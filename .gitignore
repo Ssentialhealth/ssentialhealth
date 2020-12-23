@@ -1,13 +1,8 @@
-<<<<<<< HEAD
 ### Flutter Generated
 
 # Miscellaneous
 *.class
 *.lock
-=======
-# Miscellaneous
-*.class
->>>>>>> 947567109e42eb588af930befe1166f8b252ceb3
 *.log
 *.pyc
 *.swp
@@ -23,7 +18,6 @@
 *.iws
 .idea/
 
-<<<<<<< HEAD
 # Visual Studio Code related
 .vscode/
 
@@ -893,34 +887,3 @@ DerivedData/
 !**/ios/**/default.pbxuser
 !**/ios/**/default.perspectivev3
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
-=======
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
-
-# Flutter/Dart/Pub related
-**/doc/api/
-**/ios/Flutter/.last_build_id
-.dart_tool/
-.flutter-plugins
-.flutter-plugins-dependencies
-.packages
-.pub-cache/
-.pub/
-/build/
-
-# Web related
-lib/generated_plugin_registrant.dart
-
-# Symbolication related
-app.*.symbols
-
-# Obfuscation related
-app.*.map.json
-
-# Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
->>>>>>> 947567109e42eb588af930befe1166f8b252ceb3
