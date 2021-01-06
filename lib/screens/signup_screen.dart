@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-class Body extends StatelessWidget {
+class SignUp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      
+    return Scaffold(
+
     );
   }
 }
