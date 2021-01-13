@@ -9,6 +9,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 
 class SignInScreen extends StatefulWidget {
+
+  final Function toggle;
+  SignInScreen(this.toggle);
+
   @override
   _SignInScreenState createState() => _SignInScreenState();
 }
@@ -105,7 +109,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       Text("Don't have an Account ?",style: mediumTextStyle(),),
                       GestureDetector(
                         onTap: (){
-
+                            widget.toggle();
                         },
                         child: Container(
                           padding: EdgeInsets.symmetric(vertical: 8),
