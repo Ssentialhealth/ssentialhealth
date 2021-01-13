@@ -3,10 +3,7 @@ import 'package:pocket_health/blocs/form_bloc.dart';
 import 'package:pocket_health/mixins/helper.dart';
 import 'package:pocket_health/providers/form_provider.dart';
 
-import 'forgot_password.dart';
-import 'signup_screen.dart';
-
-class Login extends StatelessWidget {
+class SignUpScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final FormBloc formBloc = FormProvider.of(context);
@@ -25,8 +22,8 @@ class Login extends StatelessWidget {
                     width: 300,
                     height: 35,
                     child:
-                      Helper.errorMessage(formBloc),
-                    ),
+                    Helper.errorMessage(formBloc),
+                  ),
                   _button(formBloc),
                   _forgotPassword(context)
                 ],
@@ -87,7 +84,7 @@ class Login extends StatelessWidget {
                 if(snapshot.hasError){
                   return null;
                 }
-                return formBloc.login(context);
+                return formBloc.register(context);
               },
               child: const Icon(Icons.arrow_forward),
               color: Colors.amber,
