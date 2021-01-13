@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_health/blocs/form_bloc.dart';
-import 'package:pocket_health/blocs/form_provider.dart';
+import 'package:pocket_health/mixins/helper.dart';
+import 'package:pocket_health/providers/form_provider.dart';
 
-import '../forgot_password.dart';
-import '../signup_screen.dart';
+import 'forgot_password.dart';
+import 'signup_screen.dart';
 
 class Login extends StatelessWidget {
   @override
@@ -20,6 +21,12 @@ class Login extends StatelessWidget {
                 children: <Widget>[
                   _emailField(formBloc),
                   _passwordField(formBloc),
+                  Container(
+                    width: 300,
+                    height: 35,
+                    child:
+                      Helper.errorMessage(formBloc),
+                    ),
                   _button(formBloc),
                   _forgotPassword(context)
                 ],
@@ -76,7 +83,12 @@ class Login extends StatelessWidget {
           return Padding(
             padding: const EdgeInsets.all(20),
             child: RaisedButton(
-              onPressed: snapshot.hasError? null:formBloc.submit,
+              onPressed: (){
+                if(snapshot.hasError){
+                  return null;
+                }
+                return formBloc.login(context);
+              },
               child: const Icon(Icons.arrow_forward),
               color: Colors.amber,
               clipBehavior: Clip.hardEdge,
