@@ -13,6 +13,9 @@ class SignInScreen extends StatefulWidget {
   final Function toggle;
   SignInScreen(this.toggle);
 
+
+
+
   @override
   _SignInScreenState createState() => _SignInScreenState();
 }
@@ -25,7 +28,9 @@ class _SignInScreenState extends State<SignInScreen> {
   TextEditingController passWordTextEditingController = new TextEditingController();
   TextEditingController emailTextEditingController = new TextEditingController();
 
+  bool _isLoading = false;
   bool _isSubmitting = false;
+
 
 
 
@@ -33,18 +38,43 @@ class _SignInScreenState extends State<SignInScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: appBarMain(context),
-      body: SingleChildScrollView(
+      appBar: AppBar(
+        title: Text("Sign In"),
+        centerTitle: true,
+      ),
+      body:  SingleChildScrollView(
         child: Container(
           height: MediaQuery.of(context).size.height - 50,
-          alignment: Alignment.bottomCenter,
+          alignment: Alignment.center,
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 24),
             child: Form(
               key: formKey,
               child: Column(
-                mainAxisSize: MainAxisSize.min,
+                mainAxisSize: MainAxisSize.max,
                 children: [
+
+                  Container(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Image.asset(
+                            'assets/images/logonotag.png',
+                            height: 150,
+                            width: 150,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 39.0),
+                          ),
+                        ],
+                      )),
+                  Text(
+                    "Please Login to Access more features",
+                    style: TextStyle(
+                        color: Colors.black
+                    ),
+                  ),
+                  SizedBox(height: 8,),
                   TextFormField(
                       validator: (val){
                         return RegExp(
@@ -55,7 +85,11 @@ class _SignInScreenState extends State<SignInScreen> {
                       },
                       controller: emailTextEditingController,
                       style: simpleTextStyle(),
-                      decoration: textFieldInputDecoration("Email")
+                      decoration: textFieldInputDecoration("Email"),
+
+                  ),
+                  SizedBox(
+                    height: 8,
                   ),
                   TextFormField(
                       obscureText: true,
@@ -64,7 +98,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       },
                       controller: passWordTextEditingController,
                       style: simpleTextStyle(),
-                      decoration: textFieldInputDecoration("Password")
+                      decoration: textFieldInputDecoration("Pin")
                   ),
                   SizedBox(height: 8,),
                   Container(
@@ -72,11 +106,12 @@ class _SignInScreenState extends State<SignInScreen> {
                     child:   Container(
                       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       child: Text(
-                        "Forgot Password ?",
+                        "Forgot Pin ?",
                         style: simpleTextStyle(),
                       ),
                     ),
                   ),
+
                   SizedBox(height: 8,),
                   GestureDetector(
                     onTap: (){
@@ -88,33 +123,37 @@ class _SignInScreenState extends State<SignInScreen> {
                       width: MediaQuery.of(context).size.width,
                       padding: EdgeInsets.symmetric(vertical: 16),
                       decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(30),
+                          borderRadius: BorderRadius.circular(5),
                           gradient: LinearGradient(
                               colors: [
-                                const Color(0xff007EF4),
-                                const Color(0xff2A75BC)
+                                const Color(0xff163C4D),
+                                const Color(0xff32687F)
                               ]
                           )
                       ),
                       child: Text("Sign In",
-                        style: mediumTextStyle(),
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold
+
+                        ),
                       ),
                     ),
                   ),
-                  SizedBox(height: 16,),
-                  SizedBox(height: 16,),
+                  SizedBox(height: 10,),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("Don't have an Account ?",style: mediumTextStyle(),),
+                      Text("Need an Account?",style: mediumTextStyle(),),
                       GestureDetector(
                         onTap: (){
                             widget.toggle();
                         },
                         child: Container(
                           padding: EdgeInsets.symmetric(vertical: 8),
-                          child: Text("Register now",style: TextStyle(
-                              color: Colors.white,
+                          child: Text("Sign Up",style: TextStyle(
+                              color: Color(0xFF163C4D),
                               fontSize: 17,
                               decoration: TextDecoration.underline
                           )
@@ -132,6 +171,7 @@ class _SignInScreenState extends State<SignInScreen> {
         ),
       ),
     );
+
   }
 
 
@@ -140,6 +180,11 @@ class _SignInScreenState extends State<SignInScreen> {
       Map<String,String> _payLoad = Map();
       _payLoad['email'] = emailTextEditingController.text;
       _payLoad["password"] = passWordTextEditingController.text;
+
+      setState(() {
+        _isLoading = true;
+
+      });
 
       print(_payLoad);
 
@@ -188,8 +233,19 @@ class _SignInScreenState extends State<SignInScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('token', value);
   }
+
+
+
 }
 
+
+
+// _isLoading ?
+// CircularProgressIndicator(
+// backgroundColor: Color(0xff163C4D),
+// valueColor: AlwaysStoppedAnimation<Color>(Colors.yellow,),
+// )
+// :
 
 
 
