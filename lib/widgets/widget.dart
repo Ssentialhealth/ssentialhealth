@@ -40,10 +40,6 @@ Widget cardItem(String image, String text){
   );
 }
 
-
-
-
-
 InputDecoration textFieldInputDecoration(String hintText){
   return InputDecoration(
     contentPadding: new EdgeInsets.symmetric(vertical: 10.0,horizontal: 10.0),

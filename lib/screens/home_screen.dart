@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:pocket_health/services/auth_service.dart';
-import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:pocket_health/widgets/widget.dart';
 import 'package:flutter/services.dart';
 
@@ -15,22 +13,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
 
   int _selectedIndex = 0;
-  static const TextStyle optionStyle =
-  TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-  static const List<Widget> _widgetOptions = <Widget>[
-    Text(
-      'Index 0: Home',
-      style: optionStyle,
-    ),
-    Text(
-      'Index 1: Business',
-      style: optionStyle,
-    ),
-    Text(
-      'Index 2: School',
-      style: optionStyle,
-    ),
-  ];
+
 
   void _onItemTapped(int index) {
     setState(() {
@@ -50,7 +33,6 @@ class _HomeScreenState extends State<HomeScreen> {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Color(0xFF00FFFF), //or set color with: Color(0xFF0000FF)
     ));
-
     return SafeArea(
       child: Scaffold(
         backgroundColor: Color(0xFFE7FFFF),
@@ -125,22 +107,27 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         bottomNavigationBar: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
+          type: BottomNavigationBarType.fixed,
+          items:  <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-              icon: Icon(Icons.home),
+              icon: new Image.asset('assets/images/icons/Home_colored.png',height: 20,width:20,),
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.business),
-              label: 'Business',
+              icon: new Image.asset('assets/images/icons/Emergency_colored.png',height: 20,width:20,),
+              label: 'Emergency',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.school),
-              label: 'School',
+              icon: new Image.asset('assets/images/icons/doctor_consult_colored.png',height: 20,width:20,),
+              label: 'Consult',
+            ),BottomNavigationBarItem(
+              icon: new Image.asset('assets/images/icons/settings.png',height: 20,width:20,),
+              label: 'Account',
             ),
           ],
           currentIndex: _selectedIndex,
-          selectedItemColor: Colors.amber[800],
+          selectedItemColor: Color(0xff163C4D),
+          unselectedItemColor: Colors.grey,
           onTap: _onItemTapped,
         ),
 
