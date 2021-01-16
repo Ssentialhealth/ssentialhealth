@@ -32,10 +32,14 @@ class _SignInScreenState extends State<SignInScreen> {
   bool _isSubmitting = false;
 
 
-
-
   @override
   Widget build(BuildContext context) {
+    Widget loadingIndicator =_isLoading? new Container(
+      color: Colors.white,
+      width: 70.0,
+      height: 70.0,
+      child: new Padding(padding: const EdgeInsets.all(5.0),child: new Center(child: new CircularProgressIndicator())),
+    ):new Container();
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -53,7 +57,6 @@ class _SignInScreenState extends State<SignInScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.max,
                 children: [
-
                   Container(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -111,11 +114,9 @@ class _SignInScreenState extends State<SignInScreen> {
                       ),
                     ),
                   ),
-
-                  SizedBox(height: 8,),
+                  new Align(child: loadingIndicator,alignment: FractionalOffset.topCenter,),
                   GestureDetector(
                     onTap: (){
-
                      login();
                     },
                     child: Container(
@@ -164,6 +165,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   ),
                   SizedBox(height: 50,),
 
+
                 ],
               ),
             ),
@@ -211,6 +213,9 @@ class _SignInScreenState extends State<SignInScreen> {
           print(loginResponse.token);
         }else{
           _showSnackBar(response.body.substring(22,response.body.length - 3));
+          setState(() {
+            _isLoading = false;
+          });
         }
 
       }).catchError((e){

@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: Colors.white
       ),
 
-      home: HomeScreen(),
+      home: Authenticate(),
 
     );
   }

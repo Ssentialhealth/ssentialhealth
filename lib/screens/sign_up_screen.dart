@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:country_list_pick/country_list_pick.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pocket_health/models/SignUpResponse.dart';
 import 'package:pocket_health/screens/home_screen.dart';
 import 'package:pocket_health/widgets/widget.dart';
@@ -28,6 +29,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   TextEditingController countryTextEditingController = new TextEditingController();
 
   bool _isSubmitting = false;
+  bool _isLoading = false;
+
   String _dropDownValue;
   String _country;
   String value = '';
@@ -36,6 +39,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Widget loadingIndicator =_isLoading? new Container(
+      color: Colors.white,
+      width: 70.0,
+      height: 70.0,
+      child: new Padding(padding: const EdgeInsets.all(5.0),child: new Center(child: new CircularProgressIndicator())),
+    ):new Container();
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -43,191 +52,198 @@ class _SignUpScreenState extends State<SignUpScreen> {
         centerTitle: true,
       ),
       body:  SingleChildScrollView(
-          child: Container(
-            height: MediaQuery.of(context).size.height - 20,
-            alignment: Alignment.center,
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 24),
-              child: Form(
-                key: formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Container(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Image.asset(
-                              'assets/images/logonotag.png',
-                              height: 150,
-                              width: 150,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 39.0),
-                            ),
-                          ],
-                        )),
-                    Text(
-                      "Please Register to Access more features",
-                      style: TextStyle(
-                          color: Colors.black
-                      ),
-                    ),
-                    SizedBox(height: 8,),
-                    TextFormField(
-                        validator: (val) {
-                          return val.isEmpty || val.length < 2
-                              ? "Enter Full Name"
-                              : null;
-                        },
-                        controller: fullNameTextEditingController,
-                        style: simpleTextStyle(),
-                        decoration: textFieldInputDecoration("Full Names")
-                    ),
-                    SizedBox(height: 8,),
-                    DropdownButtonFormField(
-                      decoration: textFieldInputDecoration("User Category"),
-                      hint: _dropDownValue == null
-                          ? Text('')
-                          : Text(
-                        _dropDownValue,
-                        style: TextStyle(color: Colors.black),
-                      ),
-                      isExpanded: true,
-                      iconSize: 30.0,
-                      style: TextStyle(color: Colors.black),
-                      items: ['Individual', 'Health Practitioner', 'Health Facility','Health Insurer', 'Health Insurance Agent'].map(
-                            (val) {
-                          return DropdownMenuItem<String>(
-                            value: val,
-                            child: Text(val),
-                          );
-                        },
-                      ).toList(),
-                      onChanged: (val) {
-                        setState(
-                              () {
-                            _dropDownValue = val;
-                          },
-                        );
-                      },
-                    ),
-                    SizedBox(height: 8,),
-                    Container(
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
-                        borderRadius: BorderRadius.circular(10)
-                      ),
-                      alignment: Alignment.centerLeft,
-                      child: CountryListPick(
-                        theme: CountryTheme(
-                          isShowFlag: true
-                        ),
-                       initialSelection: '+253',
-                       onChanged: (CountryCode code) {
-                          print(code.name);
-                          print(code.code);
-                          print(code.dialCode);
-                          print(code.flagUri);
-                          _country = code.name;
-                        },
-                ),
-                    ),
-                    SizedBox(height: 8,),
-                    TextFormField(
-                        validator: (val) {
-                          return RegExp(
-                              r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                              .hasMatch(val)
-                              ? null
-                              : "Enter a valid Email";
-                        },
-                        controller: emailTextEditingController,
-                        style: simpleTextStyle(),
-                        decoration: textFieldInputDecoration("Email")
-                    ),
-                    SizedBox(height: 8,),
-                    TextFormField(
-                        obscureText: true,
-                        validator: (val) {
-                          return val.length > 6
-                              ? null
-                              : "Please provide a Password with 6+ characters";
-                        },
-                        controller: passWordTextEditingController,
-                        style: simpleTextStyle(),
-                        decoration: textFieldInputDecoration("Password")
-                    ),
-                    SizedBox(height: 8,),
-                    Container(
-                      alignment: Alignment.centerRight,
-                      child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        child: Text(
-                          "Forgot Password ?",
-                          style: simpleTextStyle(),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 8,),
-                    GestureDetector(
-                      onTap: () {
-                        signUp();
-
-
-                      },
-                      child: Container(
-                        alignment: Alignment.center,
-                        width: MediaQuery
-                            .of(context)
-                            .size
-                            .width,
-                        padding: EdgeInsets.symmetric(vertical: 16),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            gradient: LinearGradient(
-                                colors: [
-                                  const Color(0xff163C4D),
-                                  const Color(0xff32687F)
-                                ]
-                            )
-                        ),
-                        child: Text("Sign Up",
+          child: Column(
+            children: [
+              Container(
+                height: MediaQuery.of(context).size.height - 5,
+                alignment: Alignment.center,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 24),
+                  child: Form(
+                    key: formKey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Container(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Image.asset(
+                                  'assets/images/logonotag.png',
+                                  height: 150,
+                                  width: 150,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 39.0),
+                                ),
+                              ],
+                            )),
+                        Text(
+                          "Please Register to Access more features",
                           style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold
+                              color: Colors.black
                           ),
                         ),
-                      ),
+                        SizedBox(height: 8,),
+                        TextFormField(
+                            validator: (val) {
+                              return val.isEmpty || val.length < 2
+                                  ? "Enter Full Name"
+                                  : null;
+                            },
+                            controller: fullNameTextEditingController,
+                            style: simpleTextStyle(),
+                            decoration: textFieldInputDecoration("Full Names")
+                        ),
+                        SizedBox(height: 8,),
+                        DropdownButtonFormField(
+                          decoration: textFieldInputDecoration("User Category"),
+                          hint: _dropDownValue == null
+                              ? Text('')
+                              : Text(
+                            _dropDownValue,
+                            style: TextStyle(color: Colors.black),
+                          ),
+                          isExpanded: true,
+                          iconSize: 30.0,
+                          style: TextStyle(color: Colors.black),
+                          items: ['Individual', 'Health Practitioner', 'Health Facility','Health Insurer', 'Health Insurance Agent'].map(
+                                (val) {
+                              return DropdownMenuItem<String>(
+                                value: val,
+                                child: Text(val),
+                              );
+                            },
+                          ).toList(),
+                          onChanged: (val) {
+                            setState(
+                                  () {
+                                _dropDownValue = val;
+                              },
+                            );
+                          },
+                        ),
+                        SizedBox(height: 8,),
+                        Container(
+                          decoration: BoxDecoration(
+                              border: Border.all(color: Colors.black),
+                            borderRadius: BorderRadius.circular(10)
+                          ),
+                          alignment: Alignment.centerLeft,
+                          child: CountryListPick(
+                            theme: CountryTheme(
+                              isShowFlag: true
+                            ),
+                           initialSelection: '+253',
+                           onChanged: (CountryCode code) {
+                              print(code.name);
+                              print(code.code);
+                              print(code.dialCode);
+                              print(code.flagUri);
+                              _country = code.name;
+                            },
                     ),
-                    SizedBox(height: 5,),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Already have an Account ?", style: mediumTextStyle(),),
+                        ),
+                        SizedBox(height: 8,),
+                        TextFormField(
+                            validator: (val) {
+                              return RegExp(
+                                  r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                  .hasMatch(val)
+                                  ? null
+                                  : "Enter a valid Email";
+                            },
+                            controller: emailTextEditingController,
+                            style: simpleTextStyle(),
+                            decoration: textFieldInputDecoration("Email")
+                        ),
+                        SizedBox(height: 8,),
+                        TextFormField(
+                          keyboardType: TextInputType.number,
+                            inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter.digitsOnly],
+                            obscureText: true,
+                            validator: (val) {
+                              return val.length > 6
+                                  ? null
+                                  : "Please provide a Password with 6+ characters";
+                            },
+                            controller: passWordTextEditingController,
+                            style: simpleTextStyle(),
+                            decoration: textFieldInputDecoration("Pin")
+                        ),
+                        SizedBox(height: 8,),
+                        Container(
+                          alignment: Alignment.centerRight,
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            child: Text(
+                              "Forgot Password ?",
+                              style: simpleTextStyle(),
+                            ),
+                          ),
+                        ),
+                        new Align(child: loadingIndicator,alignment: FractionalOffset.topCenter,),
+
                         GestureDetector(
                           onTap: () {
-                            widget.toggle();
+                            signUp();
+
+
                           },
                           child: Container(
-                            padding: EdgeInsets.symmetric(vertical: 8),
-                            child: Text("Sign In", style: TextStyle(
-                                color: Color(0xFF163C4D),
-                                fontSize: 17,
-                                decoration: TextDecoration.underline
-                            )
-                              ,),
+                            alignment: Alignment.center,
+                            width: MediaQuery
+                                .of(context)
+                                .size
+                                .width,
+                            padding: EdgeInsets.symmetric(vertical: 16),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(5),
+                                gradient: LinearGradient(
+                                    colors: [
+                                      const Color(0xff163C4D),
+                                      const Color(0xff32687F)
+                                    ]
+                                )
+                            ),
+                            child: Text("Sign Up",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold
+                              ),
+                            ),
                           ),
-                        )
+                        ),
+                        SizedBox(height: 5,),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Already have an Account ?", style: mediumTextStyle(),),
+                            GestureDetector(
+                              onTap: () {
+                                widget.toggle();
+                              },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(vertical: 8),
+                                child: Text("Sign In", style: TextStyle(
+                                    color: Color(0xFF163C4D),
+                                    fontSize: 17,
+                                    decoration: TextDecoration.underline
+                                )
+                                  ,),
+                              ),
+                            )
+                          ],
+                        ),
                       ],
                     ),
-                    SizedBox(height: 50,),
-                  ],
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
         ),
 
@@ -242,6 +258,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
       _payload["full_names"] = fullNameTextEditingController.text;
       _payload["user_category"] = _dropDownValue;
       _payload["country"] = _country;
+
+      setState(() {
+        _isLoading = true;
+
+      });
 
       print(_payload);
 
@@ -264,7 +285,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
           _showSnackBar("Successfully Created");
         } else {
           _showSnackBar(response.body.substring(11,response.body.length - 3));
-
+          setState(() {
+            _isLoading = false;
+          });
         }
 
       }).catchError((e){
