@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:pocket_health/services/auth_service.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:pocket_health/widgets/widget.dart';
+import 'package:flutter/services.dart';
+
 
 import '../size_config.dart';
 
@@ -11,6 +13,31 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
+  int _selectedIndex = 0;
+  static const TextStyle optionStyle =
+  TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+  static const List<Widget> _widgetOptions = <Widget>[
+    Text(
+      'Index 0: Home',
+      style: optionStyle,
+    ),
+    Text(
+      'Index 1: Business',
+      style: optionStyle,
+    ),
+    Text(
+      'Index 2: School',
+      style: optionStyle,
+    ),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     List<Map<String, dynamic>> categories = [
@@ -20,35 +47,25 @@ class _HomeScreenState extends State<HomeScreen> {
       {"icon": "assets/images/health_insurace.png", "text": "Health Insuran.."},
 
     ];
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Color(0xFF00FFFF), //or set color with: Color(0xFF0000FF)
+    ));
 
     return SafeArea(
       child: Scaffold(
         backgroundColor: Color(0xFFE7FFFF),
+        appBar: AppBar(
+          title: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Image.asset('assets/images/homelogo.png',),
+          ),
+          backgroundColor: Color(0xFF00FFFF),
+        ),
         body: SingleChildScrollView(
           child: Container(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Container(
-                  height: 74,
-                  color: Color(0xFF00FFFF),
-                  alignment: Alignment.topCenter,
-                  child:   Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(top:10.0),
-                        child: Image.asset(
-                          'assets/images/homelogo.png',
-                          height: 50,
-                          width: MediaQuery.of(context).size.width,
-                        ),
-                      ),
-                      SizedBox(height: 8,),
-
-                    ],
-                  ),
-
-                ),
                 SizedBox(height: 5,),
                 Container(
                   height: 55,
@@ -107,9 +124,26 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ),
-        // bottomNavigationBar: BottomNavigationBar(
-        //   items: [],
-        // ),
+        bottomNavigationBar: BottomNavigationBar(
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.business),
+              label: 'Business',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.school),
+              label: 'School',
+            ),
+          ],
+          currentIndex: _selectedIndex,
+          selectedItemColor: Colors.amber[800],
+          onTap: _onItemTapped,
+        ),
+
       ),
     );
   }
