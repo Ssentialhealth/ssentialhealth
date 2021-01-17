@@ -114,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: new Image.asset('assets/images/icons/Emergency_colored.png',height: 20,width:20,),
+              icon: new Image.asset('assets/images/icons/emergency red.png',height: 20,width:20,),
               label: 'Emergency',
             ),
             BottomNavigationBarItem(
