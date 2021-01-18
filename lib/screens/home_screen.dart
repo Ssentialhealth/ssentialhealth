@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:pocket_health/widgets/widget.dart';
 import 'package:flutter/services.dart';
 
@@ -30,16 +31,17 @@ class _HomeScreenState extends State<HomeScreen> {
       {"icon": "assets/images/health_insurace.png", "text": "Health Insuran.."},
 
     ];
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: Color(0xFF00FFFF), //or set color with: Color(0xFF0000FF)
-    ));
+    // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    //   statusBarColor: Color(0xFF00FFFF), //or set color with: Color(0xFF0000FF)
+    // ));
+    FlutterStatusbarcolor.setStatusBarColor(Color(0xFF00FFFF));
     return SafeArea(
       child: Scaffold(
         backgroundColor: Color(0xFFE7FFFF),
         appBar: AppBar(
           title: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Image.asset('assets/images/homelogo.png',),
+            child: Image.asset('assets/images/homelogo.png',fit: BoxFit.scaleDown,),
           ),
           backgroundColor: Color(0xFF00FFFF),
         ),

@@ -256,7 +256,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       _payload['email'] = emailTextEditingController.text;
       _payload["password"] = passWordTextEditingController.text;
       _payload["full_names"] = fullNameTextEditingController.text;
-      _payload["user_category"] = _dropDownValue;
+      _payload["user_category"] = _dropDownValue.toLowerCase();
       _payload["country"] = _country;
 
       setState(() {
