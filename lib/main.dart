@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pocket_health/Authenticate.dart';
+import 'package:pocket_health/screens/forgot_password.dart';
 import 'package:pocket_health/screens/home_screen.dart';
 
 
@@ -15,7 +16,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Ssential App',
-      darkTheme: ThemeData.dark(),
       theme: ThemeData(
         primaryColor: Colors.white,
         scaffoldBackgroundColor: Colors.white
