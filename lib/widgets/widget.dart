@@ -40,10 +40,6 @@ Widget cardItem(String image, String text){
   );
 }
 
-
-
-
-
 InputDecoration textFieldInputDecoration(String hintText){
   return InputDecoration(
     contentPadding: new EdgeInsets.symmetric(vertical: 10.0,horizontal: 10.0),
@@ -85,6 +81,13 @@ InputDecoration searchFieldInputDecoration(String hintText){
 
 }
 
+BottomNavigationBarItem navBar (Icon icon,String label){
+  return BottomNavigationBarItem(
+    icon: icon,
+    label: label,
+  );
+}
+
 
 TextStyle simpleTextStyle(){
   return TextStyle(
@@ -92,6 +95,9 @@ TextStyle simpleTextStyle(){
       fontSize: 16
   );
 }
+
+TextStyle optionStyle =
+TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
 
 TextStyle mediumTextStyle() {
   return TextStyle(

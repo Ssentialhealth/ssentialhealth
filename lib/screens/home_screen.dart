@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:pocket_health/services/auth_service.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:pocket_health/widgets/widget.dart';
+import 'package:flutter/services.dart';
+
 
 import '../size_config.dart';
 
@@ -11,6 +12,16 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
+  int _selectedIndex = 0;
+
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     List<Map<String, dynamic>> categories = [
@@ -20,35 +31,25 @@ class _HomeScreenState extends State<HomeScreen> {
       {"icon": "assets/images/health_insurace.png", "text": "Health Insuran.."},
 
     ];
-
+    // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    //   statusBarColor: Color(0xFF00FFFF), //or set color with: Color(0xFF0000FF)
+    // ));
+    FlutterStatusbarcolor.setStatusBarColor(Color(0xFF00FFFF));
     return SafeArea(
       child: Scaffold(
         backgroundColor: Color(0xFFE7FFFF),
+        appBar: AppBar(
+          title: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Image.asset('assets/images/homelogo.png',fit: BoxFit.scaleDown,),
+          ),
+          backgroundColor: Color(0xFF00FFFF),
+        ),
         body: SingleChildScrollView(
           child: Container(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Container(
-                  height: 74,
-                  color: Color(0xFF00FFFF),
-                  alignment: Alignment.topCenter,
-                  child:   Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(top:10.0),
-                        child: Image.asset(
-                          'assets/images/homelogo.png',
-                          height: 50,
-                          width: MediaQuery.of(context).size.width,
-                        ),
-                      ),
-                      SizedBox(height: 8,),
-
-                    ],
-                  ),
-
-                ),
                 SizedBox(height: 5,),
                 Container(
                   height: 55,
@@ -107,9 +108,31 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ),
-        // bottomNavigationBar: BottomNavigationBar(
-        //   items: [],
-        // ),
+        bottomNavigationBar: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          items:  <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: new Image.asset('assets/images/icons/Home_colored.png',height: 20,width:20,),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: new Image.asset('assets/images/icons/emergency red.png',height: 20,width:20,),
+              label: 'Emergency',
+            ),
+            BottomNavigationBarItem(
+              icon: new Image.asset('assets/images/icons/doctor_consult_colored.png',height: 20,width:20,),
+              label: 'Consult',
+            ),BottomNavigationBarItem(
+              icon: new Image.asset('assets/images/icons/settings.png',height: 20,width:20,),
+              label: 'Account',
+            ),
+          ],
+          currentIndex: _selectedIndex,
+          selectedItemColor: Color(0xff163C4D),
+          unselectedItemColor: Colors.grey,
+          onTap: _onItemTapped,
+        ),
+
       ),
     );
   }

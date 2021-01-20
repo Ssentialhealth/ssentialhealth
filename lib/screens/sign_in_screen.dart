@@ -1,11 +1,15 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pocket_health/models/LoginResponse.dart';
 import 'package:pocket_health/screens/home_screen.dart';
 import 'package:pocket_health/widgets/widget.dart';
 import 'package:http/http.dart' as http;
+import 'package:pocket_health/widgets/widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'forgot_password.dart';
 
 
 class SignInScreen extends StatefulWidget {
@@ -95,22 +99,31 @@ class _SignInScreenState extends State<SignInScreen> {
                     height: 8,
                   ),
                   TextFormField(
+                    maxLength: 4,
                       obscureText: true,
+                      inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter.digitsOnly],
                       validator: (val){
-                        return val.length > 6 ? null : "Please provide a Password with 6+ characters";
+                        return val.length < 5 ? null : "Please provide a Pin with four digits";
                       },
                       controller: passWordTextEditingController,
                       style: simpleTextStyle(),
                       decoration: textFieldInputDecoration("Pin")
                   ),
+
                   SizedBox(height: 8,),
-                  Container(
-                    alignment: Alignment.centerRight,
-                    child:   Container(
-                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      child: Text(
-                        "Forgot Pin ?",
-                        style: simpleTextStyle(),
+                  GestureDetector(
+                    onTap: (){
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => ForgotPassword()));
+                    },
+                    child: Container(
+                      alignment: Alignment.centerRight,
+                      child:   Container(
+                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        child: Text(
+                          "Forgot Pin ?",
+                          style: simpleTextStyle(),
+                        ),
                       ),
                     ),
                   ),
