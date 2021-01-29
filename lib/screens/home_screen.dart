@@ -31,9 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
       {"icon": "assets/images/health_insurace.png", "text": "Health Insuran.."},
 
     ];
-    // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-    //   statusBarColor: Color(0xFF00FFFF), //or set color with: Color(0xFF0000FF)
-    // ));
+
     FlutterStatusbarcolor.setStatusBarColor(Color(0xFF00FFFF));
     return SafeArea(
       child: Scaffold(
@@ -86,6 +84,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 cardItem("assets/images/adult_unwell.png","Adult Unwell- Check Symptoms \n& Conditions",),
                 cardItem("assets/images/child_health_ immunisation.png","Child Health & Immunisation",),
                 cardItem("assets/images/pregnancy_lactation.png","Pregnancy & Lactation",),
+                SizedBox(height: 8,),
+                welcomeCard(),
                 SizedBox(height: 8,),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),

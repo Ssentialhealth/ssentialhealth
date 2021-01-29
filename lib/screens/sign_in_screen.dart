@@ -204,7 +204,7 @@ class _SignInScreenState extends State<SignInScreen> {
       print(_payLoad);
 
       http.post(
-          "https://ssential.herokuapp.com/token/login/",
+          "https://ssential.herokuapp.com/api/token/",
           headers: {"Content-Type": "application/json"},
           body: json.encode(_payLoad)
       ).then((response) {
@@ -225,7 +225,7 @@ class _SignInScreenState extends State<SignInScreen> {
           addStringToSF(loginResponse.token);
           print(loginResponse.token);
         }else{
-          _showSnackBar(response.body.substring(22,response.body.length - 3));
+          _showSnackBar(response.body.substring(11,response.body.length - 2));
           setState(() {
             _isLoading = false;
           });

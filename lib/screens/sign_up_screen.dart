@@ -192,16 +192,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           decoration: textFieldInputDecoration("Confirm Pin")
                       ),
                       SizedBox(height: 10,),
-                      Container(
-                        alignment: Alignment.centerRight,
-                        child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          child: Text(
-                            "Forgot Password ?",
-                            style: simpleTextStyle(),
-                          ),
-                        ),
-                      ),
                       new Align(child: loadingIndicator,alignment: FractionalOffset.topCenter,),
                       GestureDetector(
                         onTap: () {
@@ -285,7 +275,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       print(_payload);
 
       http.post(
-        "https://ssential.herokuapp.com/accounts/users/",
+        "https://ssential.herokuapp.com/auth/users/",
         headers: {"Content-Type": "application/json"},
         body: json.encode(_payload)
       ).then((response){
@@ -301,6 +291,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             builder: (context) => HomeScreen()
           ));
           _showSnackBar("Successfully Created");
+         
         } else {
           _showSnackBar(response.body.substring(11,response.body.length - 3));
           setState(() {
@@ -315,6 +306,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
   }
 
+
   void _showSnackBar(message) {
     _scaffoldKey.currentState.showSnackBar(
         SnackBar(
@@ -327,3 +319,4 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
 
 }
+
