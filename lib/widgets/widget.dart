@@ -40,6 +40,26 @@ Widget cardItem(String image, String text){
   );
 }
 
+Widget menuItems(String image, String text){
+  return  Container(
+    child: Padding(
+      padding:  EdgeInsets.only(left:8.0),
+      child: Row(
+        children: <Widget>[
+          Padding(
+            padding:  EdgeInsets.all(8.0),
+            child: Image.asset(image,scale: 0.8,),
+          ),
+          Padding(
+            padding:  EdgeInsets.all(8.0),
+            child: Text(text,style: mediumTextStyle(),),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
 InputDecoration textFieldInputDecoration(String hintText){
   return InputDecoration(
     contentPadding: new EdgeInsets.symmetric(vertical: 10.0,horizontal: 10.0),
