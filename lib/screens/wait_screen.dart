@@ -88,6 +88,7 @@ class _WaitScreenState extends State<WaitScreen> {
 
                     ),
                   ),
+
                 ),
               ),
             ),
