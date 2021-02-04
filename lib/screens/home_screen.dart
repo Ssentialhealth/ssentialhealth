@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
+import 'package:pocket_health/screens/profile_screen.dart';
 import 'package:pocket_health/widgets/widget.dart';
-import 'package:flutter/services.dart';
 
 
 import '../size_config.dart';
@@ -63,9 +63,14 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             borderRadius: BorderRadius.circular(30),
                           ),
-                          child: ClipRRect(
-                              borderRadius: BorderRadius.circular(30),
-                              child: Image.asset("assets/images/first_aid.png", height: 50,)),
+                          child: GestureDetector(
+                            onTap: (){
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileScreen()));
+                            },
+                            child: ClipRRect(
+                                borderRadius: BorderRadius.circular(30),
+                                child: Image.asset("assets/images/download.png", height: 50,)),
+                          ),
                         ),
                       ),
                       Expanded(
