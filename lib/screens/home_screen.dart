@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:pocket_health/screens/profile_screen.dart';
+import 'package:pocket_health/widgets/card_item.dart';
+import 'package:pocket_health/widgets/category_card.dart';
+import 'package:pocket_health/widgets/welcome_dart.dart';
 import 'package:pocket_health/widgets/widget.dart';
 
 
@@ -86,11 +89,20 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                 ),
-                cardItem("assets/images/adult_unwell.png","Adult Unwell- Check Symptoms \n& Conditions",),
-                cardItem("assets/images/child_health_ immunisation.png","Child Health & Immunisation",),
-                cardItem("assets/images/pregnancy_lactation.png","Pregnancy & Lactation",),
+                CardItem(
+                  image: "assets/images/adult_unwell.png",
+                  text: "Adult Unwell- Check Symptoms \n& Conditions",
+                ),
+                CardItem(
+                  image: "assets/images/child_health_ immunisation.png",
+                  text: "Child Health & Immunisation",
+                ),
+                CardItem(
+                  image: "assets/images/pregnancy_lactation.png",
+                  text: "Pregnancy & Lactation",
+                ),
                 SizedBox(height: 8,),
-                welcomeCard(),
+                WelcomeCard(),
                 SizedBox(height: 8,),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -106,8 +118,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 SizedBox(height: 8,),
-                cardItem("assets/images/doctors_practitioners.png","Doctors & Practitioners",),
-                cardItem("assets/images/hospital_facilities.png","Health Facilities",),
+                CardItem(
+                  image: "assets/images/doctors_practitioners.png",
+                  text: "Doctors & Practitioners",
+                ),
+                CardItem(
+                  image: "assets/images/hospital_facilities.png",
+                  text: "Health Facilities",
+                ),
 
               ],
             ),

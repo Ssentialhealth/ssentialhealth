@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
+import 'package:pocket_health/screens/feedback_screen.dart';
+import 'package:pocket_health/widgets/menu_items.dart';
 import 'package:pocket_health/widgets/widget.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -101,13 +103,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: Column(
                       children: <Widget>[
                         Divider(height: 1,color: Color(0xFFC6C6C6),),
-                        menuItems("assets/images/icons/Saved.png", "Saved"),
+                        MenuItems(
+                          image: "assets/images/icons/Saved.png",
+                          text: "Saved",
+                          press: (){},
+                        ),
                         Divider(color: Color(0xFFC6C6C6),indent: 10,endIndent: 10,),
-                        menuItems("assets/images/icons/document.png", "Documents"),
+                      MenuItems(
+                          image: "assets/images/icons/document.png",
+                          text: "Documents",
+                          press: (){},
+                        ),
                         Divider(color: Color(0xFFC6C6C6),indent: 10,endIndent: 10,),
-                        menuItems("assets/images/icons/insurance agency.png", "Insurance Agency"),
+                        MenuItems(
+                          image: "assets/images/icons/insurance agency.png",
+                          text: "Insurance Agency",
+                          press: (){},
+                        ),
                         Divider(color: Color(0xFFC6C6C6),indent: 10,endIndent: 10,),
-                        menuItems("assets/images/icons/shared medical.png", "Shared Medical"),
+                        MenuItems(
+                          image: "assets/images/icons/shared medical.png",
+                          text: "Shared Medical",
+                          press: (){},
+                        ),
                         Divider(height: 1,color: Color(0xFFC6C6C6)),
                      ],
                     ),
@@ -119,11 +137,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Column(
                     children: <Widget>[
                       Divider(height: 1,color: Color(0xFFC6C6C6),),
-                      menuItems("assets/images/icons/help.png", "Help"),
+                      MenuItems(
+                        image: "assets/images/icons/help.png",
+                        text: "Help",
+                        press: (){},
+                      ),
                       Divider(color: Colors.black,indent: 10,endIndent: 10,),
-                      menuItems("assets/images/icons/feedback.png", "Feedback"),
+                      MenuItems(
+                        image: "assets/images/icons/feedback.png",
+                        text: "Feedback",
+                        press: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => FeedbackPage()));
+                        },
+                      ),
                       Divider(color: Colors.black,indent: 10,endIndent: 10,),
-                      menuItems("assets/images/icons/contact us.png", "Contact Us"),
+                      MenuItems(
+                        image: "assets/images/icons/contact us.png",
+                        text: "Contact Us",
+                        press: (){},
+                      ),
                       Divider(height: 1,color: Colors.black),
                     ],
                   ),
@@ -134,9 +166,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Column(
                     children: <Widget>[
                       Divider(height: 1,color: Color(0xFFC6C6C6),),
-                      menuItems("assets/images/icons/terms and conditions.png", "Terms & Conditions"),
+                      MenuItems(
+                        image: "assets/images/icons/terms and conditions.png",
+                        text: "Terms & Conditions",
+                        press: (){},
+                      ),
                       Divider(color: Colors.black,indent: 10,endIndent: 10,),
-                      menuItems("assets/images/icons/terms and conditions.png", "Privacy Policy"),
+                      MenuItems(
+                        image: "assets/images/icons/terms and conditions.png",
+                        text: "Privacy Policy",
+                        press: (){},
+                      ),
                       Divider(height: 1,color: Colors.black),
                     ],
                   ),

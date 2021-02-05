@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:pocket_health/Authenticate.dart';
-import 'package:pocket_health/screens/forgot_password.dart';
-import 'package:pocket_health/screens/home_screen.dart';
+import 'package:pocket_health/screens/feedback_screen.dart';
 import 'package:pocket_health/screens/profile_screen.dart';
-import 'package:pocket_health/screens/splash_screen.dart';
 import 'package:pocket_health/screens/wait_screen.dart';
 
 
@@ -24,7 +20,7 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: Colors.white
       ),
 
-      home: WaitScreen(),
+      home: ProfileScreen(),
 
     );
   }
