@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
+import 'package:pocket_health/screens/contact_us.dart';
 import 'package:pocket_health/screens/feedback_screen.dart';
+import 'package:pocket_health/screens/user_info_screen.dart';
 import 'package:pocket_health/widgets/menu_items.dart';
 import 'package:pocket_health/widgets/widget.dart';
 
@@ -30,45 +32,51 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       color: Color(0xFF00FFFF),
                       height: 100,
                       width: MediaQuery.of(context).size.width,
-                      child: Column(
-                        children: [
-                          Row(
-                            children: <Widget>[
-                              Padding(
-                                padding: EdgeInsets.all(12.0),
-                                child: Container(
-                                  child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(40),
-                                      child: Image.asset("assets/images/download.png", height: 70,)),
+                      child: GestureDetector(
+                        onTap: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => UserInfoScreen()));
+
+                        },
+                        child: Column(
+                          children: [
+                            Row(
+                              children: <Widget>[
+                                Padding(
+                                  padding: EdgeInsets.all(12.0),
+                                  child: Container(
+                                    child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(40),
+                                        child: Image.asset("assets/images/download.png", height: 70,)),
+                                  ),
                                 ),
-                              ),
-                              Padding(
-                                padding:  EdgeInsets.symmetric(vertical:20),
-                                child: Column(
-                                  children: [
-                                    Text("Nicholas Dani",style: mediumTextStyle()),
-                                    SizedBox(height: 10,),
-                                    LinearPercentIndicator(
-                                      width: 200.0,
-                                      lineHeight: 10.0,
-                                      percent: 0.3,
-                                      backgroundColor: Colors.white,
-                                      progressColor: Color(0xff163C4D),
-                                    ),
+                                Padding(
+                                  padding:  EdgeInsets.symmetric(vertical:20),
+                                  child: Column(
+                                    children: [
+                                      Text("Nicholas Dani",style: mediumTextStyle()),
+                                      SizedBox(height: 10,),
+                                      LinearPercentIndicator(
+                                        width: 200.0,
+                                        lineHeight: 10.0,
+                                        percent: 0.3,
+                                        backgroundColor: Colors.white,
+                                        progressColor: Color(0xff163C4D),
+                                      ),
 
 
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              Spacer(flex: 2,),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Icon(Icons.arrow_forward_ios_outlined),
-                              ),
+                                Spacer(flex: 2,),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Icon(Icons.arrow_forward_ios_outlined),
+                                ),
 
-                            ],
-                          ),
-                        ],
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -154,7 +162,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       MenuItems(
                         image: "assets/images/icons/contact us.png",
                         text: "Contact Us",
-                        press: (){},
+                        press: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => ContactUs()));
+
+                        },
                       ),
                       Divider(height: 1,color: Colors.black),
                     ],

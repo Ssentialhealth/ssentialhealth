@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pocket_health/screens/feedback_screen.dart';
 import 'package:pocket_health/screens/profile_screen.dart';
 import 'package:pocket_health/screens/wait_screen.dart';
+import 'package:pocket_health/screens/contact_us.dart';
 
 
 void main() {

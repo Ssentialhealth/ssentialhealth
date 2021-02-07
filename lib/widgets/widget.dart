@@ -76,9 +76,10 @@ TextStyle mediumTextStyle() {
 TextStyle largeTextStyle() {
   return TextStyle(
       color: Colors.black,
-      fontSize: 19
+      fontSize: 18
   );
 }
+
 
 
 
