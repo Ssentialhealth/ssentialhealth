@@ -1,7 +1,7 @@
 import 'package:country_list_pick/country_list_pick.dart';
 import 'package:flutter/material.dart';
 
-import '../size_config.dart';
+import '../utils/size_config.dart';
 
 Widget appBarMain(BuildContext buildContext){
   return AppBar(

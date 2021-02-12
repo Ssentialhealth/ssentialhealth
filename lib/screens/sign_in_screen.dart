@@ -114,7 +114,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   SizedBox(height: 8,),
                   GestureDetector(
                     onTap: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => ForgotPassword()));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => ForgotPasswordScreen()));
                     },
                     child: Container(
                       alignment: Alignment.centerRight,

@@ -1,27 +1,24 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:pocket_health/Authenticate.dart';
-import 'package:pocket_health/models/ForgotPassResponse.dart';
-import 'package:pocket_health/screens/sign_in_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pocket_health/bloc/forgotPassword/forgortPasswordEvent.dart';
+import 'package:pocket_health/bloc/forgotPassword/forgotPasswordBloc.dart';
+import 'package:pocket_health/screens/Authenticate.dart';
 import 'package:pocket_health/widgets/widget.dart';
-import 'package:http/http.dart' as http;
 
 
-class ForgotPassword extends StatefulWidget {
+class ForgotPasswordScreen extends StatefulWidget {
   @override
   _ForgotPasswordState createState() => _ForgotPasswordState();
 }
 
-class _ForgotPasswordState extends State<ForgotPassword> {
+class _ForgotPasswordState extends State<ForgotPasswordScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
+  ForgotPasswordBloc _forgotPasswordBloc;
+
 
   TextEditingController emailTextEditingController = new TextEditingController();
 
-
-
-  String _email;
   bool _autoValidate = false;
   bool _isLoading = false;
 
@@ -32,8 +29,12 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       color: Colors.white,
       width: 70.0,
       height: 70.0,
-      child: new Padding(padding: const EdgeInsets.all(5.0),child: new Center(child: new CircularProgressIndicator())),
+      child:  Padding(
+          padding: const EdgeInsets.all(5.0),
+          child: new Center(
+              child:  CircularProgressIndicator())),
     ):new Container();
+    _forgotPasswordBloc = BlocProvider.of<ForgotPasswordBloc>(context);
     return SafeArea(
       child: Scaffold(
           key: _scaffoldKey,
@@ -79,7 +80,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                   SizedBox(height: 15,),
                   GestureDetector(
                     onTap: (){
-                      forgotPass();
+                      BlocProvider.of<ForgotPasswordBloc>(context).add(GetResetEmail(email: emailTextEditingController.text));
                     },
                     child: Container(
                       alignment: Alignment.center,
@@ -115,7 +116,6 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                     )),
                   ),
 
-
                 ],
               ),
             ),
@@ -125,56 +125,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     );
   }
 
-  forgotPass(){
-    if(_formKey.currentState.validate()) {
-      Map<String,String> _payLoad = Map();
-      _payLoad['email'] = emailTextEditingController.text;
-      _formKey.currentState.save();
 
-      setState(() {
-        _isLoading = true;
-
-      });
-
-      http.post("https://ssential.herokuapp.com/auth/users/reset_password/",
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode(_payLoad)
-      ).then((response) {
-        print("status code:" + response.statusCode.toString());
-
-
-        ForgotPasswordResponse forgotPassword = ForgotPasswordResponse.fromJson(
-            jsonDecode(response.body));
-        print(_email.toString());
-
-        if (response.statusCode == 204) {
-          Navigator.pushReplacement(context, MaterialPageRoute(
-              builder: (context) => Authenticate()
-          ));
-          _showSnackBar(response.body);
-         } else {
-          _showSnackBar(response.body.substring(2,response.body.length -2));
-          setState(() {
-            _isLoading = false;
-          });        }
-      }
-    ).catchError((e){
-      _showSnackBar("Check Your Email , We have Sent a Link to Reset your Password");
-      setState(() {
-        _isLoading = false;
-      });
-      });
-      
-    }
-  }
-
-  void _showSnackBar(message) {
-   _scaffoldKey.currentState.showSnackBar(
-     SnackBar(
-       content: Text(message),
-          ),
-        );
-      }
 
 }
 

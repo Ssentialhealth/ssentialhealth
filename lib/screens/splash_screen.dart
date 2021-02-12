@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:pocket_health/Authenticate.dart';
+import 'package:pocket_health/screens/Authenticate.dart';
 import 'package:pocket_health/screens/sign_in_screen.dart';
 import 'package:pocket_health/screens/wait_screen.dart';
 
