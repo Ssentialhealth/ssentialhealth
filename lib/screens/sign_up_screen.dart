@@ -277,7 +277,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       http.post(
         "https://ssential.herokuapp.com/auth/users/",
         headers: {"Content-Type": "application/json"},
-        body: json.encode(_payload)
+        body: json.encode(_payload),
       ).then((response){
 
 

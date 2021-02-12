@@ -7,7 +7,7 @@ import 'package:pocket_health/widgets/welcome_dart.dart';
 import 'package:pocket_health/widgets/widget.dart';
 
 
-import '../size_config.dart';
+import '../utils/size_config.dart';
 
 class HomeScreen extends StatefulWidget {
   @override

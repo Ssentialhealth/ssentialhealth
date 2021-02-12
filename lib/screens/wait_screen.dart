@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pocket_health/screens/home_screen.dart';
 import 'package:pocket_health/widgets/widget.dart';
 
-import '../Authenticate.dart';
+import 'Authenticate.dart';
 
 class WaitScreen extends StatefulWidget {
   @override
