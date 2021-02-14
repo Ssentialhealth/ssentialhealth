@@ -1,6 +1,9 @@
 import 'package:country_list_pick/country_list_pick.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
+import 'package:pocket_health/bloc/profile/userProfileBloc.dart';
+import 'package:pocket_health/bloc/profile/userProfileEvent.dart';
 import 'package:pocket_health/widgets/widget.dart';
 
 class UserInfoScreen extends StatefulWidget {
@@ -12,8 +15,17 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
   String value;
   int currentStep = 0;
   bool complete = false;
-  String gender,bloodGroup,disorder,mental,disabilities,longTerm,dAllergies,fAllergies;
+  String countryCode,country,gender,bloodGroup,chronicCondition,mental,disabilities,longTerm,dAllergies,fAllergies;
   List<Step> steps;
+  TextEditingController surname = new TextEditingController();
+  TextEditingController phone = new TextEditingController();
+  TextEditingController dob = new TextEditingController();
+  TextEditingController residence = new TextEditingController();
+  TextEditingController chronic = new TextEditingController();
+  TextEditingController recreational = new TextEditingController();
+  TextEditingController admissionDate = new TextEditingController();
+  TextEditingController conditions = new TextEditingController();
+
 
 
   List<Step> _buildSteps() {
@@ -25,6 +37,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
           child: Column(
             children: <Widget>[
               TextFormField(
+                controller: surname,
                 decoration: textFieldInputDecoration("Surname"),
               ),
               SizedBox(height: 8,),
@@ -32,6 +45,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                 decoration: textFieldInputDecoration("Email"),
               ),
               SizedBox(height: 8,),
+              ///TODO
               Row(
                 children: [
                   Expanded(
@@ -53,6 +67,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                           print(code.code);
                           print(code.dialCode);
                           print(code.flagUri);
+                          countryCode = code.dialCode;
                         },
                       ),
                     ),
@@ -61,6 +76,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                   Container(
                     width: 230,
                     child: TextFormField(
+                      controller: phone,
                       decoration: textFieldInputDecoration("Phone Number"),
                     ),
                   ),
@@ -76,6 +92,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
               Divider(color: Color(0xff163C4D)),
               SizedBox(height: 8,),
               TextFormField(
+                controller: dob,
                 decoration: textFieldInputDecoration("Date of Birth"),
               ),
               SizedBox(height: 8,),
@@ -90,7 +107,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                 isExpanded: true,
                 iconSize: 30.0,
                 style: TextStyle(color: Colors.black),
-                items: ['Male', 'Female', 'Prefer Not to Say'].map(
+                items: ['male', 'female', 'Prefer Not to Say'].map(
                       (val) {
                     return DropdownMenuItem<String>(
                       value: val,
@@ -108,9 +125,11 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
               ),
               SizedBox(height: 8,),
               TextFormField(
+                controller: residence,
                 decoration: textFieldInputDecoration("Residence"),
               ),
               SizedBox(height: 8,),
+              //TODO
               Container(
                 decoration: BoxDecoration(
                     border: Border.all(color: Colors.black),
@@ -127,6 +146,8 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                     print(code.code);
                     print(code.dialCode);
                     print(code.flagUri);
+                    country = code.name;
+
                   },
                 ),
               ),
@@ -171,10 +192,10 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
               SizedBox(height: 8,),
               DropdownButtonFormField(
                 decoration: textFieldInputDecoration("Chronic Condition"),
-                hint: disorder == null
+                hint: chronicCondition == null
                     ? Text('')
                     : Text(
-                  disorder,
+                  chronicCondition,
                   style: TextStyle(color: Colors.black),
                 ),
                 isExpanded: true,
@@ -191,7 +212,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                 onChanged: (val) {
                   setState(
                         () {
-                          disorder = val;
+                          chronicCondition = val;
                     },
                   );
                 },
@@ -290,10 +311,12 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
               Divider(color: Color(0xff163C4D)),
               SizedBox(height: 8,),
               TextFormField(
+                controller: chronic,
                 decoration: textFieldInputDecoration("Chronic conditions in Family"),
               ),
               SizedBox(height: 8,),
               TextFormField(
+                controller: recreational,
                 decoration: textFieldInputDecoration("Recreational Drug Use"),
               ),
               SizedBox(height: 8,),
@@ -370,12 +393,65 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
               Divider(color: Color(0xff163C4D)),
               SizedBox(height: 8,),
               TextFormField(
+                controller: admissionDate,
                 decoration: textFieldInputDecoration("Date"),
               ),
               SizedBox(height: 8,),
               TextFormField(
+                controller: conditions,
                 maxLines: 5,
                 decoration: textFieldInputDecoration("Conditions"),
+              ),
+              SizedBox(height: 8,),
+              GestureDetector(
+                onTap: () {
+                  BlocProvider.of<UserProfileBloc>(context).add(
+                      CreateUserProfile(
+                          surname: surname.text,
+                          phone: phone.text,
+                          dob: dob.text,
+                          gender: gender,
+                          residence: residence.text,
+                          country: country,
+                          blood: bloodGroup,
+                        chronic: chronic.text,
+                        longTerm: longTerm,
+                        date: admissionDate.text,
+                        condition: conditions.text,
+                        code: countryCode,
+                        dissabilities: disabilities,
+                        recreational: recreational.text,
+                        drugAllergies: dAllergies,
+                        foodAllergies: fAllergies,
+
+                      ));
+
+
+                },
+                child: Container(
+                  alignment: Alignment.center,
+                  width: MediaQuery
+                      .of(context)
+                      .size
+                      .width,
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5),
+                      gradient: LinearGradient(
+                          colors: [
+                            const Color(0xff163C4D),
+                            const Color(0xff32687F)
+                          ]
+                      )
+                  ),
+                  child: Text("Update Profile",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold
+                    ),
+                  ),
+                ),
               ),
 
             ],

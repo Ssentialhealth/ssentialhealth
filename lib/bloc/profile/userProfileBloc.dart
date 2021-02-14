@@ -22,7 +22,24 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
     if (event is CreateUserProfile) {
       yield UserProfileLoading();
       try {
-        final Profile profile = await userProfileRepo.createUserProfile();
+        final Profile profile = await userProfileRepo.createUserProfile(
+          event.surname,
+          event.phone,
+          event.dob,
+          event.gender,
+          event.residence,
+          event.country,
+          event.blood,
+          event.chronic,
+          event.longTerm,
+          event.date,
+          event.condition,
+          event.code,
+          event.dissabilities,
+          event.recreational,
+          event.drugAllergies,
+          event.foodAllergies,
+        );
         if (profile != null) {
           yield UserProfileLoaded(profile);
         } else {

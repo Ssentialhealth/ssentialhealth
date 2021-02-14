@@ -2,12 +2,12 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:pocket_health/models/LoginResponse.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pocket_health/bloc/login/loginBloc.dart';
+import 'package:pocket_health/bloc/login/loginEvent.dart';
+import 'package:pocket_health/bloc/login/loginState.dart';
 import 'package:pocket_health/screens/home_screen.dart';
 import 'package:pocket_health/widgets/widget.dart';
-import 'package:http/http.dart' as http;
-import 'package:pocket_health/widgets/widget.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'forgot_password.dart';
 
@@ -33,7 +33,6 @@ class _SignInScreenState extends State<SignInScreen> {
   TextEditingController emailTextEditingController = new TextEditingController();
 
   bool _isLoading = false;
-  bool _isSubmitting = false;
 
 
   @override
@@ -115,6 +114,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   GestureDetector(
                     onTap: (){
                       Navigator.push(context, MaterialPageRoute(builder: (context) => ForgotPasswordScreen()));
+
                     },
                     child: Container(
                       alignment: Alignment.centerRight,
@@ -130,7 +130,11 @@ class _SignInScreenState extends State<SignInScreen> {
                   new Align(child: loadingIndicator,alignment: FractionalOffset.topCenter,),
                   GestureDetector(
                     onTap: (){
-                     login();
+                     BlocProvider.of<LoginBloc>(context).add(SendLoginPayLoad(email: emailTextEditingController.text,password: passWordTextEditingController.text));
+                     setState(() {
+                       _isLoading = true;
+
+                     });
                     },
                     child: Container(
                       alignment: Alignment.center,
@@ -190,54 +194,7 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
 
-  login() {
-    if (formKey.currentState.validate()) {
-      Map<String,String> _payLoad = Map();
-      _payLoad['email'] = emailTextEditingController.text;
-      _payLoad["password"] = passWordTextEditingController.text;
 
-      setState(() {
-        _isLoading = true;
-
-      });
-
-      print(_payLoad);
-
-      http.post(
-          "https://ssential.herokuapp.com/api/token/",
-          headers: {"Content-Type": "application/json"},
-          body: json.encode(_payLoad)
-      ).then((response) {
-        setState(() {
-          _isSubmitting = false;
-        });
-
-        print(response.body);
-        print("status code: " + response.statusCode.toString());
-
-        LoginResponse loginResponse =
-        LoginResponse.fromJson(json.decode(response.body));
-
-        if(response.statusCode == 200) {
-          Navigator.pushReplacement(context, MaterialPageRoute(
-              builder: (context) => HomeScreen()
-          ));
-          addStringToSF(loginResponse.token);
-          print(loginResponse.token);
-        }else{
-          _showSnackBar(response.body.substring(11,response.body.length - 2));
-          setState(() {
-            _isLoading = false;
-          });
-        }
-
-      }).catchError((e){
-        print(e.toString());
-      });
-
-    }
-
-    }
 
   void _showSnackBar(message) {
   _scaffoldKey.currentState.showSnackBar(
@@ -247,23 +204,15 @@ class _SignInScreenState extends State<SignInScreen> {
   );
   }
 
-  addStringToSF(String value) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('token', value);
+  void _login(BuildContext buildContext){
+    Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+
   }
 
 
 
 }
 
-
-
-// _isLoading ?
-// CircularProgressIndicator(
-// backgroundColor: Color(0xff163C4D),
-// valueColor: AlwaysStoppedAnimation<Color>(Colors.yellow,),
-// )
-// :
 
 
 
