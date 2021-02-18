@@ -1,15 +1,13 @@
 import 'dart:convert';
 import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:pocket_health/models/ForgotPassword.dart';
+import 'package:pocket_health/models/PractitionerProfile.dart';
+import 'package:pocket_health/models/emergency_contact.dart';
 import 'package:pocket_health/models/loginModel.dart';
-
 import 'package:pocket_health/models/profile.dart';
-import 'package:pocket_health/screens/forgot_password.dart';
-import 'package:pocket_health/screens/home_screen.dart';
 import 'package:pocket_health/utils/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -21,6 +19,120 @@ class ApiService {
 
 
   ApiService(this.httpClient) : assert(httpClient != null);
+
+  Future<EmergencyContact> addContacts(
+      String ambulanceName, countryCode,
+      ambulancePhone, insurerName,
+      insuranceNumber,insurerNumber,
+      emergenceName, emergencyRelation,emergencyNumber,
+
+      ) async {
+    Map<String,dynamic> mainLoad = Map();
+
+    Map<String,dynamic> emergency = Map();
+    emergency['name'] = emergenceName;
+    emergency['phone_number'] = emergencyNumber;
+    emergency['relationship'] = emergencyRelation;
+
+
+    Map<String,dynamic> healthI = Map();
+    healthI['name'] = insurerName;
+    healthI['insurance_number'] = insuranceNumber;
+    healthI['contacts'] = [insurerNumber];
+
+    Map<String,dynamic> ambulance = Map();
+    ambulance['name'] = ambulanceName;
+    ambulance['contacts'] = [ambulancePhone];
+
+    mainLoad['emergency_contacts'] = [emergency];
+    mainLoad['health_insurers'] = [healthI];
+    mainLoad['ambulance_services'] = [ambulance];
+
+
+
+    _token = await getStringValuesSF();
+    final response = await httpClient.post(Uri.encodeFull(addContactsEndpoint),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + _token
+        },
+        body: jsonEncode(mainLoad)
+    );
+    print(response.body);
+    print(_token);
+    print(mainLoad);
+
+    if (response.statusCode != 200) {
+      throw Exception('error creating profile');
+    }
+    final createProfileJson = jsonDecode(response.body);
+    return EmergencyContact.fromJson(createProfileJson);
+  }
+
+  Future<PractitionerProfile> createPractitioner(
+      String surname, location,
+      region, phone,
+      healthInstitution,careType,
+      practitioner, speciality,affiliatedInstitution,
+      operationTime,onlineBooking,inPerson,followUp,onlinePrice,personalPrice,followPrice
+      )async {
+
+    Map<String,dynamic> healthInfo = Map();
+    healthInfo['health_institution'] = healthInstitution;
+    healthInfo['care_type'] = careType;
+    healthInfo['practitioner'] = practitioner;
+    healthInfo['speciality'] = speciality;
+    healthInfo['affiliated_institution'] = affiliatedInstitution;
+
+    Map<String,dynamic> onlineBook = Map();
+    onlineBook['upto_15_mins'] = onlinePrice;
+    onlineBook['upto_30_mins'] = onlinePrice;
+    onlineBook['upto_1_hour'] = onlinePrice;
+
+    Map<String,dynamic> inPersonBook = Map();
+    inPersonBook['per_visit'] = onlinePrice;
+    inPersonBook['per_hour'] = onlinePrice;
+
+    Map<String,dynamic> followUpBook = Map();
+    followUpBook['per_visit'] = onlinePrice;
+    followUpBook['per_hour'] = onlinePrice;
+
+    Map<String,dynamic> ratesInfo = Map();
+    ratesInfo['online_booking'] = onlineBook;
+    ratesInfo['in_person_booking'] = inPersonBook;
+    ratesInfo['follow_up_visit'] = followUpBook;
+
+
+
+    Map<String,dynamic> follow = Map();
+    follow['follow_up_visit'] = followUp;
+
+    Map<String,dynamic> _payLoad = Map();
+      _payLoad['surname'] = surname;
+      _payLoad['phone_number'] = operationTime+phone;
+      _payLoad['location'] = location;
+      _payLoad['region'] = region;
+      _payLoad['health_info'] = healthInfo;
+      _payLoad['rates_info'] = ratesInfo;
+    _token = await getStringValuesSF();
+    final response = await httpClient.post(Uri.encodeFull(createPractitionerProfileEndpoint),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + _token
+        },
+        body: jsonEncode(_payLoad)
+    );
+    print(response.body);
+    print(_token);
+    print(_payLoad);
+
+    if (response.statusCode != 200) {
+      throw Exception('error creating profile');
+    }
+    final createProfileJson = jsonDecode(response.body);
+    return PractitionerProfile.fromJson(createProfileJson);
+
+  }
 
   Future<Profile> createProfile(
       String surname, phone,
@@ -111,7 +223,7 @@ class ApiService {
     if(response.statusCode != 200){
       throw Exception('Error Occurred');
     }else{
-      addStringToSF(loginModel.access);
+      addStringToSF(loginModel.access,loginModel.user.userCategory,loginModel.user.fullNames);
     }
     final loginJson = jsonDecode(response.body);
     return LoginModel.fromJson(loginJson);
@@ -119,11 +231,14 @@ class ApiService {
   }
 
 
+
 }
 
-addStringToSF(String value) async {
+addStringToSF(String value,String userType,String fullName) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   prefs.setString('token', value);
+  prefs.setString('userType', userType);
+  prefs.setString('fullName', fullName);
 }
 
 getStringValuesSF() async {

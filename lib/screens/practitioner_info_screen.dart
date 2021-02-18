@@ -1,6 +1,9 @@
 import 'package:country_list_pick/country_list_pick.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
+import 'package:pocket_health/bloc/practitioner_profile/practitionerProfileBloc.dart';
+import 'package:pocket_health/bloc/practitioner_profile/practitionerProfileEvent.dart';
 import 'package:pocket_health/widgets/widget.dart';
 
 class PractitionerInfo extends StatefulWidget {
@@ -12,8 +15,18 @@ class _PractitionerInfoState extends State<PractitionerInfo> {
   String value;
   int currentStep = 0;
   bool complete = false;
-  String gender,bloodGroup,disorder,mental,disabilities,longTerm,dAllergies,fAllergies;
+  String countryCode,healthInstitution,careType,practitioner,speciality,upto15,upto30,upto1,bookingVisit,bookingHour,followVisit,followHour;
   List<Step> steps;
+
+  TextEditingController surname = new TextEditingController();
+  TextEditingController phone = new TextEditingController();
+  TextEditingController location = new TextEditingController();
+  TextEditingController region = new TextEditingController();
+  TextEditingController affiliatedF = new TextEditingController();
+  TextEditingController quaterHour = new TextEditingController();
+  TextEditingController perVisit = new TextEditingController();
+  TextEditingController perFollow = new TextEditingController();
+
 
   next() {
     currentStep +1 != steps.length
@@ -41,6 +54,7 @@ class _PractitionerInfoState extends State<PractitionerInfo> {
             ),
             SizedBox(height: 8,),
             TextFormField(
+              controller: surname,
               decoration: textFieldInputDecoration("Surname"),
             ),
             SizedBox(height: 8,),
@@ -49,35 +63,13 @@ class _PractitionerInfoState extends State<PractitionerInfo> {
             ),
             SizedBox(height: 8,),
             TextFormField(
+              controller: location,
               decoration: textFieldInputDecoration("Location"),
             ),
             SizedBox(height: 8,),
-            DropdownButtonFormField(
+            TextFormField(
+              controller: region,
               decoration: textFieldInputDecoration("Region"),
-              hint: gender == null
-                  ? Text('')
-                  : Text(
-                gender,
-                style: TextStyle(color: Colors.black),
-              ),
-              isExpanded: true,
-              iconSize: 30.0,
-              style: TextStyle(color: Colors.black),
-              items: ['Male', 'Female', 'Prefer Not to Say'].map(
-                    (val) {
-                  return DropdownMenuItem<String>(
-                    value: val,
-                    child: Text(val),
-                  );
-                },
-              ).toList(),
-              onChanged: (val) {
-                setState(
-                      () {
-                    gender = val;
-                  },
-                );
-              },
             ),
             SizedBox(height: 8,),
             Row(
@@ -101,6 +93,7 @@ class _PractitionerInfoState extends State<PractitionerInfo> {
                         print(code.code);
                         print(code.dialCode);
                         print(code.flagUri);
+                        countryCode = code.dialCode;
                       },
                     ),
                   ),
@@ -109,6 +102,8 @@ class _PractitionerInfoState extends State<PractitionerInfo> {
                 Container(
                   width: 230,
                   child: TextFormField(
+                    keyboardType: TextInputType.number,
+                    controller: phone,
                     decoration: textFieldInputDecoration("Phone Number"),
                   ),
                 ),
@@ -130,10 +125,10 @@ class _PractitionerInfoState extends State<PractitionerInfo> {
           children: <Widget>[
             DropdownButtonFormField(
               decoration: textFieldInputDecoration("Health Institution"),
-              hint: bloodGroup == null
+              hint: healthInstitution == null
                   ? Text('')
                   : Text(
-                bloodGroup,
+                healthInstitution,
                 style: TextStyle(color: Colors.black),
               ),
               isExpanded: true,
@@ -150,7 +145,7 @@ class _PractitionerInfoState extends State<PractitionerInfo> {
               onChanged: (val) {
                 setState(
                       () {
-                    bloodGroup = val;
+                        healthInstitution = val;
                   },
                 );
               },
@@ -158,10 +153,10 @@ class _PractitionerInfoState extends State<PractitionerInfo> {
             SizedBox(height: 8,),
             DropdownButtonFormField(
               decoration: textFieldInputDecoration("Care Type"),
-              hint: disorder == null
+              hint: careType == null
                   ? Text('')
                   : Text(
-                disorder,
+                careType,
                 style: TextStyle(color: Colors.black),
               ),
               isExpanded: true,
@@ -178,7 +173,7 @@ class _PractitionerInfoState extends State<PractitionerInfo> {
               onChanged: (val) {
                 setState(
                       () {
-                    disorder = val;
+                        careType = val;
                   },
                 );
               },
@@ -186,10 +181,10 @@ class _PractitionerInfoState extends State<PractitionerInfo> {
             SizedBox(height: 8,),
             DropdownButtonFormField(
               decoration: textFieldInputDecoration("Practitioner Category"),
-              hint: mental == null
+              hint: practitioner == null
                   ? Text('')
                   : Text(
-                mental,
+                practitioner,
                 style: TextStyle(color: Colors.black),
               ),
               isExpanded: true,
@@ -206,7 +201,7 @@ class _PractitionerInfoState extends State<PractitionerInfo> {
               onChanged: (val) {
                 setState(
                       () {
-                    mental = val;
+                        practitioner = val;
                   },
                 );
               },
@@ -214,10 +209,10 @@ class _PractitionerInfoState extends State<PractitionerInfo> {
             SizedBox(height: 8,),
             DropdownButtonFormField(
               decoration: textFieldInputDecoration("Speciality"),
-              hint: disabilities == null
+              hint: speciality == null
                   ? Text('')
                   : Text(
-                disabilities,
+                speciality,
                 style: TextStyle(color: Colors.black),
               ),
               isExpanded: true,
@@ -234,13 +229,14 @@ class _PractitionerInfoState extends State<PractitionerInfo> {
               onChanged: (val) {
                 setState(
                       () {
-                    disabilities = val;
+                        speciality = val;
                   },
                 );
               },
             ),
             SizedBox(height: 8,),
             TextFormField(
+              controller: affiliatedF,
               decoration: textFieldInputDecoration("Affiliated Institution (Facility or Company"),
             ),
 
@@ -269,17 +265,17 @@ class _PractitionerInfoState extends State<PractitionerInfo> {
               children: [
                 Expanded(
                   child: DropdownButtonFormField(
-                    decoration: textFieldInputDecoration("Region"),
-                    hint: gender == null
+                    decoration: textFieldInputDecoration("Time"),
+                    hint: upto15 == null
                         ? Text('')
                         : Text(
-                      gender,
+                      upto15,
                       style: TextStyle(color: Colors.black),
                     ),
                     isExpanded: true,
                     iconSize: 30.0,
                     style: TextStyle(color: Colors.black),
-                    items: ['Male', 'Female', 'Prefer Not to Say'].map(
+                    items: ['Upto 15Min'].map(
                           (val) {
                         return DropdownMenuItem<String>(
                           value: val,
@@ -290,7 +286,7 @@ class _PractitionerInfoState extends State<PractitionerInfo> {
                     onChanged: (val) {
                       setState(
                             () {
-                          gender = val;
+                              upto15 = val;
                         },
                       );
                     },
@@ -302,34 +298,104 @@ class _PractitionerInfoState extends State<PractitionerInfo> {
                   child: Container(
                     width: 230,
                     child: TextFormField(
-                      decoration: textFieldInputDecoration("Phone Number"),
+                      controller: quaterHour,
+                      keyboardType: TextInputType.number,
+                      decoration: textFieldInputDecoration("Charges"),
                     ),
                   ),
                 ),
               ],
             ),
-            Align(
-              alignment: Alignment.centerRight,
-              child: Padding(
-                padding:  EdgeInsets.symmetric(vertical:8.0,),
-                child: Container(
-                  height: 30,
-                  width: 70,
-                  decoration: BoxDecoration(
-                    color: Color(0xff163C4D),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Center(
-                    child: Text("ADD",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 15,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            // SizedBox(height: 8,),
+            // Row(
+            //   children: [
+            //     Expanded(
+            //       child: DropdownButtonFormField(
+            //         decoration: textFieldInputDecoration("Time"),
+            //         hint: upto30 == null
+            //             ? Text('')
+            //             : Text(
+            //           upto30,
+            //           style: TextStyle(color: Colors.black),
+            //         ),
+            //         isExpanded: true,
+            //         iconSize: 30.0,
+            //         style: TextStyle(color: Colors.black),
+            //         items: ['Upto 30Min'].map(
+            //               (val) {
+            //             return DropdownMenuItem<String>(
+            //               value: val,
+            //               child: Text(val),
+            //             );
+            //           },
+            //         ).toList(),
+            //         onChanged: (val) {
+            //           setState(
+            //                 () {
+            //                   upto30 = val;
+            //             },
+            //           );
+            //         },
+            //       ),
+            //
+            //     ),
+            //     SizedBox(width: 18,),
+            //     Expanded(
+            //       child: Container(
+            //         width: 230,
+            //         child: TextFormField(
+            //           controller: affiliatedF,
+            //           decoration: textFieldInputDecoration("Charges"),
+            //         ),
+            //       ),
+            //     ),
+            //   ],
+            // ),
+            // SizedBox(height: 8,),
+            // Row(
+            //   children: [
+            //     Expanded(
+            //       child: DropdownButtonFormField(
+            //         decoration: textFieldInputDecoration("Time"),
+            //         hint: upto1 == null
+            //             ? Text('')
+            //             : Text(
+            //           upto1,
+            //           style: TextStyle(color: Colors.black),
+            //         ),
+            //         isExpanded: true,
+            //         iconSize: 30.0,
+            //         style: TextStyle(color: Colors.black),
+            //         items: ['Upto 60Min'].map(
+            //               (val) {
+            //             return DropdownMenuItem<String>(
+            //               value: val,
+            //               child: Text(val),
+            //             );
+            //           },
+            //         ).toList(),
+            //         onChanged: (val) {
+            //           setState(
+            //                 () {
+            //                   upto1 = val;
+            //             },
+            //           );
+            //         },
+            //       ),
+            //
+            //     ),
+            //     SizedBox(width: 18,),
+            //     Expanded(
+            //       child: Container(
+            //         width: 230,
+            //         child: TextFormField(
+            //           controller: quaterHour,
+            //           decoration: textFieldInputDecoration("Charges"),
+            //         ),
+            //       ),
+            //     ),
+            //   ],
+            // ),
             Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
@@ -338,63 +404,97 @@ class _PractitionerInfoState extends State<PractitionerInfo> {
             ),
             Divider(color: Color(0xff163C4D)),
             SizedBox(height: 8,),
-            SizedBox(height: 8,),
             Row(
               children: [
                 Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black),
-                        borderRadius: BorderRadius.circular(10)
+                  child: DropdownButtonFormField(
+                    decoration: textFieldInputDecoration("Type"),
+                    hint: bookingVisit == null
+                        ? Text('')
+                        : Text(
+                      bookingVisit,
+                      style: TextStyle(color: Colors.black),
                     ),
-                    alignment: Alignment.centerLeft,
-                    child: CountryListPick(
-                      theme: CountryTheme(
-                          isShowFlag: true,
-                          isShowCode: false,
-                          isShowTitle: false
-                      ),
-                      initialSelection: '+254',
-                      onChanged: (CountryCode code) {
-                        print(code.name);
-                        print(code.code);
-                        print(code.dialCode);
-                        print(code.flagUri);
+                    isExpanded: true,
+                    iconSize: 30.0,
+                    style: TextStyle(color: Colors.black),
+                    items: ['Per Visit'].map(
+                          (val) {
+                        return DropdownMenuItem<String>(
+                          value: val,
+                          child: Text(val),
+                        );
                       },
-                    ),
+                    ).toList(),
+                    onChanged: (val) {
+                      setState(
+                            () {
+                              bookingVisit = val;
+                        },
+                      );
+                    },
                   ),
+
                 ),
                 SizedBox(width: 18,),
-                Container(
-                  width: 230,
-                  child: TextFormField(
-                    decoration: textFieldInputDecoration("Phone Number"),
+                Expanded(
+                  child: Container(
+                    width: 230,
+                    child: TextFormField(
+                      controller: perVisit,
+                      keyboardType: TextInputType.number,
+                      decoration: textFieldInputDecoration("Charges"),
+                    ),
                   ),
                 ),
               ],
             ),
-            Align(
-              alignment: Alignment.centerRight,
-              child: Padding(
-                padding:  EdgeInsets.symmetric(vertical:8.0,),
-                child: Container(
-                  height: 30,
-                  width: 70,
-                  decoration: BoxDecoration(
-                    color: Color(0xff163C4D),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Center(
-                    child: Text("ADD",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 15,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            SizedBox(height: 8,),
+            // Row(
+            //   children: [
+            //     Expanded(
+            //       child: DropdownButtonFormField(
+            //         decoration: textFieldInputDecoration("Type"),
+            //         hint: bookingHour == null
+            //             ? Text('')
+            //             : Text(
+            //           bookingHour,
+            //           style: TextStyle(color: Colors.black),
+            //         ),
+            //         isExpanded: true,
+            //         iconSize: 30.0,
+            //         style: TextStyle(color: Colors.black),
+            //         items: ['Per Hour'].map(
+            //               (val) {
+            //             return DropdownMenuItem<String>(
+            //               value: val,
+            //               child: Text(val),
+            //             );
+            //           },
+            //         ).toList(),
+            //         onChanged: (val) {
+            //           setState(
+            //                 () {
+            //                   bookingHour = val;
+            //             },
+            //           );
+            //         },
+            //       ),
+            //
+            //     ),
+            //     SizedBox(width: 18,),
+            //     Expanded(
+            //       child: Container(
+            //         width: 230,
+            //         child: TextFormField(
+            //           controller: affiliatedF,
+            //           decoration: textFieldInputDecoration("Charges"),
+            //         ),
+            //       ),
+            //     ),
+            //   ],
+            // ),
+            SizedBox(height: 8,),
             Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
@@ -406,59 +506,146 @@ class _PractitionerInfoState extends State<PractitionerInfo> {
             Row(
               children: [
                 Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black),
-                        borderRadius: BorderRadius.circular(10)
+                  child: DropdownButtonFormField(
+                    decoration: textFieldInputDecoration("Type"),
+                    hint: followVisit == null
+                        ? Text('')
+                        : Text(
+                      followVisit,
+                      style: TextStyle(color: Colors.black),
                     ),
-                    alignment: Alignment.centerLeft,
-                    child: CountryListPick(
-                      theme: CountryTheme(
-                          isShowFlag: true,
-                          isShowCode: false,
-                          isShowTitle: false
-                      ),
-                      initialSelection: '+254',
-                      onChanged: (CountryCode code) {
-                        print(code.name);
-                        print(code.code);
-                        print(code.dialCode);
-                        print(code.flagUri);
+                    isExpanded: true,
+                    iconSize: 30.0,
+                    style: TextStyle(color: Colors.black),
+                    items: ['Per Visit'].map(
+                          (val) {
+                        return DropdownMenuItem<String>(
+                          value: val,
+                          child: Text(val),
+                        );
                       },
-                    ),
+                    ).toList(),
+                    onChanged: (val) {
+                      setState(
+                            () {
+                              followVisit = val;
+                        },
+                      );
+                    },
                   ),
+
                 ),
                 SizedBox(width: 18,),
-                Container(
-                  width: 230,
-                  child: TextFormField(
-                    decoration: textFieldInputDecoration("Phone Number"),
+                Expanded(
+                  child: Container(
+                    width: 230,
+                    child: TextFormField(
+                      controller: perFollow,
+                      keyboardType: TextInputType.number,
+                      decoration: textFieldInputDecoration("Charges"),
+                    ),
                   ),
                 ),
               ],
             ),
-            Align(
-              alignment: Alignment.centerRight,
-              child: Padding(
-                padding:  EdgeInsets.symmetric(vertical:8.0,),
-                child: Container(
-                  height: 30,
-                  width: 70,
-                  decoration: BoxDecoration(
-                    color: Color(0xff163C4D),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Center(
-                    child: Text("SAVE",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 15,
-                      ),
-                    ),
+            SizedBox(height: 8,),
+            // Row(
+            //   children: [
+            //     Expanded(
+            //       child: DropdownButtonFormField(
+            //         decoration: textFieldInputDecoration("Type"),
+            //         hint: followHour == null
+            //             ? Text('')
+            //             : Text(
+            //           followHour,
+            //           style: TextStyle(color: Colors.black),
+            //         ),
+            //         isExpanded: true,
+            //         iconSize: 30.0,
+            //         style: TextStyle(color: Colors.black),
+            //         items: ['Per Hour'].map(
+            //               (val) {
+            //             return DropdownMenuItem<String>(
+            //               value: val,
+            //               child: Text(val),
+            //             );
+            //           },
+            //         ).toList(),
+            //         onChanged: (val) {
+            //           setState(
+            //                 () {
+            //                   followHour = val;
+            //             },
+            //           );
+            //         },
+            //       ),
+            //
+            //     ),
+            //     SizedBox(width: 18,),
+            //     Expanded(
+            //       child: Container(
+            //         width: 230,
+            //         child: TextFormField(
+            //           controller: affiliatedF,
+            //           decoration: textFieldInputDecoration("Charges"),
+            //         ),
+            //       ),
+            //     ),
+            //   ],
+            // ),
+            SizedBox(height: 8,),
+            GestureDetector(
+              onTap: () {
+
+              BlocProvider.of<PractitionerProfileBloc>(context).add(
+                CreatePractitionerProfile(
+                    surname: surname.text,
+                    onlinePrice: quaterHour.text,
+                    personalPrice: perVisit.text,
+                    followPrice: perFollow.text,
+                    location: location.text,
+                    region: region.text,
+                    phone: phone.text,
+                    healthInstitution: healthInstitution,
+                    careType: careType,
+                    practitioner: practitioner,
+                    speciality: speciality,
+                    affiliatedInstitution: affiliatedF.text,
+                    operationTime: countryCode,
+                    onlineBooking: upto15,
+                    inPerson: bookingVisit,
+                    followUp: followVisit
+                )
+              );
+
+
+              },
+              child: Container(
+                alignment: Alignment.center,
+                width: MediaQuery
+                    .of(context)
+                    .size
+                    .width,
+                padding: EdgeInsets.symmetric(vertical: 16),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    gradient: LinearGradient(
+                        colors: [
+                          const Color(0xff163C4D),
+                          const Color(0xff32687F)
+                        ]
+                    )
+                ),
+                child: Text("Update Profile",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold
                   ),
                 ),
               ),
             ),
+
 
 
           ],
@@ -478,35 +665,35 @@ class _PractitionerInfoState extends State<PractitionerInfo> {
       ),
       body: Column(
         children: [
-          Container(
-            height: 180,
-            width: MediaQuery.of(context).size.width,
-            color: Color(0xFF00FFFF),
-            child: Padding(
-              padding:  EdgeInsets.symmetric(vertical:8.0),
-              child: Column(
-                children: [
-                  Image.asset("assets/images/profile.png"),
-                  SizedBox(height: 9,),
-                  Text("Nicholas Dani",style: mediumTextStyle(),),
-                  SizedBox(height: 9,),
-                  Padding(
-                    padding:  EdgeInsets.symmetric(horizontal:60.0),
-                    child: LinearPercentIndicator(
-                      width: 240.0,
-                      lineHeight: 8.0,
-                      percent: 0.3,
-                      backgroundColor: Colors.white,
-                      progressColor: Color(0xff163C4D),
-                    ),
-                  ),
-                  SizedBox(height: 9,),
-                  Text("Sign Up Progress 10%",style: TextStyle(fontSize: 12),),
-
-                ],
-              ),
-            ),
-          ),
+          // Container(
+          //   height: 180,
+          //   width: MediaQuery.of(context).size.width,
+          //   color: Color(0xFF00FFFF),
+          //   child: Padding(
+          //     padding:  EdgeInsets.symmetric(vertical:8.0),
+          //     child: Column(
+          //       children: [
+          //         Image.asset("assets/images/profile.png"),
+          //         SizedBox(height: 9,),
+          //         Text("Nicholas Dani",style: mediumTextStyle(),),
+          //         SizedBox(height: 9,),
+          //         Padding(
+          //           padding:  EdgeInsets.symmetric(horizontal:60.0),
+          //           child: LinearPercentIndicator(
+          //             width: 240.0,
+          //             lineHeight: 8.0,
+          //             percent: 0.3,
+          //             backgroundColor: Colors.white,
+          //             progressColor: Color(0xff163C4D),
+          //           ),
+          //         ),
+          //         SizedBox(height: 9,),
+          //         Text("Sign Up Progress 10%",style: TextStyle(fontSize: 12),),
+          //
+          //       ],
+          //     ),
+          //   ),
+          // ),
           Container(
             child: Expanded(
               child: Theme(
@@ -516,8 +703,8 @@ class _PractitionerInfoState extends State<PractitionerInfo> {
                   type: StepperType.horizontal,
                   steps: _buildSteps(),
                   currentStep: currentStep,
-                  onStepCancel: next,
-                  onStepContinue: cancel,
+                  onStepCancel: null,
+                  onStepContinue: null,
                   onStepTapped: (step) => goTo(step),
                 ),
               ),

@@ -1,22 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
+import 'package:pocket_health/screens/practitioner_info_screen.dart';
 import 'package:pocket_health/screens/profile_screen.dart';
 import 'package:pocket_health/widgets/card_item.dart';
 import 'package:pocket_health/widgets/category_card.dart';
 import 'package:pocket_health/widgets/welcome_dart.dart';
 import 'package:pocket_health/widgets/widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 import '../utils/size_config.dart';
 
 class HomeScreen extends StatefulWidget {
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
   int _selectedIndex = 0;
+  String _type = "...";
+
 
 
   void _onItemTapped(int index) {
@@ -67,8 +71,17 @@ class _HomeScreenState extends State<HomeScreen> {
                             borderRadius: BorderRadius.circular(30),
                           ),
                           child: GestureDetector(
-                            onTap: (){
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileScreen()));
+                            onTap: ()async{
+                              _type = await getStringValuesSF();
+
+                              print(_type);
+                              if(_type == 'individual'){
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileScreen()));
+                              }else if(_type == 'health practitioner'){
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => PractitionerInfo()));
+                              }else{
+
+                              }
                             },
                             child: ClipRRect(
                                 borderRadius: BorderRadius.circular(30),
@@ -159,5 +172,12 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+}
+
+getStringValuesSF() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  //Return String
+  String stringValue = prefs.getString('userType');
+  return stringValue;
 }
 
