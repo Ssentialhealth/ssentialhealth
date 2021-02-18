@@ -5,6 +5,7 @@ import 'package:pocket_health/screens/feedback_screen.dart';
 import 'package:pocket_health/screens/user_info_screen.dart';
 import 'package:pocket_health/widgets/menu_items.dart';
 import 'package:pocket_health/widgets/widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -12,6 +13,8 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  String _fullName = "...";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,7 +56,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   padding:  EdgeInsets.symmetric(vertical:20),
                                   child: Column(
                                     children: [
-                                      Text("Nicholas Dani",style: mediumTextStyle()),
+                                      Text(_fullName ?? 'Hello',style: mediumTextStyle()),
                                       SizedBox(height: 10,),
                                       LinearPercentIndicator(
                                         width: 200.0,
@@ -202,3 +205,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 }
 
+
+
+getStringValuesSF() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  //Return String
+  String stringValue = prefs.getString('fullName');
+  return stringValue;
+}
+
+getName() async{
+
+}

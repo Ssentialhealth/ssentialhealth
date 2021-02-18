@@ -14,7 +14,6 @@ class ForgotPasswordScreen extends StatefulWidget {
 class _ForgotPasswordState extends State<ForgotPasswordScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
-  ForgotPasswordBloc _forgotPasswordBloc;
 
 
   TextEditingController emailTextEditingController = new TextEditingController();
@@ -34,7 +33,6 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
           child: new Center(
               child:  CircularProgressIndicator())),
     ):new Container();
-    _forgotPasswordBloc = BlocProvider.of<ForgotPasswordBloc>(context);
     return SafeArea(
       child: Scaffold(
           key: _scaffoldKey,

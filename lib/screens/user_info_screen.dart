@@ -1,6 +1,11 @@
 import 'package:country_list_pick/country_list_pick.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
+import 'package:pocket_health/bloc/emergency_contact/emergencyContactBloc.dart';
+import 'package:pocket_health/bloc/emergency_contact/emergencyContactEvent.dart';
+import 'package:pocket_health/bloc/profile/userProfileBloc.dart';
+import 'package:pocket_health/bloc/profile/userProfileEvent.dart';
 import 'package:pocket_health/widgets/widget.dart';
 
 class UserInfoScreen extends StatefulWidget {
@@ -12,8 +17,25 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
   String value;
   int currentStep = 0;
   bool complete = false;
-  String gender,bloodGroup,disorder,mental,disabilities,longTerm,dAllergies,fAllergies;
+  String countryCode,country,gender,bloodGroup,chronicCondition,mental,disabilities,longTerm,dAllergies,fAllergies;
   List<Step> steps;
+  TextEditingController surname = new TextEditingController();
+  TextEditingController phone = new TextEditingController();
+  TextEditingController dob = new TextEditingController();
+  TextEditingController residence = new TextEditingController();
+  TextEditingController chronic = new TextEditingController();
+  TextEditingController recreational = new TextEditingController();
+  TextEditingController admissionDate = new TextEditingController();
+  TextEditingController conditions = new TextEditingController();
+  TextEditingController ambulanceName = new TextEditingController();
+  TextEditingController ambulancePhone = new TextEditingController();
+  TextEditingController insurerName = new TextEditingController();
+  TextEditingController insuranceNumber = new TextEditingController();
+  TextEditingController insurerNumber = new TextEditingController();
+  TextEditingController kinNumber = new TextEditingController();
+  TextEditingController kinRelation = new TextEditingController();
+  TextEditingController kinName = new TextEditingController();
+
 
 
   List<Step> _buildSteps() {
@@ -25,6 +47,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
           child: Column(
             children: <Widget>[
               TextFormField(
+                controller: surname,
                 decoration: textFieldInputDecoration("Surname"),
               ),
               SizedBox(height: 8,),
@@ -32,6 +55,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                 decoration: textFieldInputDecoration("Email"),
               ),
               SizedBox(height: 8,),
+              ///TODO
               Row(
                 children: [
                   Expanded(
@@ -53,6 +77,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                           print(code.code);
                           print(code.dialCode);
                           print(code.flagUri);
+                          countryCode = code.dialCode;
                         },
                       ),
                     ),
@@ -61,6 +86,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                   Container(
                     width: 230,
                     child: TextFormField(
+                      controller: phone,
                       decoration: textFieldInputDecoration("Phone Number"),
                     ),
                   ),
@@ -76,6 +102,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
               Divider(color: Color(0xff163C4D)),
               SizedBox(height: 8,),
               TextFormField(
+                controller: dob,
                 decoration: textFieldInputDecoration("Date of Birth"),
               ),
               SizedBox(height: 8,),
@@ -90,7 +117,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                 isExpanded: true,
                 iconSize: 30.0,
                 style: TextStyle(color: Colors.black),
-                items: ['Male', 'Female', 'Prefer Not to Say'].map(
+                items: ['male', 'female', 'Prefer Not to Say'].map(
                       (val) {
                     return DropdownMenuItem<String>(
                       value: val,
@@ -108,9 +135,11 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
               ),
               SizedBox(height: 8,),
               TextFormField(
+                controller: residence,
                 decoration: textFieldInputDecoration("Residence"),
               ),
               SizedBox(height: 8,),
+              //TODO
               Container(
                 decoration: BoxDecoration(
                     border: Border.all(color: Colors.black),
@@ -127,6 +156,8 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                     print(code.code);
                     print(code.dialCode);
                     print(code.flagUri);
+                    country = code.name;
+
                   },
                 ),
               ),
@@ -171,10 +202,10 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
               SizedBox(height: 8,),
               DropdownButtonFormField(
                 decoration: textFieldInputDecoration("Chronic Condition"),
-                hint: disorder == null
+                hint: chronicCondition == null
                     ? Text('')
                     : Text(
-                  disorder,
+                  chronicCondition,
                   style: TextStyle(color: Colors.black),
                 ),
                 isExpanded: true,
@@ -191,7 +222,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                 onChanged: (val) {
                   setState(
                         () {
-                          disorder = val;
+                          chronicCondition = val;
                     },
                   );
                 },
@@ -290,10 +321,12 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
               Divider(color: Color(0xff163C4D)),
               SizedBox(height: 8,),
               TextFormField(
+                controller: chronic,
                 decoration: textFieldInputDecoration("Chronic conditions in Family"),
               ),
               SizedBox(height: 8,),
               TextFormField(
+                controller: recreational,
                 decoration: textFieldInputDecoration("Recreational Drug Use"),
               ),
               SizedBox(height: 8,),
@@ -370,12 +403,65 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
               Divider(color: Color(0xff163C4D)),
               SizedBox(height: 8,),
               TextFormField(
+                controller: admissionDate,
                 decoration: textFieldInputDecoration("Date"),
               ),
               SizedBox(height: 8,),
               TextFormField(
+                controller: conditions,
                 maxLines: 5,
                 decoration: textFieldInputDecoration("Conditions"),
+              ),
+              SizedBox(height: 8,),
+              GestureDetector(
+                onTap: () {
+                  BlocProvider.of<UserProfileBloc>(context).add(
+                      CreateUserProfile(
+                          surname: surname.text,
+                          phone: phone.text,
+                          dob: dob.text,
+                          gender: gender,
+                          residence: residence.text,
+                          country: country,
+                          blood: bloodGroup,
+                         chronic: chronic.text,
+                        longTerm: longTerm,
+                        date: admissionDate.text,
+                        condition: conditions.text,
+                        code: countryCode,
+                        dissabilities: disabilities,
+                        recreational: recreational.text,
+                        drugAllergies: dAllergies,
+                        foodAllergies: fAllergies,
+
+                      ));
+
+
+                },
+                child: Container(
+                  alignment: Alignment.center,
+                  width: MediaQuery
+                      .of(context)
+                      .size
+                      .width,
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5),
+                      gradient: LinearGradient(
+                          colors: [
+                            const Color(0xff163C4D),
+                            const Color(0xff32687F)
+                          ]
+                      )
+                  ),
+                  child: Text("Update Profile",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold
+                    ),
+                  ),
+                ),
               ),
 
             ],
@@ -395,7 +481,8 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
               ),
               Divider(color: Color(0xff163C4D)),
               TextFormField(
-                decoration: textFieldInputDecoration("Name"),
+                controller: ambulanceName,
+                decoration: textFieldInputDecoration("AmbulanceName"),
               ),
               SizedBox(height: 8,),
               Row(
@@ -427,33 +514,14 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                   Container(
                     width: 230,
                     child: TextFormField(
+                      keyboardType: TextInputType.number,
+                      controller: ambulancePhone,
                       decoration: textFieldInputDecoration("Phone Number"),
                     ),
                   ),
                 ],
               ),
-              Align(
-                alignment: Alignment.centerRight,
-                child: Padding(
-                  padding:  EdgeInsets.symmetric(vertical:8.0,),
-                  child: Container(
-                    height: 30,
-                    width: 70,
-                    decoration: BoxDecoration(
-                      color: Color(0xff163C4D),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Center(
-                      child: Text("SAVE",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 15,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              SizedBox(height: 8,),
               Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
@@ -466,6 +534,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
               ),
               SizedBox(height: 8,),
               TextFormField(
+                keyboardType: TextInputType.number,
                 decoration: textFieldInputDecoration("Insurance Number/Policy Number"),
               ),
               SizedBox(height: 8,),
@@ -498,33 +567,13 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                   Container(
                     width: 230,
                     child: TextFormField(
+                      keyboardType: TextInputType.number,
                       decoration: textFieldInputDecoration("Phone Number"),
                     ),
                   ),
                 ],
               ),
-              Align(
-                alignment: Alignment.centerRight,
-                child: Padding(
-                  padding:  EdgeInsets.symmetric(vertical:8.0,),
-                  child: Container(
-                    height: 30,
-                    width: 70,
-                    decoration: BoxDecoration(
-                      color: Color(0xff163C4D),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Center(
-                      child: Text("SAVE",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 15,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              SizedBox(height: 8,),
               Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
@@ -533,7 +582,13 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
               ),
               Divider(color: Color(0xff163C4D)),
               TextFormField(
+                controller: kinName,
                 decoration: textFieldInputDecoration("Name"),
+              ),
+              SizedBox(height: 8,),
+              TextFormField(
+                controller: kinRelation,
+                decoration: textFieldInputDecoration("Relationship"),
               ),
               SizedBox(height: 8,),
               Row(
@@ -565,29 +620,52 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                   Container(
                     width: 230,
                     child: TextFormField(
+                      keyboardType: TextInputType.number,
+                      controller: kinNumber,
                       decoration: textFieldInputDecoration("Phone Number"),
                     ),
                   ),
                 ],
               ),
-              Align(
-                alignment: Alignment.centerRight,
-                child: Padding(
-                  padding:  EdgeInsets.symmetric(vertical:8.0,),
-                  child: Container(
-                    height: 30,
-                    width: 70,
-                    decoration: BoxDecoration(
-                      color: Color(0xff163C4D),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Center(
-                      child: Text("SAVE",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 15,
-                        ),
-                      ),
+              SizedBox(height: 8,),
+              GestureDetector(
+                onTap: () {
+                  BlocProvider.of<EmergencyContactBloc>(context).add(
+                      AddContacts(
+                          ambulanceName: ambulanceName.text,
+                          countryCode: countryCode,
+                          ambulancePhone: ambulancePhone.text,
+                          insurerName: insurerName.text,
+                          insuaranceNumber: insuranceNumber.text,
+                          insuarerNumber: insurerNumber.text,
+                          emergenceName: kinName.text,
+                          emergencyRelation: kinRelation.text,
+                          emergencyNumber: kinNumber.text
+                      )
+                  );
+
+                },
+                child: Container(
+                  alignment: Alignment.center,
+                  width: MediaQuery
+                      .of(context)
+                      .size
+                      .width,
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5),
+                      gradient: LinearGradient(
+                          colors: [
+                            const Color(0xff163C4D),
+                            const Color(0xff32687F)
+                          ]
+                      )
+                  ),
+                  child: Text("Update Profile",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold
                     ),
                   ),
                 ),
@@ -627,35 +705,35 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
       ),
       body: Column(
         children: [
-          Container(
-            height: 180,
-            width: MediaQuery.of(context).size.width,
-            color: Color(0xFF00FFFF),
-            child: Padding(
-              padding:  EdgeInsets.symmetric(vertical:8.0),
-              child: Column(
-                children: [
-                  Image.asset("assets/images/profile.png"),
-                  SizedBox(height: 9,),
-                  Text("Nicholas Dani",style: mediumTextStyle(),),
-                  SizedBox(height: 9,),
-                  Padding(
-                    padding:  EdgeInsets.symmetric(horizontal:60.0),
-                    child: LinearPercentIndicator(
-                      width: 240.0,
-                      lineHeight: 8.0,
-                      percent: 0.3,
-                      backgroundColor: Colors.white,
-                      progressColor: Color(0xff163C4D),
-                    ),
-                  ),
-                  SizedBox(height: 9,),
-                  Text("Sign Up Progress 10%",style: TextStyle(fontSize: 12),),
-
-                ],
-              ),
-            ),
-          ),
+          // Container(
+          //   height: 180,
+          //   width: MediaQuery.of(context).size.width,
+          //   color: Color(0xFF00FFFF),
+          //   child: Padding(
+          //     padding:  EdgeInsets.symmetric(vertical:8.0),
+          //     child: Column(
+          //       children: [
+          //         Image.asset("assets/images/profile.png"),
+          //         SizedBox(height: 9,),
+          //         Text("Nicholas Dani",style: mediumTextStyle(),),
+          //         SizedBox(height: 9,),
+          //         Padding(
+          //           padding:  EdgeInsets.symmetric(horizontal:60.0),
+          //           child: LinearPercentIndicator(
+          //             width: 240.0,
+          //             lineHeight: 8.0,
+          //             percent: 0.3,
+          //             backgroundColor: Colors.white,
+          //             progressColor: Color(0xff163C4D),
+          //           ),
+          //         ),
+          //         SizedBox(height: 9,),
+          //         Text("Sign Up Progress 10%",style: TextStyle(fontSize: 12),),
+          //
+          //       ],
+          //     ),
+          //   ),
+          // ),
           Container(
             child: Expanded(
               child: Theme(
@@ -665,8 +743,8 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                   type: StepperType.horizontal,
                   steps: _buildSteps(),
                   currentStep: currentStep,
-                  onStepCancel: next,
-                  onStepContinue: cancel,
+                  onStepCancel: null,
+                  onStepContinue: null,
                   onStepTapped: (step) => goTo(step),
                 ),
               ),
