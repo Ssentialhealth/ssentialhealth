@@ -17,19 +17,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;
   String _type = "...";
 
-  List<Widget> tabPages = [
-    HomeScreen(),
-    EmergencyHotlines(),
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
 
   void cardCheck(){
     if(_type != null){
@@ -152,32 +141,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ),
-
-        bottomNavigationBar: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          items:  <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: new Image.asset('assets/images/icons/Home_colored.png',height: 20,width:20,),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: new Image.asset('assets/images/icons/emergency red.png',height: 20,width:20,),
-              label: 'Emergency',
-            ),
-            BottomNavigationBarItem(
-              icon: new Image.asset('assets/images/icons/doctor_consult_colored.png',height: 20,width:20,),
-              label: 'Consult',
-            ),BottomNavigationBarItem(
-              icon: new Image.asset('assets/images/icons/settings.png',height: 20,width:20,),
-              label: 'Account',
-            ),
-          ],
-          currentIndex: _selectedIndex,
-          selectedItemColor: Color(0xff163C4D),
-          unselectedItemColor: Colors.grey,
-          onTap: _onItemTapped,
-        ),
-
       ),
     );
   }

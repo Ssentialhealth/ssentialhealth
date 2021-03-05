@@ -1,18 +1,16 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pocket_health/bloc/hotlines/hotlinesBloc.dart';
 import 'package:pocket_health/bloc/hotlines/hotlinesEvent.dart';
+import 'package:pocket_health/screens/emergency_screens/hotline_widgets/sexual_reproduction_card.dart';
 import 'package:pocket_health/widgets/widget.dart';
 
-import 'hotline_widgets/insurer_card.dart';
-
-class HealthInsurer extends StatefulWidget {
+class SexualReproduction extends StatefulWidget {
   @override
-  _HealthInsurerState createState() => _HealthInsurerState();
+  _SexualReproductionState createState() => _SexualReproductionState();
 }
 
-class _HealthInsurerState extends State<HealthInsurer> {
+class _SexualReproductionState extends State<SexualReproduction> {
   String code;
 
   @override
@@ -20,7 +18,7 @@ class _HealthInsurerState extends State<HealthInsurer> {
     return Scaffold(
         backgroundColor: Color(0xFFE7FFFF),
         appBar: AppBar(
-          title: Text("Health Insurer"),
+          title: Text("Sexual Reproduction"),
           backgroundColor: Color(0xFF00FFFF),
           centerTitle: true,
         ),
@@ -60,7 +58,7 @@ class _HealthInsurerState extends State<HealthInsurer> {
                       },
                     ),
                   ),
-                  InsurerCard()
+                  SexualReproductionCard()
 
                 ],
               ),

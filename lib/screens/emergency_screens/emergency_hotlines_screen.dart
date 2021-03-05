@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pocket_health/bloc/hotlines/hotlinesBloc.dart';
 import 'package:pocket_health/bloc/hotlines/hotlinesEvent.dart';
-import 'package:pocket_health/screens/emergency_screens/hotlines_card.dart';
+import 'package:pocket_health/screens/emergency_screens/hotline_widgets/hotlines_card.dart';
 import 'package:pocket_health/widgets/widget.dart';
 
 class EmergencyHotlines extends StatefulWidget {

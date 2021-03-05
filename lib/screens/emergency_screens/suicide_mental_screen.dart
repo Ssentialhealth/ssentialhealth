@@ -1,18 +1,17 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pocket_health/bloc/hotlines/hotlinesBloc.dart';
 import 'package:pocket_health/bloc/hotlines/hotlinesEvent.dart';
 import 'package:pocket_health/widgets/widget.dart';
 
-import 'hotline_widgets/insurer_card.dart';
+import 'hotline_widgets/suicide_mental_card.dart';
 
-class HealthInsurer extends StatefulWidget {
+class SuicideMental extends StatefulWidget {
   @override
-  _HealthInsurerState createState() => _HealthInsurerState();
+  _SuicideMentalState createState() => _SuicideMentalState();
 }
 
-class _HealthInsurerState extends State<HealthInsurer> {
+class _SuicideMentalState extends State<SuicideMental> {
   String code;
 
   @override
@@ -60,7 +59,7 @@ class _HealthInsurerState extends State<HealthInsurer> {
                       },
                     ),
                   ),
-                  InsurerCard()
+                  SuicideMentalCard()
 
                 ],
               ),

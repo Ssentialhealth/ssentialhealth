@@ -28,7 +28,7 @@ class _HotlineScreenState extends State<HotlineScreen> {
     return Scaffold(
       backgroundColor: Color(0xFFE7FFFF),
       appBar: AppBar(
-        title: Text("Emergency"),
+        title: Text("Emergency Hotlines"),
         backgroundColor: Color(0xFF00FFFF),
         centerTitle: true,
       ),
@@ -65,7 +65,9 @@ class _HotlineScreenState extends State<HotlineScreen> {
                     divider(),
                     HotlineItem(
                         text: "Fire and Disaster",
-                        press: (){}
+                        press: (){
+
+                        }
                     ),
                     divider(),
                     //Police and Security//

@@ -2,12 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pocket_health/bloc/hotlines/hotlinesBloc.dart';
 import 'package:pocket_health/bloc/hotlines/hotlinesState.dart';
-import 'package:pocket_health/models/hotlines.dart';
 import 'package:pocket_health/widgets/hotline_card.dart';
 
-class InsurerCard extends StatelessWidget {
-  // const HotlinesCard({Key key,@required this.hotlines}): super(key:key);
-
+class SuicideMentalCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<HotlinesBloc,HotlineState>(
@@ -22,11 +19,11 @@ class InsurerCard extends StatelessWidget {
               shrinkWrap: true,
               itemCount: state.hotlines.healthInsurer.length,
               itemBuilder: (BuildContext context,index){
-                final ambulance = state.hotlines.healthInsurer[index];
+                final suicide = state.hotlines.healthInsurer[index];
                 return Container(
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Hotline(name: ambulance.name, location: ambulance.location, phone: ambulance.phoneNumbers[0]),
+                    child: Hotline(name: suicide.name, location: suicide.location, phone: suicide.phoneNumbers[0]),
                   ),
                 );
               },

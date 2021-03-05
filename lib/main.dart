@@ -14,6 +14,8 @@ import 'package:pocket_health/repository/userProfile_repo.dart';
 import 'package:pocket_health/screens/Authentication/Authenticate.dart';
 import 'package:pocket_health/screens/emergency_screens/emergency_hotlines_screen.dart';
 import 'package:pocket_health/screens/emergency_screens/hotlines_screen.dart';
+import 'package:pocket_health/screens/home/home.dart';
+import 'package:pocket_health/screens/home/home_screen.dart';
 import 'package:pocket_health/services/api_service.dart';
 import 'package:http/http.dart' as http;
 import 'bloc/forgotPassword/forgotPasswordBloc.dart';
@@ -75,7 +77,7 @@ class MyApp extends StatelessWidget {
           scaffoldBackgroundColor: Colors.white
         ),
 
-        home: HotlineScreen(),
+        home: Home(),
 
       ),
     );
