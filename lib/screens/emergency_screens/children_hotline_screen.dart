@@ -18,7 +18,7 @@ class _ChildrenHotlineState extends State<ChildrenHotline> {
     return Scaffold(
         backgroundColor: Color(0xFFE7FFFF),
         appBar: AppBar(
-          title: Text("Health Insurer"),
+          title: Text("Children Hotlines"),
           backgroundColor: Color(0xFF00FFFF),
           centerTitle: true,
         ),

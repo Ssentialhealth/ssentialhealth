@@ -3,8 +3,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pocket_health/bloc/hotlines/hotlinesBloc.dart';
 import 'package:pocket_health/bloc/hotlines/hotlinesEvent.dart';
 import 'package:pocket_health/models/hotlines.dart';
+import 'package:pocket_health/screens/emergency_screens/accident_rescue_screen.dart';
+import 'package:pocket_health/screens/emergency_screens/children_hotline_screen.dart';
 import 'package:pocket_health/screens/emergency_screens/emergency_hotlines_screen.dart';
+import 'package:pocket_health/screens/emergency_screens/fire_and_disaster_screen.dart';
 import 'package:pocket_health/screens/emergency_screens/health_insurer.dart';
+import 'package:pocket_health/screens/emergency_screens/police_security_screen.dart';
+import 'package:pocket_health/screens/emergency_screens/sexual_gender_screen.dart';
+import 'package:pocket_health/screens/emergency_screens/sexual_reproduction_screen.dart';
+import 'package:pocket_health/screens/emergency_screens/suicide_mental_screen.dart';
 import 'package:pocket_health/widgets/hotline_item.dart';
 import 'package:pocket_health/widgets/widget.dart';
 
@@ -66,7 +73,7 @@ class _HotlineScreenState extends State<HotlineScreen> {
                     HotlineItem(
                         text: "Fire and Disaster",
                         press: (){
-
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => FireAndDisaster()));
                         }
                     ),
                     divider(),
@@ -75,7 +82,9 @@ class _HotlineScreenState extends State<HotlineScreen> {
                     divider(),
                     HotlineItem(
                         text: "Police and Security",
-                        press: (){}
+                        press: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => PoliceSecurity()));
+                        }
                     ),
                     divider(),
                     //Accident Rescue//
@@ -83,7 +92,9 @@ class _HotlineScreenState extends State<HotlineScreen> {
                     divider(),
                     HotlineItem(
                         text: "Accident Rescue(Road/Air/Water)",
-                        press: (){}
+                        press: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => AccidentRescue()));
+                        }
                     ),
                     divider(),
                     //Suicide//
@@ -91,7 +102,9 @@ class _HotlineScreenState extends State<HotlineScreen> {
                     divider(),
                     HotlineItem(
                         text: "Suicide and Mental Health Hotlines",
-                        press: (){}
+                        press: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => SuicideMental()));
+                        }
                     ),
                     divider(),
                     //Sexual and Gender Based//
@@ -99,7 +112,9 @@ class _HotlineScreenState extends State<HotlineScreen> {
                     divider(),
                     HotlineItem(
                         text: "Sexual and Gender Based Violence Hotlines",
-                        press: (){}
+                        press: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => SexualAndGender()));
+                        }
                     ),
                     divider(),
                     //Children Hotlines//
@@ -107,7 +122,9 @@ class _HotlineScreenState extends State<HotlineScreen> {
                     divider(),
                     HotlineItem(
                         text: "Children Hotlines",
-                        press: (){}
+                        press: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => ChildrenHotline()));
+                        }
                     ),
                     divider(),
                     //Sexual and Reproductive Health Hotlines
@@ -116,7 +133,7 @@ class _HotlineScreenState extends State<HotlineScreen> {
                     HotlineItem(
                         text: "Sexual and Reproductive Health Hotlines",
                         press: (){
-
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => SexualReproduction()));
                         }
                     ),
                     divider(),

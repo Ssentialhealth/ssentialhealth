@@ -19,7 +19,7 @@ class _SexualAndGenderState extends State<SexualAndGender> {
     return Scaffold(
         backgroundColor: Color(0xFFE7FFFF),
         appBar: AppBar(
-          title: Text("Health Insurer"),
+          title: Text("Sexual and Gender Based"),
           backgroundColor: Color(0xFF00FFFF),
           centerTitle: true,
         ),

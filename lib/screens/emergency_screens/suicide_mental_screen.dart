@@ -19,7 +19,7 @@ class _SuicideMentalState extends State<SuicideMental> {
     return Scaffold(
         backgroundColor: Color(0xFFE7FFFF),
         appBar: AppBar(
-          title: Text("Health Insurer"),
+          title: Text("Suicide and Mental Health"),
           backgroundColor: Color(0xFF00FFFF),
           centerTitle: true,
         ),
