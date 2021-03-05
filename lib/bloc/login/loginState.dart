@@ -22,4 +22,6 @@ class LoginLoading extends LoginState {
 
 }
 
-class LoginError extends LoginState {}
+class LoginError extends LoginState {
+
+}

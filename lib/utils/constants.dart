@@ -4,4 +4,4 @@ final String forgotPassEndpoint = "https://ssential.herokuapp.com/auth/users/res
 final String createProfileEndpoint = "https://ssential.herokuapp.com/api/user/profile/";
 final String createPractitionerProfileEndpoint = "https://ssential.herokuapp.com/api/user/practitioner_profile/";
 final String addContactsEndpoint = "https://ssential.herokuapp.com/api/user/emergency_details/";
-final String getHotlines = "https://ssential.herokuapp.com/api/emergency/hotlines/";
+final String getHotlines = "https://ssential.herokuapp.com/api/emergency/hotlines?country=";

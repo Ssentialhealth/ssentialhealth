@@ -4,7 +4,7 @@ import 'package:country_list_pick/country_list_pick.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pocket_health/models/SignUpResponse.dart';
-import 'package:pocket_health/screens/home_screen.dart';
+import 'package:pocket_health/screens/home/home_screen.dart';
 import 'package:pocket_health/widgets/widget.dart';
 import 'package:http/http.dart' as http;
 
@@ -291,7 +291,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             builder: (context) => HomeScreen()
           ));
           _showSnackBar("Successfully Created");
-         
+
         } else {
           _showSnackBar(response.body.substring(11,response.body.length - 3));
           setState(() {
@@ -305,7 +305,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     }
   }
-
 
   void _showSnackBar(message) {
     _scaffoldKey.currentState.showSnackBar(

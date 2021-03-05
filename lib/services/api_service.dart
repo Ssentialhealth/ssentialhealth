@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -9,6 +8,7 @@ import 'package:pocket_health/models/emergency_contact.dart';
 import 'package:pocket_health/models/hotlines.dart';
 import 'package:pocket_health/models/loginModel.dart';
 import 'package:pocket_health/models/profile.dart';
+import 'package:pocket_health/screens/home/home_screen.dart';
 import 'package:pocket_health/utils/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -18,15 +18,18 @@ class ApiService {
   BuildContext buildContext;
 
 
+
   ApiService(this.httpClient) : assert(httpClient != null);
 
-  Future<List<Hotlines>> fetchHotlines()async {
-    final response = await this.httpClient.get(getHotlines);
+  Future<Hotlines> fetchHotlines(String country)async {
+    final response = await this.httpClient.get("https://ssential.herokuapp.com/api/emergency/hotlines?country=$country");
     if(response.statusCode != 200){
       throw Exception('Error Fetching Hotlines');
     }
-   final hotlinesJson = jsonDecode(response.body);
-    return Hotlines.fromJson(hotlinesJson);
+
+    print(response.body);
+    final hotlinesJson = response.body;
+    return hotlinesFromJson(hotlinesJson);
   }
 
   Future<EmergencyContact> addContacts(String ambulanceName, countryCode,
@@ -221,6 +224,7 @@ class ApiService {
     print(response.body);
     LoginModel loginModel = LoginModel.fromJson(jsonDecode(response.body));
     if (response.statusCode != 200) {
+      _showSnackBar(response.body.substring(11,response.body.length - 3));
       throw Exception('Error Occurred');
     } else {
       addStringToSF(loginModel.access, loginModel.user.userCategory,
@@ -245,5 +249,14 @@ getStringValuesSF() async {
   //Return String
   String stringValue = prefs.getString('token');
   return stringValue;
+}
+
+void _showSnackBar(message) {
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  _scaffoldKey.currentState.showSnackBar(
+      SnackBar(
+        content: Text(message),
+      )
+  );
 }
 

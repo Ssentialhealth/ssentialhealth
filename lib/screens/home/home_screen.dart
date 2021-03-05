@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
-import 'package:pocket_health/screens/practitioner_info_screen.dart';
-import 'package:pocket_health/screens/profile_screen.dart';
+import 'package:pocket_health/screens/emergency_screens/emergency_hotlines_screen.dart';
+import 'package:pocket_health/screens/profile/practitioner_info_screen.dart';
+import 'package:pocket_health/screens/profile/profile_screen.dart';
 import 'package:pocket_health/widgets/card_item.dart';
 import 'package:pocket_health/widgets/category_card.dart';
 import 'package:pocket_health/widgets/welcome_dart.dart';
 import 'package:pocket_health/widgets/widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-
-import '../utils/size_config.dart';
+import '../../utils/size_config.dart';
 
 class HomeScreen extends StatefulWidget {
 
@@ -21,12 +20,21 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
   String _type = "...";
 
-
+  List<Widget> tabPages = [
+    HomeScreen(),
+    EmergencyHotlines(),
+  ];
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  void cardCheck(){
+    if(_type != null){
+
+    }
   }
 
   @override
@@ -144,6 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ),
+
         bottomNavigationBar: BottomNavigationBar(
           type: BottomNavigationBarType.fixed,
           items:  <BottomNavigationBarItem>[
@@ -180,4 +189,5 @@ getStringValuesSF() async {
   String stringValue = prefs.getString('userType');
   return stringValue;
 }
+
 

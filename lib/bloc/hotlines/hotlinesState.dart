@@ -18,9 +18,9 @@ class HotlinesError extends HotlineState {}
 class HotlinesEmpty extends HotlineState {}
 
 class HotlinesLoaded extends HotlineState {
+  final Hotlines hotlines;
   @override
-  List<Hotlines> get props => hotlines;
-  final List<Hotlines> hotlines;
+  List<Hotlines> get props => [hotlines];
 
   HotlinesLoaded(this.hotlines) : assert(hotlines != null);
 }

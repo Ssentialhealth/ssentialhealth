@@ -86,6 +86,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                   Container(
                     width: 230,
                     child: TextFormField(
+                      keyboardType: TextInputType.number,
                       controller: phone,
                       decoration: textFieldInputDecoration("Phone Number"),
                     ),
@@ -103,7 +104,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
               SizedBox(height: 8,),
               TextFormField(
                 controller: dob,
-                decoration: textFieldInputDecoration("Date of Birth"),
+                decoration: textFieldInputDecoration("DOB(YYYY-MM-DD)"),
               ),
               SizedBox(height: 8,),
               DropdownButtonFormField(
@@ -349,7 +350,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                 isExpanded: true,
                 iconSize: 30.0,
                 style: TextStyle(color: Colors.black),
-                items: ['Penicillin', 'Sulphur', 'Cephalosporins','Aspirin','NSAIDs','Other'].map(
+                items: ['None','Penicillin', 'Sulphur', 'Cephalosporins','Aspirin','NSAIDs','Other'].map(
                       (val) {
                     return DropdownMenuItem<String>(
                       value: val,
@@ -404,7 +405,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
               SizedBox(height: 8,),
               TextFormField(
                 controller: admissionDate,
-                decoration: textFieldInputDecoration("Date"),
+                decoration: textFieldInputDecoration("Date(YYYY-MM-DD)"),
               ),
               SizedBox(height: 8,),
               TextFormField(
@@ -454,7 +455,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                           ]
                       )
                   ),
-                  child: Text("Update Profile",
+                  child: Text("Submit",
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: 18,
@@ -661,7 +662,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                           ]
                       )
                   ),
-                  child: Text("Update Profile",
+                  child: Text("Submit",
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: 18,

@@ -20,10 +20,11 @@ class HotlinesBloc extends Bloc<HotlinesEvent,HotlineState>{
     if(event is FetchHotline){
       yield HotlinesLoading();
       try{
-        final List<Hotlines> hotlines = await hotlinesRepo.getHotlines();
+        final Hotlines hotlines = await hotlinesRepo.getHotlines(event.country);
         yield HotlinesLoaded(hotlines);
-      }catch(_){
+      }catch(e){
         yield HotlinesError();
+        print(e.toString());
       }
     }
 

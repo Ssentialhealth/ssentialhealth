@@ -5,8 +5,8 @@ class HotlineRepo{
   final ApiService apiService;
   HotlineRepo(this.apiService) : assert(apiService != null);
 
-  Future<List<Hotlines>> getHotlines() async {
-    return await apiService.fetchHotlines();
+  Future<Hotlines> getHotlines(String country) async {
+    return await apiService.fetchHotlines(country);
   }
 
 }
