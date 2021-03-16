@@ -1,12 +1,14 @@
 import 'package:country_list_pick/country_list_pick.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:pocket_health/bloc/emergency_contact/emergencyContactBloc.dart';
 import 'package:pocket_health/bloc/emergency_contact/emergencyContactEvent.dart';
 import 'package:pocket_health/bloc/profile/userProfileBloc.dart';
 import 'package:pocket_health/bloc/profile/userProfileEvent.dart';
 import 'package:pocket_health/widgets/widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UserInfoScreen extends StatefulWidget {
   @override
@@ -14,18 +16,33 @@ class UserInfoScreen extends StatefulWidget {
 }
 
 class _UserInfoScreenState extends State<UserInfoScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+    getName();
+
+  }
+  void getName()async{
+    _name = await getStringValuesSF();
+    setState(() {
+      _fullName = _name;
+    });
+    print(_fullName);
+
+  }
+  String _fullName ;
+  String _name;
+
   String value;
   int currentStep = 0;
   bool complete = false;
-  String countryCode,country,gender,bloodGroup,chronicCondition,mental,disabilities,longTerm,dAllergies,fAllergies;
+  String countryCode,country,gender,bloodGroup,chronicCondition,mental,disabilities,longTerm,dAllergies,fAllergies,dateOfBirth,chronic,recreational,admissionDate;
   List<Step> steps;
   TextEditingController surname = new TextEditingController();
   TextEditingController phone = new TextEditingController();
   TextEditingController dob = new TextEditingController();
   TextEditingController residence = new TextEditingController();
-  TextEditingController chronic = new TextEditingController();
-  TextEditingController recreational = new TextEditingController();
-  TextEditingController admissionDate = new TextEditingController();
   TextEditingController conditions = new TextEditingController();
   TextEditingController ambulanceName = new TextEditingController();
   TextEditingController ambulancePhone = new TextEditingController();
@@ -102,10 +119,83 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
               ),
               Divider(color: Color(0xff163C4D)),
               SizedBox(height: 8,),
-              TextFormField(
-                controller: dob,
-                decoration: textFieldInputDecoration("DOB(YYYY-MM-DD)"),
+              // TextField(
+              //   readOnly: true,
+              //   decoration: InputDecoration(
+              //     prefixIcon: Icon(Icons.date_range)
+              //   ),
+              //   onTap: (){
+              //     DatePicker.showDatePicker(context,
+              //         showTitleActions: true,
+              //         minTime: DateTime(1963, 3, 5),
+              //         maxTime: DateTime(2021, 6, 7),
+              //         onChanged: (date) {
+              //           print('change $date');
+              //         }, onConfirm: (date) {
+              //           print('confirm $date');
+              //         }, currentTime: DateTime.now(), locale: LocaleType.en);
+              //   },
+              // ),
+              Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                      "Date of Birth"
+                  )
               ),
+              SizedBox(height: 5,),
+              TextFormField(
+                readOnly: true,
+                decoration: dateFieldInputDecoration(dateOfBirth),
+                controller: dob,
+                onTap: (){
+                      DatePicker.showDatePicker(context,
+                      showTitleActions: true,
+                      minTime: DateTime(1963, 3, 5),
+                      maxTime: DateTime(2021, 6, 7),
+                      onChanged: (date) {
+                      // print('change $date');
+                      }, onConfirm: (date) {
+                      // print('confirm $date');
+                      setState(() {
+                        var dob = date.toString();
+                        var dates = DateTime.parse(dob);
+                        var formattedDate = "${dates.day}-${dates.month}-${dates.year}";
+
+                        dateOfBirth = formattedDate;
+
+                        print(formattedDate);
+                      });
+                      }, currentTime: DateTime.now(), locale: LocaleType.en);
+                    },
+              ),
+              // DropdownButtonFormField(
+              //   decoration: textFieldInputDecoration("Date of Birth"),
+              //   hint: dateOfBirth == null
+              //       ? Text('')
+              //       : Text(
+              //     dateOfBirth,
+              //     style: TextStyle(color: Colors.black),
+              //   ),
+              //   isExpanded: true,
+              //   iconSize: 30.0,
+              //   style: TextStyle(color: Colors.black),
+              //
+              //   onTap: (){
+              //     DatePicker.showDatePicker(context,
+              //         showTitleActions: true,
+              //         minTime: DateTime(1963, 3, 5),
+              //         maxTime: DateTime(2021, 6, 7),
+              //         onChanged: (val) {
+              //           setState(() {
+              //             dateOfBirth = val.toString();
+              //             print("DOB:"+val.toString());
+              //           });
+              //           print('change $val');
+              //         }, onConfirm: (date) {
+              //           print('confirm $date');
+              //         }, currentTime: DateTime.now(), locale: LocaleType.en);
+              //   },
+              // ),
               SizedBox(height: 8,),
               DropdownButtonFormField(
                 decoration: textFieldInputDecoration("Gender"),
@@ -118,7 +208,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                 isExpanded: true,
                 iconSize: 30.0,
                 style: TextStyle(color: Colors.black),
-                items: ['male', 'female', 'Prefer Not to Say'].map(
+                items: ['male', 'female','Transgender Female', 'Transgender Male','Intersex,','Non-binary','Other','Leave Blank',].map(
                       (val) {
                     return DropdownMenuItem<String>(
                       value: val,
@@ -141,29 +231,10 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
               ),
               SizedBox(height: 8,),
               //TODO
-              Container(
-                decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black),
-                    borderRadius: BorderRadius.circular(10)
+              TextFormField(
+                  controller: residence,
+                  decoration: textFieldInputDecoration("Region/Town/Locality"),
                 ),
-                alignment: Alignment.centerLeft,
-                child: CountryListPick(
-                  theme: CountryTheme(
-                      isShowFlag: true
-                  ),
-                  initialSelection: '+254',
-                  onChanged: (CountryCode code) {
-                    print(code.name);
-                    print(code.code);
-                    print(code.dialCode);
-                    print(code.flagUri);
-                    country = code.name;
-
-                  },
-                ),
-              ),
-
-
             ],
           ),
         ),
@@ -321,14 +392,60 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
               ),
               Divider(color: Color(0xff163C4D)),
               SizedBox(height: 8,),
-              TextFormField(
-                controller: chronic,
-                decoration: textFieldInputDecoration("Chronic conditions in Family"),
+              DropdownButtonFormField(
+                decoration: textFieldInputDecoration("Chronic Condition"),
+                hint: chronic == null
+                    ? Text('')
+                    : Text(
+                  chronic,
+                  style: TextStyle(color: Colors.black),
+                ),
+                isExpanded: true,
+                iconSize: 30.0,
+                style: TextStyle(color: Colors.black),
+                items: ['None', 'Diabetes', 'Hypertension,','Heart Failure','Cancer,','Congenital,','Asthma','Eczema','Convulsion disorder','Neuro-developmental disorder','Other'].map(
+                      (val) {
+                    return DropdownMenuItem<String>(
+                      value: val,
+                      child: Text(val),
+                    );
+                  },
+                ).toList(),
+                onChanged: (val) {
+                  setState(
+                        () {
+                          chronic = val;
+                    },
+                  );
+                },
               ),
               SizedBox(height: 8,),
-              TextFormField(
-                controller: recreational,
+              DropdownButtonFormField(
                 decoration: textFieldInputDecoration("Recreational Drug Use"),
+                hint: recreational == null
+                    ? Text('')
+                    : Text(
+                  recreational,
+                  style: TextStyle(color: Colors.black),
+                ),
+                isExpanded: true,
+                iconSize: 30.0,
+                style: TextStyle(color: Colors.black),
+                items: ['None', 'Alcohol', 'Tobacco,','Marijuana','Cocaine','Heroin','Other opioids','Others Usage',].map(
+                      (val) {
+                    return DropdownMenuItem<String>(
+                      value: val,
+                      child: Text(val),
+                    );
+                  },
+                ).toList(),
+                onChanged: (val) {
+                  setState(
+                        () {
+                          recreational = val;
+                    },
+                  );
+                },
               ),
               SizedBox(height: 8,),
               Align(
@@ -403,14 +520,42 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
               ),
               Divider(color: Color(0xff163C4D)),
               SizedBox(height: 8,),
+              Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                      "Date of Admission"
+                  )
+              ),
+              SizedBox(height: 5,),
               TextFormField(
-                controller: admissionDate,
-                decoration: textFieldInputDecoration("Date(YYYY-MM-DD)"),
+                readOnly: true,
+                decoration: dateFieldInputDecoration(admissionDate),
+                onTap: (){
+                  DatePicker.showDatePicker(context,
+                      showTitleActions: true,
+                      minTime: DateTime(1963, 3, 5),
+                      maxTime: DateTime(2021, 6, 7),
+                      onChanged: (date) {
+                        // print('change $date');
+                      }, onConfirm: (date) {
+                        // print('confirm $date');
+                        setState(() {
+                          var dob = date.toString();
+                          var dates = DateTime.parse(dob);
+                          var formattedDate = "${dates.day}-${dates.month}-${dates.year}";
+
+                          admissionDate = formattedDate;
+
+                          print(formattedDate);
+                        });
+                      }, currentTime: DateTime.now(), locale: LocaleType.en);
+                },
               ),
               SizedBox(height: 8,),
               TextFormField(
                 controller: conditions,
-                maxLines: 5,
+                maxLines: 4,
+                maxLength: 40,
                 decoration: textFieldInputDecoration("Conditions"),
               ),
               SizedBox(height: 8,),
@@ -420,18 +565,18 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                       CreateUserProfile(
                           surname: surname.text,
                           phone: phone.text,
-                          dob: dob.text,
+                          dob: dateOfBirth,
                           gender: gender,
                           residence: residence.text,
                           country: country,
                           blood: bloodGroup,
-                         chronic: chronic.text,
+                         chronic: chronic,
                         longTerm: longTerm,
-                        date: admissionDate.text,
+                        date: admissionDate,
                         condition: conditions.text,
                         code: countryCode,
                         dissabilities: disabilities,
-                        recreational: recreational.text,
+                        recreational: recreational,
                         drugAllergies: dAllergies,
                         foodAllergies: fAllergies,
 
@@ -706,35 +851,35 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
       ),
       body: Column(
         children: [
-          // Container(
-          //   height: 180,
-          //   width: MediaQuery.of(context).size.width,
-          //   color: Color(0xFF00FFFF),
-          //   child: Padding(
-          //     padding:  EdgeInsets.symmetric(vertical:8.0),
-          //     child: Column(
-          //       children: [
-          //         Image.asset("assets/images/profile.png"),
-          //         SizedBox(height: 9,),
-          //         Text("Nicholas Dani",style: mediumTextStyle(),),
-          //         SizedBox(height: 9,),
-          //         Padding(
-          //           padding:  EdgeInsets.symmetric(horizontal:60.0),
-          //           child: LinearPercentIndicator(
-          //             width: 240.0,
-          //             lineHeight: 8.0,
-          //             percent: 0.3,
-          //             backgroundColor: Colors.white,
-          //             progressColor: Color(0xff163C4D),
-          //           ),
-          //         ),
-          //         SizedBox(height: 9,),
-          //         Text("Sign Up Progress 10%",style: TextStyle(fontSize: 12),),
-          //
-          //       ],
-          //     ),
-          //   ),
-          // ),
+          Container(
+            height: 180,
+            width: MediaQuery.of(context).size.width,
+            color: Color(0xFF00FFFF),
+            child: Padding(
+              padding:  EdgeInsets.symmetric(vertical:8.0),
+              child: Column(
+                children: [
+                  Image.asset("assets/images/profile.png"),
+                  SizedBox(height: 9,),
+                  Text("$_fullName",style: mediumTextStyle(),),
+                  SizedBox(height: 9,),
+                  Padding(
+                    padding:  EdgeInsets.symmetric(horizontal:60.0),
+                    child: LinearPercentIndicator(
+                      width: 240.0,
+                      lineHeight: 8.0,
+                      percent: 0.3,
+                      backgroundColor: Colors.white,
+                      progressColor: Color(0xff163C4D),
+                    ),
+                  ),
+                  SizedBox(height: 9,),
+                  Text("Sign Up Progress 10%",style: TextStyle(fontSize: 12),),
+
+                ],
+              ),
+            ),
+          ),
           Container(
             child: Expanded(
               child: Theme(
@@ -756,4 +901,10 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
       ),
     );
   }
+}
+getStringValuesSF() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  //Return String
+  String stringValue = prefs.getString('fullName');
+  return stringValue;
 }

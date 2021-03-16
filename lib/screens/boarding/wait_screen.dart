@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pocket_health/screens/home/home.dart';
 import 'package:pocket_health/screens/home/home_screen.dart';
 import 'package:pocket_health/widgets/widget.dart';
 
@@ -64,7 +65,7 @@ class _WaitScreenState extends State<WaitScreen> {
               child: GestureDetector(
                 onTap: (){
                   Navigator.pushReplacement(context, MaterialPageRoute(
-                    builder: (context) => HomeScreen()
+                    builder: (context) => Home()
                   ));
                 },
                 child: Container(

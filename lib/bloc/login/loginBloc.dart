@@ -21,10 +21,10 @@ class LoginBloc extends Bloc<LoginEvent,LoginState> {
           yield LoginLoaded(loginModel);
 
         }else{
-          yield LoginError();
+          yield LoginInitial();
         }
       }catch(e) {
-        yield LoginError();
+        yield LoginError(e.toString());
       }
     }
   }

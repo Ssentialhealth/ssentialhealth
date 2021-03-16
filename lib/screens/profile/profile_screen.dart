@@ -14,7 +14,6 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  String _fullName = "Hello";
 
   @override
   void initState() {
@@ -22,12 +21,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
     getName();
 
   }
-
   void getName()async{
-    _fullName = await getStringValuesSF();
+    _name = await getStringValuesSF();
+    setState(() {
+      _fullName = _name;
+    });
     print(_fullName);
 
   }
+  String _fullName ;
+  String _name;
+
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +74,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   padding:  EdgeInsets.symmetric(vertical:20),
                                   child: Column(
                                     children: [
-                                      Text(_fullName,style: mediumTextStyle()),
+                                      Text("$_fullName",style: mediumTextStyle()),
                                       SizedBox(height: 10,),
                                       LinearPercentIndicator(
                                         width: 200.0,
@@ -79,8 +83,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         backgroundColor: Colors.white,
                                         progressColor: Color(0xff163C4D),
                                       ),
-
-
                                     ],
                                   ),
                                 ),
@@ -89,7 +91,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   padding: const EdgeInsets.all(8.0),
                                   child: Icon(Icons.arrow_forward_ios_outlined),
                                 ),
-
                               ],
                             ),
                           ],

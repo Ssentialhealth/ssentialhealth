@@ -17,13 +17,20 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   String _type = "...";
+  bool visibilityController = false;
 
 
-  void cardCheck(){
-    if(_type != null){
-
-    }
+   welcomeCard(){
+    setState(() {
+      if(_type != null){
+        visibilityController = true;
+        return WelcomeCard();
+      }else{
+        visibilityController = false;
+      }
+    });
   }
 
   @override
@@ -31,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
     List<Map<String, dynamic>> categories = [
       {"icon": "assets/images/mental_health.png", "text": "Mental Health"},
       {"icon": "assets/images/wellness.png", "text": "Wellness"},
-      {"icon": "assets/images/first_aid.png", "text": "FirstAid"},
+      {"icon": "assets/images/first_aid.png", "text": "First Aid"},
       {"icon": "assets/images/health_insurace.png", "text": "Health Insuran.."},
 
     ];
@@ -39,6 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
     FlutterStatusbarcolor.setStatusBarColor(Color(0xFF00FFFF));
     return SafeArea(
       child: Scaffold(
+        key: _scaffoldKey,
         backgroundColor: Color(0xFFE7FFFF),
         appBar: AppBar(
           title: Padding(
@@ -77,7 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               }else if(_type == 'health practitioner'){
                                 Navigator.push(context, MaterialPageRoute(builder: (context) => PractitionerInfo()));
                               }else{
-
+                                _showSnackBar("Login To Access This Feature");
                               }
                             },
                             child: ClipRRect(
@@ -112,7 +120,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   text: "Pregnancy & Lactation",
                 ),
                 SizedBox(height: 8,),
-                WelcomeCard(),
+                Visibility(
+                  visible: visibilityController,
+                    child:WelcomeCard()
+
+                ),
                 SizedBox(height: 8,),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -144,6 +156,13 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+  void _showSnackBar(message) {
+    _scaffoldKey.currentState.showSnackBar(
+        SnackBar(
+          content: Text(message),
+        )
+    );
+  }
 }
 
 getStringValuesSF() async {
@@ -152,5 +171,7 @@ getStringValuesSF() async {
   String stringValue = prefs.getString('userType');
   return stringValue;
 }
+
+
 
 

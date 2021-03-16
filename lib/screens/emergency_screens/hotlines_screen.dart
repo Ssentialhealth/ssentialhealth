@@ -24,11 +24,6 @@ class _HotlineScreenState extends State<HotlineScreen> {
   String code;
   Hotlines hotlines = new Hotlines();
 
-  @override
-  void initState() {
-    super.initState();
-
-  }
 
   @override
   Widget build(BuildContext context) {

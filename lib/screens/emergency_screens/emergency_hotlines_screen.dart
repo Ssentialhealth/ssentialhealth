@@ -40,7 +40,7 @@ class _EmergencyHotlinesState extends State<EmergencyHotlines> {
                     isExpanded: true,
                     iconSize: 30.0,
                     style: TextStyle(color: Colors.black),
-                    items: ['kenya','nigeria',].map(
+                    items: ['kenya','india',].map(
                           (val) {
                         return DropdownMenuItem<String>(
                           value: val,
@@ -48,7 +48,7 @@ class _EmergencyHotlinesState extends State<EmergencyHotlines> {
                         );
                       },
                     ).toList(),
-                    onChanged: (val) {
+                    onChanged: (val){
                       setState(
                             () {
                               code = val;
@@ -58,7 +58,9 @@ class _EmergencyHotlinesState extends State<EmergencyHotlines> {
                     },
                   ),
                 ),
-                HotlinesCard()
+                Container(
+                    child: HotlinesCard()
+                )
 
               ],
             ),

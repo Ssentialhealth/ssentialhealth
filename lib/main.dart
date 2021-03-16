@@ -12,6 +12,7 @@ import 'package:pocket_health/repository/loginRepo.dart';
 import 'package:pocket_health/repository/practitionerProfileRepo.dart';
 import 'package:pocket_health/repository/userProfile_repo.dart';
 import 'package:pocket_health/screens/Authentication/Authenticate.dart';
+import 'package:pocket_health/screens/boarding/wait_screen.dart';
 import 'package:pocket_health/screens/emergency_screens/emergency_hotlines_screen.dart';
 import 'package:pocket_health/screens/emergency_screens/hotlines_screen.dart';
 import 'package:pocket_health/screens/home/home.dart';
@@ -77,7 +78,7 @@ class MyApp extends StatelessWidget {
           scaffoldBackgroundColor: Colors.white
         ),
 
-        home: Home(),
+        home: WaitScreen(),
 
       ),
     );

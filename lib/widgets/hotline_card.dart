@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Hotline extends StatelessWidget {
   const Hotline({
@@ -7,10 +9,12 @@ class Hotline extends StatelessWidget {
     @required this.name,
     @required this.location,
     @required this.phone,
+    @required this.press,
   }) : super(key:key);
   final String name;
   final String location;
   final String phone;
+  final Function press;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -40,14 +44,20 @@ class Hotline extends StatelessWidget {
               ),
             ],
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(phone,style: TextStyle(color: Colors.blue),)),
+          GestureDetector(
+           onTap: press,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(phone,style: TextStyle(color: Colors.blue),)),
+            ),
           ),
         ],
       ),
     );
   }
+
+
 }
+

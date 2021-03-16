@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pocket_health/bloc/login/loginBloc.dart';
 import 'package:pocket_health/bloc/login/loginEvent.dart';
 import 'package:pocket_health/bloc/login/loginState.dart';
+import 'package:pocket_health/screens/home/home.dart';
 import 'package:pocket_health/screens/home/home_screen.dart';
 import 'package:pocket_health/widgets/widget.dart';
 
@@ -52,11 +53,11 @@ class _SignInScreenState extends State<SignInScreen> {
             listener: (context,state){
               if(state is LoginLoaded){
                 Navigator.pushReplacement(context, MaterialPageRoute(
-                    builder: (context) => HomeScreen()
+                    builder: (context) => Home()
                 ));
               }
               if(state is LoginError){
-                Scaffold.of(context)..hideCurrentSnackBar()..showSnackBar(const SnackBar(content: Text('Error')));
+                Scaffold.of(context)..hideCurrentSnackBar()..showSnackBar( SnackBar(content: Text("No active account found with the given credentials")));
               }
             },
           child: Container(
