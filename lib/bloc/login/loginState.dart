@@ -22,4 +22,8 @@ class LoginLoading extends LoginState {
 
 }
 
-class LoginError extends LoginState {}
+class LoginError extends LoginState {
+  final String error;
+  LoginError(this.error): assert(error != null);
+
+}

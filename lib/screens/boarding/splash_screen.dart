@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:pocket_health/screens/Authenticate.dart';
-import 'package:pocket_health/screens/sign_in_screen.dart';
-import 'package:pocket_health/screens/wait_screen.dart';
+import 'package:pocket_health/screens/Authentication/Authenticate.dart';
+import 'package:pocket_health/screens/Authentication/sign_in_screen.dart';
+import 'package:pocket_health/screens/boarding/wait_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   @override

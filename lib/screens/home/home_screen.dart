@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
-import 'package:pocket_health/screens/practitioner_info_screen.dart';
-import 'package:pocket_health/screens/profile_screen.dart';
+import 'package:pocket_health/screens/emergency_screens/emergency_hotlines_screen.dart';
+import 'package:pocket_health/screens/profile/practitioner_info_screen.dart';
+import 'package:pocket_health/screens/profile/profile_screen.dart';
 import 'package:pocket_health/widgets/card_item.dart';
 import 'package:pocket_health/widgets/category_card.dart';
 import 'package:pocket_health/widgets/welcome_dart.dart';
 import 'package:pocket_health/widgets/widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-
-import '../utils/size_config.dart';
+import '../../utils/size_config.dart';
 
 class HomeScreen extends StatefulWidget {
 
@@ -18,14 +17,19 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   String _type = "...";
+  bool visibilityController = false;
 
 
-
-  void _onItemTapped(int index) {
+   welcomeCard(){
     setState(() {
-      _selectedIndex = index;
+      if(_type != null){
+        visibilityController = true;
+        return WelcomeCard();
+      }else{
+        visibilityController = false;
+      }
     });
   }
 
@@ -34,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
     List<Map<String, dynamic>> categories = [
       {"icon": "assets/images/mental_health.png", "text": "Mental Health"},
       {"icon": "assets/images/wellness.png", "text": "Wellness"},
-      {"icon": "assets/images/first_aid.png", "text": "FirstAid"},
+      {"icon": "assets/images/first_aid.png", "text": "First Aid"},
       {"icon": "assets/images/health_insurace.png", "text": "Health Insuran.."},
 
     ];
@@ -42,6 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
     FlutterStatusbarcolor.setStatusBarColor(Color(0xFF00FFFF));
     return SafeArea(
       child: Scaffold(
+        key: _scaffoldKey,
         backgroundColor: Color(0xFFE7FFFF),
         appBar: AppBar(
           title: Padding(
@@ -80,7 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               }else if(_type == 'health practitioner'){
                                 Navigator.push(context, MaterialPageRoute(builder: (context) => PractitionerInfo()));
                               }else{
-
+                                _showSnackBar("Login To Access This Feature");
                               }
                             },
                             child: ClipRRect(
@@ -115,7 +120,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   text: "Pregnancy & Lactation",
                 ),
                 SizedBox(height: 8,),
-                WelcomeCard(),
+                Visibility(
+                  visible: visibilityController,
+                    child:WelcomeCard()
+
+                ),
                 SizedBox(height: 8,),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -144,32 +153,14 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ),
-        bottomNavigationBar: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          items:  <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: new Image.asset('assets/images/icons/Home_colored.png',height: 20,width:20,),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: new Image.asset('assets/images/icons/emergency red.png',height: 20,width:20,),
-              label: 'Emergency',
-            ),
-            BottomNavigationBarItem(
-              icon: new Image.asset('assets/images/icons/doctor_consult_colored.png',height: 20,width:20,),
-              label: 'Consult',
-            ),BottomNavigationBarItem(
-              icon: new Image.asset('assets/images/icons/settings.png',height: 20,width:20,),
-              label: 'Account',
-            ),
-          ],
-          currentIndex: _selectedIndex,
-          selectedItemColor: Color(0xff163C4D),
-          unselectedItemColor: Colors.grey,
-          onTap: _onItemTapped,
-        ),
-
       ),
+    );
+  }
+  void _showSnackBar(message) {
+    _scaffoldKey.currentState.showSnackBar(
+        SnackBar(
+          content: Text(message),
+        )
     );
   }
 }
@@ -180,4 +171,7 @@ getStringValuesSF() async {
   String stringValue = prefs.getString('userType');
   return stringValue;
 }
+
+
+
 

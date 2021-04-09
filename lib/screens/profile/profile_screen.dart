@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
-import 'package:pocket_health/screens/contact_us.dart';
-import 'package:pocket_health/screens/feedback_screen.dart';
-import 'package:pocket_health/screens/user_info_screen.dart';
+import 'package:pocket_health/models/loginModel.dart';
+import 'package:pocket_health/screens/menu_screens/contact_us.dart';
+import 'package:pocket_health/screens/menu_screens/feedback_screen.dart';
+import 'package:pocket_health/screens/profile/user_info_screen.dart';
 import 'package:pocket_health/widgets/menu_items.dart';
 import 'package:pocket_health/widgets/widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,7 +14,24 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  String _fullName = "...";
+
+  @override
+  void initState() {
+    super.initState();
+    getName();
+
+  }
+  void getName()async{
+    _name = await getStringValuesSF();
+    setState(() {
+      _fullName = _name;
+    });
+    print(_fullName);
+
+  }
+  String _fullName ;
+  String _name;
+
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +74,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   padding:  EdgeInsets.symmetric(vertical:20),
                                   child: Column(
                                     children: [
-                                      Text(_fullName ?? 'Hello',style: mediumTextStyle()),
+                                      Text("$_fullName",style: mediumTextStyle()),
                                       SizedBox(height: 10,),
                                       LinearPercentIndicator(
                                         width: 200.0,
@@ -65,8 +83,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         backgroundColor: Colors.white,
                                         progressColor: Color(0xff163C4D),
                                       ),
-
-
                                     ],
                                   ),
                                 ),
@@ -75,7 +91,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   padding: const EdgeInsets.all(8.0),
                                   child: Icon(Icons.arrow_forward_ios_outlined),
                                 ),
-
                               ],
                             ),
                           ],
@@ -214,6 +229,3 @@ getStringValuesSF() async {
   return stringValue;
 }
 
-getName() async{
-
-}

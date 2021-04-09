@@ -4,9 +4,11 @@ import 'package:country_list_pick/country_list_pick.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pocket_health/models/SignUpResponse.dart';
-import 'package:pocket_health/screens/home_screen.dart';
+import 'package:pocket_health/screens/home/home_screen.dart';
 import 'package:pocket_health/widgets/widget.dart';
 import 'package:http/http.dart' as http;
+
+import 'Authenticate.dart';
 
 
 
@@ -87,8 +89,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       SizedBox(height: 10,),
                       TextFormField(
                           validator: (val) {
-                            return val.isEmpty || val.length < 3
-                                ? "Enter Full Name"
+                            return val.isEmpty || val.length < 6
+                                ? "Name should have minimum of 6 characters"
                                 : null;
                           },
                           controller: fullNameTextEditingController,
@@ -286,12 +288,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
         SignUpResponse signUpResponse = SignUpResponse.fromJson(json.decode(response.body));
 
-        if(response.statusCode == 201) {
+        if(response.statusCode == 201){
           Navigator.pushReplacement(context, MaterialPageRoute(
-            builder: (context) => HomeScreen()
+            builder: (context) =>Authenticate()
           ));
-          _showSnackBar("Successfully Created");
-         
+          setState(() async{
+            await _showSnackBar("Successfully Created");
+
+          });
+
         } else {
           _showSnackBar(response.body.substring(11,response.body.length - 3));
           setState(() {
@@ -305,7 +310,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     }
   }
-
 
   void _showSnackBar(message) {
     _scaffoldKey.currentState.showSnackBar(

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pocket_health/bloc/forgotPassword/forgortPasswordEvent.dart';
 import 'package:pocket_health/bloc/forgotPassword/forgotPasswordBloc.dart';
-import 'package:pocket_health/screens/Authenticate.dart';
+import 'package:pocket_health/screens/Authentication/Authenticate.dart';
 import 'package:pocket_health/widgets/widget.dart';
 
 
