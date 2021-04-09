@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:pocket_health/screens/emergency_screens/emergency_hotlines_screen.dart';
+import 'package:pocket_health/screens/AdultUnwell/adult_unwell.dart';
 import 'package:pocket_health/screens/profile/practitioner_info_screen.dart';
 import 'package:pocket_health/screens/profile/profile_screen.dart';
 import 'package:pocket_health/widgets/card_item.dart';
@@ -65,26 +66,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   height: 55,
                   child: Row(
                     children: <Widget>[
-                      // Padding(
-                      //   padding: const EdgeInsets.all(8.0),
-                      //   child: Container(
-                      //     decoration: BoxDecoration(
-                      //       border: Border.all(
-                      //           width: 3,
-                      //           color: Colors.white
-                      //       ),
-                      //       borderRadius: BorderRadius.circular(30),
-                      //     ),
-                      //     child: GestureDetector(
-                      //       onTap: ()async{
-                      //
-                      //       },
-                      //       child: ClipRRect(
-                      //           borderRadius: BorderRadius.circular(30),
-                      //           child: Image.asset("assets/images/download.png", height: 50,)),
-                      //     ),
-                      //   ),
-                      // ),
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -93,20 +74,38 @@ class _HomeScreenState extends State<HomeScreen> {
                             decoration: searchFieldInputDecoration("Search for services"),
                           ),
                         ),
-                      )
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: GestureDetector(
+                          onTap: ()async{
+
+                          },
+                          child: Icon(Icons.settings)
+                        ),
+                      ),
 
                     ],
                   ),
                 ),
                 CardItem(
+                  press: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => AdultUnwell()));
+                  },
                   image: "assets/images/adult_unwell.png",
                   text: "Adult Unwell- Check Symptoms \n& Conditions",
                 ),
                 CardItem(
+                  press: (){
+
+                  },
                   image: "assets/images/child_health_ immunisation.png",
                   text: "Child Health & Immunisation",
                 ),
                 CardItem(
+                  press: (){
+
+                  },
                   image: "assets/images/pregnancy_lactation.png",
                   text: "Pregnancy & Lactation",
                 ),
@@ -132,10 +131,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 SizedBox(height: 8,),
                 CardItem(
+                  press: (){
+
+                  },
                   image: "assets/images/doctors_practitioners.png",
                   text: "Doctors & Practitioners",
                 ),
                 CardItem(
+                  press: (){
+
+                  },
                   image: "assets/images/hospital_facilities.png",
                   text: "Health Facilities",
                 ),

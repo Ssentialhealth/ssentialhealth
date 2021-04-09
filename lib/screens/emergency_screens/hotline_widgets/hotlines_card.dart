@@ -47,8 +47,8 @@ class HotlinesCard extends StatelessWidget {
       },
     );
   }
-  _callNumber(String phoneNumber) async {
-    String number = phoneNumber;
-    await FlutterPhoneDirectCaller.callNumber(number);
-  }
+  // _callNumber(String phoneNumber) async {
+  //   String number = phoneNumber;
+  //   await FlutterPhoneDirectCaller.callNumber(number);
+  // }
 }

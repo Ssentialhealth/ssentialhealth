@@ -6,6 +6,8 @@ import 'package:http/http.dart' as http;
 import 'package:pocket_health/bloc/profile/userProfileBloc.dart';
 import 'package:pocket_health/models/ForgotPassword.dart';
 import 'package:pocket_health/models/PractitionerProfile.dart';
+import 'package:pocket_health/models/adult_unwell_model.dart';
+import 'package:pocket_health/models/conditionDetailsModel.dart';
 import 'package:pocket_health/models/emergency_contact.dart';
 import 'package:pocket_health/models/hotlines.dart';
 import 'package:pocket_health/models/loginModel.dart';
@@ -32,6 +34,27 @@ class ApiService {
     final hotlinesJson = response.body;
     return hotlinesFromJson(hotlinesJson);
   }
+
+  Future<ConditionDetails> fetchConditionDetails(int id)async{
+    final response = await this.httpClient.get("https://ssential.herokuapp.com/api/conditions/adult_unwell/$id");
+    if(response.statusCode != 200){
+      throw Exception('Error Fetching Condition Details');
+    }
+    print(response.body);
+    return conditionDetailsFromJson(response.body);
+  }
+
+  Future<List<AdultUnwellModel>> fetchConditions()async{
+    final response = await this.httpClient.get("https://ssential.herokuapp.com/api/conditions/adult_unwell");
+    if(response.statusCode != 200){
+      throw Exception('Error Fetching Conditions');
+    }
+
+    print(response.body);
+
+    return adultUnwellModelFromJson(response.body);
+  }
+
 
   Future<EmergencyContact> addContacts(String ambulanceName, countryCode,
       ambulancePhone, insurerName,

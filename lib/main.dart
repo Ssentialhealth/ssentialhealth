@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pocket_health/bloc/adult_unwell/adultUnwellBloc.dart';
 import 'package:pocket_health/bloc/emergency_contact/emergencyContactBloc.dart';
 import 'package:pocket_health/bloc/hotlines/hotlinesBloc.dart';
 import 'package:pocket_health/bloc/login/loginBloc.dart';
 import 'package:pocket_health/bloc/practitioner_profile/practitionerProfileBloc.dart';
 import 'package:pocket_health/bloc/profile/userProfileBloc.dart';
+import 'package:pocket_health/repository/adultUnwellRepo.dart';
+import 'package:pocket_health/repository/conditionDetailRepo.dart';
 import 'package:pocket_health/repository/emergencyContactRepo.dart';
 import 'package:pocket_health/repository/forgotPasswordRepo.dart';
 import 'package:pocket_health/repository/hotline_repo.dart';
@@ -21,6 +24,7 @@ import 'package:pocket_health/screens/home/home_screen.dart';
 import 'package:pocket_health/services/api_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:pocket_health/simple_bloc_observer.dart';
+import 'bloc/conditionDetails/conditionDetailsBloc.dart';
 import 'bloc/forgotPassword/forgotPasswordBloc.dart';
 
 
@@ -41,6 +45,8 @@ void main() {
   final PractitionerProfileRepo practitionerProfileRepo = PractitionerProfileRepo(ApiService(http.Client()),);
   final EmergencyContactRepo emergencyContactRepo = EmergencyContactRepo(ApiService(http.Client()),);
   final HotlineRepo hotlineRepo = HotlineRepo(ApiService(http.Client()),);
+  final ConditionDetailsRepo conditionDetailsRepo = ConditionDetailsRepo(ApiService(http.Client()),);
+  final AdultUnwellRepo unwellRepo = AdultUnwellRepo(ApiService(http.Client()),);
   Bloc.observer = SimpleBlocObserver();
   runApp(MyApp(
     forgotPasswordRepo: forgotPasswordRepo,
@@ -49,6 +55,8 @@ void main() {
     practitionerProfileRepo:practitionerProfileRepo,
     emergencyContactRepo:emergencyContactRepo,
     hotlinesRepo:hotlineRepo,
+    adultUnwellRepo: unwellRepo,
+    conditionDetailsRepo: conditionDetailsRepo,
   ));
 }
 
@@ -59,7 +67,11 @@ class MyApp extends StatelessWidget {
   final PractitionerProfileRepo practitionerProfileRepo;
   final EmergencyContactRepo emergencyContactRepo;
   final HotlineRepo hotlinesRepo;
-  const MyApp({Key key, @required this.forgotPasswordRepo,@required this.hotlinesRepo,@required this.loginRepository,@required this.emergencyContactRepo,@required this.userProfileRepo,@required this.practitionerProfileRepo}) : super(key: key);
+  final ConditionDetailsRepo conditionDetailsRepo;
+  final AdultUnwellRepo adultUnwellRepo;
+  const MyApp({Key key, @required this.forgotPasswordRepo,@required this.adultUnwellRepo,
+    @required this.hotlinesRepo,@required this.loginRepository,
+    @required this.emergencyContactRepo,@required this.userProfileRepo,@required this.conditionDetailsRepo,@required this.practitionerProfileRepo}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -71,6 +83,8 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => PractitionerProfileBloc(practitionerProfileRepo: practitionerProfileRepo)),
         BlocProvider(create: (context) => EmergencyContactBloc(emergencyContactRepo: emergencyContactRepo)),
         BlocProvider(create: (context) => HotlinesBloc(hotlinesRepo: hotlinesRepo)),
+        BlocProvider(create: (context) => ConditionDetailsBloc(conditionDetailsRepo: conditionDetailsRepo)),
+        BlocProvider(create: (context) => AdultUnwellBloc(adultUnwellRepo: adultUnwellRepo),)
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
