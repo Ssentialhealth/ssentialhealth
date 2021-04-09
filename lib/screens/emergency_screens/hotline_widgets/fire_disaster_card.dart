@@ -23,7 +23,7 @@ class FireAndDisasterCard extends StatelessWidget {
                 return Container(
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Hotline(name: fireDisaster.name, location: fireDisaster.location, phone: fireDisaster.phoneNumbers[0]),
+                    child: Hotline(name: fireDisaster.name, location: fireDisaster.location, phones: fireDisaster.phoneNumbers),
                   ),
                 );
               },

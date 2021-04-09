@@ -8,9 +8,7 @@ import 'package:pocket_health/repository/userProfile_repo.dart';
 
 class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
   final UserProfileRepo userProfileRepo;
-  UserProfileBloc({@required this.userProfileRepo}) : super(UserProfileInitial()){
-    add(CreateUserProfile());
-  }
+  UserProfileBloc({@required this.userProfileRepo}) : super(UserProfileInitial());
 
   UserProfileState get initialState => UserProfileInitial();
 
@@ -24,6 +22,7 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
       try {
         final Profile profile = await userProfileRepo.createUserProfile(
           event.surname,
+          event.photo,
           event.phone,
           event.dob,
           event.gender,
@@ -40,13 +39,12 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
           event.drugAllergies,
           event.foodAllergies,
         );
-        if (profile != null) {
+
           yield UserProfileLoaded(profile);
-        } else {
-          yield UserProfileError();
-        }
+
       } catch (e) {
-        yield UserProfileError();
+        yield UserProfileError(e.toString());
+        print("Name:"+e.toString());
       }
     }
   }

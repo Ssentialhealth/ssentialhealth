@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/cupertino.dart';
 import 'package:pocket_health/screens/Authentication/sign_in_screen.dart';
 import 'package:pocket_health/screens/Authentication/sign_up_screen.dart';

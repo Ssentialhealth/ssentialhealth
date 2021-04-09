@@ -7,9 +7,7 @@ import 'package:pocket_health/repository/emergencyContactRepo.dart';
 
 class EmergencyContactBloc extends Bloc<EmergencyContactEvent,EmergencyContactState>{
   final EmergencyContactRepo emergencyContactRepo;
-  EmergencyContactBloc({@required this.emergencyContactRepo}) : super(EmergencyContactInitial()){
-    add(AddContacts());
-  }
+  EmergencyContactBloc({@required this.emergencyContactRepo}) : super(EmergencyContactInitial());
 
   EmergencyContactState get initialState => EmergencyContactInitial();
 
@@ -33,8 +31,6 @@ class EmergencyContactBloc extends Bloc<EmergencyContactEvent,EmergencyContactSt
         );
         if(emergencyContact != null) {
           yield EmergencyContactLoaded(emergencyContact);
-        }else{
-          yield EmergencyContactError();
         }
       }catch(e) {
         yield EmergencyContactError();

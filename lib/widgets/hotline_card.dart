@@ -8,12 +8,12 @@ class Hotline extends StatelessWidget {
     Key key,
     @required this.name,
     @required this.location,
-    @required this.phone,
+    @required this.phones,
     @required this.press,
   }) : super(key:key);
   final String name;
   final String location;
-  final String phone;
+  final List<String> phones;
   final Function press;
   @override
   Widget build(BuildContext context) {
@@ -44,15 +44,24 @@ class Hotline extends StatelessWidget {
               ),
             ],
           ),
-          GestureDetector(
-           onTap: press,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(phone,style: TextStyle(color: Colors.blue),)),
-            ),
-          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Align(
+                alignment: Alignment.centerLeft,
+                child:Container(
+                  height: 20,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: phones.length,
+                    itemBuilder: (context,index){
+                      final phone = phones[index];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal:8.0),
+                        child: Text(phone,style: TextStyle(color: Colors.lightBlueAccent),),
+                      );
+                    },
+                  ),
+                ))),
         ],
       ),
     );

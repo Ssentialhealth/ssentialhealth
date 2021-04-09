@@ -44,6 +44,9 @@ dependencies:
   url_launcher: ^5.4.5
   flutter_phone_direct_caller: ^1.0.1
   flutter_datetime_picker: ^1.5.0
+  image_picker: ^0.6.7+22
+  platform_alert_dialog: ^1.0.0+2
+
 
 flutter_icons:
   image_path: "assets/images/icons/launcher.png"

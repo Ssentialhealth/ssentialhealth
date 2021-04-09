@@ -20,4 +20,7 @@ class UserProfileLoaded extends UserProfileState {
   UserProfileLoaded(this.profile) : assert(profile != null);
 }
 
-class UserProfileError extends UserProfileState {}
+class UserProfileError extends UserProfileState {
+  final String errorMessage;
+  UserProfileError(this.errorMessage);
+}

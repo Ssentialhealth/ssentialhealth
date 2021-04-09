@@ -7,6 +7,7 @@ class UserProfileRepo {
 
   Future<Profile> createUserProfile(
       String surname,
+      String photo,
       String phone,
       String dob,
       String gender,
@@ -24,7 +25,7 @@ class UserProfileRepo {
       String foodAllergies,
       ) async {
     return await apiService.createProfile(
-      surname,phone,dob,gender,residence,country,blood,chronic,longTerm,date,condition,code,dissabilities,recreational,drugAllergies,foodAllergies
+      surname,photo,phone,dob,gender,residence,country,blood,chronic,longTerm,date,condition,code,dissabilities,recreational,drugAllergies,foodAllergies
     );
   }
 

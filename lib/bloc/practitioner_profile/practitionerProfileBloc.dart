@@ -7,9 +7,7 @@ import 'package:pocket_health/repository/practitionerProfileRepo.dart';
 
 class PractitionerProfileBloc extends Bloc<PractitionerProfileEvent,PractitionerProfileState> {
   final PractitionerProfileRepo practitionerProfileRepo;
-  PractitionerProfileBloc({@required this.practitionerProfileRepo}) : super(PractitionerProfileInitial()){
-    add(CreatePractitionerProfile());
-  }
+  PractitionerProfileBloc({@required this.practitionerProfileRepo}) : super(PractitionerProfileInitial());
 
   PractitionerProfileState get initialState => PractitionerProfileInitial();
 
@@ -31,20 +29,18 @@ class PractitionerProfileBloc extends Bloc<PractitionerProfileEvent,Practitioner
             event.speciality,
             event.affiliatedInstitution,
             event.operationTime,
-            event.onlineBooking,
-            event.inPerson,
-            event.followUp,
+            event.onlinePrice,
+            event.onlinePriceB,
+            event.onlinePriceC,
             event.personalPrice,
+            event.personalBPrice,
             event.followPrice,
-            event.onlinePrice
+            event.followBPrice
+
         );
-        if(practitionerProfile != null) {
           yield PractitionerProfileLoaded(practitionerProfile);
-        } else {
-          yield PractitionerProfileError();
-        }
       }catch (e) {
-        yield PractitionerProfileError();
+        yield PractitionerProfileError(e.toString());
       }
     }
   }

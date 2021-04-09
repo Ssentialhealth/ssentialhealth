@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pocket_health/screens/Authentication/sign_in_screen.dart';
 import 'package:pocket_health/screens/home/home.dart';
 import 'package:pocket_health/screens/home/home_screen.dart';
 import 'package:pocket_health/widgets/widget.dart';
@@ -6,6 +7,8 @@ import 'package:pocket_health/widgets/widget.dart';
 import '../Authentication/Authenticate.dart';
 
 class WaitScreen extends StatefulWidget {
+
+
   @override
   _WaitScreenState createState() => _WaitScreenState();
 }
@@ -34,6 +37,31 @@ class _WaitScreenState extends State<WaitScreen> {
                       ),
                     ],
                   )),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Create an Account ?", style: mediumTextStyle(),),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(
+                        builder: (context) => Authenticate()
+                    ));
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    child: Text("Sign Up",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Color(0xFF163C4D),
+                        fontSize: 17,
+                        decoration: TextDecoration.underline
+                    )
+                      ,),
+                  ),
+                )
+              ],
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,

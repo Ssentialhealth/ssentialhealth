@@ -65,35 +65,26 @@ class _HomeScreenState extends State<HomeScreen> {
                   height: 55,
                   child: Row(
                     children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                                width: 3,
-                                color: Colors.white
-                            ),
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          child: GestureDetector(
-                            onTap: ()async{
-                              _type = await getStringValuesSF();
-
-                              print(_type);
-                              if(_type == 'individual'){
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileScreen()));
-                              }else if(_type == 'health practitioner'){
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => PractitionerInfo()));
-                              }else{
-                                _showSnackBar("Login To Access This Feature");
-                              }
-                            },
-                            child: ClipRRect(
-                                borderRadius: BorderRadius.circular(30),
-                                child: Image.asset("assets/images/download.png", height: 50,)),
-                          ),
-                        ),
-                      ),
+                      // Padding(
+                      //   padding: const EdgeInsets.all(8.0),
+                      //   child: Container(
+                      //     decoration: BoxDecoration(
+                      //       border: Border.all(
+                      //           width: 3,
+                      //           color: Colors.white
+                      //       ),
+                      //       borderRadius: BorderRadius.circular(30),
+                      //     ),
+                      //     child: GestureDetector(
+                      //       onTap: ()async{
+                      //
+                      //       },
+                      //       child: ClipRRect(
+                      //           borderRadius: BorderRadius.circular(30),
+                      //           child: Image.asset("assets/images/download.png", height: 50,)),
+                      //     ),
+                      //   ),
+                      // ),
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -156,13 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-  void _showSnackBar(message) {
-    _scaffoldKey.currentState.showSnackBar(
-        SnackBar(
-          content: Text(message),
-        )
-    );
-  }
+
 }
 
 getStringValuesSF() async {

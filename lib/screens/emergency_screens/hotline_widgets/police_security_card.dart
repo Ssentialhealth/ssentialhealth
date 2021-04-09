@@ -23,7 +23,7 @@ class PoliceSecurityCard extends StatelessWidget {
                 return Container(
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Hotline(name: policeSecurity.name, location: policeSecurity.location, phone: policeSecurity.phoneNumbers[0]),
+                    child: Hotline(name: policeSecurity.name, location: policeSecurity.location, phones: policeSecurity.phoneNumbers),
                   ),
                 );
               },

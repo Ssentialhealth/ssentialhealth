@@ -12,13 +12,15 @@ import 'package:pocket_health/repository/loginRepo.dart';
 import 'package:pocket_health/repository/practitionerProfileRepo.dart';
 import 'package:pocket_health/repository/userProfile_repo.dart';
 import 'package:pocket_health/screens/Authentication/Authenticate.dart';
+import 'package:pocket_health/screens/boarding/splash_screen.dart';
 import 'package:pocket_health/screens/boarding/wait_screen.dart';
 import 'package:pocket_health/screens/emergency_screens/emergency_hotlines_screen.dart';
-import 'package:pocket_health/screens/emergency_screens/hotlines_screen.dart';
+import 'package:pocket_health/screens/emergency_screens/hotlines_landing_screen.dart';
 import 'package:pocket_health/screens/home/home.dart';
 import 'package:pocket_health/screens/home/home_screen.dart';
 import 'package:pocket_health/services/api_service.dart';
 import 'package:http/http.dart' as http;
+import 'package:pocket_health/simple_bloc_observer.dart';
 import 'bloc/forgotPassword/forgotPasswordBloc.dart';
 
 
@@ -39,7 +41,7 @@ void main() {
   final PractitionerProfileRepo practitionerProfileRepo = PractitionerProfileRepo(ApiService(http.Client()),);
   final EmergencyContactRepo emergencyContactRepo = EmergencyContactRepo(ApiService(http.Client()),);
   final HotlineRepo hotlineRepo = HotlineRepo(ApiService(http.Client()),);
-
+  Bloc.observer = SimpleBlocObserver();
   runApp(MyApp(
     forgotPasswordRepo: forgotPasswordRepo,
     loginRepository: loginRepository,
@@ -78,7 +80,7 @@ class MyApp extends StatelessWidget {
           scaffoldBackgroundColor: Colors.white
         ),
 
-        home: WaitScreen(),
+        home: SplashScreen(),
 
       ),
     );

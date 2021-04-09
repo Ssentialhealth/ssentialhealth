@@ -1,4 +1,5 @@
 class PractitionerProfile {
+  String user_id;
   String surname;
   String phoneNumber;
   String location;
@@ -9,6 +10,7 @@ class PractitionerProfile {
   PractitionerProfile(
       {this.surname,
         this.phoneNumber,
+        this.user_id,
         this.location,
         this.region,
         this.healthInfo,
@@ -16,6 +18,7 @@ class PractitionerProfile {
 
   PractitionerProfile.fromJson(Map<String, dynamic> json) {
     surname = json['surname'];
+    user_id = json['user_id'];
     phoneNumber = json['phone_number'];
     location = json['location'];
     region = json['region'];
@@ -30,6 +33,7 @@ class PractitionerProfile {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['surname'] = this.surname;
+    data['user_id'] = this.user_id;
     data['phone_number'] = this.phoneNumber;
     data['location'] = this.location;
     data['region'] = this.region;

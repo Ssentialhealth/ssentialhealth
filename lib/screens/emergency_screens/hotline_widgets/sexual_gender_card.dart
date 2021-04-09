@@ -23,7 +23,7 @@ class SexualGenderCard extends StatelessWidget {
                 return Container(
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Hotline(name: sexualGender.name, location: sexualGender.location, phone: sexualGender.phoneNumbers[0]),
+                    child: Hotline(name: sexualGender.name, location: sexualGender.location, phones: sexualGender.phoneNumbers),
                   ),
                 );
               },

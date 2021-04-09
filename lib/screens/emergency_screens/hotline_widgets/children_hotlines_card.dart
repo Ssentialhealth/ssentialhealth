@@ -26,7 +26,7 @@ class ChildrenHotlineCard extends StatelessWidget {
                 return Container(
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Hotline(name: children.name, location: children.location, phone: children.phoneNumbers[0]),
+                    child: Hotline(name: children.name, location: children.location, phones: children.phoneNumbers),
                   ),
                 );
               },

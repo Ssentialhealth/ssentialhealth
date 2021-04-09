@@ -9,7 +9,9 @@ abstract class UserProfileEvent extends Equatable{
 }
 
 class CreateUserProfile extends UserProfileEvent {
+
   final String surname;
+  final String photo;
   final String phone;
   final String dob;
   final String gender;
@@ -27,6 +29,7 @@ class CreateUserProfile extends UserProfileEvent {
   final String foodAllergies;
   CreateUserProfile({
     @required this.surname,
+    @required this.photo,
     @required this.phone,
     @required this.dob,
     @required this.gender,
@@ -43,6 +46,10 @@ class CreateUserProfile extends UserProfileEvent {
     @required this.drugAllergies,
     @required this.foodAllergies,
   });
+
+}
+
+class ErrorCreatingUser extends UserProfileEvent{
 
 }
 

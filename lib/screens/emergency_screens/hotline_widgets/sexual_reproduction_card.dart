@@ -23,7 +23,7 @@ class SexualReproductionCard extends StatelessWidget {
                 return Container(
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Hotline(name: insurer.name, location: insurer.location, phone: insurer.phoneNumbers[0]),
+                    child: Hotline(name: insurer.name, location: insurer.location, phones: insurer.phoneNumbers),
                   ),
                 );
               },

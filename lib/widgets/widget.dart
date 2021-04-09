@@ -49,6 +49,27 @@ InputDecoration dateFieldInputDecoration(String hintText){
 
 }
 
+InputDecoration lockFieldInputDecoration(String hintText){
+  return InputDecoration(
+    contentPadding: new EdgeInsets.symmetric(vertical: 10.0,horizontal: 10.0),
+      hintText: hintText,
+      prefixIcon: Icon(Icons.lock),
+      hintStyle: TextStyle(
+        color: Colors.black,
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(5.0)),
+        borderSide: BorderSide(color: Colors.black),
+      ),
+      enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+          borderSide: BorderSide(color: Colors.black)
+      ),
+
+  );
+
+}
+
 InputDecoration inputFieldInputDecoration(String hintText){
   return InputDecoration(
     contentPadding: new EdgeInsets.symmetric(vertical: 10.0,horizontal: 10.0),

@@ -27,8 +27,9 @@ class HotlinesCard extends StatelessWidget {
                 return Container(
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Hotline(name: ambulance.name, location: ambulance.location, phone: ambulance.phoneNumbers[0],press: (){
-                      _callNumber(ambulance.phoneNumbers[0]);
+                    child: Hotline(name: ambulance.name, location: ambulance.location,
+                      phones: ambulance.phoneNumbers,
+                      press: (){
                     },),
                   ),
                 );

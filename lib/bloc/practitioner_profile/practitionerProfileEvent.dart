@@ -10,29 +10,33 @@ abstract class PractitionerProfileEvent extends Equatable{
 
 class CreatePractitionerProfile extends PractitionerProfileEvent {
 
+  //General//
   final String surname;
   final String location;
   final String region;
   final String phone;
+  //Health//
   final String healthInstitution;
   final String careType;
   final String practitioner;
   final String speciality;
   final String affiliatedInstitution;
+  //Provider//
   final String operationTime;
-  final String onlineBooking;
+  //online Booking//
   final String onlinePrice;
-  final String inPerson;
+  final String onlinePriceB;
+  final String onlinePriceC;
+  //InPerson Booking//
   final String personalPrice;
-  final String followUp;
+  final String personalBPrice;
+  //Follow Up//
   final String followPrice;
+  final String followBPrice;
 
 
   CreatePractitionerProfile({
     @required this.surname,
-    @required this.onlinePrice,
-    @required this.personalPrice,
-    @required this.followPrice,
     @required this.location,
     @required this.region,
     @required this.phone,
@@ -42,11 +46,16 @@ class CreatePractitionerProfile extends PractitionerProfileEvent {
     @required this.speciality,
     @required this.affiliatedInstitution,
     @required this.operationTime,
-    @required this.onlineBooking,
-    @required this.inPerson,
-    @required this.followUp,
+    @required this.onlinePrice,
+    @required this.onlinePriceB,
+    @required this.onlinePriceC,
+    @required this.personalPrice,
+    @required this.personalBPrice,
+    @required this.followPrice,
+    @required this.followBPrice,
 
   });
 
 
 }
+

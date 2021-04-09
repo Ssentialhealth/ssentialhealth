@@ -119,7 +119,6 @@ class _SignInScreenState extends State<SignInScreen> {
                         style: simpleTextStyle(),
                         decoration: textFieldInputDecoration("Pin")
                     ),
-
                     SizedBox(height: 8,),
                     GestureDetector(
                       onTap: (){
@@ -139,7 +138,9 @@ class _SignInScreenState extends State<SignInScreen> {
                     ),
                     GestureDetector(
                       onTap: (){
-                       BlocProvider.of<LoginBloc>(context).add(SendLoginPayLoad(email: emailTextEditingController.text,password: passWordTextEditingController.text));
+                        if(formKey.currentState.validate()){
+                          BlocProvider.of<LoginBloc>(context).add(SendLoginPayLoad(email: emailTextEditingController.text,password: passWordTextEditingController.text));
+                        }
                       },
                       child: Container(
                         alignment: Alignment.center,
@@ -155,7 +156,6 @@ class _SignInScreenState extends State<SignInScreen> {
                             )
                         ),
                         child: BlocBuilder<LoginBloc , LoginState>(
-
                           builder:(context,state){
                             if(state is LoginLoading){
                               return CircularProgressIndicator();
@@ -205,10 +205,6 @@ class _SignInScreenState extends State<SignInScreen> {
     );
 
   }
-
-
-
-
 
 
   void _login(BuildContext buildContext){

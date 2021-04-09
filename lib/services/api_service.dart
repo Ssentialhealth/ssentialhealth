@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
+import 'package:pocket_health/bloc/profile/userProfileBloc.dart';
 import 'package:pocket_health/models/ForgotPassword.dart';
 import 'package:pocket_health/models/PractitionerProfile.dart';
 import 'package:pocket_health/models/emergency_contact.dart';
@@ -80,8 +82,8 @@ class ApiService {
       region, phone,
       healthInstitution, careType,
       practitioner, speciality, affiliatedInstitution,
-      operationTime, onlineBooking, inPerson, followUp, onlinePrice,
-      personalPrice, followPrice) async {
+      operationTime,onlinePrice,
+      personalPrice, followPrice,onlinePriceB,onlinePriceC, personalBPrice,followBPrice) async {
     Map<String, dynamic> healthInfo = Map();
     healthInfo['health_institution'] = healthInstitution;
     healthInfo['care_type'] = careType;
@@ -91,25 +93,22 @@ class ApiService {
 
     Map<String, dynamic> onlineBook = Map();
     onlineBook['upto_15_mins'] = onlinePrice;
-    onlineBook['upto_30_mins'] = onlinePrice;
-    onlineBook['upto_1_hour'] = onlinePrice;
+    onlineBook['upto_30_mins'] = onlinePriceB;
+    onlineBook['upto_1_hour'] = onlinePriceC;
 
     Map<String, dynamic> inPersonBook = Map();
-    inPersonBook['per_visit'] = onlinePrice;
-    inPersonBook['per_hour'] = onlinePrice;
+    inPersonBook['per_visit'] = personalPrice;
+    inPersonBook['per_hour'] = personalBPrice;
 
     Map<String, dynamic> followUpBook = Map();
-    followUpBook['per_visit'] = onlinePrice;
-    followUpBook['per_hour'] = onlinePrice;
+    followUpBook['per_visit'] = followPrice;
+    followUpBook['per_hour'] = followBPrice;
 
     Map<String, dynamic> ratesInfo = Map();
     ratesInfo['online_booking'] = onlineBook;
     ratesInfo['in_person_booking'] = inPersonBook;
     ratesInfo['follow_up_visit'] = followUpBook;
 
-
-    Map<String, dynamic> follow = Map();
-    follow['follow_up_visit'] = followUp;
 
     Map<String, dynamic> _payLoad = Map();
     _payLoad['surname'] = surname;
@@ -132,13 +131,13 @@ class ApiService {
     print(_payLoad);
 
     if (response.statusCode != 200) {
-      throw Exception('error creating profile');
+      throw Exception(response.body);
     }
     final createProfileJson = jsonDecode(response.body);
     return PractitionerProfile.fromJson(createProfileJson);
   }
 
-  Future<Profile> createProfile(String surname, phone,
+  Future<Profile> createProfile(String surname, phone,photo,
       dob, gender,
       residence, country,
       blood, chronic, longTerm,
@@ -159,7 +158,8 @@ class ApiService {
     List<String> fAllergies = [data['recreational_drug_use'] = foodAllergies];
 
     _payLoad['surame'] = surname;
-    _payLoad['phone_number'] = code + phone;
+    _payLoad['profile_img_url'] = phone;
+    _payLoad['phone_number'] = code + photo;
     _payLoad['date_of_birth'] = dob;
     _payLoad['gender'] = gender;
     _payLoad['residence'] = residence;
@@ -177,6 +177,7 @@ class ApiService {
     final response = await httpClient.post(
         Uri.encodeFull(createProfileEndpoint),
         headers: {
+          'Accept': 'application/json',
           "Content-Type": "application/json",
           "Authorization": "Bearer " + _token
         },
@@ -187,8 +188,15 @@ class ApiService {
     print(_payLoad);
 
     if (response.statusCode != 200) {
-      throw Exception('error creating profile');
+      throw Exception("Please Enter Fill all the Fields");
     }
+
+    if(!response.body.startsWith('{"id":')){
+      print("No ID");
+    }else{
+      print("NO");
+    }
+
     final createProfileJson = jsonDecode(response.body);
     return Profile.fromJson(createProfileJson);
   }
@@ -227,7 +235,7 @@ class ApiService {
       throw Exception('Error Occurred');
     } else {
       addStringToSF(loginModel.access, loginModel.user.userCategory,
-          loginModel.user.fullNames);
+          loginModel.user.fullNames,loginModel.user.email);
     }
     final loginJson = jsonDecode(response.body);
     return LoginModel.fromJson(loginJson);
@@ -236,11 +244,21 @@ class ApiService {
 
 }
 
-addStringToSF(String value,String userType,String fullName) async {
+addStringToSF(String value,String userType,String fullName,String email) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
+  User user = User(email: email,fullNames: fullName);
+
+  // Map<String, dynamic> map ={
+  //   'name': user.fullNames,
+  //   'email': user.email,
+  // };
+  // String rawJson = jsonEncode(map);
+  // prefs.setString('userInfo', rawJson);
+
   prefs.setString('token', value);
   prefs.setString('userType', userType);
   prefs.setString('fullName', fullName);
+  prefs.setString('email', email);
 }
 
 getStringValuesSF() async {

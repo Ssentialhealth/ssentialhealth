@@ -20,4 +20,7 @@ class PractitionerProfileLoaded extends PractitionerProfileState {
   PractitionerProfileLoaded(this.practitionerProfile): assert(practitionerProfile != null);
 }
 
-class PractitionerProfileError extends PractitionerProfileState {}
+class PractitionerProfileError extends PractitionerProfileState {
+  final String errorMessage;
+  PractitionerProfileError(this.errorMessage);
+}

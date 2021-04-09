@@ -33,6 +33,17 @@ class _HotlineScreenState extends State<HotlineScreen> {
         title: Text("Emergency Hotlines"),
         backgroundColor: Color(0xFF00FFFF),
         centerTitle: true,
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(
+              Icons.settings,
+              color: Colors.black,
+            ),
+            onPressed: () {
+              // do something
+            },
+          )
+        ],
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -127,6 +138,35 @@ class _HotlineScreenState extends State<HotlineScreen> {
                     divider(),
                     HotlineItem(
                         text: "Sexual and Reproductive Health Hotlines",
+                        press: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => SexualReproduction()));
+                        }
+                    ),
+                    divider(),
+                    //Emergency Contact 1
+                    SizedBox(height: 8,),
+                    divider(),
+                    HotlineItem(
+                        text: "Health Emergency 1",
+                        press: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => SexualReproduction()));
+                        }
+                    ),
+                    divider(),
+                    //Emergency Contact 2
+                    SizedBox(height: 8,),
+                    divider(),
+                    HotlineItem(
+                        text: "Life In Danger Emergency 2 ",
+                        press: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => SexualReproduction()));
+                        }
+                    ),
+                    divider(),
+                    SizedBox(height: 8,),
+                    divider(),
+                    HotlineItem(
+                        text: "Emergency Health Information",
                         press: (){
                           Navigator.push(context, MaterialPageRoute(builder: (context) => SexualReproduction()));
                         }

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_health/screens/emergency_screens/emergency_hotlines_screen.dart';
-import 'package:pocket_health/screens/emergency_screens/hotlines_screen.dart';
+import 'package:pocket_health/screens/emergency_screens/hotlines_landing_screen.dart';
 import 'package:pocket_health/screens/home/account_page.dart';
 import 'package:pocket_health/screens/home/doctor_consult.dart';
+import 'package:pocket_health/screens/profile/profile_screen.dart';
 
 import 'home_screen.dart';
 
@@ -18,7 +19,7 @@ class _HomeState extends State<Home> {
     HomeScreen(),
     HotlineScreen(),
     DoctorConsult(),
-    AccountScreen()
+    ProfileScreen()
   ];
 
   void _onItemTapped(int index) {

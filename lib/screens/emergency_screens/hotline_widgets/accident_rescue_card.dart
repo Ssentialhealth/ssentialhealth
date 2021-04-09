@@ -23,7 +23,7 @@ class AccidentRescueCard extends StatelessWidget {
                 return Container(
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Hotline(name: accident.name, location: accident.location, phone: accident.phoneNumbers[0]),
+                    child: Hotline(name: accident.name, location: accident.location, phones: accident.phoneNumbers),
                   ),
                 );
               },

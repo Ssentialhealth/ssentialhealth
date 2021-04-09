@@ -12,18 +12,18 @@ class SuicideMentalCard extends StatelessWidget {
         if(state is HotlinesInitial){
           return Container(color: Colors.black,height: 300,);
         }if(state is HotlinesLoaded){
-          print(state.hotlines.healthInsurer.length);
+          print(state.hotlines.suicideAndMental.length);
           return Container(
             height: 470,
             child: ListView.builder(
               shrinkWrap: true,
-              itemCount: state.hotlines.healthInsurer.length,
+              itemCount: state.hotlines.suicideAndMental.length,
               itemBuilder: (BuildContext context,index){
-                final suicide = state.hotlines.healthInsurer[index];
+                final suicide = state.hotlines.suicideAndMental[index];
                 return Container(
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Hotline(name: suicide.name, location: suicide.location, phone: suicide.phoneNumbers[0]),
+                    child: Hotline(name: suicide.name, location: suicide.location, phones: suicide.phoneNumbers),
                   ),
                 );
               },
