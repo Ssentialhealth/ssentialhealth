@@ -310,4 +310,3 @@ getTypeValuesSF() async {
   return stringValue;
 }
 
-

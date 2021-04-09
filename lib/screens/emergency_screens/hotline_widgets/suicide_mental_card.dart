@@ -12,7 +12,7 @@ class SuicideMentalCard extends StatelessWidget {
         if(state is HotlinesInitial){
           return Container(color: Colors.black,height: 300,);
         }if(state is HotlinesLoaded){
-          print(state.hotlines.suicideAndMental.length);
+          print(state.hotlines.healthInsurer.length);
           return Container(
             height: 470,
             child: ListView.builder(
