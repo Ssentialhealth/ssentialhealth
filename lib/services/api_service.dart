@@ -137,7 +137,9 @@ class ApiService {
     return PractitionerProfile.fromJson(createProfileJson);
   }
 
-  Future<Profile> createProfile(String surname, phone,photo,
+  Future<Profile> createProfile(
+    String surname,
+     phone,photo,
       dob, gender,
       residence, country,
       blood, chronic, longTerm,

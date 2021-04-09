@@ -153,6 +153,7 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.1"
+<<<<<<< HEAD
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -160,6 +161,8 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.11"
+=======
+>>>>>>> e64468689f0b47256df802a54ac5154e17738624
   flutter_session:
     dependency: "direct main"
     description:
