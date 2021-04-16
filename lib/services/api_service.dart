@@ -11,6 +11,7 @@ import 'package:pocket_health/models/conditionDetailsModel.dart';
 import 'package:pocket_health/models/emergency_contact.dart';
 import 'package:pocket_health/models/hotlines.dart';
 import 'package:pocket_health/models/loginModel.dart';
+import 'package:pocket_health/models/organDetailsModel.dart';
 import 'package:pocket_health/models/organsModel.dart';
 import 'package:pocket_health/models/profile.dart';
 import 'package:pocket_health/utils/constants.dart';
@@ -70,6 +71,16 @@ class ApiService {
 
     return organsModelFromJson(response.body);
 
+  }
+
+  //Specific Organ Details Fetch Endpoint
+  Future<OrganDetailsModel> fetchOrganDetails(int id)async{
+    final response = await this.httpClient.get("https://ssential.herokuapp.com/api/conditions/organs/$id");
+    if(response.statusCode != 200){
+      throw Exception('Error Fetching Condition Details');
+    }
+    print(response.body);
+    return organDetailsModelFromJson(response.body);
   }
 
   //User Emergency Contacts Endpoints Fetch

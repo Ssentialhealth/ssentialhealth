@@ -2,10 +2,10 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pocket_health/bloc/login/loginEvent.dart';
-import 'package:pocket_health/bloc/login/loginState.dart';
 import 'package:pocket_health/models/loginModel.dart';
 import 'package:pocket_health/repository/loginRepo.dart';
-import 'package:pocket_health/screens/home/home_screen.dart';
+
+import 'loginState.dart';
 
 class LoginBloc extends Bloc<LoginEvent,LoginState> {
   final LoginRepository loginRepository;
