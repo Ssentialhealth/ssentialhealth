@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_health/models/adult_unwell_model.dart';
-import 'package:pocket_health/screens/AdultUnwell/adult_unwell_list.dart';
+import 'package:pocket_health/screens/AdultUnwell/adult_unwell_screens/adult_unwell_list.dart';
 import 'package:pocket_health/screens/AdultUnwell/organs/organs.dart';
 import 'package:pocket_health/widgets/adult_unwell_menu_items.dart';
 import 'package:pocket_health/widgets/widget.dart';

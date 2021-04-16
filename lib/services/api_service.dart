@@ -11,6 +11,7 @@ import 'package:pocket_health/models/conditionDetailsModel.dart';
 import 'package:pocket_health/models/emergency_contact.dart';
 import 'package:pocket_health/models/hotlines.dart';
 import 'package:pocket_health/models/loginModel.dart';
+import 'package:pocket_health/models/organsModel.dart';
 import 'package:pocket_health/models/profile.dart';
 import 'package:pocket_health/utils/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -24,6 +25,7 @@ class ApiService {
 
   ApiService(this.httpClient) : assert(httpClient != null);
 
+  //Emergency Endpoint Hotlines Fetch
   Future<Hotlines> fetchHotlines(String country)async {
     final response = await this.httpClient.get("https://ssential.herokuapp.com/api/emergency/hotlines?country=$country");
     if(response.statusCode != 200){
@@ -35,15 +37,7 @@ class ApiService {
     return hotlinesFromJson(hotlinesJson);
   }
 
-  Future<ConditionDetails> fetchConditionDetails(int id)async{
-    final response = await this.httpClient.get("https://ssential.herokuapp.com/api/conditions/adult_unwell/$id");
-    if(response.statusCode != 200){
-      throw Exception('Error Fetching Condition Details');
-    }
-    print(response.body);
-    return conditionDetailsFromJson(response.body);
-  }
-
+  //All Symptoms Endpoint Fetch
   Future<List<AdultUnwellModel>> fetchConditions()async{
     final response = await this.httpClient.get("https://ssential.herokuapp.com/api/conditions/adult_unwell");
     if(response.statusCode != 200){
@@ -55,7 +49,30 @@ class ApiService {
     return adultUnwellModelFromJson(response.body);
   }
 
+  //Symptoms Endpoint Details Fetch by ID
+  Future<ConditionDetails> fetchConditionDetails(int id)async{
+    final response = await this.httpClient.get("https://ssential.herokuapp.com/api/conditions/adult_unwell/$id");
+    if(response.statusCode != 200){
+      throw Exception('Error Fetching Condition Details');
+    }
+    print(response.body);
+    return conditionDetailsFromJson(response.body);
+  }
 
+  //All Organs Endpoint
+  Future<List<OrgansModel>> fetchAllOrgans()async{
+    final response = await this.httpClient.get("https://ssential.herokuapp.com/api/conditions/organs/");
+    if(response.statusCode != 200){
+      throw Exception('Error Fetching Organs');
+    }
+
+    print(response.body);
+
+    return organsModelFromJson(response.body);
+
+  }
+
+  //User Emergency Contacts Endpoints Fetch
   Future<EmergencyContact> addContacts(String ambulanceName, countryCode,
       ambulancePhone, insurerName,
       insuranceNumber, insurerNumber,
@@ -101,6 +118,7 @@ class ApiService {
     return EmergencyContact.fromJson(createProfileJson);
   }
 
+  //Health Practitioner Profile Creation Endpoint
   Future<PractitionerProfile> createPractitioner(String surname, location,
       region, phone,
       healthInstitution, careType,
@@ -160,6 +178,7 @@ class ApiService {
     return PractitionerProfile.fromJson(createProfileJson);
   }
 
+  //Individual User Profile Creation Endpoint
   Future<Profile> createProfile(
     String surname,
      phone,photo,
@@ -226,6 +245,7 @@ class ApiService {
     return Profile.fromJson(createProfileJson);
   }
 
+  //User Reset Password Endpoint
   Future<ForgotPassword> resetPassword(String email) async {
     Map<String, String> _payLoad = Map();
     _payLoad['email'] = email;
@@ -244,6 +264,7 @@ class ApiService {
     return ForgotPassword.fromJson(resetPasswordJson);
   }
 
+  //User Login Endpoint
   Future<LoginModel> login(String email, String password) async {
     Map<String, String> payLoad = Map();
     payLoad['email'] = email;

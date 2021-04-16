@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pocket_health/screens/AdultUnwell/organs_list.dart';
+import 'package:pocket_health/screens/AdultUnwell/organs/organs_list.dart';
 import 'package:pocket_health/widgets/adult_unwell_menu_items.dart';
 import 'package:pocket_health/widgets/widget.dart';
 

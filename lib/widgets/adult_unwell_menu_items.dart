@@ -18,7 +18,7 @@ class AdultUnwellMenuItems extends StatelessWidget{
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Text(text,style: mediumTextStyle(),),
+                Text(text,style: mediumTextStyle(),overflow: TextOverflow.ellipsis,),
                 Icon(Icons.arrow_forward_ios_outlined,color: Color(0xFF00FFFF),size: 18.0,),
               ],
             ),

@@ -4,7 +4,7 @@ import 'package:pocket_health/bloc/adult_unwell/adultUnwellBloc.dart';
 import 'package:pocket_health/bloc/adult_unwell/adultUnwellState.dart';
 import 'package:pocket_health/bloc/conditionDetails/conditionDetailsBloc.dart';
 import 'package:pocket_health/bloc/conditionDetails/conditionDetailsEvent.dart';
-import 'package:pocket_health/screens/AdultUnwell/conditionDetailsScreen.dart';
+import 'package:pocket_health/screens/AdultUnwell/condition_details/conditionDetailsScreen.dart';
 import 'package:pocket_health/widgets/adult_unwell_menu_items.dart';
 
 class AdultUnwellCard extends StatelessWidget {
