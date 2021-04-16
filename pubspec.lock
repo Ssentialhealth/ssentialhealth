@@ -160,6 +160,10 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.11"
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 30518b7af27c09da17b09e0b8c28f7020584173c
   flutter_screenutil:
     dependency: "direct main"
     description:
@@ -167,6 +171,11 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.0.4+1"
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> b224c000d1bef1a09c984ad1d536111fc4ff8abb
+>>>>>>> 30518b7af27c09da17b09e0b8c28f7020584173c
   flutter_session:
     dependency: "direct main"
     description:
