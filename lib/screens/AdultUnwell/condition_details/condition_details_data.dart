@@ -45,9 +45,10 @@ class DetailsData extends StatelessWidget {
                     ),
                     SizedBox(height: 12,),
                     Container(
-                      height: 100.h,
+                      constraints: BoxConstraints(minHeight: 10.h),
                       child: ListView.builder(
                         shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
                         itemCount: state.conditionDetails.commonManagement.length,
                         itemBuilder: (BuildContext context,index){
                         final accident = state.conditionDetails.commonManagement[index];
@@ -72,16 +73,17 @@ class DetailsData extends StatelessWidget {
                     ),
                     SizedBox(height: 12,),
                     Container(
-                      height: 170.h,
+                      constraints: BoxConstraints(minHeight: 10.h),
                       child: ListView.builder(
                         shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
                         itemCount: state.conditionDetails.possibleCausingConditions.length,
                         itemBuilder: (BuildContext context,index){
                           final accident = state.conditionDetails.possibleCausingConditions[index];
                           return Container(
                               child: Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: Text(accident)
+                                  child: Text("• "+accident)
 
                               )
                           );

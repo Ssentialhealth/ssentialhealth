@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pocket_health/bloc/organDetails/organDetailsBloc.dart';
+import 'package:pocket_health/bloc/organDetails/organDetailsEvent.dart';
+import 'package:pocket_health/bloc/organs/organsBloc.dart';
+import 'package:pocket_health/bloc/organs/organsState.dart';
 import 'package:pocket_health/screens/AdultUnwell/organs/organs_list.dart';
 import 'package:pocket_health/widgets/adult_unwell_menu_items.dart';
 import 'package:pocket_health/widgets/widget.dart';
+
+import 'organDetailsScreen.dart';
 
 class Organs extends StatefulWidget {
   @override
@@ -9,62 +16,9 @@ class Organs extends StatefulWidget {
 }
 
 class _OrgansState extends State<Organs> {
-  final   List<String> organs = [
-    "Head, Eyes and the Nerves system",
-    "Ear, Nose and Throat System",
-    "Stomach and Digestive System",
-    "Chest, Heart and Circulation system",
-    "Urination and Reproductive systems",
-    "Muscle, Bone and Connective system",
-    "Skin, Hair and Mucous membranes",
-    "Injuries, Trauma",
-    "Drugs & Toxins Poisoning",
-    "Infections",
-    "Burn and Electrocution",
-    "Mental,Behavioral and social conditions",
-    "Tumors, malignancies",
-    "Autoimmune and allergy conditions",
-    "Metabolic and Hormone conditions",
-    "Blood conditions",
-    "Vascular (blood vessel) conditions ",
-    "Congenital and genetic conditions ",
-    "Degenerative conditions",
-    "Parasites",
-    "Others",
 
-  ];
-  var items = List<String>();
-  TextEditingController editingController =  TextEditingController();
+  String textValue;
 
-  @override
-  void initState() {
-    items.addAll(organs);
-    super.initState();
-  }
-
-  void filterSearchResults(String query) {
-    List<String> dummySearchList = List<String>();
-    dummySearchList.addAll(organs);
-    if(query.isNotEmpty) {
-      List<String> dummyListData = List<String>();
-      dummySearchList.forEach((item) {
-        if(item.contains(query)) {
-          dummyListData.add(item);
-        }
-      });
-      setState(() {
-        items.clear();
-        items.addAll(dummyListData);
-      });
-      return;
-    } else {
-      setState(() {
-        items.clear();
-        items.addAll(organs);
-      });
-    }
-
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,30 +30,116 @@ class _OrgansState extends State<Organs> {
         centerTitle: true,
       ),
       body: Container(
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextField(
-                      controller: editingController,
-                      cursorColor: Colors.grey,
-                      decoration: searchFieldInputDecoration("Search main affected organ"),
-                      onChanged: (value){
-                        filterSearchResults(value);
+        child: BlocBuilder<OrgansBloc,OrgansState>(
+          builder: (context,state){
+            if(state is OrgansLoaded){
+
+              print(textValue);
+
+              // void filterSearchResults(String query) {
+              //   List<String> dummySearchList = List<String>();
+              //   dummySearchList.addAll(organsList.name);
+              //   if(query.isNotEmpty) {
+              //     List<String> dummyListData = List<String>();
+              //     dummySearchList.forEach((item) {
+              //       if(item.contains(query)) {
+              //         dummyListData.add(item);
+              //       }
+              //     });
+              //     setState(() {
+              //       items.clear();
+              //       items.addAll(dummyListData);
+              //     });
+              //     return;
+              //   } else {
+              //     setState(() {
+              //       items.clear();
+              //       items.addAll(organs);
+              //     });
+              //   }
+              //
+              // }
+              return Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: TextField(
+                            cursorColor: Colors.grey,
+                            decoration: searchFieldInputDecoration("Search main affected organ"),
+                            onChanged: (value){
+                              setState(() {
+                                textValue = value;
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  textValue == null ?
+                  Expanded(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: state.organsModel.length,
+                      itemBuilder: (BuildContext context,index){
+                        final organs = state.organsModel[index];
+
+
+                        return Container(
+                          child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: AdultUnwellMenuItems(text: organs.name,
+                                press: ()async{
+                                  BlocProvider.of<OrgansDetailsBloc>(context).add(FetchOrganDetails(id: organs.id));
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => OrganDetailsScreen(title: organs.name,)));
+
+                                },
+                              )
+                          ),
+                        );
                       },
                     ),
-                  ),
-                ),
-              ],
-            ),
-            Expanded(
-                child: OrgansCard()
-            ),
+                  ) :  Expanded(
+                    child:
+                   state.organsModel.where((element) => element.name.contains(textValue)).toList().length != 0 ?
+                    ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: state.organsModel.where((element) => element.name.contains(textValue)).toList().length,
+                      itemBuilder: (BuildContext context,index){
+                        final list = state.organsModel.where((element) => element.name.contains(textValue)).toList();
+                        final filterOrgans = list[index];
 
-          ],
+                        return Container(
+                          child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: AdultUnwellMenuItems(text: filterOrgans.name,
+                                press: ()async{
+                                  BlocProvider.of<OrgansDetailsBloc>(context).add(FetchOrganDetails(id: filterOrgans.id));
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => OrganDetailsScreen(title: filterOrgans.name,)));
+
+                                },
+                              )
+                          ),
+                        );
+                      },
+                    ): Center(child: Text("$textValue Is Not Available"))
+                  )
+
+                ],
+              );
+            }
+            return Center(
+              child: Container(
+                  child: CircularProgressIndicator(backgroundColor: Colors.lightBlueAccent,)
+              ),
+            );
+          }
+
+
+
         ),
       ),
     );

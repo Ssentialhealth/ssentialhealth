@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pocket_health/bloc/organDetails/organDetailsBloc.dart';
+import 'package:pocket_health/bloc/organDetails/organDetailsEvent.dart';
 import 'package:pocket_health/bloc/organs/organsBloc.dart';
 import 'package:pocket_health/bloc/organs/organsState.dart';
 import 'package:pocket_health/widgets/adult_unwell_menu_items.dart';
+
+import 'organDetailsScreen.dart';
 
 class OrgansCard extends StatelessWidget {
   @override
@@ -25,8 +29,8 @@ class OrgansCard extends StatelessWidget {
                         padding: const EdgeInsets.all(8.0),
                         child: AdultUnwellMenuItems(text: organs.name,
                           press: ()async{
-                            // BlocProvider.of<ConditionDetailsBloc>(context).add(FetchDetails(id: accident.id));
-                            // Navigator.push(context, MaterialPageRoute(builder: (context) => ConditionDetailsScreen(title: accident.name,)));
+                            BlocProvider.of<OrgansDetailsBloc>(context).add(FetchOrganDetails(id: organs.id));
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => OrganDetailsScreen(title: organs.name,)));
 
                           },
                         )

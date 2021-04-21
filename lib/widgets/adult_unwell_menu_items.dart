@@ -18,8 +18,11 @@ class AdultUnwellMenuItems extends StatelessWidget{
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Text(text,style: mediumTextStyle(),overflow: TextOverflow.ellipsis,),
-                Icon(Icons.arrow_forward_ios_outlined,color: Color(0xFF00FFFF),size: 18.0,),
+                Expanded(child: Text(text,overflow: TextOverflow.ellipsis,style: mediumTextStyle())),
+                Padding(
+                  padding:  EdgeInsets.symmetric(horizontal:5.0),
+                  child: Icon(Icons.arrow_forward_ios_outlined,color: Color(0xFF00FFFF),size: 18.0,),
+                ),
               ],
             ),
             Divider(color: Color(0xFFC6C6C6),indent: 1,endIndent: 1,),
