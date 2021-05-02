@@ -7,10 +7,14 @@ import 'package:pocket_health/bloc/conditionDetails/conditionDetailState.dart';
 import 'package:pocket_health/bloc/conditionDetails/conditionDetailsBloc.dart';
 import 'package:pocket_health/bloc/conditionDetails/conditionDetailsEvent.dart';
 import 'package:pocket_health/bloc/organDetails/organDetailsEvent.dart';
+import 'package:pocket_health/bloc/search_conditions/search_condition_bloc.dart';
+import 'package:pocket_health/bloc/search_conditions/search_condition_event.dart';
+import 'package:pocket_health/bloc/search_conditions/search_condition_state.dart';
 import 'package:pocket_health/models/adult_unwell_model.dart';
 import 'package:pocket_health/screens/AdultUnwell/adult_unwell_screens/adult_unwell_list.dart';
 import 'package:pocket_health/screens/AdultUnwell/condition_details/conditionDetailsScreen.dart';
 import 'package:pocket_health/screens/AdultUnwell/organs/organs.dart';
+import 'package:pocket_health/screens/doctor_consult/doctor_consult_screen.dart';
 import 'package:pocket_health/widgets/adult_unwell_menu_items.dart';
 import 'package:pocket_health/widgets/widget.dart';
 
@@ -46,10 +50,11 @@ class _AdultUnwellState extends State<AdultUnwell> {
                             padding: const EdgeInsets.all(8.0),
                             child: TextField(
                               cursorColor: Colors.grey,
-                              decoration: searchFieldInputDecoration("Search main affected organ"),
+                              decoration: searchFieldInputDecoration("Search symptom or condition"),
                               onChanged: (value){
                                 setState(() {
                                   textValue = value;
+                                  BlocProvider.of<SearchConditionBloc>(context).add(FetchSearchCondition(condition: textValue));
                                 });
                               },
                             ),
@@ -90,30 +95,69 @@ class _AdultUnwellState extends State<AdultUnwell> {
                           );
                         },
                       ),
-                    ) :  Expanded(
-                        child:
-                        state.adultUnwellModel.where((element) => element.name.contains(textValue)).toList().length != 0 ?
-                        ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: state.adultUnwellModel.where((element) => element.name.contains(textValue)).toList().length,
-                          itemBuilder: (BuildContext context,index){
-                            final list = state.adultUnwellModel.where((element) => element.name.contains(textValue)).toList();
-                            final filterOrgans = list[index];
+                    ) :  BlocBuilder<SearchConditionBloc,SearchConditionState>(
+                      builder: (context,state){
+                        if(state is SearchConditionLoaded ){
+                          return Expanded(
+                              child: state.searchCondition.length == null ? ListView.builder(
+                                shrinkWrap: true,
+                                itemCount: state.searchCondition.length,
+                                itemBuilder: (BuildContext context,index){
+                                  final search = state.searchCondition[index];
 
-                            return Container(
-                              child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: AdultUnwellMenuItems(text: filterOrgans.name,
-                                    press: ()async{
-                                      BlocProvider.of<ConditionDetailsBloc>(context).add(FetchDetails(id: filterOrgans.id));
-                                      Navigator.push(context, MaterialPageRoute(builder: (context) => ConditionDetailsScreen(title: filterOrgans.name,)));
+                                  return Container(
+                                    child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: AdultUnwellMenuItems(text: search.name,
+                                          press: ()async{
+                                            BlocProvider.of<ConditionDetailsBloc>(context).add(FetchDetails(id: search.id));
+                                            Navigator.push(context, MaterialPageRoute(builder: (context) => ConditionDetailsScreen(title: search.name,)));
 
-                                    },
-                                  )
-                              ),
-                            );
-                          },
-                        ): Center(child: Text("$textValue Is Not Available"))
+                                          },
+                                        )
+                                    ),
+                                  );
+                                },
+                              ):Padding(
+                                padding: const EdgeInsets.symmetric(horizontal:30.0,vertical: 8.0),
+                                child: Center(child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Align(
+                                      alignment: Alignment.center,
+                                        child: Text("Sorry,$textValue did not match any condition in our Database, please refine your search or",textAlign: TextAlign.center,)),
+                                    Row(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        GestureDetector(
+                                          onTap: ()async{
+                                            Navigator.push(context, MaterialPageRoute(builder: (context) => DoctorConsultScreen()));
+
+                                          },
+                                          child: Align(
+                                              alignment: Alignment.center,
+                                              child: Text(" Consult a doctor",style: TextStyle(color:Colors.lightBlueAccent),textAlign: TextAlign.center,)),
+                                        ),
+                                        Align(
+                                            alignment: Alignment.center,
+                                            child: Text(" or a facility for further help",style: TextStyle(color:Colors.lightBlueAccent))),
+                                      ],
+                                    ),
+
+                                  ],
+                                )),
+                              )
+                          );
+                        }
+                        if(state is SearchConditionLoading){
+                          return Center(
+                            child: Container(
+                                child: CircularProgressIndicator(backgroundColor: Colors.lightBlueAccent,)
+                            ),
+                          );
+                        }
+                        return Center(child: Text("$textValue Is Not Available"));
+                      },
                     )
 
                   ],

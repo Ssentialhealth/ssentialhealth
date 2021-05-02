@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:pocket_health/bloc/conditionDetails/conditionDetailState.dart';
 import 'package:pocket_health/bloc/conditionDetails/conditionDetailsBloc.dart';
 import 'package:pocket_health/widgets/widget.dart';
@@ -29,11 +30,19 @@ class DetailsData extends StatelessWidget {
                               fontWeight: FontWeight.bold
                           )),
                     ),
-                    SizedBox(height: 12,),
-                    Text(state.conditionDetails.overview,
-                        style:simpleTextStyle()
+                    SizedBox(height: 8.h,),
+                    // Text(state.conditionDetails.overview,
+                    //     style:simpleTextStyle()
+                    // ),
+                    Markdown(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      styleSheet: MarkdownStyleSheet(
+                        h2: simpleTextStyle()
+                      ),
+                      data: state.conditionDetails.overview
                     ),
-                    SizedBox(height: 12,),
+                    SizedBox(height: 8.h,),
                     Align(
                       alignment: Alignment.topLeft,
                       child: Text("Common Management",
@@ -55,7 +64,14 @@ class DetailsData extends StatelessWidget {
                         return Container(
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text(accident)
+                            child:  Markdown(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                styleSheet: MarkdownStyleSheet(
+                                    h2: simpleTextStyle()
+                                ),
+                                data: accident
+                            ),
 
                             )
                         );
