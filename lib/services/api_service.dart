@@ -13,7 +13,9 @@ import 'package:pocket_health/models/hotlines.dart';
 import 'package:pocket_health/models/loginModel.dart';
 import 'package:pocket_health/models/organDetailsModel.dart';
 import 'package:pocket_health/models/organsModel.dart';
+import 'package:pocket_health/models/organs_search_model.dart';
 import 'package:pocket_health/models/profile.dart';
+import 'package:pocket_health/models/search_condition_model.dart';
 import 'package:pocket_health/utils/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -36,6 +38,28 @@ class ApiService {
     print(response.body);
     final hotlinesJson = response.body;
     return hotlinesFromJson(hotlinesJson);
+  }
+
+  //Search Conditions
+  Future<List<SearchCondition>> fetchSearchedCondition(String condition)async {
+    final response = await this.httpClient.get("https://ssential.herokuapp.com/api/conditions/adult_unwell/?possible_causing_conditions=$condition");
+    if(response.statusCode != 200){
+      throw Exception('Error Fetching Hotlines');
+    }
+
+    print(response.body);
+    return searchConditionFromJson(response.body);
+  }
+
+  //Search Organs
+  Future<List<SearchOrgan>> fetchSearchedOrgan(String organ)async {
+    final response = await this.httpClient.get("https://ssential.herokuapp.com/api/conditions/organs/?name=$organ");
+    if(response.statusCode != 200){
+      throw Exception('Error Fetching Hotlines');
+    }
+
+    print(response.body);
+    return searchOrganFromJson(response.body);
   }
 
   //All Symptoms Endpoint Fetch
