@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pocket_health/bloc/adult_unwell/adultUnwellBloc.dart';
+import 'package:pocket_health/bloc/child_health/child_conditions_bloc.dart';
 import 'package:pocket_health/bloc/emergency_contact/emergencyContactBloc.dart';
 import 'package:pocket_health/bloc/hotlines/hotlinesBloc.dart';
 import 'package:pocket_health/bloc/login/loginBloc.dart';
@@ -10,7 +11,9 @@ import 'package:pocket_health/bloc/practitioner_profile/practitionerProfileBloc.
 import 'package:pocket_health/bloc/profile/userProfileBloc.dart';
 import 'package:pocket_health/bloc/search_conditions/search_condition_bloc.dart';
 import 'package:pocket_health/bloc/search_organ/search_organ_bloc.dart';
+import 'package:pocket_health/bloc/symptoms/details/symptoms_bloc.dart';
 import 'package:pocket_health/repository/adultUnwellRepo.dart';
+import 'package:pocket_health/repository/child_conditions_repo.dart';
 import 'package:pocket_health/repository/conditionDetailRepo.dart';
 import 'package:pocket_health/repository/emergencyContactRepo.dart';
 import 'package:pocket_health/repository/forgotPasswordRepo.dart';
@@ -21,6 +24,7 @@ import 'package:pocket_health/repository/organsRepo.dart';
 import 'package:pocket_health/repository/practitionerProfileRepo.dart';
 import 'package:pocket_health/repository/search_condition_repo.dart';
 import 'package:pocket_health/repository/search_organs_repo.dart';
+import 'package:pocket_health/repository/symptoms_repo.dart';
 import 'package:pocket_health/repository/userProfile_repo.dart';
 import 'package:pocket_health/screens/boarding/splash_screen.dart';
 import 'package:pocket_health/services/api_service.dart';
@@ -52,7 +56,9 @@ void main() {
   final SearchConditionRepo searchConditionRepo = SearchConditionRepo(ApiService(http.Client()),);
   final SearchOrganRepo searchOrganRepo = SearchOrganRepo(ApiService(http.Client()),);
   final ConditionDetailsRepo conditionDetailsRepo = ConditionDetailsRepo(ApiService(http.Client()),);
+  final SymptomDetailsRepo symptomDetailsRepo = SymptomDetailsRepo(ApiService(http.Client()),);
   final AdultUnwellRepo unwellRepo = AdultUnwellRepo(ApiService(http.Client()),);
+  final ChildConditionsRepo childConditionRepo = ChildConditionsRepo(ApiService(http.Client()),);
   final OrgansRepo organsRepo = OrgansRepo(ApiService(http.Client()),);
   final OrganDetailsRepo organDetailsRepo = OrganDetailsRepo(ApiService(http.Client()),);
   Bloc.observer = SimpleBlocObserver();
@@ -65,10 +71,12 @@ void main() {
     hotlinesRepo:hotlineRepo,
     searchConditionRepo:searchConditionRepo,
     adultUnwellRepo: unwellRepo,
+    childConditionRepo: childConditionRepo,
     conditionDetailsRepo: conditionDetailsRepo,
     organsRepo: organsRepo,
     organDetailRepo: organDetailsRepo,
     searchOrganRepo: searchOrganRepo,
+    symptomDetailsRepo: symptomDetailsRepo,
   ));
 }
 
@@ -82,10 +90,12 @@ class MyApp extends StatelessWidget {
   final SearchConditionRepo searchConditionRepo;
   final ConditionDetailsRepo conditionDetailsRepo;
   final AdultUnwellRepo adultUnwellRepo;
+  final ChildConditionsRepo childConditionRepo;
   final OrgansRepo organsRepo;
   final OrganDetailsRepo organDetailRepo;
   final SearchOrganRepo searchOrganRepo;
-  const MyApp({Key key, @required this.forgotPasswordRepo,@required this.searchOrganRepo,@required this.searchConditionRepo,@required this.adultUnwellRepo,@required this.organsRepo,@required this.organDetailRepo,
+  final SymptomDetailsRepo symptomDetailsRepo;
+  const MyApp({Key key, @required this.forgotPasswordRepo,@required this.childConditionRepo,@required this.searchOrganRepo,@required this.symptomDetailsRepo,@required this.searchConditionRepo,@required this.adultUnwellRepo,@required this.organsRepo,@required this.organDetailRepo,
     @required this.hotlinesRepo,@required this.loginRepository,
     @required this.emergencyContactRepo,@required this.userProfileRepo,@required this.conditionDetailsRepo,@required this.practitionerProfileRepo}) : super(key: key);
 
@@ -105,9 +115,12 @@ class MyApp extends StatelessWidget {
           BlocProvider(create: (context) => SearchConditionBloc(searchConditionRepo: searchConditionRepo)),
           BlocProvider(create: (context) => ConditionDetailsBloc(conditionDetailsRepo: conditionDetailsRepo)),
           BlocProvider(create: (context) => AdultUnwellBloc(adultUnwellRepo: adultUnwellRepo),),
+          BlocProvider(create: (context) => ChildConditionBloc(childConditionsRepo: childConditionRepo),),
           BlocProvider(create: (context) => OrgansBloc(organsRepo: organsRepo),),
           BlocProvider(create: (context) => OrgansDetailsBloc(organDetailsRepo: organDetailRepo),),
-          BlocProvider(create: (context) => SearchOrganBloc(searchOrganRepo: searchOrganRepo),)
+          BlocProvider(create: (context) => SearchOrganBloc(searchOrganRepo: searchOrganRepo),),
+          BlocProvider(create: (context) => SymptomDetailsBloc(symptomDetailsRepo: symptomDetailsRepo),),
+
         ],
         child: MaterialApp(
           debugShowCheckedModeBanner: false,

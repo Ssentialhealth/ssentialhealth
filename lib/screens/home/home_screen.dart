@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:pocket_health/screens/emergency_screens/emergency_hotlines_screen.dart';
 import 'package:pocket_health/screens/AdultUnwell/adult_unwell_screens/adult_unwell.dart';
+import 'package:pocket_health/screens/home/child_health_immunization_screen.dart';
 import 'package:pocket_health/screens/profile/practitioner_info_screen.dart';
 import 'package:pocket_health/screens/profile/profile_screen.dart';
 import 'package:pocket_health/widgets/card_item.dart';
@@ -97,6 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 CardItem(
                   press: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => CHIScreen()));
 
                   },
                   image: "assets/images/child_health_ immunisation.png",

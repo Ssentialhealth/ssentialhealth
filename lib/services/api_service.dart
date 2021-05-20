@@ -7,6 +7,8 @@ import 'package:pocket_health/bloc/profile/userProfileBloc.dart';
 import 'package:pocket_health/models/ForgotPassword.dart';
 import 'package:pocket_health/models/PractitionerProfile.dart';
 import 'package:pocket_health/models/adult_unwell_model.dart';
+import 'package:pocket_health/models/child_condition_detail_model.dart';
+import 'package:pocket_health/models/child_conditions_model.dart';
 import 'package:pocket_health/models/conditionDetailsModel.dart';
 import 'package:pocket_health/models/emergency_contact.dart';
 import 'package:pocket_health/models/hotlines.dart';
@@ -16,6 +18,8 @@ import 'package:pocket_health/models/organsModel.dart';
 import 'package:pocket_health/models/organs_search_model.dart';
 import 'package:pocket_health/models/profile.dart';
 import 'package:pocket_health/models/search_condition_model.dart';
+import 'package:pocket_health/models/symptom_model.dart';
+import 'package:pocket_health/models/symptoms_detail_model.dart';
 import 'package:pocket_health/utils/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -42,7 +46,7 @@ class ApiService {
 
   //Search Conditions
   Future<List<SearchCondition>> fetchSearchedCondition(String condition)async {
-    final response = await this.httpClient.get("https://ssential.herokuapp.com/api/conditions/adult_unwell/?possible_causing_conditions=$condition");
+    final response = await this.httpClient.get("https://ssential.herokuapp.com/api/conditions/symptoms/?overview=$condition");
     if(response.statusCode != 200){
       throw Exception('Error Fetching Hotlines');
     }
@@ -62,16 +66,38 @@ class ApiService {
     return searchOrganFromJson(response.body);
   }
 
-  //All Symptoms Endpoint Fetch
-  Future<List<AdultUnwellModel>> fetchConditions()async{
-    final response = await this.httpClient.get("https://ssential.herokuapp.com/api/conditions/adult_unwell");
+  //All Condition Endpoint Fetch
+  Future<List<SymptomModel>> fetchConditions()async{
+    final response = await this.httpClient.get("https://ssential.herokuapp.com/api/conditions/symptoms");
     if(response.statusCode != 200){
       throw Exception('Error Fetching Conditions');
     }
 
     print(response.body);
 
-    return adultUnwellModelFromJson(response.body);
+    return symptomModelFromJson(response.body);
+  }
+
+  //All Child Conditions Fetch
+  Future<List<ChildConditionsModel>> fetchChildConditions()async{
+    final response = await this.httpClient.get("https://ssential.herokuapp.com/api/conditions/child_unwell");
+    if(response.statusCode != 200){
+      throw Exception("Error Fetching condition");
+    }
+    print(response.body);
+
+    return childConditionsModelFromJson(response.body);
+  }
+
+
+  //Symptoms Endpoint Details Fetch by ID
+  Future<SymptomDetail> fetchSymptomsDetails(int id)async{
+    final response = await this.httpClient.get("https://ssential.herokuapp.com/api/conditions/symptoms/$id");
+    if(response.statusCode != 200){
+      throw Exception('Error Fetching Symptom Detail');
+    }
+    print(response.body);
+    return symptomDetailFromJson(response.body);
   }
 
   //Symptoms Endpoint Details Fetch by ID
@@ -82,6 +108,16 @@ class ApiService {
     }
     print(response.body);
     return conditionDetailsFromJson(response.body);
+  }
+
+  //Child Conditions detail
+  Future<ChildConditionsDetailModel> fetchChildConditionDetails(int id)async{
+    final response = await this.httpClient.get("https://ssential.herokuapp.com/api/conditions/child_unwell/$id");
+    if(response.statusCode != 200){
+      throw Exception('Error Fetching Condition Details');
+    }
+    print(response.body);
+    return childConditionsDetailModelFromJson(response.body);
   }
 
   //All Organs Endpoint

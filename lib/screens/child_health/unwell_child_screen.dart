@@ -1,41 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pocket_health/bloc/adult_unwell/adultUnwellBloc.dart';
-import 'package:pocket_health/bloc/adult_unwell/adultUnwellState.dart';
+import 'package:pocket_health/bloc/child_health/child_conditions_bloc.dart';
+import 'package:pocket_health/bloc/child_health/child_conditions_state.dart';
 import 'package:pocket_health/bloc/search_conditions/search_condition_bloc.dart';
 import 'package:pocket_health/bloc/search_conditions/search_condition_event.dart';
 import 'package:pocket_health/bloc/search_conditions/search_condition_state.dart';
 import 'package:pocket_health/bloc/symptoms/details/symptoms_bloc.dart';
 import 'package:pocket_health/bloc/symptoms/details/symptoms_event.dart';
-import 'package:pocket_health/screens/AdultUnwell/organs/organs.dart';
+import 'package:pocket_health/repository/child_conditions_repo.dart';
 import 'package:pocket_health/screens/AdultUnwell/symptoms/symptom_details_screen.dart';
 import 'package:pocket_health/screens/doctor_consult/doctor_consult_screen.dart';
 import 'package:pocket_health/screens/facility/facility_screen.dart';
 import 'package:pocket_health/widgets/adult_unwell_menu_items.dart';
 import 'package:pocket_health/widgets/widget.dart';
 
-class AdultUnwell extends StatefulWidget {
+class UnwellChildScreen extends StatefulWidget {
+  const UnwellChildScreen({Key key}) : super(key: key);
+
   @override
-  _AdultUnwellState createState() => _AdultUnwellState();
+  _UnwellChildScreenState createState() => _UnwellChildScreenState();
 }
 
-class _AdultUnwellState extends State<AdultUnwell> {
+class _UnwellChildScreenState extends State<UnwellChildScreen> {
 
   String textValue;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFEAFCF6),
       appBar: AppBar(
         title: Text("Most Notable Symptom/Sign",style: TextStyle(fontSize: 18),),
         backgroundColor: Color(0xFF00FFFF),
         centerTitle: true,
       ),
       body: Container(
-        child: BlocBuilder<AdultUnwellBloc,AdultUnwellState>(
+        child: BlocBuilder<ChildConditionBloc,ChildConditionState>(
             builder: (context,state){
-                           if(state is AdultUnwellLoaded){
+              if(state is ChildConditionLoaded){
                 print(textValue);
                 return Column(
                   children: [
@@ -60,7 +61,7 @@ class _AdultUnwellState extends State<AdultUnwell> {
                           padding: const EdgeInsets.all(8.0),
                           child: GestureDetector(
                               onTap: ()async{
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => Organs()));
+                                // Navigator.push(context, MaterialPageRoute(builder: (context) => Organs()));
 
                               },
                               child: Icon(Icons.menu,size: 32.0)
@@ -70,27 +71,27 @@ class _AdultUnwellState extends State<AdultUnwell> {
                     ),
                     textValue == null ?
                     Expanded(
-                      child:  ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: state.adultUnwellModel.length,
-                        itemBuilder: (BuildContext context,index){
-                          final organs = state.adultUnwellModel[index];
+                        child:  ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: state.childConditionModel.length,
+                          itemBuilder: (BuildContext context,index){
+                            final organs = state.childConditionModel[index];
 
 
-                          return Container(
-                            child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: AdultUnwellMenuItems(text: organs.name,
-                                  press: ()async{
-                                    BlocProvider.of<SymptomDetailsBloc>(context).add(FetchSymptomDetails(id: organs.id));
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => SymptomDetailsScreen(title: organs.name,)));
+                            return Container(
+                              child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: AdultUnwellMenuItems(text: organs.name,
+                                    press: ()async{
+                                      // BlocProvider.of<SymptomDetailsBloc>(context).add(FetchSymptomDetails(id: organs.id));
+                                      // Navigator.push(context, MaterialPageRoute(builder: (context) => SymptomDetailsScreen(title: organs.name,)));
 
-                                  },
-                                )
-                            ),
-                          );
-                        },
-                      )
+                                    },
+                                  )
+                              ),
+                            );
+                          },
+                        )
 
                     ) :  BlocBuilder<SearchConditionBloc,SearchConditionState>(
                       builder: (context,state){
@@ -121,7 +122,7 @@ class _AdultUnwellState extends State<AdultUnwell> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Align(
-                                      alignment: Alignment.center,
+                                        alignment: Alignment.center,
                                         child: Text("Sorry,$textValue did not match any condition in our Database, please refine your search or",textAlign: TextAlign.center,)),
                                     Row(
                                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -168,7 +169,7 @@ class _AdultUnwellState extends State<AdultUnwell> {
               }
               return Center(
                 child: Container(
-                  child: CircularProgressIndicator(backgroundColor: Colors.lightBlueAccent,)
+                    child: CircularProgressIndicator(backgroundColor: Colors.lightBlueAccent,)
                 ),
               );
             }
@@ -180,40 +181,3 @@ class _AdultUnwellState extends State<AdultUnwell> {
     );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

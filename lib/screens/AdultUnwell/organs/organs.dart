@@ -11,6 +11,7 @@ import 'package:pocket_health/bloc/search_organ/search_organ_event.dart';
 import 'package:pocket_health/bloc/search_organ/search_organ_state.dart';
 import 'package:pocket_health/screens/AdultUnwell/condition_details/conditionDetailsScreen.dart';
 import 'package:pocket_health/screens/doctor_consult/doctor_consult_screen.dart';
+import 'package:pocket_health/screens/facility/facility_screen.dart';
 import 'package:pocket_health/widgets/adult_unwell_menu_items.dart';
 import 'package:pocket_health/widgets/widget.dart';
 
@@ -95,7 +96,7 @@ class _OrgansState extends State<Organs> {
                         }
                         if(state is SearchOrganLoaded){
                           return Expanded(
-                              child: state.searchOrgan.length == null ? ListView.builder(
+                              child: state.searchOrgan.length > 0 ? ListView.builder(
                                 shrinkWrap: true,
                                 itemCount: state.searchOrgan.length,
                                 itemBuilder: (BuildContext context,index){
@@ -134,9 +135,15 @@ class _OrgansState extends State<Organs> {
                                               alignment: Alignment.center,
                                               child: Text(" Consult a doctor",style: TextStyle(color:Colors.lightBlueAccent),textAlign: TextAlign.center,)),
                                         ),
-                                        Align(
-                                            alignment: Alignment.center,
-                                            child: Text(" or a facility for further help",style: TextStyle(color:Colors.lightBlueAccent))),
+                                        GestureDetector(
+                                          onTap: ()async{
+                                            Navigator.push(context, MaterialPageRoute(builder: (context) => FacilityScreen()));
+
+                                          },
+                                          child: Align(
+                                              alignment: Alignment.center,
+                                              child: Text(" or a facility for further help",style: TextStyle(color:Colors.lightBlueAccent))),
+                                        ),
                                       ],
                                     ),
 

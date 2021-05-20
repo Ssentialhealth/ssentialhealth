@@ -1,15 +1,15 @@
 // To parse this JSON data, do
 //
-//     final searchCondition = searchConditionFromJson(jsonString);
+//     final symptomModel = symptomModelFromJson(jsonString);
 
 import 'dart:convert';
 
-List<SearchCondition> searchConditionFromJson(String str) => List<SearchCondition>.from(json.decode(str).map((x) => SearchCondition.fromJson(x)));
+List<SymptomModel> symptomModelFromJson(String str) => List<SymptomModel>.from(json.decode(str).map((x) => SymptomModel.fromJson(x)));
 
-String searchConditionToJson(List<SearchCondition> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+String symptomModelToJson(List<SymptomModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
-class SearchCondition {
-  SearchCondition({
+class SymptomModel {
+  SymptomModel({
     this.id,
     this.healthConditions,
     this.name,
@@ -23,7 +23,7 @@ class SearchCondition {
   String overview;
   List<String> commonManagement;
 
-  factory SearchCondition.fromJson(Map<String, dynamic> json) => SearchCondition(
+  factory SymptomModel.fromJson(Map<String, dynamic> json) => SymptomModel(
     id: json["id"],
     healthConditions: List<HealthCondition>.from(json["health_conditions"].map((x) => HealthCondition.fromJson(x))),
     name: json["name"],

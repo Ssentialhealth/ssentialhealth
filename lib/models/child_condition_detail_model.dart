@@ -1,24 +1,24 @@
 // To parse this JSON data, do
 //
-//     final adultUnwellModel = adultUnwellModelFromJson(jsonString);
+//     final childConditionsDetailModel = childConditionsDetailModelFromJson(jsonString);
 
 import 'dart:convert';
 
-List<AdultUnwellModel> adultUnwellModelFromJson(String str) => List<AdultUnwellModel>.from(json.decode(str).map((x) => AdultUnwellModel.fromJson(x)));
+ChildConditionsDetailModel childConditionsDetailModelFromJson(String str) => ChildConditionsDetailModel.fromJson(json.decode(str));
 
-String adultUnwellModelToJson(List<AdultUnwellModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+String childConditionsDetailModelToJson(ChildConditionsDetailModel data) => json.encode(data.toJson());
 
-class AdultUnwellModel {
-  AdultUnwellModel({
+class ChildConditionsDetailModel {
+  ChildConditionsDetailModel({
     this.id,
     this.otherPossibleConditions,
     this.symptoms,
+    this.medication,
     this.name,
     this.overview,
     this.symptomsOverview,
     this.investigation,
     this.treatment,
-    this.medications,
     this.prevention,
     this.complications,
   });
@@ -26,25 +26,25 @@ class AdultUnwellModel {
   int id;
   List<dynamic> otherPossibleConditions;
   List<Symptom> symptoms;
+  Medication medication;
   String name;
   String overview;
   String symptomsOverview;
   String investigation;
   String treatment;
-  List<String> medications;
   List<String> prevention;
   List<String> complications;
 
-  factory AdultUnwellModel.fromJson(Map<String, dynamic> json) => AdultUnwellModel(
+  factory ChildConditionsDetailModel.fromJson(Map<String, dynamic> json) => ChildConditionsDetailModel(
     id: json["id"],
     otherPossibleConditions: List<dynamic>.from(json["other_possible_conditions"].map((x) => x)),
     symptoms: List<Symptom>.from(json["symptoms"].map((x) => Symptom.fromJson(x))),
+    medication: Medication.fromJson(json["medication"]),
     name: json["name"],
     overview: json["overview"],
     symptomsOverview: json["symptoms_overview"],
     investigation: json["investigation"],
     treatment: json["treatment"],
-    medications: List<String>.from(json["medications"].map((x) => x)),
     prevention: List<String>.from(json["prevention"].map((x) => x)),
     complications: List<String>.from(json["complications"].map((x) => x)),
   );
@@ -53,14 +53,46 @@ class AdultUnwellModel {
     "id": id,
     "other_possible_conditions": List<dynamic>.from(otherPossibleConditions.map((x) => x)),
     "symptoms": List<dynamic>.from(symptoms.map((x) => x.toJson())),
+    "medication": medication.toJson(),
     "name": name,
     "overview": overview,
     "symptoms_overview": symptomsOverview,
     "investigation": investigation,
     "treatment": treatment,
-    "medications": List<dynamic>.from(medications.map((x) => x)),
     "prevention": List<dynamic>.from(prevention.map((x) => x)),
     "complications": List<dynamic>.from(complications.map((x) => x)),
+  };
+}
+
+class Medication {
+  Medication({
+    this.id,
+    this.upto12Months,
+    this.oneToTwoYears,
+    this.twoToSixYears,
+    this.above6Years,
+  });
+
+  int id;
+  List<String> upto12Months;
+  List<String> oneToTwoYears;
+  List<String> twoToSixYears;
+  List<String> above6Years;
+
+  factory Medication.fromJson(Map<String, dynamic> json) => Medication(
+    id: json["id"],
+    upto12Months: List<String>.from(json["upto_12_months"].map((x) => x)),
+    oneToTwoYears: List<String>.from(json["one_to_two_years"].map((x) => x)),
+    twoToSixYears: List<String>.from(json["two_to_six_years"].map((x) => x)),
+    above6Years: List<String>.from(json["above_6_years"].map((x) => x)),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "upto_12_months": List<dynamic>.from(upto12Months.map((x) => x)),
+    "one_to_two_years": List<dynamic>.from(oneToTwoYears.map((x) => x)),
+    "two_to_six_years": List<dynamic>.from(twoToSixYears.map((x) => x)),
+    "above_6_years": List<dynamic>.from(above6Years.map((x) => x)),
   };
 }
 
