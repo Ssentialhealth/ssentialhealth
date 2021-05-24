@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:pocket_health/bloc/child_health/details_bloc/child_condition_detail_bloc.dart';
+import 'package:pocket_health/bloc/child_health/details_bloc/child_condition_detail_state.dart';
 import 'package:pocket_health/bloc/conditionDetails/conditionDetailState.dart';
 import 'package:pocket_health/bloc/conditionDetails/conditionDetailsBloc.dart';
 import 'package:pocket_health/widgets/widget.dart';
@@ -8,15 +10,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 
 
-class DetailsData extends StatelessWidget {
+class ChildDetailsData extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ConditionDetailsBloc,ConditionDetailsState>(
+    return BlocBuilder<ChildConditionDetailsBloc,ChildConditionDetailsState>(
         builder: (context,state){
-          if(state is ConditionDetailsInitial){
+          if(state is ChildConditionDetailsInitial){
             return Container(color: Colors.black,height: 300,);
           }
-          if(state is ConditionDetailsLoaded){
+          if(state is ChildConditionDetailsLoaded){
             return Container(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10),
@@ -42,7 +44,7 @@ class DetailsData extends StatelessWidget {
                       styleSheet: MarkdownStyleSheet(
                         h2: simpleTextStyle()
                       ),
-                      data: state.conditionDetails.overview
+                      data: state.childConditionsDetailModel.overview
                     ),
                     SizedBox(height: 12,),
                     //Medication
@@ -56,32 +58,32 @@ class DetailsData extends StatelessWidget {
                     ),
                     SizedBox(height: 12,),
                     //Medication List
-                    Container(
-                      constraints: BoxConstraints(minHeight: 10.h),
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        itemCount: state.conditionDetails.medications.length,
-                        itemBuilder: (BuildContext context,index){
-                          final accident = state.conditionDetails.medications[index];
-                          return Container(
-                              child: Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal:8.0),
-                                  child:Markdown(
-                                      shrinkWrap: true,
-                                      physics: NeverScrollableScrollPhysics(),
-                                      styleSheet: MarkdownStyleSheet(
-                                          h2: simpleTextStyle()
-                                      ),
-                                      data: "• "+accident
-                                  ),
-
-
-                              )
-                          );
-                        },
-                      ),
-                    ),
+                    // Container(
+                    //   constraints: BoxConstraints(minHeight: 10.h),
+                    //   child: ListView.builder(
+                    //     shrinkWrap: true,
+                    //     physics: NeverScrollableScrollPhysics(),
+                    //     itemCount: state.childConditionsDetailModel.,
+                    //     itemBuilder: (BuildContext context,index){
+                    //       final accident = state.childConditionsDetailModel.medications[index];
+                    //       return Container(
+                    //           child: Padding(
+                    //               padding: const EdgeInsets.symmetric(horizontal:8.0),
+                    //               child:Markdown(
+                    //                   shrinkWrap: true,
+                    //                   physics: NeverScrollableScrollPhysics(),
+                    //                   styleSheet: MarkdownStyleSheet(
+                    //                       h2: simpleTextStyle()
+                    //                   ),
+                    //                   data: "• "+accident
+                    //               ),
+                    //
+                    //
+                    //           )
+                    //       );
+                    //     },
+                    //   ),
+                    // ),
                     //Treatment
                     Align(
                       alignment: Alignment.topLeft,
@@ -98,7 +100,7 @@ class DetailsData extends StatelessWidget {
                         styleSheet: MarkdownStyleSheet(
                             h2: simpleTextStyle()
                         ),
-                        data: state.conditionDetails.treatment
+                        data: state.childConditionsDetailModel.treatment
                     ),
                     SizedBox(height: 12,),
                     //Investigation
@@ -117,7 +119,7 @@ class DetailsData extends StatelessWidget {
                         styleSheet: MarkdownStyleSheet(
                             h2: simpleTextStyle()
                         ),
-                        data: state.conditionDetails.investigation
+                        data: state.childConditionsDetailModel.investigation
                     ),
                     //Prevention
                     SizedBox(height: 12,),
@@ -135,9 +137,9 @@ class DetailsData extends StatelessWidget {
                       child: ListView.builder(
                         shrinkWrap: true,
                         physics: NeverScrollableScrollPhysics(),
-                        itemCount: state.conditionDetails.prevention.length,
+                        itemCount: state.childConditionsDetailModel.prevention.length,
                         itemBuilder: (BuildContext context,index){
-                          final accident = state.conditionDetails.prevention[index];
+                          final accident = state.childConditionsDetailModel.prevention[index];
                           return Container(
                               child: Padding(
                                   padding: const EdgeInsets.all(8.0),
@@ -163,9 +165,9 @@ class DetailsData extends StatelessWidget {
                       child: ListView.builder(
                         shrinkWrap: true,
                         physics: NeverScrollableScrollPhysics(),
-                        itemCount: state.conditionDetails.complications.length,
+                        itemCount: state.childConditionsDetailModel.complications.length,
                         itemBuilder: (BuildContext context,index){
-                          final accident = state.conditionDetails.complications[index];
+                          final accident = state.childConditionsDetailModel.complications[index];
                           return Container(
                               child: Padding(
                                   padding: const EdgeInsets.all(8.0),
@@ -183,7 +185,7 @@ class DetailsData extends StatelessWidget {
                 ),
               ),
             );
-            print(state.conditionDetails.name);
+            print(state.childConditionsDetailModel.name);
           }
           if(state is ConditionDetailsError){
             return Container(color: Colors.blueGrey,height: 40,);

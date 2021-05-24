@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:pocket_health/screens/child_health/nutrition_screen.dart';
 import 'package:pocket_health/screens/child_health/unwell_child_screen.dart';
 import 'package:pocket_health/widgets/child_card_item.dart';
+
+import 'growth_milestones_screen.dart';
 
 class CHIScreen extends StatefulWidget {
   const CHIScreen({Key key}) : super(key: key);
@@ -29,8 +32,12 @@ class _CHIScreenState extends State<CHIScreen> {
                 Navigator.push(context, MaterialPageRoute(builder: (context) => UnwellChildScreen()));
               }),
               ChildCardItem(image: "assets/images/immunisation_chart.png", press: (){}),
-              ChildCardItem(image: "assets/images/growth_and_milestones.png", press: (){}),
-              // ChildCardItem(image: "assets/images/child_nutrition.png", press: (){}),
+              ChildCardItem(image: "assets/images/growth_and_milestones.png", press: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context) => GrowthAndMilestones()));
+              }),
+              ChildCardItem(image: "assets/images/child_n.png", press: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context) => NutritionScreen()));
+              }),
               ChildCardItem(image: "assets/images/chronic_conditions.png", press: (){}),
               ChildCardItem(image: "assets/images/child_resource.png", press: (){}),
 

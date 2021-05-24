@@ -13,6 +13,8 @@ import 'package:pocket_health/models/conditionDetailsModel.dart';
 import 'package:pocket_health/models/emergency_contact.dart';
 import 'package:pocket_health/models/hotlines.dart';
 import 'package:pocket_health/models/loginModel.dart';
+import 'package:pocket_health/models/normal_development_Model.dart';
+import 'package:pocket_health/models/nutrition_model.dart';
 import 'package:pocket_health/models/organDetailsModel.dart';
 import 'package:pocket_health/models/organsModel.dart';
 import 'package:pocket_health/models/organs_search_model.dart';
@@ -76,6 +78,28 @@ class ApiService {
     print(response.body);
 
     return symptomModelFromJson(response.body);
+  }
+
+  Future<List<NutritionModel>> fetchNutrition()async{
+    final response = await this.httpClient.get("https://ssential.herokuapp.com/api/child_health/nutrition/");
+    if(response.statusCode != 200){
+      throw Exception('Error Fetching Nutrition');
+    }
+
+    print(response.body);
+
+    return nutritionModelFromJson(response.body);
+  }
+
+  Future<NormalDevelopmentModel> fetchNormalDevelopment()async{
+    final response = await this.httpClient.get("https://ssential.herokuapp.com/api/child_health/normal_development/");
+    if(response.statusCode != 200){
+      throw Exception('Error Fetching Nutrition');
+    }
+
+    print(response.body);
+
+    return normalDevelopmentModelFromJson(response.body);
   }
 
   //All Child Conditions Fetch

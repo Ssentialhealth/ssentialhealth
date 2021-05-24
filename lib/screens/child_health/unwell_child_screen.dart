@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pocket_health/bloc/child_health/child_conditions_bloc.dart';
 import 'package:pocket_health/bloc/child_health/child_conditions_state.dart';
+import 'package:pocket_health/bloc/child_health/details_bloc/child_condition_detail_bloc.dart';
+import 'package:pocket_health/bloc/child_health/details_bloc/child_condition_detail_event.dart';
 import 'package:pocket_health/bloc/search_conditions/search_condition_bloc.dart';
 import 'package:pocket_health/bloc/search_conditions/search_condition_event.dart';
 import 'package:pocket_health/bloc/search_conditions/search_condition_state.dart';
@@ -9,6 +11,7 @@ import 'package:pocket_health/bloc/symptoms/details/symptoms_bloc.dart';
 import 'package:pocket_health/bloc/symptoms/details/symptoms_event.dart';
 import 'package:pocket_health/repository/child_conditions_repo.dart';
 import 'package:pocket_health/screens/AdultUnwell/symptoms/symptom_details_screen.dart';
+import 'package:pocket_health/screens/child_health/unwell_child_condition_screen.dart';
 import 'package:pocket_health/screens/doctor_consult/doctor_consult_screen.dart';
 import 'package:pocket_health/screens/facility/facility_screen.dart';
 import 'package:pocket_health/widgets/adult_unwell_menu_items.dart';
@@ -77,14 +80,13 @@ class _UnwellChildScreenState extends State<UnwellChildScreen> {
                           itemBuilder: (BuildContext context,index){
                             final organs = state.childConditionModel[index];
 
-
                             return Container(
                               child: Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: AdultUnwellMenuItems(text: organs.name,
                                     press: ()async{
-                                      // BlocProvider.of<SymptomDetailsBloc>(context).add(FetchSymptomDetails(id: organs.id));
-                                      // Navigator.push(context, MaterialPageRoute(builder: (context) => SymptomDetailsScreen(title: organs.name,)));
+                                      BlocProvider.of<ChildConditionDetailsBloc>(context).add(FetchChildConditionDetails(id: organs.id));
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) => UnwellChildDetails(title: organs.name,)));
 
                                     },
                                   )
@@ -108,8 +110,8 @@ class _UnwellChildScreenState extends State<UnwellChildScreen> {
                                         padding: const EdgeInsets.all(8.0),
                                         child: AdultUnwellMenuItems(text: search.name,
                                           press: ()async{
-                                            BlocProvider.of<SymptomDetailsBloc>(context).add(FetchSymptomDetails(id: search.id));
-                                            Navigator.push(context, MaterialPageRoute(builder: (context) => SymptomDetailsScreen(title: search.name,)));
+                                            BlocProvider.of<ChildConditionDetailsBloc>(context).add(FetchChildConditionDetails(id: search.id));
+                                            Navigator.push(context, MaterialPageRoute(builder: (context) => UnwellChildDetails(title: search.name,)));
 
                                           },
                                         )
