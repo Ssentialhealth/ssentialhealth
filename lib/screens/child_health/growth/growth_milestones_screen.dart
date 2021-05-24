@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pocket_health/screens/child_health/normal_development_screen.dart';
+import 'package:pocket_health/screens/child_health/normal_development/normal_development_screen.dart';
 import 'package:pocket_health/widgets/adult_unwell_menu_items.dart';
 
 class GrowthAndMilestones extends StatefulWidget {

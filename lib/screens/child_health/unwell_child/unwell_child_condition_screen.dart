@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'child_condition_details_data.dart';
+import '../condition/child_condition_details_data.dart';
 
 class UnwellChildDetails extends StatefulWidget {
 

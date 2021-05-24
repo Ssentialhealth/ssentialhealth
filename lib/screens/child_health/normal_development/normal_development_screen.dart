@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:pocket_health/screens/child_health/normal_development_data.dart';
+import 'package:pocket_health/screens/child_health/normal_development/normal_development_data.dart';
 import 'package:pocket_health/widgets/widget.dart';
 
 

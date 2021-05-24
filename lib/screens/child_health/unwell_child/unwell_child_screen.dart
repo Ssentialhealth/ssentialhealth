@@ -11,7 +11,7 @@ import 'package:pocket_health/bloc/symptoms/details/symptoms_bloc.dart';
 import 'package:pocket_health/bloc/symptoms/details/symptoms_event.dart';
 import 'package:pocket_health/repository/child_conditions_repo.dart';
 import 'package:pocket_health/screens/AdultUnwell/symptoms/symptom_details_screen.dart';
-import 'package:pocket_health/screens/child_health/unwell_child_condition_screen.dart';
+import 'package:pocket_health/screens/child_health/unwell_child/unwell_child_condition_screen.dart';
 import 'package:pocket_health/screens/doctor_consult/doctor_consult_screen.dart';
 import 'package:pocket_health/screens/facility/facility_screen.dart';
 import 'package:pocket_health/widgets/adult_unwell_menu_items.dart';
