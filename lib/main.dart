@@ -4,6 +4,8 @@ import 'package:pocket_health/bloc/adult_unwell/adultUnwellBloc.dart';
 import 'package:pocket_health/bloc/child_health/child_conditions_bloc.dart';
 import 'package:pocket_health/bloc/child_health/child_resource/child_resource_bloc.dart';
 import 'package:pocket_health/bloc/child_health/child_resource_detail/child_resource_detail_bloc.dart';
+import 'package:pocket_health/bloc/child_health/congenital_condition/congenital_condition_bloc.dart';
+import 'package:pocket_health/bloc/child_health/congenital_detail/congenital_detail_bloc.dart';
 import 'package:pocket_health/bloc/child_health/details_bloc/child_condition_detail_bloc.dart';
 import 'package:pocket_health/bloc/child_health/normal_development/normal_development_bloc.dart';
 import 'package:pocket_health/bloc/child_health/nutrition_bloc/nutrition_bloc.dart';
@@ -23,6 +25,8 @@ import 'package:pocket_health/repository/child_conditions_repo.dart';
 import 'package:pocket_health/repository/child_resource_repo.dart';
 import 'package:pocket_health/repository/chilren_resource_detail_repo.dart';
 import 'package:pocket_health/repository/conditionDetailRepo.dart';
+import 'package:pocket_health/repository/congenital_conditions_repo.dart';
+import 'package:pocket_health/repository/congenital_details_repo.dart';
 import 'package:pocket_health/repository/emergencyContactRepo.dart';
 import 'package:pocket_health/repository/forgotPasswordRepo.dart';
 import 'package:pocket_health/repository/hotline_repo.dart';
@@ -76,6 +80,8 @@ void main() {
   final NormalDevelopmentRepo normalDevelopmentRepo = NormalDevelopmentRepo(ApiService(http.Client()),);
   final ChildResourceRepo childResourceRepo = ChildResourceRepo(ApiService(http.Client()),);
   final ChildResourceDetailRepo childResourceDetailRepo = ChildResourceDetailRepo(ApiService(http.Client()),);
+  final CongenitalConditionsRepo congenitalConditionsRepo = CongenitalConditionsRepo(ApiService(http.Client()),);
+  final CongenitalConditionDetailRepo congenitalConditionDetailRepo = CongenitalConditionDetailRepo(ApiService(http.Client()),);
   Bloc.observer = SimpleBlocObserver();
   runApp(MyApp(
     forgotPasswordRepo: forgotPasswordRepo,
@@ -97,6 +103,8 @@ void main() {
     normalDevelopmentRepo: normalDevelopmentRepo,
     childResourceRepo: childResourceRepo,
     childResourceDetailRepo: childResourceDetailRepo,
+    congenitalConditionsRepo: congenitalConditionsRepo,
+    congenitalConditionDetailRepo: congenitalConditionDetailRepo,
   ));
 }
 
@@ -120,9 +128,11 @@ class MyApp extends StatelessWidget {
   final NormalDevelopmentRepo normalDevelopmentRepo;
   final ChildResourceRepo childResourceRepo;
   final ChildResourceDetailRepo childResourceDetailRepo;
+  final CongenitalConditionsRepo congenitalConditionsRepo;
+  final CongenitalConditionDetailRepo congenitalConditionDetailRepo;
   const MyApp({Key key, @required this.forgotPasswordRepo,@required this.normalDevelopmentRepo,@required this.nutritionRepo,@required this.childConditionRepo,@required this.childConditionDetailRepo,@required this.searchOrganRepo,@required this.symptomDetailsRepo,@required this.searchConditionRepo,@required this.adultUnwellRepo,@required this.organsRepo,@required this.organDetailRepo,
     @required this.hotlinesRepo,@required this.loginRepository,
-    @required this.emergencyContactRepo,@required this.userProfileRepo,@required this.conditionDetailsRepo,@required this.practitionerProfileRepo,@required this.childResourceRepo,@required this.childResourceDetailRepo,}) : super(key: key);
+    @required this.emergencyContactRepo,@required this.userProfileRepo,@required this.conditionDetailsRepo,@required this.practitionerProfileRepo,@required this.childResourceRepo,@required this.childResourceDetailRepo,@required this.congenitalConditionDetailRepo,@required this.congenitalConditionsRepo,}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -150,6 +160,8 @@ class MyApp extends StatelessWidget {
           BlocProvider(create: (context) => NormalDevelopmentBloc(normalDevelopmentRepo: normalDevelopmentRepo),),
           BlocProvider(create: (context) => ChildResourceBloc(childResourceRepo: childResourceRepo),),
           BlocProvider(create: (context) => ChildResourceDetailsBloc(childResourceDetailRepo: childResourceDetailRepo),),
+          BlocProvider(create: (context) => CongenitalConditionBloc(congenitalConditionsRepo: congenitalConditionsRepo),),
+          BlocProvider(create: (context) => CongenitalConditionDetailsBloc(congenitalDetailDetailRepo: congenitalConditionDetailRepo),),
 
         ],
         child: MaterialApp(

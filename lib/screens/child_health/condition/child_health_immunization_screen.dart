@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:pocket_health/screens/child_health/congenital_conditions/congenital_condition_screen.dart';
 import 'package:pocket_health/screens/child_health/nutrition/nutrition_screen.dart';
 import 'package:pocket_health/screens/child_health/resource/child_resource_screen.dart';
 import 'package:pocket_health/screens/child_health/unwell_child/unwell_child_screen.dart';
@@ -39,7 +40,9 @@ class _CHIScreenState extends State<CHIScreen> {
               ChildCardItem(image: "assets/images/child_n.png", press: (){
                 Navigator.push(context, MaterialPageRoute(builder: (context) => NutritionScreen()));
               }),
-              ChildCardItem(image: "assets/images/chronic_conditions.png", press: (){}),
+              ChildCardItem(image: "assets/images/chronic_conditions.png", press: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context) => CongenitalScreen()));
+              }),
               ChildCardItem(image: "assets/images/child_resource.png", press: (){
                 Navigator.push(context, MaterialPageRoute(builder: (context) => ChildResourceScreen()));
               }),

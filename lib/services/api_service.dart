@@ -7,6 +7,8 @@ import 'package:pocket_health/bloc/profile/userProfileBloc.dart';
 import 'package:pocket_health/models/ForgotPassword.dart';
 import 'package:pocket_health/models/PractitionerProfile.dart';
 import 'package:pocket_health/models/adult_unwell_model.dart';
+import 'package:pocket_health/models/child_chronic_condition_model.dart';
+import 'package:pocket_health/models/child_chronic_detail_model.dart';
 import 'package:pocket_health/models/child_condition_detail_model.dart';
 import 'package:pocket_health/models/child_conditions_model.dart';
 import 'package:pocket_health/models/child_resource_detail_model.dart';
@@ -135,6 +137,28 @@ class ApiService {
     print(response.body);
     return childResourceDetailModelFromJson(response.body);
   }
+
+  //Child Chronic Condition
+  Future<List<CongenitalConditionsModel>> fetchCongenitalConditions()async{
+    final response = await this.httpClient.get("https://ssential.herokuapp.com/api/child_health/congenital_conditions/");
+    if(response.statusCode != 200){
+      throw Exception("Error Fetching condition");
+    }
+    print(response.body);
+
+    return congenitalConditionsModelFromJson(response.body);
+  }
+
+  //Child Chronic condition Detail
+  Future<CongenitalDetailModel> fetchCongenitalDetails(int id)async{
+    final response = await this.httpClient.get("https://ssential.herokuapp.com/api/child_health/congenital_conditions/$id");
+    if(response.statusCode != 200){
+      throw Exception('Error Fetching Symptom Detail');
+    }
+    print(response.body);
+    return congenitalDetailModelFromJson(response.body);
+  }
+
 
   //Symptoms Endpoint Details Fetch by ID
   Future<SymptomDetail> fetchSymptomsDetails(int id)async{

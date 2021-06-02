@@ -11,23 +11,23 @@ String nutritionModelToJson(List<NutritionModel> data) => json.encode(List<dynam
 class NutritionModel {
   NutritionModel({
     this.id,
-    this.phase,
-    this.nutrition,
+    this.the06Months,
+    this.the612Months,
   });
 
   int id;
-  String phase;
-  List<String> nutrition;
+  List<String> the06Months;
+  List<String> the612Months;
 
   factory NutritionModel.fromJson(Map<String, dynamic> json) => NutritionModel(
     id: json["id"],
-    phase: json["phase"],
-    nutrition: List<String>.from(json["nutrition"].map((x) => x)),
+    the06Months: json["0-6 months"] == null ? null : List<String>.from(json["0-6 months"].map((x) => x)),
+    the612Months: json["6-12 months"] == null ? null : List<String>.from(json["6-12 months"].map((x) => x)),
   );
 
   Map<String, dynamic> toJson() => {
     "id": id,
-    "phase": phase,
-    "nutrition": List<dynamic>.from(nutrition.map((x) => x)),
+    "0-6 months": the06Months == null ? null : List<dynamic>.from(the06Months.map((x) => x)),
+    "6-12 months": the612Months == null ? null : List<dynamic>.from(the612Months.map((x) => x)),
   };
 }
