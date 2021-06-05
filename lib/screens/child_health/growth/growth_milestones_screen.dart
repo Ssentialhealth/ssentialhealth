@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pocket_health/screens/child_health/growth_charts/growth_chart_screen.dart';
 import 'package:pocket_health/screens/child_health/normal_development/normal_development_screen.dart';
 import 'package:pocket_health/widgets/adult_unwell_menu_items.dart';
 
@@ -31,7 +32,9 @@ class _GrowthAndMilestonesState extends State<GrowthAndMilestones> {
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: AdultUnwellMenuItems(text: "Growth Tables & Charts",),
+                child: AdultUnwellMenuItems(text: "Growth Tables & Charts",press: (){
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => GrowthChartScreen()));
+                },),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
