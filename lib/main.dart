@@ -6,6 +6,7 @@ import 'package:pocket_health/bloc/child_health/child_resource/child_resource_bl
 import 'package:pocket_health/bloc/child_health/child_resource_detail/child_resource_detail_bloc.dart';
 import 'package:pocket_health/bloc/child_health/congenital_condition/congenital_condition_bloc.dart';
 import 'package:pocket_health/bloc/child_health/congenital_detail/congenital_detail_bloc.dart';
+import 'package:pocket_health/bloc/child_health/delayed_milestones/delayed_milestone_bloc.dart';
 import 'package:pocket_health/bloc/child_health/details_bloc/child_condition_detail_bloc.dart';
 import 'package:pocket_health/bloc/child_health/growth_charts/growth_chart_bloc.dart';
 import 'package:pocket_health/bloc/child_health/normal_development/normal_development_bloc.dart';
@@ -28,6 +29,7 @@ import 'package:pocket_health/repository/chilren_resource_detail_repo.dart';
 import 'package:pocket_health/repository/conditionDetailRepo.dart';
 import 'package:pocket_health/repository/congenital_conditions_repo.dart';
 import 'package:pocket_health/repository/congenital_details_repo.dart';
+import 'package:pocket_health/repository/delayed_milestones_repo.dart';
 import 'package:pocket_health/repository/emergencyContactRepo.dart';
 import 'package:pocket_health/repository/forgotPasswordRepo.dart';
 import 'package:pocket_health/repository/growth_charts_repo.dart';
@@ -85,6 +87,7 @@ void main() {
   final CongenitalConditionsRepo congenitalConditionsRepo = CongenitalConditionsRepo(ApiService(http.Client()),);
   final CongenitalConditionDetailRepo congenitalConditionDetailRepo = CongenitalConditionDetailRepo(ApiService(http.Client()),);
   final GrowthChartsRepo growthChartsRepo = GrowthChartsRepo(ApiService(http.Client()),);
+  final DelayedMilestonesRepo delayedMilestonesRepo = DelayedMilestonesRepo(ApiService(http.Client()),);
 
   Bloc.observer = SimpleBlocObserver();
   runApp(MyApp(
@@ -110,6 +113,7 @@ void main() {
     congenitalConditionsRepo: congenitalConditionsRepo,
     congenitalConditionDetailRepo: congenitalConditionDetailRepo,
     growthChartsRepo: growthChartsRepo,
+    delayedMilestonesRepo: delayedMilestonesRepo,
   ));
 }
 
@@ -136,9 +140,10 @@ class MyApp extends StatelessWidget {
   final CongenitalConditionsRepo congenitalConditionsRepo;
   final CongenitalConditionDetailRepo congenitalConditionDetailRepo;
   final GrowthChartsRepo growthChartsRepo;
+  final DelayedMilestonesRepo delayedMilestonesRepo;
   const MyApp({Key key, @required this.forgotPasswordRepo,@required this.normalDevelopmentRepo,@required this.nutritionRepo,@required this.childConditionRepo,@required this.childConditionDetailRepo,@required this.searchOrganRepo,@required this.symptomDetailsRepo,@required this.searchConditionRepo,@required this.adultUnwellRepo,@required this.organsRepo,@required this.organDetailRepo,
     @required this.hotlinesRepo,@required this.loginRepository,
-    @required this.emergencyContactRepo,@required this.userProfileRepo,@required this.conditionDetailsRepo,@required this.practitionerProfileRepo,@required this.childResourceRepo,@required this.childResourceDetailRepo,@required this.congenitalConditionDetailRepo,@required this.congenitalConditionsRepo,@required this.growthChartsRepo,}) : super(key: key);
+    @required this.emergencyContactRepo,@required this.userProfileRepo,@required this.conditionDetailsRepo,@required this.practitionerProfileRepo,@required this.childResourceRepo,@required this.childResourceDetailRepo,@required this.congenitalConditionDetailRepo,@required this.congenitalConditionsRepo,@required this.growthChartsRepo,@required this.delayedMilestonesRepo,}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -169,6 +174,7 @@ class MyApp extends StatelessWidget {
           BlocProvider(create: (context) => CongenitalConditionBloc(congenitalConditionsRepo: congenitalConditionsRepo),),
           BlocProvider(create: (context) => CongenitalConditionDetailsBloc(congenitalDetailDetailRepo: congenitalConditionDetailRepo),),
           BlocProvider(create: (context) => GrowthChartBloc(growthChartsRepo: growthChartsRepo),),
+          BlocProvider(create: (context) => DelayedMilestoneBloc(delayedMilestonesRepo: delayedMilestonesRepo),),
 
         ],
         child: MaterialApp(

@@ -14,6 +14,7 @@ import 'package:pocket_health/models/child_conditions_model.dart';
 import 'package:pocket_health/models/child_resource_detail_model.dart';
 import 'package:pocket_health/models/children_resources_model.dart';
 import 'package:pocket_health/models/conditionDetailsModel.dart';
+import 'package:pocket_health/models/delayed_milestone_model.dart';
 import 'package:pocket_health/models/emergency_contact.dart';
 import 'package:pocket_health/models/growth_chart_model.dart';
 import 'package:pocket_health/models/hotlines.dart';
@@ -150,6 +151,7 @@ class ApiService {
     return congenitalConditionsModelFromJson(response.body);
   }
 
+  //Growth Chart Fetch
   Future<GrowthChartModel> fetchGrowthCharts()async{
     final response = await this.httpClient.get("https://ssential.herokuapp.com/api/child_health/growth_charts/");
     if(response.statusCode != 200){
@@ -158,6 +160,17 @@ class ApiService {
     print(response.body);
 
     return growthChartModelFromJson(response.body);
+  }
+
+  //
+  Future<DelayedMilestoneModel> fetchDelayedMilestones()async{
+    final response = await this.httpClient.get("https://ssential.herokuapp.com/api/child_health/delayed_milestones/");
+    if(response.statusCode != 200){
+      throw Exception("Error Fetching condition");
+    }
+    print(response.body);
+
+    return delayedMilestoneModelFromJson(response.body);
   }
 
 
