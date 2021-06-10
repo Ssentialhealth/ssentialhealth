@@ -20,7 +20,13 @@ class _UnwellChildDetailsState extends State<UnwellChildDetails> {
         backgroundColor: Color(0xFF00FFFF),
         centerTitle: true,
       ),
-      body: ChildDetailsData(),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            ChildDetailsData(),
+          ],
+        ),
+      ),
     );
   }
 }

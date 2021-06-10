@@ -60,16 +60,16 @@ class _UnwellChildScreenState extends State<UnwellChildScreen> {
                             ),
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: GestureDetector(
-                              onTap: ()async{
-                                // Navigator.push(context, MaterialPageRoute(builder: (context) => Organs()));
-
-                              },
-                              child: Icon(Icons.menu,size: 32.0)
-                          ),
-                        ),
+                        // Padding(
+                        //   padding: const EdgeInsets.all(8.0),
+                        //   child: GestureDetector(
+                        //       onTap: ()async{
+                        //         // Navigator.push(context, MaterialPageRoute(builder: (context) => Organs()));
+                        //
+                        //       },
+                        //       child: Icon(Icons.menu,size: 32.0)
+                        //   ),
+                        // ),
                       ],
                     ),
                     textValue == null ?

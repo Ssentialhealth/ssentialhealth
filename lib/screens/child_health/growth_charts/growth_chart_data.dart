@@ -59,9 +59,26 @@ class GrowthChartData extends StatelessWidget {
                                             itemCount: growthChart.links.length,
                                             itemBuilder: (BuildContext context,index){
                                               final linksList = growthChart.links[index] ;
-                                              return  Align(
-                                                  alignment: Alignment.topLeft,
-                                                  child: Image.network(linksList)
+                                              return  Column(
+                                                children: [
+                                                  Align(
+                                                      alignment: Alignment.center,
+                                                      child: Image.network(linksList)
+                                                  ),
+                                                  SizedBox(height: 5.h,),
+                                                  Align(
+                                                      alignment: Alignment.topLeft,
+                                                      child: Text("Link to Source")
+                                                  ),
+                                                  Markdown(
+                                                      shrinkWrap: true,
+                                                      physics: NeverScrollableScrollPhysics(),
+                                                      styleSheet: MarkdownStyleSheet(
+                                                          h2: simpleTextStyle()
+                                                      ),
+                                                      data: linksList
+                                                  ),
+                                                ],
                                               );
                                             }
                                         ),

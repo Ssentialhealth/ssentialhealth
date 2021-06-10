@@ -58,32 +58,32 @@ class ChildDetailsData extends StatelessWidget {
                     ),
                     SizedBox(height: 12,),
                     //Medication List
-                    // Container(
-                    //   constraints: BoxConstraints(minHeight: 10.h),
-                    //   child: ListView.builder(
-                    //     shrinkWrap: true,
-                    //     physics: NeverScrollableScrollPhysics(),
-                    //     itemCount: state.childConditionsDetailModel.,
-                    //     itemBuilder: (BuildContext context,index){
-                    //       final accident = state.childConditionsDetailModel.medications[index];
-                    //       return Container(
-                    //           child: Padding(
-                    //               padding: const EdgeInsets.symmetric(horizontal:8.0),
-                    //               child:Markdown(
-                    //                   shrinkWrap: true,
-                    //                   physics: NeverScrollableScrollPhysics(),
-                    //                   styleSheet: MarkdownStyleSheet(
-                    //                       h2: simpleTextStyle()
-                    //                   ),
-                    //                   data: "• "+accident
-                    //               ),
-                    //
-                    //
-                    //           )
-                    //       );
-                    //     },
-                    //   ),
-                    // ),
+                    Container(
+                      constraints: BoxConstraints(minHeight: 10.h),
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: state.childConditionsDetailModel.medication.above6Years.length,
+                        itemBuilder: (BuildContext context,index){
+                          final accident = state.childConditionsDetailModel.medication.above6Years[index];
+                          return Container(
+                              child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal:8.0),
+                                  child:Markdown(
+                                      shrinkWrap: true,
+                                      physics: NeverScrollableScrollPhysics(),
+                                      styleSheet: MarkdownStyleSheet(
+                                          h2: simpleTextStyle()
+                                      ),
+                                      data: "• "+accident
+                                  ),
+
+
+                              )
+                          );
+                        },
+                      ),
+                    ),
                     //Treatment
                     Align(
                       alignment: Alignment.topLeft,
