@@ -9,6 +9,7 @@ import 'package:pocket_health/bloc/child_health/congenital_detail/congenital_det
 import 'package:pocket_health/bloc/child_health/delayed_milestones/delayed_milestone_bloc.dart';
 import 'package:pocket_health/bloc/child_health/details_bloc/child_condition_detail_bloc.dart';
 import 'package:pocket_health/bloc/child_health/growth_charts/growth_chart_bloc.dart';
+import 'package:pocket_health/bloc/child_health/immunization_schedule/immunization_schedule_bloc.dart';
 import 'package:pocket_health/bloc/child_health/normal_development/normal_development_bloc.dart';
 import 'package:pocket_health/bloc/child_health/nutrition_bloc/nutrition_bloc.dart';
 import 'package:pocket_health/bloc/emergency_contact/emergencyContactBloc.dart';
@@ -34,6 +35,7 @@ import 'package:pocket_health/repository/emergencyContactRepo.dart';
 import 'package:pocket_health/repository/forgotPasswordRepo.dart';
 import 'package:pocket_health/repository/growth_charts_repo.dart';
 import 'package:pocket_health/repository/hotline_repo.dart';
+import 'package:pocket_health/repository/immunization_schedule_repo.dart';
 import 'package:pocket_health/repository/loginRepo.dart';
 import 'package:pocket_health/repository/normal_development_repo.dart';
 import 'package:pocket_health/repository/nutrition_repo.dart';
@@ -88,6 +90,7 @@ void main() {
   final CongenitalConditionDetailRepo congenitalConditionDetailRepo = CongenitalConditionDetailRepo(ApiService(http.Client()),);
   final GrowthChartsRepo growthChartsRepo = GrowthChartsRepo(ApiService(http.Client()),);
   final DelayedMilestonesRepo delayedMilestonesRepo = DelayedMilestonesRepo(ApiService(http.Client()),);
+  final ImmunizationScheduleRepo immunizationScheduleRepo = ImmunizationScheduleRepo(ApiService(http.Client()),);
 
   Bloc.observer = SimpleBlocObserver();
   runApp(MyApp(
@@ -114,6 +117,7 @@ void main() {
     congenitalConditionDetailRepo: congenitalConditionDetailRepo,
     growthChartsRepo: growthChartsRepo,
     delayedMilestonesRepo: delayedMilestonesRepo,
+    immunizationScheduleRepo: immunizationScheduleRepo,
   ));
 }
 
@@ -141,9 +145,10 @@ class MyApp extends StatelessWidget {
   final CongenitalConditionDetailRepo congenitalConditionDetailRepo;
   final GrowthChartsRepo growthChartsRepo;
   final DelayedMilestonesRepo delayedMilestonesRepo;
+  final ImmunizationScheduleRepo immunizationScheduleRepo;
   const MyApp({Key key, @required this.forgotPasswordRepo,@required this.normalDevelopmentRepo,@required this.nutritionRepo,@required this.childConditionRepo,@required this.childConditionDetailRepo,@required this.searchOrganRepo,@required this.symptomDetailsRepo,@required this.searchConditionRepo,@required this.adultUnwellRepo,@required this.organsRepo,@required this.organDetailRepo,
     @required this.hotlinesRepo,@required this.loginRepository,
-    @required this.emergencyContactRepo,@required this.userProfileRepo,@required this.conditionDetailsRepo,@required this.practitionerProfileRepo,@required this.childResourceRepo,@required this.childResourceDetailRepo,@required this.congenitalConditionDetailRepo,@required this.congenitalConditionsRepo,@required this.growthChartsRepo,@required this.delayedMilestonesRepo,}) : super(key: key);
+    @required this.emergencyContactRepo,@required this.userProfileRepo,@required this.conditionDetailsRepo,@required this.practitionerProfileRepo,@required this.childResourceRepo,@required this.childResourceDetailRepo,@required this.congenitalConditionDetailRepo,@required this.congenitalConditionsRepo,@required this.growthChartsRepo,@required this.delayedMilestonesRepo,@required this.immunizationScheduleRepo,}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -175,6 +180,7 @@ class MyApp extends StatelessWidget {
           BlocProvider(create: (context) => CongenitalConditionDetailsBloc(congenitalDetailDetailRepo: congenitalConditionDetailRepo),),
           BlocProvider(create: (context) => GrowthChartBloc(growthChartsRepo: growthChartsRepo),),
           BlocProvider(create: (context) => DelayedMilestoneBloc(delayedMilestonesRepo: delayedMilestonesRepo),),
+          BlocProvider(create: (context) => ImmunizationScheduleBloc(immunizationScheduleRepo: immunizationScheduleRepo),),
 
         ],
         child: MaterialApp(

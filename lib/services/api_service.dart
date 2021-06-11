@@ -18,6 +18,7 @@ import 'package:pocket_health/models/delayed_milestone_model.dart';
 import 'package:pocket_health/models/emergency_contact.dart';
 import 'package:pocket_health/models/growth_chart_model.dart';
 import 'package:pocket_health/models/hotlines.dart';
+import 'package:pocket_health/models/immunization_schedule_model.dart';
 import 'package:pocket_health/models/loginModel.dart';
 import 'package:pocket_health/models/normal_development_Model.dart';
 import 'package:pocket_health/models/nutrition_model.dart';
@@ -174,7 +175,6 @@ class ApiService {
   }
 
 
-
   //Child Chronic condition Detail
   Future<CongenitalDetailModel> fetchCongenitalDetails(int id)async{
     final response = await this.httpClient.get("https://ssential.herokuapp.com/api/child_health/congenital_conditions/$id");
@@ -237,6 +237,29 @@ class ApiService {
     }
     print(response.body);
     return organDetailsModelFromJson(response.body);
+  }
+
+  //Immunization Schedule Creating
+  Future<ImmunizationScheduleModel> createSchedule(String childName,String childDob) async{
+    Map<String, dynamic> schedule = Map();
+    schedule['child_name'] = childName;
+    schedule['child_dob'] = childDob;
+
+    _token = await getStringValuesSF();
+
+    final response = await httpClient.post(Uri.encodeFull(immunizationEndpoint),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + _token
+      },
+      body: jsonEncode(schedule)
+    );
+
+    if(response.statusCode != 200) {
+      throw Exception('Error Creating Schedule');
+    }
+    final createSchedule = jsonDecode(response.body);
+    return ImmunizationScheduleModel.fromJson(createSchedule);
   }
 
   //User Emergency Contacts Endpoints Fetch
