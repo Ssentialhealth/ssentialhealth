@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:pocket_health/bloc/child_health/all_schedules/all_schedules_bloc.dart';
+import 'package:pocket_health/bloc/child_health/all_schedules/all_schedules_event.dart';
+import 'package:pocket_health/screens/child_health/all_schedules/all_schedules_screen.dart';
 import 'package:pocket_health/screens/child_health/congenital_conditions/congenital_condition_screen.dart';
 import 'package:pocket_health/screens/child_health/immunization_schedule/immunization_schedule_screen.dart';
 import 'package:pocket_health/screens/child_health/nutrition/nutrition_screen.dart';
 import 'package:pocket_health/screens/child_health/resource/child_resource_screen.dart';
 import 'package:pocket_health/screens/child_health/unwell_child/unwell_child_screen.dart';
 import 'package:pocket_health/widgets/child_card_item.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../growth/growth_milestones_screen.dart';
 
@@ -17,11 +22,14 @@ class CHIScreen extends StatefulWidget {
 }
 
 class _CHIScreenState extends State<CHIScreen> {
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  String _token = "...";
 
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: Color(0xFFEAFCF6),
       appBar: AppBar(
         title: Text("Child Health & Immunization",style: TextStyle(fontSize: 18),),
@@ -34,8 +42,14 @@ class _CHIScreenState extends State<CHIScreen> {
               ChildCardItem(image: "assets/images/child_unwell.png", press: (){
                 Navigator.push(context, MaterialPageRoute(builder: (context) => UnwellChildScreen()));
               }),
-              ChildCardItem(image: "assets/images/immunisation_chart.png", press: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context) => ImmunizationChartScreen()));
+              ChildCardItem(image: "assets/images/immunisation_chart.png", press: ()async{
+                _token = await getStringValuesSF();
+                if(_token != null){
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => AllSchedules()));
+                }else{
+                  _showErrorSnack("Login To Access This Feature");
+                }
+
               }),
               ChildCardItem(image: "assets/images/growth_and_milestones.png", press: (){
                 Navigator.push(context, MaterialPageRoute(builder: (context) => GrowthAndMilestones()));
@@ -56,5 +70,32 @@ class _CHIScreenState extends State<CHIScreen> {
       ),
 
     );
+  }
+  getStringValuesSF() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    //Return String
+    String stringValue = prefs.getString('token');
+    return stringValue;
+  }
+  _showErrorSnack(String message) {
+    final snackbar = SnackBar(
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: Color(0xff163C4D),
+      duration: Duration(milliseconds: 2500),
+      content: Text(
+        "$message",
+        style: TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+    // ignore: deprecated_member_use
+    _scaffoldKey.currentState.hideCurrentSnackBar();
+    // ignore: deprecated_member_use
+    _scaffoldKey.currentState.showSnackBar(snackbar);
+    // setState(() {
+    //   _isSubmitting = false;
+    // });
   }
 }

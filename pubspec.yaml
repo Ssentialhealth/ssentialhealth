@@ -51,6 +51,7 @@ dependencies:
   flutter_svg: ^0.19.2
   buttons_tabbar: ^1.1.2
   syncfusion_flutter_pdfviewer: ^18.4.48-beta
+  pull_to_refresh: ^2.0.0
 
 
 flutter_icons:

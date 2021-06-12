@@ -1,8 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:pocket_health/models/child_chronic_detail_model.dart';
-import 'package:pocket_health/models/child_condition_detail_model.dart';
-import 'package:pocket_health/models/conditionDetailsModel.dart';
-import 'package:pocket_health/models/hotlines.dart';
+
 
 abstract class CongenitalConditionDetailsState extends Equatable{
   const CongenitalConditionDetailsState();

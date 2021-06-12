@@ -29,7 +29,7 @@ class ImmunizationScheduleBloc extends Bloc<ImmunizationScheduleEvent,Immunizati
 
       } catch (e) {
         yield ImmunizationScheduleError(e.toString());
-        print("Name:"+e.toString());
+        print("Error:"+e.toString());
       }
     }
   }

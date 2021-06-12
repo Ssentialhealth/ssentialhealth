@@ -6,7 +6,9 @@ import 'package:http/http.dart' as http;
 import 'package:pocket_health/bloc/profile/userProfileBloc.dart';
 import 'package:pocket_health/models/ForgotPassword.dart';
 import 'package:pocket_health/models/PractitionerProfile.dart';
+import 'package:pocket_health/models/Schedule_detail_model.dart';
 import 'package:pocket_health/models/adult_unwell_model.dart';
+import 'package:pocket_health/models/all_schedules_model.dart';
 import 'package:pocket_health/models/child_chronic_condition_model.dart';
 import 'package:pocket_health/models/child_chronic_detail_model.dart';
 import 'package:pocket_health/models/child_condition_detail_model.dart';
@@ -255,12 +257,51 @@ class ApiService {
       body: jsonEncode(schedule)
     );
 
+    print(response.body);
     if(response.statusCode != 200) {
       throw Exception('Error Creating Schedule');
     }
     final createSchedule = jsonDecode(response.body);
     return ImmunizationScheduleModel.fromJson(createSchedule);
   }
+
+  //Fetching all Schedules
+  Future<List<AllScheduleModel>> fetchAllSchedule()async{
+
+    _token = await getStringValuesSF();
+
+    final response = await this.httpClient.get(Uri.encodeFull(immunizationEndpoint),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + _token
+        },
+    );
+    print(_token);
+    print(response.body);
+    if(response.statusCode != 200){
+      throw Exception("Error Fetching condition");
+    }
+    return allScheduleModelFromJson(response.body);
+  }
+
+  //Schedule detail
+  Future<ScheduleDetail> fetchScheduleById(int id)async{
+    _token = await getStringValuesSF();
+
+    final response = await this.httpClient.get(Uri.encodeFull("https://ssential.herokuapp.com/api/child_health/immunization_schedule/$id"),
+      headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + _token
+      },
+    );
+    if(response.statusCode != 200){
+      throw Exception('Error Fetching Schedule Details');
+    }
+    print(response.body);
+    return scheduleDetailFromJson(response.body);
+  }
+
+
 
   //User Emergency Contacts Endpoints Fetch
   Future<EmergencyContact> addContacts(String ambulanceName, countryCode,

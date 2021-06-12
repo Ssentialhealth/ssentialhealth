@@ -6,3 +6,4 @@ final String createPractitionerProfileEndpoint = "https://ssential.herokuapp.com
 final String addContactsEndpoint = "https://ssential.herokuapp.com/api/user/emergency_details/";
 final String getHotlines = "https://ssential.herokuapp.com/api/emergency/hotlines?country=";
 final String immunizationEndpoint = "https://ssential.herokuapp.com/api/child_health/immunization_schedule/";
+final String allSchedulesEndpoint = "https://ssential.herokuapp.com/api/child_health/immunization_schedule/";
