@@ -22,6 +22,7 @@ class DetailsData extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10),
                 child: Column(
                   children: [
+                    //Overview title
                     Align(
                       alignment: Alignment.topLeft,
                       child: Text("Overview",
@@ -34,6 +35,7 @@ class DetailsData extends StatelessWidget {
                     // Text(state.conditionDetails.overview,
                     //     style:simpleTextStyle()
                     // ),
+                    //overview data
                     Markdown(
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
@@ -42,14 +44,89 @@ class DetailsData extends StatelessWidget {
                       ),
                       data: state.conditionDetails.overview
                     ),
-                    SizedBox(height: 8.h,),
+                    SizedBox(height: 12,),
+                    //Medication
                     Align(
                       alignment: Alignment.topLeft,
-                      child: Text("Common Management",
+                      child: Text("Medications",
                           style:TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold
+                          )),
+                    ),
+                    SizedBox(height: 12,),
+                    //Medication List
+                    Container(
+                      constraints: BoxConstraints(minHeight: 10.h),
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: state.conditionDetails.medications.length,
+                        itemBuilder: (BuildContext context,index){
+                          final accident = state.conditionDetails.medications[index];
+                          return Container(
+                              child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal:8.0),
+                                  child:Markdown(
+                                      shrinkWrap: true,
+                                      physics: NeverScrollableScrollPhysics(),
+                                      styleSheet: MarkdownStyleSheet(
+                                          h2: simpleTextStyle()
+                                      ),
+                                      data: "• "+accident
+                                  ),
 
+
+                              )
+                          );
+                        },
+                      ),
+                    ),
+                    //Treatment
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: Text("Treatment",
+                          style:TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold
+                          )),
+                    ),
+                    SizedBox(height: 12,),
+                    Markdown(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        styleSheet: MarkdownStyleSheet(
+                            h2: simpleTextStyle()
+                        ),
+                        data: state.conditionDetails.treatment
+                    ),
+                    SizedBox(height: 12,),
+                    //Investigation
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: Text("Investigation",
+                          style:TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold
+                          )),
+                    ),
+                    SizedBox(height: 12,),
+                    Markdown(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        styleSheet: MarkdownStyleSheet(
+                            h2: simpleTextStyle()
+                        ),
+                        data: state.conditionDetails.investigation
+                    ),
+                    //Prevention
+                    SizedBox(height: 12,),
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: Text("Prevention",
+                          style:TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold
                           )),
                     ),
                     SizedBox(height: 12,),
@@ -58,44 +135,9 @@ class DetailsData extends StatelessWidget {
                       child: ListView.builder(
                         shrinkWrap: true,
                         physics: NeverScrollableScrollPhysics(),
-                        itemCount: state.conditionDetails.commonManagement.length,
+                        itemCount: state.conditionDetails.prevention.length,
                         itemBuilder: (BuildContext context,index){
-                        final accident = state.conditionDetails.commonManagement[index];
-                        return Container(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child:  Markdown(
-                                shrinkWrap: true,
-                                physics: NeverScrollableScrollPhysics(),
-                                styleSheet: MarkdownStyleSheet(
-                                    h2: simpleTextStyle()
-                                ),
-                                data: accident
-                            ),
-
-                            )
-                        );
-                    },
-                  ),
-                ),
-                    SizedBox(height: 12,),
-                    Align(
-                      alignment: Alignment.topLeft,
-                      child: Text("Possible Causing Conditions",
-                          style:TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold
-                          )),
-                    ),
-                    SizedBox(height: 12,),
-                    Container(
-                      constraints: BoxConstraints(minHeight: 10.h),
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        itemCount: state.conditionDetails.possibleCausingConditions.length,
-                        itemBuilder: (BuildContext context,index){
-                          final accident = state.conditionDetails.possibleCausingConditions[index];
+                          final accident = state.conditionDetails.prevention[index];
                           return Container(
                               child: Padding(
                                   padding: const EdgeInsets.all(8.0),
@@ -106,6 +148,37 @@ class DetailsData extends StatelessWidget {
                         },
                       ),
                     ),
+                    //Complications
+                    SizedBox(height: 12,),
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: Text("Complications",
+                          style:TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold
+                          )),
+                    ),
+                    Container(
+                      constraints: BoxConstraints(minHeight: 10.h),
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: state.conditionDetails.complications.length,
+                        itemBuilder: (BuildContext context,index){
+                          final accident = state.conditionDetails.complications[index];
+                          return Container(
+                              child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text("• "+accident)
+
+                              )
+                          );
+                        },
+                      ),
+                    ),
+                    //other conditions
+
+
                   ],
                 ),
               ),

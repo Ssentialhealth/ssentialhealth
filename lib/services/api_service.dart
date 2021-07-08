@@ -6,16 +6,31 @@ import 'package:http/http.dart' as http;
 import 'package:pocket_health/bloc/profile/userProfileBloc.dart';
 import 'package:pocket_health/models/ForgotPassword.dart';
 import 'package:pocket_health/models/PractitionerProfile.dart';
+import 'package:pocket_health/models/Schedule_detail_model.dart';
 import 'package:pocket_health/models/adult_unwell_model.dart';
+import 'package:pocket_health/models/all_schedules_model.dart';
+import 'package:pocket_health/models/child_chronic_condition_model.dart';
+import 'package:pocket_health/models/child_chronic_detail_model.dart';
+import 'package:pocket_health/models/child_condition_detail_model.dart';
+import 'package:pocket_health/models/child_conditions_model.dart';
+import 'package:pocket_health/models/child_resource_detail_model.dart';
+import 'package:pocket_health/models/children_resources_model.dart';
 import 'package:pocket_health/models/conditionDetailsModel.dart';
+import 'package:pocket_health/models/delayed_milestone_model.dart';
 import 'package:pocket_health/models/emergency_contact.dart';
+import 'package:pocket_health/models/growth_chart_model.dart';
 import 'package:pocket_health/models/hotlines.dart';
+import 'package:pocket_health/models/immunization_schedule_model.dart';
 import 'package:pocket_health/models/loginModel.dart';
+import 'package:pocket_health/models/normal_development_Model.dart';
+import 'package:pocket_health/models/nutrition_model.dart';
 import 'package:pocket_health/models/organDetailsModel.dart';
 import 'package:pocket_health/models/organsModel.dart';
 import 'package:pocket_health/models/organs_search_model.dart';
 import 'package:pocket_health/models/profile.dart';
 import 'package:pocket_health/models/search_condition_model.dart';
+import 'package:pocket_health/models/symptom_model.dart';
+import 'package:pocket_health/models/symptoms_detail_model.dart';
 import 'package:pocket_health/utils/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -42,7 +57,7 @@ class ApiService {
 
   //Search Conditions
   Future<List<SearchCondition>> fetchSearchedCondition(String condition)async {
-    final response = await this.httpClient.get("https://ssential.herokuapp.com/api/conditions/adult_unwell/?possible_causing_conditions=$condition");
+    final response = await this.httpClient.get("https://ssential.herokuapp.com/api/conditions/symptoms/?overview=$condition");
     if(response.statusCode != 200){
       throw Exception('Error Fetching Hotlines');
     }
@@ -62,16 +77,125 @@ class ApiService {
     return searchOrganFromJson(response.body);
   }
 
-  //All Symptoms Endpoint Fetch
-  Future<List<AdultUnwellModel>> fetchConditions()async{
-    final response = await this.httpClient.get("https://ssential.herokuapp.com/api/conditions/adult_unwell");
+  //All Condition Endpoint Fetch
+  Future<List<SymptomModel>> fetchConditions()async{
+    final response = await this.httpClient.get("https://ssential.herokuapp.com/api/conditions/symptoms");
     if(response.statusCode != 200){
       throw Exception('Error Fetching Conditions');
     }
 
     print(response.body);
 
-    return adultUnwellModelFromJson(response.body);
+    return symptomModelFromJson(response.body);
+  }
+
+  Future<List<NutritionModel>> fetchNutrition()async{
+    final response = await this.httpClient.get("https://ssential.herokuapp.com/api/child_health/nutrition/");
+    if(response.statusCode != 200){
+      throw Exception('Error Fetching Nutrition');
+    }
+
+    print(response.body);
+
+    return nutritionModelFromJson(response.body);
+  }
+
+  Future<NormalDevelopmentModel> fetchNormalDevelopment()async{
+    final response = await this.httpClient.get("https://ssential.herokuapp.com/api/child_health/normal_development/");
+    if(response.statusCode != 200){
+      throw Exception('Error Fetching Nutrition');
+    }
+
+    print(response.body);
+
+    return normalDevelopmentModelFromJson(response.body);
+  }
+
+  //All Child Conditions Fetch
+  Future<List<ChildConditionsModel>> fetchChildConditions()async{
+    final response = await this.httpClient.get("https://ssential.herokuapp.com/api/conditions/child_unwell");
+    if(response.statusCode != 200){
+      throw Exception("Error Fetching condition");
+    }
+    print(response.body);
+
+    return childConditionsModelFromJson(response.body);
+  }
+
+  //Children Resources
+  Future<List<ChildResourceModel>> fetchChildResource()async{
+    final response = await this.httpClient.get("https://ssential.herokuapp.com/api/child_health/children_resources/");
+    if(response.statusCode != 200){
+      throw Exception("Error Fetching condition");
+    }
+    print(response.body);
+
+    return childResourceModelFromJson(response.body);
+  }
+
+  //Children Resource Details
+  Future<ChildResourceDetailModel> fetchResourceDetails(int id)async{
+    final response = await this.httpClient.get("https://ssential.herokuapp.com/api/child_health/children_resources/$id");
+    if(response.statusCode != 200){
+      throw Exception('Error Fetching Symptom Detail');
+    }
+    print(response.body);
+    return childResourceDetailModelFromJson(response.body);
+  }
+
+  //Child Chronic Condition
+  Future<List<CongenitalConditionsModel>> fetchCongenitalConditions()async{
+    final response = await this.httpClient.get("https://ssential.herokuapp.com/api/child_health/congenital_conditions/");
+    if(response.statusCode != 200){
+      throw Exception("Error Fetching condition");
+    }
+    print(response.body);
+
+    return congenitalConditionsModelFromJson(response.body);
+  }
+
+  //Growth Chart Fetch
+  Future<GrowthChartModel> fetchGrowthCharts()async{
+    final response = await this.httpClient.get("https://ssential.herokuapp.com/api/child_health/growth_charts/");
+    if(response.statusCode != 200){
+      throw Exception("Error Fetching condition");
+    }
+    print(response.body);
+
+    return growthChartModelFromJson(response.body);
+  }
+
+  //
+  Future<DelayedMilestoneModel> fetchDelayedMilestones()async{
+    final response = await this.httpClient.get("https://ssential.herokuapp.com/api/child_health/delayed_milestones/");
+    if(response.statusCode != 200){
+      throw Exception("Error Fetching condition");
+    }
+    print(response.body);
+
+    return delayedMilestoneModelFromJson(response.body);
+  }
+
+
+  //Child Chronic condition Detail
+  Future<CongenitalDetailModel> fetchCongenitalDetails(int id)async{
+    final response = await this.httpClient.get("https://ssential.herokuapp.com/api/child_health/congenital_conditions/$id");
+    if(response.statusCode != 200){
+      throw Exception('Error Fetching Symptom Detail');
+    }
+    print(response.body);
+    return congenitalDetailModelFromJson(response.body);
+  }
+
+
+  //Symptoms Endpoint Details Fetch by ID
+  Future<SymptomDetail> fetchSymptomsDetails(int id)async{
+    final response = await this.httpClient.get("https://ssential.herokuapp.com/api/conditions/symptoms/$id");
+    if(response.statusCode != 200){
+      throw Exception('Error Fetching Symptom Detail');
+    }
+    print(response.body);
+    return symptomDetailFromJson(response.body);
   }
 
   //Symptoms Endpoint Details Fetch by ID
@@ -82,6 +206,16 @@ class ApiService {
     }
     print(response.body);
     return conditionDetailsFromJson(response.body);
+  }
+
+  //Child Conditions detail
+  Future<ChildConditionsDetailModel> fetchChildConditionDetails(int id)async{
+    final response = await this.httpClient.get("https://ssential.herokuapp.com/api/conditions/child_unwell/$id");
+    if(response.statusCode != 200){
+      throw Exception('Error Fetching Condition Details');
+    }
+    print(response.body);
+    return childConditionsDetailModelFromJson(response.body);
   }
 
   //All Organs Endpoint
@@ -106,6 +240,68 @@ class ApiService {
     print(response.body);
     return organDetailsModelFromJson(response.body);
   }
+
+  //Immunization Schedule Creating
+  Future<ImmunizationScheduleModel> createSchedule(String childName,String childDob) async{
+    Map<String, dynamic> schedule = Map();
+    schedule['child_name'] = childName;
+    schedule['child_dob'] = childDob;
+
+    _token = await getStringValuesSF();
+
+    final response = await httpClient.post(Uri.encodeFull(immunizationEndpoint),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + _token
+      },
+      body: jsonEncode(schedule)
+    );
+
+    print(response.body);
+    if(response.statusCode != 200) {
+      throw Exception('Error Creating Schedule');
+    }
+    final createSchedule = jsonDecode(response.body);
+    return ImmunizationScheduleModel.fromJson(createSchedule);
+  }
+
+  //Fetching all Schedules
+  Future<List<AllScheduleModel>> fetchAllSchedule()async{
+
+    _token = await getStringValuesSF();
+
+    final response = await this.httpClient.get(Uri.encodeFull(immunizationEndpoint),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + _token
+        },
+    );
+    print(_token);
+    print(response.body);
+    if(response.statusCode != 200){
+      throw Exception("Error Fetching condition");
+    }
+    return allScheduleModelFromJson(response.body);
+  }
+
+  //Schedule detail
+  Future<ScheduleDetail> fetchScheduleById(int id)async{
+    _token = await getStringValuesSF();
+
+    final response = await this.httpClient.get(Uri.encodeFull("https://ssential.herokuapp.com/api/child_health/immunization_schedule/$id"),
+      headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + _token
+      },
+    );
+    if(response.statusCode != 200){
+      throw Exception('Error Fetching Schedule Details');
+    }
+    print(response.body);
+    return scheduleDetailFromJson(response.body);
+  }
+
+
 
   //User Emergency Contacts Endpoints Fetch
   Future<EmergencyContact> addContacts(String ambulanceName, countryCode,

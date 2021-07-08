@@ -11,31 +11,51 @@ String searchConditionToJson(List<SearchCondition> data) => json.encode(List<dyn
 class SearchCondition {
   SearchCondition({
     this.id,
+    this.healthConditions,
     this.name,
     this.overview,
     this.commonManagement,
-    this.possibleCausingConditions,
+  });
+
+  int id;
+  List<HealthCondition> healthConditions;
+  String name;
+  String overview;
+  List<String> commonManagement;
+
+  factory SearchCondition.fromJson(Map<String, dynamic> json) => SearchCondition(
+    id: json["id"],
+    healthConditions: List<HealthCondition>.from(json["health_conditions"].map((x) => HealthCondition.fromJson(x))),
+    name: json["name"],
+    overview: json["overview"],
+    commonManagement: List<String>.from(json["common_management"].map((x) => x)),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "health_conditions": List<dynamic>.from(healthConditions.map((x) => x.toJson())),
+    "name": name,
+    "overview": overview,
+    "common_management": List<dynamic>.from(commonManagement.map((x) => x)),
+  };
+}
+
+class HealthCondition {
+  HealthCondition({
+    this.id,
+    this.name,
   });
 
   int id;
   String name;
-  String overview;
-  List<String> commonManagement;
-  List<String> possibleCausingConditions;
 
-  factory SearchCondition.fromJson(Map<String, dynamic> json) => SearchCondition(
+  factory HealthCondition.fromJson(Map<String, dynamic> json) => HealthCondition(
     id: json["id"],
     name: json["name"],
-    overview: json["overview"],
-    commonManagement: List<String>.from(json["common_management"].map((x) => x)),
-    possibleCausingConditions: List<String>.from(json["possible_causing_conditions"].map((x) => x)),
   );
 
   Map<String, dynamic> toJson() => {
     "id": id,
     "name": name,
-    "overview": overview,
-    "common_management": List<dynamic>.from(commonManagement.map((x) => x)),
-    "possible_causing_conditions": List<dynamic>.from(possibleCausingConditions.map((x) => x)),
   };
 }

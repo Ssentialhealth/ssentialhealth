@@ -49,6 +49,17 @@ InputDecoration dateFieldInputDecoration(String hintText){
 
 }
 
+InputDecoration dateInputDecoration(String hintText){
+  return InputDecoration.collapsed(
+      hintText: hintText,
+      hintStyle: TextStyle(
+        color: Colors.black,
+      ),
+
+  );
+
+}
+
 InputDecoration lockFieldInputDecoration(String hintText){
   return InputDecoration(
     contentPadding: new EdgeInsets.symmetric(vertical: 10.0,horizontal: 10.0),
@@ -86,6 +97,16 @@ InputDecoration inputFieldInputDecoration(String hintText){
         borderSide: BorderSide(color: Colors.black)
     ),
 
+  );
+
+}
+InputDecoration inputDeco(String hintText){
+  return InputDecoration.collapsed(
+    hintText: hintText,
+
+    hintStyle: TextStyle(
+      color: Colors.deepOrangeAccent,
+    ),
   );
 
 }

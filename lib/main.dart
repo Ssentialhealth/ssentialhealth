@@ -1,6 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pocket_health/bloc/adult_unwell/adultUnwellBloc.dart';
+import 'package:pocket_health/bloc/child_health/all_schedules/all_schedules_bloc.dart';
+import 'package:pocket_health/bloc/child_health/child_conditions_bloc.dart';
+import 'package:pocket_health/bloc/child_health/child_resource/child_resource_bloc.dart';
+import 'package:pocket_health/bloc/child_health/child_resource_detail/child_resource_detail_bloc.dart';
+import 'package:pocket_health/bloc/child_health/congenital_condition/congenital_condition_bloc.dart';
+import 'package:pocket_health/bloc/child_health/congenital_detail/congenital_detail_bloc.dart';
+import 'package:pocket_health/bloc/child_health/delayed_milestones/delayed_milestone_bloc.dart';
+import 'package:pocket_health/bloc/child_health/details_bloc/child_condition_detail_bloc.dart';
+import 'package:pocket_health/bloc/child_health/growth_charts/growth_chart_bloc.dart';
+import 'package:pocket_health/bloc/child_health/immunization_schedule/immunization_schedule_bloc.dart';
+import 'package:pocket_health/bloc/child_health/normal_development/normal_development_bloc.dart';
+import 'package:pocket_health/bloc/child_health/nutrition_bloc/nutrition_bloc.dart';
+import 'package:pocket_health/bloc/child_health/schedule_detail/schedule_detail_bloc.dart';
 import 'package:pocket_health/bloc/emergency_contact/emergencyContactBloc.dart';
 import 'package:pocket_health/bloc/hotlines/hotlinesBloc.dart';
 import 'package:pocket_health/bloc/login/loginBloc.dart';
@@ -10,17 +23,32 @@ import 'package:pocket_health/bloc/practitioner_profile/practitionerProfileBloc.
 import 'package:pocket_health/bloc/profile/userProfileBloc.dart';
 import 'package:pocket_health/bloc/search_conditions/search_condition_bloc.dart';
 import 'package:pocket_health/bloc/search_organ/search_organ_bloc.dart';
+import 'package:pocket_health/bloc/symptoms/details/symptoms_bloc.dart';
 import 'package:pocket_health/repository/adultUnwellRepo.dart';
+import 'package:pocket_health/repository/all_schedules_repo.dart';
+import 'package:pocket_health/repository/child_condition_detail_repo.dart';
+import 'package:pocket_health/repository/child_conditions_repo.dart';
+import 'package:pocket_health/repository/child_resource_repo.dart';
+import 'package:pocket_health/repository/chilren_resource_detail_repo.dart';
 import 'package:pocket_health/repository/conditionDetailRepo.dart';
+import 'package:pocket_health/repository/congenital_conditions_repo.dart';
+import 'package:pocket_health/repository/congenital_details_repo.dart';
+import 'package:pocket_health/repository/delayed_milestones_repo.dart';
 import 'package:pocket_health/repository/emergencyContactRepo.dart';
 import 'package:pocket_health/repository/forgotPasswordRepo.dart';
+import 'package:pocket_health/repository/growth_charts_repo.dart';
 import 'package:pocket_health/repository/hotline_repo.dart';
+import 'package:pocket_health/repository/immunization_schedule_repo.dart';
 import 'package:pocket_health/repository/loginRepo.dart';
+import 'package:pocket_health/repository/normal_development_repo.dart';
+import 'package:pocket_health/repository/nutrition_repo.dart';
 import 'package:pocket_health/repository/organDetailsRepo.dart';
 import 'package:pocket_health/repository/organsRepo.dart';
 import 'package:pocket_health/repository/practitionerProfileRepo.dart';
+import 'package:pocket_health/repository/schedule_detail_repo.dart';
 import 'package:pocket_health/repository/search_condition_repo.dart';
 import 'package:pocket_health/repository/search_organs_repo.dart';
+import 'package:pocket_health/repository/symptoms_repo.dart';
 import 'package:pocket_health/repository/userProfile_repo.dart';
 import 'package:pocket_health/screens/boarding/splash_screen.dart';
 import 'package:pocket_health/services/api_service.dart';
@@ -52,9 +80,24 @@ void main() {
   final SearchConditionRepo searchConditionRepo = SearchConditionRepo(ApiService(http.Client()),);
   final SearchOrganRepo searchOrganRepo = SearchOrganRepo(ApiService(http.Client()),);
   final ConditionDetailsRepo conditionDetailsRepo = ConditionDetailsRepo(ApiService(http.Client()),);
+  final ChildConditionDetailRepo childConditionDetailRepo = ChildConditionDetailRepo(ApiService(http.Client()),);
+  final SymptomDetailsRepo symptomDetailsRepo = SymptomDetailsRepo(ApiService(http.Client()),);
   final AdultUnwellRepo unwellRepo = AdultUnwellRepo(ApiService(http.Client()),);
+  final NutritionRepo nutritionRepo = NutritionRepo(ApiService(http.Client()),);
+  final ChildConditionsRepo childConditionRepo = ChildConditionsRepo(ApiService(http.Client()),);
   final OrgansRepo organsRepo = OrgansRepo(ApiService(http.Client()),);
   final OrganDetailsRepo organDetailsRepo = OrganDetailsRepo(ApiService(http.Client()),);
+  final NormalDevelopmentRepo normalDevelopmentRepo = NormalDevelopmentRepo(ApiService(http.Client()),);
+  final ChildResourceRepo childResourceRepo = ChildResourceRepo(ApiService(http.Client()),);
+  final ChildResourceDetailRepo childResourceDetailRepo = ChildResourceDetailRepo(ApiService(http.Client()),);
+  final CongenitalConditionsRepo congenitalConditionsRepo = CongenitalConditionsRepo(ApiService(http.Client()),);
+  final CongenitalConditionDetailRepo congenitalConditionDetailRepo = CongenitalConditionDetailRepo(ApiService(http.Client()),);
+  final GrowthChartsRepo growthChartsRepo = GrowthChartsRepo(ApiService(http.Client()),);
+  final DelayedMilestonesRepo delayedMilestonesRepo = DelayedMilestonesRepo(ApiService(http.Client()),);
+  final ImmunizationScheduleRepo immunizationScheduleRepo = ImmunizationScheduleRepo(ApiService(http.Client()),);
+  final AllScheduleRepo allScheduleRepo = AllScheduleRepo(ApiService(http.Client()),);
+  final ScheduleDetailRepo scheduleDetailRepo = ScheduleDetailRepo(ApiService(http.Client()),);
+
   Bloc.observer = SimpleBlocObserver();
   runApp(MyApp(
     forgotPasswordRepo: forgotPasswordRepo,
@@ -65,10 +108,24 @@ void main() {
     hotlinesRepo:hotlineRepo,
     searchConditionRepo:searchConditionRepo,
     adultUnwellRepo: unwellRepo,
+    childConditionRepo: childConditionRepo,
     conditionDetailsRepo: conditionDetailsRepo,
+    childConditionDetailRepo: childConditionDetailRepo,
     organsRepo: organsRepo,
     organDetailRepo: organDetailsRepo,
     searchOrganRepo: searchOrganRepo,
+    symptomDetailsRepo: symptomDetailsRepo,
+    nutritionRepo: nutritionRepo,
+    normalDevelopmentRepo: normalDevelopmentRepo,
+    childResourceRepo: childResourceRepo,
+    childResourceDetailRepo: childResourceDetailRepo,
+    congenitalConditionsRepo: congenitalConditionsRepo,
+    congenitalConditionDetailRepo: congenitalConditionDetailRepo,
+    growthChartsRepo: growthChartsRepo,
+    delayedMilestonesRepo: delayedMilestonesRepo,
+    immunizationScheduleRepo: immunizationScheduleRepo,
+    allScheduleRepo: allScheduleRepo,
+    scheduleDetailRepo: scheduleDetailRepo,
   ));
 }
 
@@ -81,13 +138,32 @@ class MyApp extends StatelessWidget {
   final HotlineRepo hotlinesRepo;
   final SearchConditionRepo searchConditionRepo;
   final ConditionDetailsRepo conditionDetailsRepo;
+  final NutritionRepo nutritionRepo;
+  final ChildConditionDetailRepo childConditionDetailRepo;
   final AdultUnwellRepo adultUnwellRepo;
+  final ChildConditionsRepo childConditionRepo;
   final OrgansRepo organsRepo;
   final OrganDetailsRepo organDetailRepo;
   final SearchOrganRepo searchOrganRepo;
-  const MyApp({Key key, @required this.forgotPasswordRepo,@required this.searchOrganRepo,@required this.searchConditionRepo,@required this.adultUnwellRepo,@required this.organsRepo,@required this.organDetailRepo,
+  final SymptomDetailsRepo symptomDetailsRepo;
+  final NormalDevelopmentRepo normalDevelopmentRepo;
+  final ChildResourceRepo childResourceRepo;
+  final ChildResourceDetailRepo childResourceDetailRepo;
+  final CongenitalConditionsRepo congenitalConditionsRepo;
+  final CongenitalConditionDetailRepo congenitalConditionDetailRepo;
+  final GrowthChartsRepo growthChartsRepo;
+  final DelayedMilestonesRepo delayedMilestonesRepo;
+  final ImmunizationScheduleRepo immunizationScheduleRepo;
+  final AllScheduleRepo allScheduleRepo;
+  final ScheduleDetailRepo scheduleDetailRepo;
+  const MyApp({Key key, @required this.forgotPasswordRepo,@required this.normalDevelopmentRepo,@required this.nutritionRepo,@required this.childConditionRepo,@required this.childConditionDetailRepo,@required this.searchOrganRepo,@required this.symptomDetailsRepo,@required this.searchConditionRepo,@required this.adultUnwellRepo,@required this.organsRepo,@required this.organDetailRepo,
     @required this.hotlinesRepo,@required this.loginRepository,
-    @required this.emergencyContactRepo,@required this.userProfileRepo,@required this.conditionDetailsRepo,@required this.practitionerProfileRepo}) : super(key: key);
+    @required this.emergencyContactRepo,@required this.userProfileRepo,
+    @required this.conditionDetailsRepo,@required this.practitionerProfileRepo,
+    @required this.childResourceRepo,@required this.childResourceDetailRepo,
+    @required this.congenitalConditionDetailRepo,@required this.congenitalConditionsRepo,
+    @required this.growthChartsRepo,@required this.delayedMilestonesRepo,
+    @required this.immunizationScheduleRepo,@required this.allScheduleRepo,@required this.scheduleDetailRepo,}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -105,9 +181,24 @@ class MyApp extends StatelessWidget {
           BlocProvider(create: (context) => SearchConditionBloc(searchConditionRepo: searchConditionRepo)),
           BlocProvider(create: (context) => ConditionDetailsBloc(conditionDetailsRepo: conditionDetailsRepo)),
           BlocProvider(create: (context) => AdultUnwellBloc(adultUnwellRepo: adultUnwellRepo),),
+          BlocProvider(create: (context) => ChildConditionBloc(childConditionsRepo: childConditionRepo),),
           BlocProvider(create: (context) => OrgansBloc(organsRepo: organsRepo),),
           BlocProvider(create: (context) => OrgansDetailsBloc(organDetailsRepo: organDetailRepo),),
-          BlocProvider(create: (context) => SearchOrganBloc(searchOrganRepo: searchOrganRepo),)
+          BlocProvider(create: (context) => SearchOrganBloc(searchOrganRepo: searchOrganRepo),),
+          BlocProvider(create: (context) => SymptomDetailsBloc(symptomDetailsRepo: symptomDetailsRepo),),
+          BlocProvider(create: (context) => ChildConditionDetailsBloc(childConditionDetailRepo: childConditionDetailRepo),),
+          BlocProvider(create: (context) => NutritionBloc(nutritionRepo: nutritionRepo),),
+          BlocProvider(create: (context) => NormalDevelopmentBloc(normalDevelopmentRepo: normalDevelopmentRepo),),
+          BlocProvider(create: (context) => ChildResourceBloc(childResourceRepo: childResourceRepo),),
+          BlocProvider(create: (context) => ChildResourceDetailsBloc(childResourceDetailRepo: childResourceDetailRepo),),
+          BlocProvider(create: (context) => CongenitalConditionBloc(congenitalConditionsRepo: congenitalConditionsRepo),),
+          BlocProvider(create: (context) => CongenitalConditionDetailsBloc(congenitalDetailDetailRepo: congenitalConditionDetailRepo),),
+          BlocProvider(create: (context) => GrowthChartBloc(growthChartsRepo: growthChartsRepo),),
+          BlocProvider(create: (context) => DelayedMilestoneBloc(delayedMilestonesRepo: delayedMilestonesRepo),),
+          BlocProvider(create: (context) => ImmunizationScheduleBloc(immunizationScheduleRepo: immunizationScheduleRepo),),
+          BlocProvider(create: (context) => AllSchedulesBloc(allSchedulesRepo: allScheduleRepo),),
+          BlocProvider(create: (context) => ScheduleDetailsBloc(scheduleDetailRepo: scheduleDetailRepo),),
+
         ],
         child: MaterialApp(
           debugShowCheckedModeBanner: false,

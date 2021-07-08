@@ -27,7 +27,7 @@ class _OrganDetailsScreenState extends State<OrganDetailsScreen> {
               padding: const EdgeInsets.all(8.0),
               child: Align(
                 alignment: Alignment.topLeft,
-                child: Text("Possible Cause Conditions",
+                child: Text("Possible Conditions",
                     style:TextStyle(
                         fontSize: 18,
                     )),

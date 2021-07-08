@@ -8,6 +8,12 @@ class DoctorConsultScreen extends StatefulWidget {
 class _DoctorConsultScreenState extends State<DoctorConsultScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Doctor Consult"),
+        centerTitle: true,
+        backgroundColor: Color(0xFF00FFFF),
+      ),
+    );
   }
 }

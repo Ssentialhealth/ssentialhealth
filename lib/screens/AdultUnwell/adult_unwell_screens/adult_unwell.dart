@@ -1,20 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pocket_health/bloc/adult_unwell/adultUnwellBloc.dart';
-import 'package:pocket_health/bloc/adult_unwell/adultUnwellEvent.dart';
 import 'package:pocket_health/bloc/adult_unwell/adultUnwellState.dart';
-import 'package:pocket_health/bloc/conditionDetails/conditionDetailState.dart';
-import 'package:pocket_health/bloc/conditionDetails/conditionDetailsBloc.dart';
-import 'package:pocket_health/bloc/conditionDetails/conditionDetailsEvent.dart';
-import 'package:pocket_health/bloc/organDetails/organDetailsEvent.dart';
 import 'package:pocket_health/bloc/search_conditions/search_condition_bloc.dart';
 import 'package:pocket_health/bloc/search_conditions/search_condition_event.dart';
 import 'package:pocket_health/bloc/search_conditions/search_condition_state.dart';
-import 'package:pocket_health/models/adult_unwell_model.dart';
-import 'package:pocket_health/screens/AdultUnwell/adult_unwell_screens/adult_unwell_list.dart';
-import 'package:pocket_health/screens/AdultUnwell/condition_details/conditionDetailsScreen.dart';
+import 'package:pocket_health/bloc/symptoms/details/symptoms_bloc.dart';
+import 'package:pocket_health/bloc/symptoms/details/symptoms_event.dart';
 import 'package:pocket_health/screens/AdultUnwell/organs/organs.dart';
+import 'package:pocket_health/screens/AdultUnwell/symptoms/symptom_details_screen.dart';
 import 'package:pocket_health/screens/doctor_consult/doctor_consult_screen.dart';
+import 'package:pocket_health/screens/facility/facility_screen.dart';
 import 'package:pocket_health/widgets/adult_unwell_menu_items.dart';
 import 'package:pocket_health/widgets/widget.dart';
 
@@ -74,7 +70,7 @@ class _AdultUnwellState extends State<AdultUnwell> {
                     ),
                     textValue == null ?
                     Expanded(
-                      child: ListView.builder(
+                      child:  ListView.builder(
                         shrinkWrap: true,
                         itemCount: state.adultUnwellModel.length,
                         itemBuilder: (BuildContext context,index){
@@ -86,20 +82,21 @@ class _AdultUnwellState extends State<AdultUnwell> {
                                 padding: const EdgeInsets.all(8.0),
                                 child: AdultUnwellMenuItems(text: organs.name,
                                   press: ()async{
-                                    BlocProvider.of<ConditionDetailsBloc>(context).add(FetchDetails(id: organs.id));
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => ConditionDetailsScreen(title: organs.name,)));
+                                    BlocProvider.of<SymptomDetailsBloc>(context).add(FetchSymptomDetails(id: organs.id));
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => SymptomDetailsScreen(title: organs.name,)));
 
                                   },
                                 )
                             ),
                           );
                         },
-                      ),
+                      )
+
                     ) :  BlocBuilder<SearchConditionBloc,SearchConditionState>(
                       builder: (context,state){
                         if(state is SearchConditionLoaded ){
                           return Expanded(
-                              child: state.searchCondition.length == null ? ListView.builder(
+                              child: state.searchCondition.length > 0 ? ListView.builder(
                                 shrinkWrap: true,
                                 itemCount: state.searchCondition.length,
                                 itemBuilder: (BuildContext context,index){
@@ -110,8 +107,8 @@ class _AdultUnwellState extends State<AdultUnwell> {
                                         padding: const EdgeInsets.all(8.0),
                                         child: AdultUnwellMenuItems(text: search.name,
                                           press: ()async{
-                                            BlocProvider.of<ConditionDetailsBloc>(context).add(FetchDetails(id: search.id));
-                                            Navigator.push(context, MaterialPageRoute(builder: (context) => ConditionDetailsScreen(title: search.name,)));
+                                            BlocProvider.of<SymptomDetailsBloc>(context).add(FetchSymptomDetails(id: search.id));
+                                            Navigator.push(context, MaterialPageRoute(builder: (context) => SymptomDetailsScreen(title: search.name,)));
 
                                           },
                                         )
@@ -138,9 +135,15 @@ class _AdultUnwellState extends State<AdultUnwell> {
                                               alignment: Alignment.center,
                                               child: Text(" Consult a doctor",style: TextStyle(color:Colors.lightBlueAccent),textAlign: TextAlign.center,)),
                                         ),
-                                        Align(
-                                            alignment: Alignment.center,
-                                            child: Text(" or a facility for further help",style: TextStyle(color:Colors.lightBlueAccent))),
+                                        GestureDetector(
+                                          onTap: ()async{
+                                            Navigator.push(context, MaterialPageRoute(builder: (context) => FacilityScreen()));
+
+                                          },
+                                          child: Align(
+                                              alignment: Alignment.center,
+                                              child: Text(" or a facility for further help",style: TextStyle(color:Colors.lightBlueAccent))),
+                                        ),
                                       ],
                                     ),
 
