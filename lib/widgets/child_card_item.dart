@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 
 class ChildCardItem extends StatelessWidget {
-  const ChildCardItem ({
-    Key key,
-    @required this.image,
-    @required this.press
-  }) : super(key: key);
+  const ChildCardItem({Key key, @required this.image, @required this.press}) : super(key: key);
 
   final String image;
   final Function press;
@@ -16,17 +11,17 @@ class ChildCardItem extends StatelessWidget {
     return GestureDetector(
       onTap: press,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal:8.0,vertical: 0),
-        child:  Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0),
+        child: Container(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal:8.0),
-            child: Image.asset(image, height: 70,),
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Image.asset(
+              image,
+              height: 70,
+            ),
           ),
         ),
       ),
     );
   }
-
-
-
 }

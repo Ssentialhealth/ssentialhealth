@@ -1,4 +1,6 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:pocket_health/screens/Authentication/sign_in_screen.dart';
 import 'package:pocket_health/screens/Authentication/sign_up_screen.dart';
 
@@ -8,7 +10,6 @@ class Authenticate extends StatefulWidget {
 }
 
 class _AuthenticateState extends State<Authenticate> {
-
   bool showSignInScreen = true;
 
   void toggleView() {
@@ -16,7 +17,6 @@ class _AuthenticateState extends State<Authenticate> {
       showSignInScreen = !showSignInScreen;
     });
   }
-
 
   @override
   Widget build(BuildContext context) {

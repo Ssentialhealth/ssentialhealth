@@ -2,25 +2,27 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pocket_health/models/ForgotPassword.dart';
 import 'package:pocket_health/repository/forgotPasswordRepo.dart';
+
 import 'forgortPasswordEvent.dart';
 import 'forgotPasswordState.dart';
 
-class ForgotPasswordBloc extends Bloc<ForgotPasswordEvent,ForgotPasswordState> {
-    final ForgotPasswordRepo forgotPasswordRepo;
-    ForgotPasswordBloc({@required this.forgotPasswordRepo}) : super(ForgotPasswordInitial());
+class ForgotPasswordBloc extends Bloc<ForgotPasswordEvent, ForgotPasswordState> {
+  final ForgotPasswordRepo forgotPasswordRepo;
 
-    @override
-  Stream<ForgotPasswordState> mapEventToState(ForgotPasswordEvent event) async*{
-    if(event is GetResetEmail){
+  ForgotPasswordBloc({@required this.forgotPasswordRepo}) : super(ForgotPasswordInitial());
+
+  @override
+  Stream<ForgotPasswordState> mapEventToState(ForgotPasswordEvent event) async* {
+    if (event is GetResetEmail) {
       yield ForgotPasswordLoading();
-      try{
+      try {
         final ForgotPassword forgotPassword = await forgotPasswordRepo.resetUserPassword(event.email);
-        if(forgotPassword != null) {
+        if (forgotPassword != null) {
           yield ForgotPasswordLoading();
-        }else {
+        } else {
           yield ForgotPasswordError();
         }
-      }catch(e) {
+      } catch (e) {
         yield ForgotPasswordError();
       }
     }

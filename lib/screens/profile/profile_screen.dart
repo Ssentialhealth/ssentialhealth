@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:platform_alert_dialog/platform_alert_dialog.dart';
-import 'package:pocket_health/models/loginModel.dart';
 import 'package:pocket_health/screens/menu_screens/contact_us.dart';
 import 'package:pocket_health/screens/menu_screens/feedback_screen.dart';
 import 'package:pocket_health/screens/profile/practitioner_info_screen.dart';
@@ -203,25 +202,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           press: (){},
                         ),
                         Divider(color: Color(0xFFC6C6C6),indent: 10,endIndent: 10,),
-                      MenuItems(
+                        MenuItems(
                           image: "assets/images/icons/document.png",
                           text: "Documents",
-                          press: (){},
+                          press: () {},
                         ),
                         Divider(color: Color(0xFFC6C6C6),indent: 10,endIndent: 10,),
                         MenuItems(
                           image: "assets/images/icons/insurance agency.png",
                           text: "Health Insurer Details",
-                          press: (){},
+                          press: () {},
                         ),
-                        Divider(color: Color(0xFFC6C6C6),indent: 10,endIndent: 10,),
+                        Divider(
+                          color: Color(0xFFC6C6C6),
+                          indent: 10,
+                          endIndent: 10,
+                        ),
                         MenuItems(
                           image: "assets/images/icons/shared medical.png",
                           text: "Shared Medical Info",
-                          press: (){},
+                          press: () {},
                         ),
-                        Divider(height: 1,color: Color(0xFFC6C6C6)),
-                     ],
+                        Divider(height: 1, color: Color(0xFFC6C6C6)),
+                      ],
                     ),
                   ),
                 ),
@@ -272,16 +275,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       MenuItems(
                         image: "assets/images/icons/terms and conditions.png",
                         text: "Privacy Policy",
-                        press: (){},
+                        press: () {},
                       ),
-                      Divider(height: 1,color: Color(0xFFC6C6C6)),
+                      Divider(height: 1, color: Color(0xFFC6C6C6)),
                     ],
                   ),
                 ),
-
               ],
             ),
-        ),
+          ),
         ),
       ),
     );
@@ -309,4 +311,3 @@ getTypeValuesSF() async {
   String stringValue = prefs.getString('userType');
   return stringValue;
 }
-

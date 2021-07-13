@@ -1,9 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:pocket_health/models/Schedule_detail_model.dart';
-import 'package:pocket_health/models/child_chronic_detail_model.dart';
 
-
-abstract class ScheduleDetailsState extends Equatable{
+abstract class ScheduleDetailsState extends Equatable {
   const ScheduleDetailsState();
 
   @override
@@ -20,9 +18,10 @@ class ScheduleDetailsError extends ScheduleDetailsState {}
 class ScheduleDetailsEmpty extends ScheduleDetailsState {}
 
 class ScheduleDetailsLoaded extends ScheduleDetailsState {
-  final ScheduleDetail scheduleDetail;
-  @override
-  List<ScheduleDetail> get props => [scheduleDetail];
+	final List<ScheduleDetail> scheduleDetails;
 
-  ScheduleDetailsLoaded(this.scheduleDetail) : assert(scheduleDetail != null);
+  @override
+  List<ScheduleDetail> get props => scheduleDetails;
+
+  ScheduleDetailsLoaded(this.scheduleDetails) : assert(scheduleDetails != null);
 }

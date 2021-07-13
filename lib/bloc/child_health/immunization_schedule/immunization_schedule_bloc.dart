@@ -6,17 +6,17 @@ import 'package:pocket_health/bloc/child_health/immunization_schedule/immunizati
 import 'package:pocket_health/models/immunization_schedule_model.dart';
 import 'package:pocket_health/repository/immunization_schedule_repo.dart';
 
-class ImmunizationScheduleBloc extends Bloc<ImmunizationScheduleEvent,ImmunizationScheduleState>{
+class ImmunizationScheduleBloc extends Bloc<ImmunizationScheduleEvent, ImmunizationScheduleState> {
   final ImmunizationScheduleRepo immunizationScheduleRepo;
+
   ImmunizationScheduleBloc({@required this.immunizationScheduleRepo}) : super(ImmunizationScheduleInitial());
 
   ImmunizationScheduleState get initialState => ImmunizationScheduleInitial();
 
-
   @override
   Stream<ImmunizationScheduleState> mapEventToState(
-      ImmunizationScheduleEvent event,
-      ) async* {
+    ImmunizationScheduleEvent event,
+  ) async* {
     if (event is CreateSchedule) {
       yield ImmunizationScheduleLoading();
       try {
@@ -26,18 +26,10 @@ class ImmunizationScheduleBloc extends Bloc<ImmunizationScheduleEvent,Immunizati
         );
 
         yield ImmunizationScheduleLoaded(immunizationScheduleModel);
-
       } catch (e) {
         yield ImmunizationScheduleError(e.toString());
-        print("Error:"+e.toString());
+        print("Error:" + e.toString());
       }
     }
   }
-
-
 }
-
-
-
-
-

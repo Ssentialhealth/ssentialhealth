@@ -1,8 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:pocket_health/screens/Authentication/Authenticate.dart';
-import 'package:pocket_health/screens/Authentication/sign_in_screen.dart';
 import 'package:pocket_health/screens/boarding/wait_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -11,9 +9,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-
   final splashDelay = 5;
-
 
   @override
   void initState() {
@@ -45,18 +41,18 @@ class _SplashScreenState extends State<SplashScreen> {
                   flex: 7,
                   child: Container(
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Image.asset(
-                            'assets/images/Logo.png',
-                            height: 250,
-                            width: 250,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 10.0),
-                          ),
-                        ],
-                      )),
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Image.asset(
+                        'assets/images/Logo.png',
+                        height: 250,
+                        width: 250,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10.0),
+                      ),
+                    ],
+                  )),
                 ),
               ],
             ),

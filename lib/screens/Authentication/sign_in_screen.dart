@@ -50,16 +50,16 @@ class _SignInScreenState extends State<SignInScreen> {
       ),
       body:  SingleChildScrollView(
         child: BlocListener<LoginBloc,LoginState>(
-            listener: (context,state){
-              if(state is LoginLoaded){
-                Navigator.pushReplacement(context, MaterialPageRoute(
-                    builder: (context) => Home()
-                ));
-              }
-              if(state is LoginError){
-                Scaffold.of(context)..hideCurrentSnackBar()..showSnackBar( SnackBar(content: Text("No active account found with the given credentials")));
-              }
-            },
+          listener: (context, state) {
+            if (state is LoginLoaded) {
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Home()));
+            }
+            if (state is LoginError) {
+              Scaffold.of(context)
+                ..hideCurrentSnackBar()
+                ..showSnackBar(SnackBar(content: Text("No active account found with the given credentials")));
+            }
+          },
           child: Container(
             height: MediaQuery.of(context).size.height - 50,
             alignment: Alignment.center,
@@ -92,33 +92,26 @@ class _SignInScreenState extends State<SignInScreen> {
                     ),
                     SizedBox(height: 8,),
                     TextFormField(
-                        validator: (val){
-                          return RegExp(
-                              r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                              .hasMatch(val)
-                              ? null
-                              : "Enter a valid Email";
-                        },
-                        controller: emailTextEditingController,
-                        style: simpleTextStyle(),
-                        decoration: textFieldInputDecoration("Email"),
-
+                      validator: (val) {
+                        return RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(val) ? null : "Enter a valid Email";
+                      },
+                      controller: emailTextEditingController,
+                      style: simpleTextStyle(),
+                      decoration: textFieldInputDecoration("Email"),
                     ),
                     SizedBox(
                       height: 8,
                     ),
                     TextFormField(
-                      maxLength: 4,
+		                    maxLength: 4,
                         obscureText: true,
-                        inputFormatters: <TextInputFormatter>[
-                          FilteringTextInputFormatter.digitsOnly],
-                        validator: (val){
+                        inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
+                        validator: (val) {
                           return val.length < 5 ? null : "Please provide a Pin with four digits";
                         },
                         controller: passWordTextEditingController,
                         style: simpleTextStyle(),
-                        decoration: textFieldInputDecoration("Pin")
-                    ),
+                        decoration: textFieldInputDecoration("Pin")),
                     SizedBox(height: 8,),
                     GestureDetector(
                       onTap: (){
@@ -155,20 +148,15 @@ class _SignInScreenState extends State<SignInScreen> {
                                 ]
                             )
                         ),
-                        child: BlocBuilder<LoginBloc , LoginState>(
-                          builder:(context,state){
-                            if(state is LoginLoading){
-                              return CircularProgressIndicator();
-                            }
-                            return Text("Sign In",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.bold
-                              ),
-                            );
+                        child: BlocBuilder<LoginBloc , LoginState>(builder: (context, state) {
+                          if (state is LoginLoading) {
+                            return CircularProgressIndicator();
                           }
-                        ),
+                          return Text(
+                            "Sign In",
+                            style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold),
+                          );
+                        }),
                       ),
                     ),
                     SizedBox(height: 10,),
@@ -178,7 +166,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         Text("Need an Account?",style: mediumTextStyle(),),
                         GestureDetector(
                           onTap: (){
-                              widget.toggle();
+	                          widget.toggle();
                           },
                           child: Container(
                             padding: EdgeInsets.symmetric(vertical: 8),
@@ -215,8 +203,6 @@ class _SignInScreenState extends State<SignInScreen> {
 
 
 }
-
-
 
 
 

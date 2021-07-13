@@ -1,19 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
-import 'package:pocket_health/screens/emergency_screens/emergency_hotlines_screen.dart';
 import 'package:pocket_health/screens/AdultUnwell/adult_unwell_screens/adult_unwell.dart';
 import 'package:pocket_health/screens/child_health/condition/child_health_immunization_screen.dart';
-import 'package:pocket_health/screens/profile/practitioner_info_screen.dart';
-import 'package:pocket_health/screens/profile/profile_screen.dart';
+import 'package:pocket_health/screens/practitioners/practitioners_categories_screen.dart';
 import 'package:pocket_health/widgets/card_item.dart';
 import 'package:pocket_health/widgets/category_card.dart';
 import 'package:pocket_health/widgets/welcome_dart.dart';
 import 'package:pocket_health/widgets/widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../utils/size_config.dart';
 
 class HomeScreen extends StatefulWidget {
-
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -23,13 +19,12 @@ class _HomeScreenState extends State<HomeScreen> {
   String _type = "...";
   bool visibilityController = false;
 
-
-   welcomeCard(){
+  welcomeCard() {
     setState(() {
-      if(_type != null){
+      if (_type != null) {
         visibilityController = true;
         return WelcomeCard();
-      }else{
+      } else {
         visibilityController = false;
       }
     });
@@ -42,18 +37,22 @@ class _HomeScreenState extends State<HomeScreen> {
       {"icon": "assets/images/wellness.png", "text": "Wellness"},
       {"icon": "assets/images/first_aid.png", "text": "First Aid"},
       {"icon": "assets/images/health_insurace.png", "text": "Health Insuran.."},
-
     ];
 
     FlutterStatusbarcolor.setStatusBarColor(Color(0xFF00FFFF));
+
     return SafeArea(
       child: Scaffold(
         key: _scaffoldKey,
         backgroundColor: Color(0xFFE7FFFF),
         appBar: AppBar(
+	        automaticallyImplyLeading: false,
           title: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Image.asset('assets/images/homelogo.png',fit: BoxFit.scaleDown,),
+            child: Image.asset(
+              'assets/images/homelogo.png',
+              fit: BoxFit.scaleDown,
+            ),
           ),
           backgroundColor: Color(0xFF00FFFF),
         ),
@@ -62,7 +61,9 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                SizedBox(height: 5,),
+                SizedBox(
+                  height: 5,
+                ),
                 Container(
                   height: 55,
                   child: Row(
@@ -78,75 +79,76 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: GestureDetector(
-                          onTap: ()async{
-
-                          },
-                          child: Icon(Icons.settings)
-                        ),
+                        child: GestureDetector(onTap: () async {}, child: Icon(Icons.settings)),
                       ),
-
                     ],
                   ),
                 ),
                 CardItem(
-                  press: (){
+	                press: () {
                     Navigator.push(context, MaterialPageRoute(builder: (context) => AdultUnwell()));
                   },
                   image: "assets/images/adult_unwell.png",
                   text: "Adult Unwell- Check Symptoms \n& Conditions",
                 ),
                 CardItem(
-                  press: (){
+	                press: () {
                     Navigator.push(context, MaterialPageRoute(builder: (context) => CHIScreen()));
-
                   },
                   image: "assets/images/child_health_ immunisation.png",
                   text: "Child Health & Immunisation",
                 ),
                 CardItem(
-                  press: (){
-
-                  },
+                  press: () {},
                   image: "assets/images/pregnancy_lactation.png",
                   text: "Pregnancy & Lactation",
                 ),
-                SizedBox(height: 8,),
-                Visibility(
-                  visible: visibilityController,
-                    child:WelcomeCard()
-
+                SizedBox(
+                  height: 8,
                 ),
-                SizedBox(height: 8,),
+                Visibility(visible: visibilityController, child: WelcomeCard()),
+                SizedBox(
+                  height: 8,
+                ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                      ...List.generate(categories.length, (index) =>
-                      CategoryCard(icon: categories[index]["icon"],
-                        text: categories[index]["text"],
-                        press: () {},))
-                    ]
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ...List.generate(
+                        categories.length,
+                        (index) => CategoryCard(
+                          icon: categories[index]["icon"],
+                          text: categories[index]["text"],
+                          press: () {},
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                SizedBox(height: 8,),
+                SizedBox(
+                  height: 8,
+                ),
                 CardItem(
-                  press: (){
-
+                  press: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) {
+                          return PractitionersCategoriesScreen();
+                        },
+                      ),
+                    );
                   },
                   image: "assets/images/doctors_practitioners.png",
                   text: "Doctors & Practitioners",
                 ),
                 CardItem(
-                  press: (){
-
-                  },
+	                press: () {},
                   image: "assets/images/hospital_facilities.png",
                   text: "Health Facilities",
                 ),
-
               ],
             ),
           ),
@@ -162,7 +164,3 @@ getStringValuesSF() async {
   String stringValue = prefs.getString('userType');
   return stringValue;
 }
-
-
-
-
