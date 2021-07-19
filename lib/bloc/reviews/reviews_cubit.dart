@@ -14,35 +14,11 @@ class ReviewsCubit extends Cubit<ReviewsState> {
   void loadReviews() async {
     try {
       emit(LoadReviewsLoading());
-      emit(LoadReviewsLoaded());
+      final loadedReviews = await reviewsRepo.getReviews();
+      emit(LoadReviewsLoaded(loadedReviews));
     } catch (_) {
+	    emit(LoadReviewsFailure());
       print("loadReviews | $_");
-    }
-  }
-
-  void postReview({
-    @required String reviewerID,
-    @required String datePosted,
-    @required String reviewText,
-    @required double rating,
-    @required String practitionerID,
-  }) async {
-    try {
-      emit(PostReviewsLoading());
-
-      ReviewModel reviewModel = ReviewModel();
-      reviewModel = ReviewModel(
-        practitionerID: reviewerID,
-        datePosted: datePosted,
-        rating: rating,
-        reviewText: reviewText,
-        reviewerID: reviewerID,
-      );
-      final postedReviews = await reviewsRepo.addReview(reviewModel);
-      emit(PostReviewsDone(postedReviews));
-    } catch (_) {
-      print("postReviews | $_");
-      emit(PostReviewsFailure());
     }
   }
 }

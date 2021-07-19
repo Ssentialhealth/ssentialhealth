@@ -2,13 +2,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:pocket_health/models/practitioner_profile_model.dart';
+import 'package:pocket_health/models/review_model.dart';
 import 'package:pocket_health/utils/constants.dart';
 
 class ReviewCard extends StatelessWidget {
-  final PractitionerProfileModel practitionerProfileModel;
+  // final PractitionerProfileModel practitionerProfileModel;
 
-  const ReviewCard({Key key, this.practitionerProfileModel}) : super(key: key);
+  final ReviewModel review;
+
+  const ReviewCard({Key key, this.review}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +48,7 @@ class ReviewCard extends StatelessWidget {
             children: [
               //name
               Text(
-                'Salma Hussein',
+                review.user.toString(),
                 style: TextStyle(
                   fontSize: 17.sp,
                   color: Color(0xff181818),
@@ -63,7 +65,7 @@ class ReviewCard extends StatelessWidget {
                     itemCount: 5,
                     itemSize: 13.w,
                     direction: Axis.horizontal,
-                    rating: 3.5,
+                    rating: review.rating,
                     unratedColor: Colors.orange.shade100,
                     itemBuilder: (context, index) {
                       return Icon(
@@ -90,7 +92,7 @@ class ReviewCard extends StatelessWidget {
               SizedBox(
                 width: 280.w,
                 child: Text(
-                  'Column(mainA xisAlig nment: Mai nAx isAli g nment .spac e Be t ween , cro s sAxis Alignm ent:  Cros sAx is nAxisAlignment: MainAxisAlignment.spaceBetween, crossAxisAlignment: CrossAxisAlignment.start, children: [',
+                  review.comment,
                   maxLines: 4,
                   softWrap: true,
                   overflow: TextOverflow.ellipsis,

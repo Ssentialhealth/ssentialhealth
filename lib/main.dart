@@ -62,6 +62,7 @@ import 'bloc/filter_reviews/filter_reviews_cubit.dart';
 import 'bloc/forgotPassword/forgotPasswordBloc.dart';
 import 'bloc/list_practitioners/list_practitioners_cubit.dart';
 import 'bloc/organDetails/organDetailsBloc.dart';
+import 'bloc/post_review/post_review_cubit.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -265,6 +266,9 @@ class MyApp extends StatelessWidget {
           ),
           BlocProvider(
             create: (context) => ReviewsCubit(reviewsRepo: reviewsRepo),
+          ),
+          BlocProvider(
+            create: (context) => PostReviewCubit(reviewsRepo),
           ),
         ],
         child: MaterialApp(

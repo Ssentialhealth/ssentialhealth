@@ -1,3 +1,4 @@
+import 'package:country_list_pick/country_list_pick.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import "package:flutter_screenutil/flutter_screenutil.dart";
@@ -23,10 +24,13 @@ class FilterPractitionersScreen extends StatefulWidget {
 
 class _FilterPractitionersScreenState extends State<FilterPractitionersScreen> {
   double distanceVal = 5.0;
+  String countryVal;
   double priceVal = 0.0;
   String distanceUnits = 'distanceUnit';
   String priceUnits = 'priceUnit';
   bool cheapestVal = false;
+  bool highestRatedVal = false;
+  bool availabilityVal = false;
   bool nearestVal = false;
   bool isFiltering = false;
 
@@ -74,8 +78,11 @@ class _FilterPractitionersScreenState extends State<FilterPractitionersScreen> {
               SharedPreferences prefs = await SharedPreferences.getInstance();
               prefs.containsKey('filterByPrice') ? prefs.remove('filterByPrice') : null;
               prefs.containsKey('filterByDistance') ? prefs.remove('filterByDistance') : null;
+              prefs.containsKey('filterByAvailability') ? prefs.remove('filterByAvailability') : null;
+              prefs.containsKey('filterByCountry') ? prefs.remove('filterByCountry') : null;
               prefs.containsKey('sortByCheapest') ? prefs.remove('sortByCheapest') : null;
               prefs.containsKey('sortByNearest') ? prefs.remove('sortByNearest') : null;
+              prefs.containsKey('sortByHighestRated') ? prefs.remove('sortByHighestRated') : null;
               prefs.containsKey('filterBySpeciality') ? prefs.remove('filterBySpeciality') : null;
               context.read<ListPractitionersCubit>()..listPractitioners(widget.practitionerCategory);
               Navigator.pop(context);
@@ -112,7 +119,7 @@ class _FilterPractitionersScreenState extends State<FilterPractitionersScreen> {
                 //sort type
                 Column(
                   children: [
-                    //names
+                    //cheapest
                     Theme(
                       data: ThemeData(
                         checkboxTheme: CheckboxThemeData(
@@ -186,11 +193,150 @@ class _FilterPractitionersScreenState extends State<FilterPractitionersScreen> {
                         },
                       ),
                     ),
+
+                    //rating
+                    Theme(
+                      data: ThemeData(
+                        checkboxTheme: CheckboxThemeData(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          fillColor: MaterialStateProperty.all(Color(0xFF00FFFF)),
+                          visualDensity: VisualDensity.compact,
+                        ),
+                      ),
+                      child: CheckboxListTile(
+                        isThreeLine: false,
+                        tristate: false,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 20.r),
+                        tileColor: Colors.white,
+                        dense: true,
+                        value: highestRatedVal,
+                        title: Text(
+                          'Highest Rated',
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            color: Color(0xff707070),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        onChanged: (val) async {
+                          SharedPreferences prefs = await SharedPreferences.getInstance();
+                          await prefs.setBool('sortByHighestRated', val);
+                          setState(() {
+                            highestRatedVal = val;
+                          });
+                        },
+                      ),
+                    ),
+
+                    //availability
+                    Theme(
+                      data: ThemeData(
+                        checkboxTheme: CheckboxThemeData(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          fillColor: MaterialStateProperty.all(Color(0xFF00FFFF)),
+                          visualDensity: VisualDensity.compact,
+                        ),
+                      ),
+                      child: CheckboxListTile(
+                        isThreeLine: false,
+                        tristate: false,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 20.r),
+                        tileColor: Colors.white,
+                        dense: true,
+                        value: availabilityVal,
+                        title: Text(
+                          'Available',
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            color: Color(0xff707070),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        onChanged: (val) async {
+                          SharedPreferences prefs = await SharedPreferences.getInstance();
+                          await prefs.setBool('filterByAvailability', val);
+
+                          setState(() {
+                            availabilityVal = val;
+                          });
+                        },
+                      ),
+                    ),
                   ],
                 ),
                 Divider(height: 1, thickness: 1.r, color: Color(0xffB3B3B3)),
 
                 widget.practitionerCategory == "Doctors" ? BySpeciality() : SizedBox.shrink(),
+
+                //COUNTRY
+                FilterTitle(filter: "COUNTRY"),
+                Divider(height: 1, thickness: 1.r, color: Color(0xffB3B3B3)),
+
+                CountryListPick(
+                  appBar: AppBar(
+                    centerTitle: true,
+                    elevation: 0.0,
+                    leadingWidth: 80.w,
+                    title: Text(
+                      "Pick Country",
+                      style: appBarStyle.copyWith(color: Colors.black),
+                    ),
+                    backgroundColor: Colors.white,
+                  ),
+                  pickerBuilder: (context, code) {
+                    return ListTile(
+                      isThreeLine: false,
+                      contentPadding: EdgeInsets.symmetric(horizontal: 20.r),
+                      tileColor: Colors.white,
+                      dense: true,
+                      leading: Image.asset(
+                        Uri.parse(code.flagUri).toFilePath(),
+                        package: 'country_list_pick',
+                        width: 32.w,
+                      ),
+                      trailing: Icon(
+                        Icons.keyboard_arrow_down,
+                        size: 24.r,
+                        color: accentColor,
+                      ),
+                      title: Row(
+                        children: [
+                          Text(
+                            code.name,
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                              color: Color(0xff707070),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          SizedBox(width: 10.w),
+                          Text(
+                            code.dialCode,
+                            style: TextStyle(
+                              fontSize: 13.sp,
+                              color: accentColorDark,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  useSafeArea: true,
+                  initialSelection: '+254',
+                  onChanged: (val) async {
+                    SharedPreferences prefs = await SharedPreferences.getInstance();
+                    await prefs.setString('filterByCountry', val.dialCode);
+
+                    setState(() {
+                      countryVal = val.dialCode;
+                    });
+                  },
+                ),
 
                 //distance
                 Padding(
@@ -297,21 +443,21 @@ class _FilterPractitionersScreenState extends State<FilterPractitionersScreen> {
                       labelFormatterCallback: (actualValue, label) {
                         final newLabel = distanceUnits == "Miles"
                             ? actualValue == 33
-                                ? "MAX"
-                                : label
+                            ? "MAX"
+                            : label
                             : actualValue == 55
-                                ? "MAX"
-                                : label;
+                            ? "MAX"
+                            : label;
                         return newLabel;
                       },
                       tooltipTextFormatterCallback: (actualValue, label) {
                         final newLabel = distanceUnits == "Miles"
                             ? actualValue == 33
-                                ? "MAX"
-                                : label
+                            ? "MAX"
+                            : label
                             : actualValue == 55
-                                ? "MAX"
-                                : label;
+                            ? "MAX"
+                            : label;
                         return newLabel;
                       },
                       minorTicksPerInterval: 0,
@@ -437,18 +583,18 @@ class _FilterPractitionersScreenState extends State<FilterPractitionersScreen> {
                         final kshLabel = label == "1000"
                             ? '1,000'
                             : label == "2000"
-                                ? '2,000'
-                                : label == "3000"
-                                    ? "3,000"
-                                    : label == "4000"
-                                        ? '4,000'
-                                        : label == "5000"
-                                            ? "5,000"
-                                            : label == "6000"
-                                                ? 'MAX'
-                                                : label == "0"
-                                                    ? "0"
-                                                    : '';
+                            ? '2,000'
+                            : label == "3000"
+                            ? "3,000"
+                            : label == "4000"
+                            ? '4,000'
+                            : label == "5000"
+                            ? "5,000"
+                            : label == "6000"
+                            ? 'MAX'
+                            : label == "0"
+                            ? "0"
+                            : '';
                         final usdLabel = label == "60" ? 'MAX' : label;
                         final newLabel = priceUnits == 'USD' ? usdLabel : kshLabel;
 
@@ -458,18 +604,18 @@ class _FilterPractitionersScreenState extends State<FilterPractitionersScreen> {
                         final kshLabel = label == "1000"
                             ? '1,000'
                             : label == "2000"
-                                ? '2,000'
-                                : label == "3000"
-                                    ? "3,000"
-                                    : label == "4000"
-                                        ? '4,000'
-                                        : label == "5000"
-                                            ? "5,000"
-                                            : label == "6000"
-                                                ? 'MAX'
-                                                : label == "0"
-                                                    ? "0"
-                                                    : '';
+                            ? '2,000'
+                            : label == "3000"
+                            ? "3,000"
+                            : label == "4000"
+                            ? '4,000'
+                            : label == "5000"
+                            ? "5,000"
+                            : label == "6000"
+                            ? 'MAX'
+                            : label == "0"
+                            ? "0"
+                            : '';
                         final usdLabel = label == "60" ? 'MAX' : label;
                         final newLabel = priceUnits == 'USD' ? usdLabel : kshLabel;
 
@@ -511,17 +657,17 @@ class _FilterPractitionersScreenState extends State<FilterPractitionersScreen> {
                     ),
                     child: isFiltering
                         ? CircularProgressIndicator(
-                            color: accentColorLight,
-                            backgroundColor: accentColorDark,
-                          )
+                      color: accentColorLight,
+                      backgroundColor: accentColorDark,
+                    )
                         : Text(
-                            'Apply Filters',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w400,
-                              fontSize: 15.sp,
-                            ),
-                          ),
+                      'Apply Filters',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w400,
+                        fontSize: 15.sp,
+                      ),
+                    ),
                     onPressed: () async {
                       setState(() {
                         isFiltering = true;
@@ -531,6 +677,8 @@ class _FilterPractitionersScreenState extends State<FilterPractitionersScreen> {
                       final filterByPrice = prefs.getDouble('filterByPrice');
                       final sortByCheapest = prefs.getBool('sortByCheapest');
                       final sortByNearest = prefs.getBool('sortByNearest');
+                      final filterByAvailability = prefs.getBool('filterByAvailability');
+                      final sortByHighestRated = prefs.getBool('sortByHighestRated');
                       final specialityIndex = prefs.getInt('filterBySpeciality');
                       final filterBySpeciality = specialityIndex != null ? specialities[specialityIndex] : 'null';
 
@@ -540,6 +688,8 @@ class _FilterPractitionersScreenState extends State<FilterPractitionersScreen> {
                           filterByPrice: filterByPrice.toString(),
                           filterBySpeciality: filterBySpeciality.toString(),
                           sortByCheapest: sortByCheapest.toString(),
+                          filterByAvailability: filterByAvailability.toString(),
+                          sortByHighestRated: sortByHighestRated.toString(),
                           sortByNearest: sortByNearest.toString(),
                           practitionersCategory: widget.practitionerCategory,
                         );
@@ -549,7 +699,8 @@ class _FilterPractitionersScreenState extends State<FilterPractitionersScreen> {
                       print('filterByPrice   | $filterByPrice');
                       print('sortByCheapest   | $sortByCheapest');
                       print('sortByNearest   | $sortByNearest');
-                      print('filterBySpeciality   | $specialityIndex');
+                      print('sortByNearest   | $sortByNearest');
+                      print('filterByAvailability   | $filterByAvailability');
                       print('filterBySpecialityText   | $filterBySpeciality');
                     },
                   ),

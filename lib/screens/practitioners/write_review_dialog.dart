@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pocket_health/bloc/post_review/post_review_cubit.dart';
 import 'package:pocket_health/bloc/reviews/reviews_cubit.dart';
 import 'package:pocket_health/utils/constants.dart';
 
@@ -188,34 +189,105 @@ class _WriteReviewDialogState extends State<WriteReviewDialog> {
 
                 SizedBox(width: 8.w),
                 //post
-                TextButton(
-                  child: Text(
-                    'POST',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  style: ButtonStyle(
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    backgroundColor: MaterialStateProperty.all(Color(0xff1A5864)),
-                    minimumSize: MaterialStateProperty.all(Size(0, 0)),
-                    padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 32.w, vertical: 10.w)),
-                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5.w),
-                      side: BorderSide(
-                        color: Color(0xff1A5864),
-                        width: 1.w,
-                      ),
-                    )),
-                  ),
-                  onPressed: () {
-                    if (ratingVal != null && reviewTextVal != null) {
-                      context.read<ReviewsCubit>()
-                        ..postReview(
-                            reviewerID: 'test', reviewText: reviewTextVal, rating: ratingVal, datePosted: DateTime.now().toString(), practitionerID: "TESSS");
+                BlocConsumer<PostReviewCubit, PostReviewState>(
+                  listener: (context, state) {
+                    if (state is PostReviewDone) {
+                      context.read<ReviewsCubit>()..loadReviews();
                       Navigator.pop(context);
                     }
+                  },
+                  builder: (context, state) {
+                    if (state is PostReviewsLoading) {
+                      return TextButton(
+                        child: SizedBox(
+                          height: 17.w,
+                          width: 17.w,
+                          child: CircularProgressIndicator(
+                            color: Colors.tealAccent,
+                          ),
+                        ),
+                        style: ButtonStyle(
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          backgroundColor: MaterialStateProperty.all(Color(0xff1A5864)),
+                          minimumSize: MaterialStateProperty.all(Size(0, 0)),
+                          padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 32.w, vertical: 10.w)),
+                          shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5.w),
+                            side: BorderSide(
+                              color: Color(0xff1A5864),
+                              width: 1.w,
+                            ),
+                          )),
+                        ),
+                        onPressed: () {},
+                      );
+                    }
+                    if (state is PostReviewsFailure) {}
+                    if (state is PostReviewInitial) {
+                      return TextButton(
+                        child: Text(
+                          'POST',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        style: ButtonStyle(
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          backgroundColor: MaterialStateProperty.all(Color(0xff1A5864)),
+                          minimumSize: MaterialStateProperty.all(Size(0, 0)),
+                          padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 32.w, vertical: 10.w)),
+                          shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5.w),
+                            side: BorderSide(
+                              color: Color(0xff1A5864),
+                              width: 1.w,
+                            ),
+                          )),
+                        ),
+                        onPressed: () async {
+                          if (ratingVal != null && reviewTextVal != null) {
+                            context.read<PostReviewCubit>()
+                              ..postReview(
+                                user: 1,
+                                rating: ratingVal.toDouble(),
+                                comment: reviewTextVal,
+                                // datePosted: DateTime.now().toString(),
+                                profile: 12,
+                              );
+
+                            // if (state is PostReviewDone) {
+                            //   Navigator.pop(context);
+                            // }
+                          }
+                        },
+                      );
+                    }
+                    if (state is PostReviewDone) {
+                      return TextButton(
+                        child: Icon(
+                          Icons.check,
+                          color: Colors.tealAccent,
+                          size: 21.w,
+                        ),
+                        style: ButtonStyle(
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          backgroundColor: MaterialStateProperty.all(Color(0xff1A5864)),
+                          minimumSize: MaterialStateProperty.all(Size(0, 0)),
+                          padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 32.w, vertical: 10.w)),
+                          shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5.w),
+                            side: BorderSide(
+                              color: Color(0xff1A5864),
+                              width: 1.w,
+                            ),
+                          )),
+                        ),
+                        onPressed: () {},
+                      );
+                    }
+
+                    return Container();
                   },
                 ),
               ],

@@ -6,6 +6,10 @@ import 'dart:convert';
 
 List<ScheduleDetail> scheduleDetailFromJson(String str) => List<ScheduleDetail>.from(json.decode(str).map((x) => ScheduleDetail.fromJson(x)));
 
+ScheduleDetail oneScheduleDetailFromJson(String str) => ScheduleDetail.fromJson(json.decode(str));
+
+String oneScheduleDetailToJson(ScheduleDetail data) => json.encode(data.toJson());
+
 String scheduleDetailToJson(List<ScheduleDetail> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class ScheduleDetail {

@@ -10,12 +10,14 @@ class PractitionerProfileModel {
   String surname;
   String phoneNumber;
   String location;
+  bool available;
   String region;
   String profileImgUrl;
   HealthInfo healthInfo;
   RatesInfo ratesInfo;
 
-  PractitionerProfileModel({this.user, this.surname, this.phoneNumber, this.location, this.region, this.profileImgUrl, this.healthInfo, this.ratesInfo});
+  PractitionerProfileModel(
+      {this.user, this.surname, this.available, this.phoneNumber, this.location, this.region, this.profileImgUrl, this.healthInfo, this.ratesInfo});
 
   PractitionerProfileModel.fromJson(Map<String, dynamic> json) {
     user = json['user'] ?? 'null';
@@ -23,17 +25,19 @@ class PractitionerProfileModel {
     phoneNumber = json['phone_number'] ?? 'null';
     location = json['location'] ?? 'null';
     region = json['region'] ?? 'null';
+    available = json['available'] ?? 'null';
     profileImgUrl = json['profile_img_url'] ?? 'null';
     healthInfo = json['health_info'] != null ? new HealthInfo.fromJson(json['health_info']) : HealthInfo();
     ratesInfo = json['rates_info'] != null ? new RatesInfo.fromJson(json['rates_info']) : HealthInfo();
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+	  final Map<String, dynamic> data = new Map<String, dynamic>();
     data['user'] = this.user;
     data['surname'] = this.surname;
     data['phone_number'] = this.phoneNumber;
     data['location'] = this.location;
+    data['available'] = this.available;
     data['region'] = this.region;
     data['profile_img_url'] = this.profileImgUrl;
     if (this.healthInfo != null) {

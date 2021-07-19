@@ -10,6 +10,10 @@ List<AllScheduleModel> allScheduleModelFromJson(String str) => List<AllScheduleM
 
 String allScheduleModelToJson(List<AllScheduleModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
+AllScheduleModel oneScheduleModelFromJson(String str) => AllScheduleModel.fromJson(json.decode(str));
+
+String oneScheduleModelToJson(AllScheduleModel data) => json.encode(data.toJson());
+
 class AllScheduleModel {
   AllScheduleModel({
     @required this.id,
@@ -43,7 +47,7 @@ class AllScheduleModel {
 }
 
 class Schedule {
-	Schedule({
+  Schedule({
     @required this.id,
     @required this.vaccines,
     @required this.age,

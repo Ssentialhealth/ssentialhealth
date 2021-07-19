@@ -4,16 +4,16 @@ import 'package:pocket_health/bloc/child_health/all_schedules/all_schedules_bloc
 import 'package:pocket_health/bloc/child_health/all_schedules/all_schedules_state.dart';
 import 'package:pocket_health/bloc/child_health/schedule_detail/schedule_detail_bloc.dart';
 import 'package:pocket_health/bloc/child_health/schedule_detail/schedule_detail_event.dart';
-import 'package:pocket_health/screens/child_health/schedule_detail/schedule_detail_screen.dart';
+import 'package:pocket_health/screens/child_health/edit_schedule_details/edit_schedule_details_screen.dart';
 
-class AllSchedulesData extends StatefulWidget {
-  const AllSchedulesData({Key key}) : super(key: key);
+class AllImmunizationSchedulesData extends StatefulWidget {
+  const AllImmunizationSchedulesData({Key key}) : super(key: key);
 
   @override
-  _AllSchedulesDataState createState() => _AllSchedulesDataState();
+  _AllImmunizationSchedulesDataState createState() => _AllImmunizationSchedulesDataState();
 }
 
-class _AllSchedulesDataState extends State<AllSchedulesData> {
+class _AllImmunizationSchedulesDataState extends State<AllImmunizationSchedulesData> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AllSchedulesBloc, AllSchedulesState>(builder: (BuildContext context, state) {
@@ -47,8 +47,8 @@ class _AllSchedulesDataState extends State<AllSchedulesData> {
                       padding: const EdgeInsets.symmetric(vertical: 5.0),
                       child: GestureDetector(
                         onTap: () async {
-                          BlocProvider.of<ScheduleDetailsBloc>(context).add(FetchScheduleDetails(id: allSchedules.id));
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => ScheduleDetailScreen(id: allSchedules.id)));
+                          BlocProvider.of<ScheduleDetailsBloc>(context).add(FetchScheduleDetails(allSchedules.id));
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => EditScheduleDetailsScreen(id: allSchedules.id)));
                         },
                         child: Container(
                           color: Colors.white,

@@ -39,18 +39,23 @@ class PractitionerProfileRepo {
     return await apiService.fetchPractitioners(practitionersCategory);
   }
 
-  Future<List<PractitionerProfileModel>> filterPractitioners(
-      {@required String filterByDistance,
-      @required String practitionersCategory,
-      @required String filterByPrice,
-      @required String sortByNearest,
-      @required String sortByCheapest,
-      @required String filterBySpeciality}) async {
+  Future<List<PractitionerProfileModel>> filterPractitioners({
+    @required String filterByDistance,
+    @required String practitionersCategory,
+    @required String filterByPrice,
+    @required String filterByAvailability,
+    @required String sortByNearest,
+    @required String sortByHighestRated,
+    @required String sortByCheapest,
+    @required String filterBySpeciality,
+  }) async {
     return await apiService.fetchFilteredPractitioners(
         filterByDistance: filterByDistance,
         filterByPrice: filterByPrice,
+        filterByAvailability: filterByAvailability,
         filterBySpeciality: filterBySpeciality,
         sortByCheapest: sortByCheapest,
+        sortByHighestRated: sortByHighestRated,
         sortByNearest: sortByNearest,
         practitionersCategory: practitionersCategory);
   }

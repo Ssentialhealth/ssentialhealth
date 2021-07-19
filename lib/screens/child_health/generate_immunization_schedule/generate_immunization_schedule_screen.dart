@@ -6,17 +6,18 @@ import 'package:pocket_health/bloc/child_health/all_schedules/all_schedules_bloc
 import 'package:pocket_health/bloc/child_health/all_schedules/all_schedules_event.dart';
 import 'package:pocket_health/bloc/child_health/immunization_schedule/immunization_schedule_bloc.dart';
 import 'package:pocket_health/bloc/child_health/immunization_schedule/immunization_schedule_event.dart';
-import 'package:pocket_health/screens/child_health/immunization_schedule/immunization_schedule_data.dart';
 import 'package:pocket_health/widgets/widget.dart';
 
-class ImmunizationChartScreen extends StatefulWidget {
-  const ImmunizationChartScreen({Key key}) : super(key: key);
+import 'generate_immunization_schedule_data.dart';
+
+class GenerateImmunizationScheduleScreen extends StatefulWidget {
+  const GenerateImmunizationScheduleScreen({Key key}) : super(key: key);
 
   @override
-  _ImmunizationChartScreenState createState() => _ImmunizationChartScreenState();
+  _GenerateImmunizationScheduleScreenState createState() => _GenerateImmunizationScheduleScreenState();
 }
 
-class _ImmunizationChartScreenState extends State<ImmunizationChartScreen> {
+class _GenerateImmunizationScheduleScreenState extends State<GenerateImmunizationScheduleScreen> {
   String dateOfBirth;
   String received;
   TextEditingController dob = new TextEditingController();
@@ -25,10 +26,10 @@ class _ImmunizationChartScreenState extends State<ImmunizationChartScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-	    backgroundColor: Color(0xFFEAFCF6),
+      backgroundColor: Color(0xFFEAFCF6),
       appBar: AppBar(
           title: Text(
-            "Immution Schedule",
+            "Generate Immunization Schedule",
             style: TextStyle(fontSize: 18),
           ),
           backgroundColor: Color(0xFF00FFFF),
@@ -153,7 +154,7 @@ class _ImmunizationChartScreenState extends State<ImmunizationChartScreen> {
                 ),
               ],
             ),
-            ImmunizationData(),
+            GenerateImmunizationScheduleData(),
           ],
         ),
       ),

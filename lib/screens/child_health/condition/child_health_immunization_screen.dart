@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:pocket_health/screens/child_health/all_schedules/all_schedules_screen.dart';
+import 'package:pocket_health/screens/child_health/all_immunization_schedules/all_immunization_schedules_screen.dart';
 import 'package:pocket_health/screens/child_health/congenital_conditions/congenital_condition_screen.dart';
 import 'package:pocket_health/screens/child_health/nutrition/nutrition_screen.dart';
 import 'package:pocket_health/screens/child_health/resource/child_resource_screen.dart';
@@ -47,7 +47,7 @@ class _CHIScreenState extends State<CHIScreen> {
                 press: () async {
                   _token = await getStringValuesSF();
                   if (_token != null) {
-                    _token = await getStringValuesSF();
+	                  _token = await getStringValuesSF();
 
                     final response = await http.Client().get(
                       Uri.encodeFull("https://ssential.herokuapp.com/api/child_health/immunization_schedule/vaccines/35"),
@@ -55,7 +55,7 @@ class _CHIScreenState extends State<CHIScreen> {
                     );
                     print("test" + response.body);
                     print(_token);
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => AllSchedules()));
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => AllImmunizationSchedulesScreen()));
                   } else {
                     _showErrorSnack("Login To Access This Feature");
                   }

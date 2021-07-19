@@ -10,8 +10,12 @@ class ReviewsInitial extends ReviewsState {
 }
 
 class LoadReviewsLoaded extends ReviewsState {
+  final List<ReviewModel> reviewModels;
+
+  LoadReviewsLoaded(this.reviewModels);
+
   @override
-  List<Object> get props => [];
+  List<Object> get props => [reviewModels];
 }
 
 class LoadReviewsLoading extends ReviewsState {
@@ -20,25 +24,6 @@ class LoadReviewsLoading extends ReviewsState {
 }
 
 class LoadReviewsFailure extends ReviewsState {
-  @override
-  List<Object> get props => [];
-}
-
-class PostReviewsDone extends ReviewsState {
-  final ReviewModel reviewModel;
-
-  PostReviewsDone(this.reviewModel);
-
-  @override
-  List<Object> get props => [reviewModel];
-}
-
-class PostReviewsLoading extends ReviewsState {
-  @override
-  List<Object> get props => [];
-}
-
-class PostReviewsFailure extends ReviewsState {
   @override
   List<Object> get props => [];
 }

@@ -1,18 +1,18 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:pocket_health/models/review_model.dart';
 
 part 'filter_reviews_state.dart';
 
 class FilterReviewsCubit extends Cubit<FilterReviewsState> {
-  FilterReviewsCubit() : super(RecentlyRatedLoaded());
+	FilterReviewsCubit() : super(FilterReviewsInitial());
 
   //recent
-  void loadRecentlyRated() async {
+	void loadRecentlyRated({List<ReviewModel> toSort}) async {
     try {
       emit(FilterReviewsLoading());
 
-      /////fetch reviews
-      emit(RecentlyRatedLoaded());
+      emit(RecentlyRatedLoaded(toSort));
     } catch (_) {
       emit(FilterReviewsFailure());
       print("loadRecentlyRated failed | $_");
@@ -20,12 +20,14 @@ class FilterReviewsCubit extends Cubit<FilterReviewsState> {
   }
 
   //highest
-  void loadHighestRated() async {
+	void loadHighestRated({List<ReviewModel> toSort}) async {
     try {
       emit(FilterReviewsLoading());
 
       /////fetch reviews
-      emit(HighestRatedLoaded());
+      toSort.sort((a, b) => b.rating.toDouble().compareTo(a.rating.toDouble()));
+
+      emit(HighestRatedLoaded(toSort));
     } catch (_) {
       emit(FilterReviewsFailure());
       print("loadHighestRated failed | $_");
@@ -33,12 +35,14 @@ class FilterReviewsCubit extends Cubit<FilterReviewsState> {
   }
 
   //lowest
-  void loadLowestRated() async {
+	void loadLowestRated({List<ReviewModel> toSort}) async {
     try {
       emit(FilterReviewsLoading());
 
-      /////fetch reviews
-      emit(LowestRatedLoaded());
+      //
+      toSort.sort((a, b) => a.rating.toDouble().compareTo(b.rating.toDouble()));
+
+      emit(LowestRatedLoaded(toSort));
     } catch (_) {
       emit(FilterReviewsFailure());
       print("loadLowestRated failed | $_");

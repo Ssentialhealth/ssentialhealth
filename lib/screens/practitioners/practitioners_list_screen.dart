@@ -5,6 +5,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:pocket_health/bloc/list_practitioners/list_practitioners_cubit.dart';
 import 'package:pocket_health/models/practitioner_profile_model.dart';
 import 'package:pocket_health/screens/practitioners/practitioner_profile_screen.dart';
+import 'package:pocket_health/services/test_service.dart';
 import 'package:pocket_health/utils/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -27,15 +28,22 @@ class _PractitionersListScreenState extends State<PractitionersListScreen> {
   String filterByName;
   bool isSortedByCheapest = false;
 
-  checkIfSorted(state) async {
+  checkIfSorted(ListPractitionersLoaded state) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool testBool = prefs.getBool('sortByCheapest');
-    testBool == null ? setState(() => isSortedByCheapest = false) : setState(() => isSortedByCheapest = true);
+    //sort
+    bool sortCheapest = prefs.getBool('sortByCheapest');
+    sortCheapest == null ? setState(() => isSortedByCheapest = false) : setState(() => isSortedByCheapest = true);
 
-    if (isSortedByCheapest)
+    //filter
+    String filterCountry = prefs.getString('filterByCountry');
+    print(filterCountry);
+
+    if (filterCountry != null) {
+      state.practitionerProfiles.retainWhere((element) => element.phoneNumber.startsWith(filterCountry));
+    }
+
+    if (isSortedByCheapest && state.practitionerProfiles.isNotEmpty)
       state.practitionerProfiles.sort((a, b) => double.parse(a.ratesInfo.onlineBooking.upto1Hour).compareTo(double.parse(b.ratesInfo.onlineBooking.upto1Hour)));
-
-    print('isSorted  ' + isSortedByCheapest.toString());
   }
 
   @override
@@ -136,9 +144,12 @@ class _PractitionersListScreenState extends State<PractitionersListScreen> {
                     SharedPreferences prefs = await SharedPreferences.getInstance();
                     prefs.containsKey('filterByPrice') ? prefs.remove('filterByPrice') : null;
                     prefs.containsKey('filterByDistance') ? prefs.remove('filterByDistance') : null;
+                    prefs.containsKey('filterByCountry') ? prefs.remove('filterByCountry') : null;
                     prefs.containsKey('sortByCheapest') ? prefs.remove('sortByCheapest') : null;
+                    prefs.containsKey('filterByAvailability') ? prefs.remove('filterByAvailability') : null;
                     prefs.containsKey('sortByNearest') ? prefs.remove('sortByNearest') : null;
                     prefs.containsKey('filterBySpeciality') ? prefs.remove('filterBySpeciality') : null;
+                    // test();
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (BuildContext context) {
@@ -357,7 +368,7 @@ class _PractitionersListScreenState extends State<PractitionersListScreen> {
                                                   'View Profile',
                                                   style: TextStyle(
                                                     color: Color(0xff1A5864),
-                                                    fontSize: 16.sp,
+                                                    fontSize: 15.sp,
                                                     fontWeight: FontWeight.w500,
                                                   ),
                                                 ),
@@ -392,7 +403,7 @@ class _PractitionersListScreenState extends State<PractitionersListScreen> {
                                                   'Book Appointment',
                                                   style: TextStyle(
                                                     color: Colors.white,
-                                                    fontSize: 16.sp,
+                                                    fontSize: 15.sp,
                                                     fontWeight: FontWeight.w500,
                                                   ),
                                                 ),

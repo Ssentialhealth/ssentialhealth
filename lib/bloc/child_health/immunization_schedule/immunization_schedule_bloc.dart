@@ -31,5 +31,9 @@ class ImmunizationScheduleBloc extends Bloc<ImmunizationScheduleEvent, Immunizat
         print("Error:" + e.toString());
       }
     }
+
+    if (event is LoadInitial) {
+      yield ImmunizationScheduleInitial();
+    }
   }
 }

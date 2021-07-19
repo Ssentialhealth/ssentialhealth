@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:pocket_health/models/ForgotPassword.dart';
-import 'package:pocket_health/models/Schedule_detail_model.dart';
 import 'package:pocket_health/models/all_schedules_model.dart';
 import 'package:pocket_health/models/child_chronic_condition_model.dart';
 import 'package:pocket_health/models/child_chronic_detail_model.dart';
@@ -254,6 +253,8 @@ class ApiService {
     return ImmunizationScheduleModel.fromJson(createSchedule);
   }
 
+  //UPDATE SCHEDULE
+
   //Fetching all Schedules
   Future<List<AllScheduleModel>> fetchAllSchedule() async {
     _token = await getStringValuesSF();
@@ -271,7 +272,7 @@ class ApiService {
   }
 
   //Schedule detail
-  Future<List<ScheduleDetail>> fetchScheduleById(int id) async {
+  Future<AllScheduleModel> fetchEachSchedule(int id) async {
     _token = await getStringValuesSF();
 
     final response = await this.httpClient.get(
@@ -282,7 +283,8 @@ class ApiService {
       throw Exception('Error Fetching Schedule Details');
     }
     print(response.body);
-    return scheduleDetailFromJson(response.body);
+    final schedule = allScheduleModelFromJson(response.body).where((element) => element.id == id).toList()[0];
+    return schedule;
   }
 
   //User Emergency Contacts Endpoints Fetch
@@ -388,6 +390,8 @@ class ApiService {
     @required String filterByDistance,
     @required String filterByPrice,
     @required String sortByNearest,
+    @required String filterByAvailability,
+    @required String sortByHighestRated,
     @required String sortByCheapest,
     @required String filterBySpeciality,
     @required String practitionersCategory,
@@ -409,43 +413,108 @@ class ApiService {
     print(filterByDistance);
 
     final filtered = practitionersCategory == 'Doctors'
-        ? (filterByPrice != 'null' && filterByDistance != 'null' && filterBySpeciality != 'null')
+        ? (filterByPrice != 'null' && filterByDistance != 'null' && filterBySpeciality != 'null' && filterByAvailability != 'null')
             //if doctors filtered by all filters
             ? whereNotNull
                 .where((element) =>
                     (double.parse(element.ratesInfo.onlineBooking.upto1Hour) <= double.parse(filterByPrice)) &&
                     (30.0 <= double.parse(filterByDistance)) &&
-                    (element.healthInfo.speciality == filterBySpeciality))
+                    (element.healthInfo.speciality == filterBySpeciality) &&
+                    (element.available.toString() == filterByAvailability))
                 .toList()
             // if doctors not filtered by price
-            : (practitionersCategory == 'Doctors') && (filterByPrice == 'null' && filterByDistance != 'null' && filterBySpeciality != 'null')
-                ? whereNotNull.where((element) => (30.0 <= double.parse(filterByDistance)) && (element.healthInfo.speciality == filterBySpeciality)).toList()
+            : (practitionersCategory == 'Doctors') &&
+                    (filterByPrice == 'null' && filterByDistance != 'null' && filterBySpeciality != 'null' && filterByAvailability != 'null')
+                ? whereNotNull
+                    .where((element) =>
+                        (30.0 <= double.parse(filterByDistance)) &&
+                        (element.healthInfo.speciality == filterBySpeciality) &&
+                        (element.available.toString() == filterByAvailability))
+                    .toList()
                 // if doctors not filtered by distance or price
-                : (practitionersCategory == 'Doctors') && (filterByPrice == 'null' && filterByDistance == 'null' && filterBySpeciality != 'null')
-                    ? whereNotNull.where((element) => (element.healthInfo.speciality == filterBySpeciality)).toList()
+                : (practitionersCategory == 'Doctors') &&
+                        (filterByPrice == 'null' && filterByDistance == 'null' && filterBySpeciality != 'null' && filterByAvailability != 'null')
+                    ? whereNotNull
+                        .where((element) => (element.healthInfo.speciality == filterBySpeciality) && (element.available.toString() == filterByAvailability))
+                        .toList()
                     // if doctors not filtered by distance
-                    : (practitionersCategory == 'Doctors') && (filterByPrice != 'null' && filterByDistance == 'null' && filterBySpeciality != 'null')
+                    : (practitionersCategory == 'Doctors') &&
+                            (filterByPrice != 'null' && filterByDistance == 'null' && filterBySpeciality != 'null' && filterByAvailability != 'null')
                         ? whereNotNull
                             .where((element) =>
                                 (double.parse(element.ratesInfo.onlineBooking.upto1Hour) <= double.parse(filterByPrice)) &&
-                                (element.healthInfo.speciality == filterBySpeciality))
+                                (element.healthInfo.speciality == filterBySpeciality) &&
+                                (element.available.toString() == filterByAvailability))
                             .toList()
-                        // if doctors not filtered by distance or price or speciality
-                        : whereNotNull
-        : (filterByPrice != 'null' && filterByDistance != 'null')
-            //if filtered by price & distance
+                        // if doctors not filtered by distance or availability
+                        : (practitionersCategory == 'Doctors') &&
+                                (filterByPrice != 'null' && filterByDistance == 'null' && filterBySpeciality != 'null' && filterByAvailability == 'null')
+                            ? whereNotNull
+                                .where((element) =>
+                                    (double.parse(element.ratesInfo.onlineBooking.upto1Hour) <= double.parse(filterByPrice)) &&
+                                    (element.healthInfo.speciality == filterBySpeciality))
+                                .toList()
+                            // if doctors not filtered by price or availability
+                            : (practitionersCategory == 'Doctors') &&
+                                    (filterByPrice == 'null' && filterByDistance != 'null' && filterBySpeciality != 'null' && filterByAvailability == 'null')
+                                ? whereNotNull
+                                    .where((element) => (30.0 <= double.parse(filterByDistance)) && (element.healthInfo.speciality == filterBySpeciality))
+                                    .toList() // if doctors not filtered availability
+                                : (practitionersCategory == 'Doctors') &&
+                                        (filterByPrice != 'null' &&
+                                            filterByDistance != 'null' &&
+                                            filterBySpeciality != 'null' &&
+                                            filterByAvailability == 'null')
+                                    ? whereNotNull
+                                        .where((element) =>
+                                            (double.parse(element.ratesInfo.onlineBooking.upto1Hour) <= double.parse(filterByPrice)) &&
+                                            (element.healthInfo.speciality == filterBySpeciality))
+                                        .toList()
+                                    : (practitionersCategory == 'Doctors') &&
+                                            (filterByPrice == 'null' &&
+                                                filterByDistance == 'null' &&
+                                                filterByAvailability != 'null' &&
+                                                filterBySpeciality == 'null')
+                                        ? whereNotNull.where((element) => (element.available.toString() == filterByAvailability)).toList()
+                                        : whereNotNull
+        : (filterByPrice != 'null' && filterByDistance != 'null' && filterByAvailability != 'null')
+            //if filtered by price & distance & availability
             ? whereNotNull
                 .where((element) =>
-                    (double.parse(element.ratesInfo.onlineBooking.upto1Hour) <= double.parse(filterByPrice)) && (30.0 <= double.parse(filterByDistance)))
+                    (double.parse(element.ratesInfo.onlineBooking.upto1Hour) <= double.parse(filterByPrice)) &&
+                    (30.0 <= double.parse(filterByDistance)) &&
+                    (element.available.toString() == filterByAvailability))
                 .toList()
             // if not filtered by price
-            : (filterByPrice == 'null' && filterByDistance != 'null')
-                ? whereNotNull.where((element) => (30.0 <= double.parse(filterByDistance))).toList()
-                // if not filtered by distance
-                : (filterByPrice != 'null' && filterByDistance == 'null')
-                    ? whereNotNull.where((element) => (double.parse(element.ratesInfo.onlineBooking.upto1Hour) <= double.parse(filterByPrice))).toList()
-                    // if not filtered by distance or price
-                    : whereNotNull;
+            : (filterByPrice == 'null' && filterByDistance != 'null' && filterByAvailability != 'null')
+                ? whereNotNull.where((element) => (30.0 <= double.parse(filterByDistance)) && (element.available.toString() == filterByAvailability)).toList()
+                // if not filtered by distance or price
+                : (filterByPrice == 'null' && filterByDistance == 'null' && filterByAvailability != 'null')
+                    ? whereNotNull.where((element) => (element.available.toString() == filterByAvailability)).toList()
+                    // if not filtered by distance
+                    : (filterByPrice != 'null' && filterByDistance == 'null' && filterByAvailability != 'null')
+                        ? whereNotNull
+                            .where((element) =>
+                                (double.parse(element.ratesInfo.onlineBooking.upto1Hour) <= double.parse(filterByPrice)) &&
+                                (element.available.toString() == filterByAvailability))
+                            .toList()
+                        // if not filtered by availabilty
+                        : (filterByPrice != 'null' && filterByDistance != 'null' && filterByAvailability == 'null')
+                            ? whereNotNull
+                                .where((element) =>
+                                    (double.parse(element.ratesInfo.onlineBooking.upto1Hour) <= double.parse(filterByPrice)) &&
+                                    (30.0 <= double.parse(filterByDistance)))
+                                .toList()
+                            // if not filtered by availabilty or distance
+                            : (filterByPrice != 'null' && filterByDistance == 'null' && filterByAvailability == 'null')
+                                ? whereNotNull
+                                    .where((element) => (double.parse(element.ratesInfo.onlineBooking.upto1Hour) <= double.parse(filterByPrice)))
+                                    .toList()
+                                // if not filtered by availabilty or price
+                                : (filterByPrice == 'null' && filterByDistance != 'null' && filterByAvailability == 'null')
+                                    ? whereNotNull.where((element) => (30.0 <= double.parse(filterByDistance))).toList()
+                                    // if not filtered
+                                    : whereNotNull;
     return filtered;
   }
 
@@ -505,14 +574,14 @@ class ApiService {
   //User Reset Password Endpoint
   Future<ForgotPassword> resetPassword(String email) async {
 	  Map<String, String> _payLoad = Map();
-    _payLoad['email'] = email;
-    final response = await this.httpClient.post(Uri.encodeFull(forgotPassEndpoint), headers: {"Content-Type": "application/json"}, body: jsonEncode(_payLoad));
-    print(response.body);
-    if (response.statusCode != 204) {
-      throw Exception('Error creating Profile');
-    }
-    final resetPasswordJson = jsonDecode(response.body);
-    return ForgotPassword.fromJson(resetPasswordJson);
+	  _payLoad['email'] = email;
+	  final response = await this.httpClient.post(Uri.encodeFull(forgotPassEndpoint), headers: {"Content-Type": "application/json"}, body: jsonEncode(_payLoad));
+	  print(response.body);
+	  if (response.statusCode != 204) {
+		  throw Exception('Error creating Profile');
+	  }
+	  final resetPasswordJson = jsonDecode(response.body);
+	  return ForgotPassword.fromJson(resetPasswordJson);
   }
 
   //User Login Endpoint
@@ -538,9 +607,20 @@ class ApiService {
   Future<ReviewModel> postReview(ReviewModel review) async {
     final mapData = reviewModelToJson(review);
 
-    final response = await this.httpClient.post(Uri.encodeFull('reviewsEndpoint'), body: mapData);
+    final response = await this.httpClient.post(
+          Uri.encodeFull('https://ssential.herokuapp.com/api/practitionerProfile/reviews/'),
+          headers: {"Content-Type": "application/json"},
+          body: mapData,
+        );
     print("review respsonse | ${response.body}");
     return reviewModelFromJson(response.body);
+  }
+
+  //fetch reviews
+  Future<List<ReviewModel>> fetchReviews() async {
+    final response = await this.httpClient.get('https://ssential.herokuapp.com/api/practitionerProfile/reviews/');
+    print("review respsonse | ${response.body}");
+    return listOfReviewModelFromJson(response.body);
   }
 }
 

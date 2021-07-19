@@ -12,8 +12,7 @@ class CreateSchedule extends ImmunizationScheduleEvent {
   final String childName;
   final String childDob;
 
-  CreateSchedule({
-    @required this.childName,
-    @required this.childDob
-  });
+  CreateSchedule({@required this.childName, @required this.childDob});
 }
+
+class LoadInitial extends ImmunizationScheduleEvent {}

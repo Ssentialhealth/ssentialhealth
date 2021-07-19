@@ -9,4 +9,8 @@ class ReviewsRepo {
   Future<ReviewModel> addReview(reviewModel) async {
     return await apiService.postReview(reviewModel);
   }
+
+  Future<List<ReviewModel>> getReviews() async {
+    return await apiService.fetchReviews();
+  }
 }

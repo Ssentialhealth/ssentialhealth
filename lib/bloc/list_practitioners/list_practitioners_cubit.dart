@@ -23,21 +23,26 @@ class ListPractitionersCubit extends Cubit<ListPractitionersState> {
     }
   }
 
-  Future filterPractitioners(
-      {@required String filterByDistance,
-      @required String practitionersCategory,
-      @required String filterByPrice,
-      @required String sortByNearest,
-      @required String sortByCheapest,
-      @required String filterBySpeciality}) async {
+  Future filterPractitioners({
+    @required String filterByDistance,
+    @required String practitionersCategory,
+    @required String filterByPrice,
+    @required String filterByAvailability,
+    @required String sortByNearest,
+    @required String sortByCheapest,
+    @required String sortByHighestRated,
+    @required String filterBySpeciality,
+  }) async {
     try {
       emit(ListPractitionersLoading());
       final List<PractitionerProfileModel> filteredPractitionerProfiles = await practitionerProfileRepo.filterPractitioners(
           filterByDistance: filterByDistance,
           filterByPrice: filterByPrice,
+          filterByAvailability: filterByAvailability,
           filterBySpeciality: filterBySpeciality,
           sortByCheapest: sortByCheapest,
           sortByNearest: sortByNearest,
+          sortByHighestRated: sortByHighestRated,
           practitionersCategory: practitionersCategory);
       emit(ListPractitionersLoaded(filteredPractitionerProfiles));
     } catch (_) {

@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/foundation.dart';
 
 abstract class ScheduleDetailsEvent extends Equatable {
   const ScheduleDetailsEvent();
@@ -10,5 +9,5 @@ abstract class ScheduleDetailsEvent extends Equatable {
 
 class FetchScheduleDetails extends ScheduleDetailsEvent {
   final int id;
-  const FetchScheduleDetails({@required this.id});
+  const FetchScheduleDetails(this.id);
 }

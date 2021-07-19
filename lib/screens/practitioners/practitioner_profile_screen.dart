@@ -4,8 +4,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pocket_health/bloc/filter_reviews/filter_reviews_cubit.dart';
+import 'package:pocket_health/bloc/post_review/post_review_cubit.dart';
+import 'package:pocket_health/bloc/reviews/reviews_cubit.dart';
 import 'package:pocket_health/models/practitioner_profile_model.dart';
+import 'package:pocket_health/models/review_model.dart';
 import 'package:pocket_health/screens/practitioners/reviews_list.dart';
+import 'package:pocket_health/screens/practitioners/sort_reviews_row.dart';
 import 'package:pocket_health/screens/practitioners/write_review_dialog.dart';
 import 'package:pocket_health/utils/constants.dart';
 
@@ -338,12 +342,15 @@ class _PractitionerProfileScreenState extends State<PractitionerProfileScreen> w
 
                         //tab switcher
                         TabBar(
-                          indicatorColor: accentColorDark,
+	                        indicatorColor: accentColorDark,
                           indicatorSize: TabBarIndicatorSize.label,
                           isScrollable: false,
                           labelColor: accentColorDark,
                           unselectedLabelColor: Color(0xff777a7e),
                           indicatorPadding: EdgeInsets.zero,
+                          onTap: (tabIdx) {
+                            if (tabIdx == 1) return context.read<ReviewsCubit>()..loadReviews();
+                          },
                           labelPadding: EdgeInsets.zero,
                           labelStyle: TextStyle(
                             color: accentColorDark,
@@ -494,47 +501,47 @@ class _PractitionerProfileScreenState extends State<PractitionerProfileScreen> w
                     ),
                   ),
                   SizedBox(height: 10.h),
-
-                  //overview
-                  Container(
-                    height: 144.h,
-                    clipBehavior: Clip.hardEdge,
-                    padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 15.h),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(
-                        color: Color(0x19000000),
-                        width: 1.h,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Color(0xC000000),
-                          blurRadius: 4.w,
-                          spreadRadius: 2.w,
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Overview', style: sectionTitle),
-                        SizedBox(height: 8.h),
-                        Padding(
-                          padding: EdgeInsets.only(left: 5.w),
-                          child: Text(
-                            'Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, crossAxisAlignment: CrossAxisnAxisAlignment: MainAxisAlignment.spaceBetween, crossAxisAlignment: CrossAxisAlignment.start, children: [',
-                            maxLines: 5,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              color: textBlack,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 10.h),
+                  //
+                  // //overview
+                  // Container(
+                  //   height: 144.h,
+                  //   clipBehavior: Clip.hardEdge,
+                  //   padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 15.h),
+                  //   decoration: BoxDecoration(
+                  //     color: Colors.white,
+                  //     border: Border.all(
+                  //       color: Color(0x19000000),
+                  //       width: 1.h,
+                  //     ),
+                  //     boxShadow: [
+                  //       BoxShadow(
+                  //         color: Color(0xC000000),
+                  //         blurRadius: 4.w,
+                  //         spreadRadius: 2.w,
+                  //       ),
+                  //     ],
+                  //   ),
+                  //   child: Column(
+                  //     mainAxisAlignment: MainAxisAlignment.start,
+                  //     crossAxisAlignment: CrossAxisAlignment.start,
+                  //     children: [
+                  //       Text('Overview', style: sectionTitle),
+                  //       SizedBox(height: 8.h),
+                  //       Padding(
+                  //         padding: EdgeInsets.only(left: 5.w),
+                  //         child: Text(
+                  //           'Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, crossAxisAlignment: CrossAxisnAxisAlignment: MainAxisAlignment.spaceBetween, crossAxisAlignment: CrossAxisAlignment.start, children: [',
+                  //           maxLines: 5,
+                  //           overflow: TextOverflow.ellipsis,
+                  //           style: TextStyle(
+                  //             color: textBlack,
+                  //           ),
+                  //         ),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
+                  // SizedBox(height: 10.h),
 
                   //rates title
                   Container(
@@ -923,6 +930,7 @@ class _PractitionerProfileScreenState extends State<PractitionerProfileScreen> w
                             Text('Sort by:', style: sectionTitle),
                             GestureDetector(
                               onTap: () {
+	                              context.read<PostReviewCubit>()..loadInitial();
                                 showDialog(
                                   context: context,
                                   builder: (context) => WriteReviewDialog(),
@@ -937,422 +945,90 @@ class _PractitionerProfileScreenState extends State<PractitionerProfileScreen> w
                       SizedBox(height: 10.h),
 
                       //filter chips
-                      BlocBuilder<FilterReviewsCubit, FilterReviewsState>(
+	                    BlocBuilder<ReviewsCubit, ReviewsState>(
                         builder: (context, state) {
-                          return Padding(
-                            padding: EdgeInsets.only(left: 15.w, right: 15.w),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                //recent
-                                GestureDetector(
-                                  onTap: () {
-                                    context.read<FilterReviewsCubit>()..loadRecentlyRated();
-                                  },
-                                  child: Visibility(
-                                    replacement: AnimatedContainer(
-                                      duration: Duration(milliseconds: 150),
-                                      padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 5.w),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(100.w),
-                                        border: Border.all(
-                                          color: Color(0xffC6C6C6),
-                                          width: 1.5.w,
-                                        ),
-                                      ),
-                                      height: 34.h,
-                                      child: Center(
-                                        child: Text(
-                                          'Recent',
-                                          style: TextStyle(
-                                            color: Color(0xff5C5C5C),
-                                            fontSize: 13.sp,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    visible: state is RecentlyRatedLoaded,
-                                    child: AnimatedContainer(
-                                      duration: Duration(milliseconds: 150),
-                                      padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 5.w),
-                                      decoration: BoxDecoration(
-                                        color: accentColorLight,
-                                        borderRadius: BorderRadius.circular(100.w),
-                                        border: Border.all(
-                                          color: accentColorDark,
-                                          width: 1.5.w,
-                                        ),
-                                      ),
-                                      height: 34.h,
-                                      child: Center(
-                                        child: Text(
-                                          'Recent',
-                                          style: TextStyle(
-                                            color: accentColorDark,
-                                            fontSize: 13.sp,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-
-                                SizedBox(width: 10.w),
-                                //highest
-                                GestureDetector(
-                                  onTap: () {
-                                    context.read<FilterReviewsCubit>()..loadHighestRated();
-                                  },
-                                  child: Visibility(
-                                    visible: state is HighestRatedLoaded,
-                                    replacement: AnimatedContainer(
-                                      duration: Duration(milliseconds: 150),
-                                      padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 5.w),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(100.w),
-                                        border: Border.all(
-                                          color: Color(0xffC6C6C6),
-                                          width: 1.5.w,
-                                        ),
-                                      ),
-                                      height: 34.h,
-                                      child: Center(
-                                        child: Text(
-                                          'Highest Rated',
-                                          style: TextStyle(
-                                            color: Color(0xff5C5C5C),
-                                            fontSize: 13.sp,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    child: AnimatedContainer(
-                                      duration: Duration(milliseconds: 150),
-                                      padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 5.w),
-                                      decoration: BoxDecoration(
-                                        color: accentColorLight,
-                                        borderRadius: BorderRadius.circular(100.w),
-                                        border: Border.all(
-                                          color: accentColorDark,
-                                          width: 1.5.w,
-                                        ),
-                                      ),
-                                      height: 34.h,
-                                      child: Center(
-                                        child: Text(
-                                          'Highest Rated',
-                                          style: TextStyle(
-                                            color: accentColorDark,
-                                            fontSize: 13.sp,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(width: 10.w),
-
-                                //lowest
-                                GestureDetector(
-                                  onTap: () {
-                                    context.read<FilterReviewsCubit>()..loadLowestRated();
-                                  },
-                                  child: Visibility(
-                                    visible: state is LowestRatedLoaded,
-                                    replacement: AnimatedContainer(
-                                      duration: Duration(milliseconds: 150),
-                                      padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 5.w),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(100.w),
-                                        border: Border.all(
-                                          color: Color(0xffC6C6C6),
-                                          width: 1.5.w,
-                                        ),
-                                      ),
-                                      height: 34.h,
-                                      child: Center(
-                                        child: Text(
-                                          'Lowest Rated',
-                                          style: TextStyle(
-                                            color: Color(0xff5C5C5C),
-                                            fontSize: 13.sp,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    child: AnimatedContainer(
-                                      duration: Duration(milliseconds: 150),
-                                      padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 5.w),
-                                      decoration: BoxDecoration(
-                                        color: accentColorLight,
-                                        borderRadius: BorderRadius.circular(100.w),
-                                        border: Border.all(
-                                          color: accentColorDark,
-                                          width: 1.5.w,
-                                        ),
-                                      ),
-                                      height: 34.h,
-                                      child: Center(
-                                        child: Text(
-                                          'Lowest Rated',
-                                          style: TextStyle(
-                                            color: accentColorDark,
-                                            fontSize: 13.sp,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
+                          if (state is LoadReviewsLoaded) {
+                            final List<ReviewModel> toSort = state.reviewModels;
+                            return SortReviewsRow(toSort: toSort);
+                          } else
+                            return SortReviewsRow();
                         },
                       ),
 
                       SizedBox(height: 10.h),
 
                       //reviews
-                      BlocBuilder<FilterReviewsCubit, FilterReviewsState>(
-                        builder: (context, state) {
-                          //recent
-                          if (state is RecentlyRatedLoaded) {
-                            return ReviewsList();
-                          }
+                      BlocBuilder<ReviewsCubit, ReviewsState>(
+                        builder: (context, reviewsState) {
+                          if (reviewsState is LoadReviewsLoaded) {
+                            return BlocBuilder<FilterReviewsCubit, FilterReviewsState>(
+                              builder: (context, state) {
+                                //recent
+                                if (state is RecentlyRatedLoaded) {
+                                  return ReviewsList(reviewsState.reviewModels);
+                                }
 
-                          //highest
-                          if (state is HighestRatedLoaded) {
-                            return Container(
-                              padding: EdgeInsets.symmetric(vertical: 15.w, horizontal: 15.w),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(5.w),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Color(0xC000000),
-                                    blurRadius: 4.w,
-                                    spreadRadius: 2.w,
-                                  ),
-                                ],
-                              ),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  //avi
-                                  CircleAvatar(
-                                    radius: 15.w,
-                                    backgroundImage: AssetImage("assets/images/progile.jpeg"),
-                                  ),
+                                //highest
+                                if (state is HighestRatedLoaded) {
+                                  final sortedByHighestRated = state.sortedByHighestRated;
+                                  return ReviewsList(sortedByHighestRated);
+                                }
 
-                                  SizedBox(width: 15.w),
+                                //lowest
+                                if (state is LowestRatedLoaded) {
+                                  final sortedByLowestRated = state.sortedByLowestRated;
+                                  return ReviewsList(sortedByLowestRated);
+                                }
 
-                                  //details
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      //name
-                                      Text(
-                                        'Salma Hussein',
-                                        style: TextStyle(
-                                          fontSize: 17.sp,
-                                          color: Color(0xff181818),
-                                        ),
-                                      ),
+                                //loading
+                                if (state is FilterReviewsLoading) {
+                                  return SizedBox(
+                                    height: 20.w,
+                                    width: 20.w,
+                                    child: CircularProgressIndicator(
+                                      backgroundColor: Colors.tealAccent,
+                                      color: accentColorDark,
+                                    ),
+                                  );
+                                }
 
-                                      SizedBox(height: 3.h),
+                                //failure
+                                if (state is FilterReviewsFailure) {
+                                  return Container(
+                                    height: 100,
+                                    color: Colors.red,
+                                  );
+                                }
 
-                                      //rating bar / time ago
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: [
-                                          RatingBarIndicator(
-                                            itemCount: 5,
-                                            itemSize: 13.w,
-                                            direction: Axis.horizontal,
-                                            rating: 3.5,
-                                            unratedColor: Colors.orange.shade100,
-                                            itemBuilder: (context, index) {
-                                              return Icon(
-                                                Icons.star,
-                                                size: 13.w,
-                                                color: Colors.orange,
-                                              );
-                                            },
-                                          ),
-                                          Text(
-                                            '  2 weeks ago',
-                                            style: TextStyle(
-                                              fontSize: 13.sp,
-                                              fontWeight: FontWeight.w500,
-                                              color: Color(0xff6A6969),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-
-                                      SizedBox(height: 6.h),
-
-                                      //text
-                                      SizedBox(
-                                        width: 280.w,
-                                        child: Text(
-                                          'Column(mainA xisAlig nment: Mai nAx isAli g nment .spac e Be t ween , cro s sAxis Alignm ent:  Cros sAx is nAxisAlignment: MainAxisAlignment.spaceBetween, crossAxisAlignment: CrossAxisAlignment.start, children: [',
-                                          maxLines: 4,
-                                          softWrap: true,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                            fontSize: 13.sp,
-                                            // fontWeight: FontWeight.w500,
-                                            color: Color(0xff6A6969),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-
-                                  SizedBox(width: 7.w),
-
-                                  //ctx menu
-                                  Icon(
-                                    Icons.more_vert,
-                                    size: 20.w,
-                                    color: textBlack,
-                                  ),
-                                ],
-                              ),
+                                return Container(
+                                  height: 100,
+                                  color: Colors.pink,
+                                );
+                              },
                             );
                           }
-
-                          //lowest
-                          if (state is LowestRatedLoaded) {
-                            return Container(
-                              padding: EdgeInsets.symmetric(vertical: 15.w, horizontal: 15.w),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(5.w),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Color(0xC000000),
-                                    blurRadius: 4.w,
-                                    spreadRadius: 2.w,
-                                  ),
-                                ],
-                              ),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  //avi
-                                  CircleAvatar(
-                                    radius: 15.w,
-                                    backgroundImage: AssetImage("assets/images/progile.jpeg"),
-                                  ),
-
-                                  SizedBox(width: 15.w),
-
-                                  //details
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      //name
-                                      Text(
-                                        'Salma Hussein',
-                                        style: TextStyle(
-                                          fontSize: 17.sp,
-                                          color: Color(0xff181818),
-                                        ),
-                                      ),
-
-                                      SizedBox(height: 3.h),
-
-                                      //rating bar / time ago
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: [
-                                          RatingBarIndicator(
-                                            itemCount: 5,
-                                            itemSize: 13.w,
-                                            direction: Axis.horizontal,
-                                            rating: 3.5,
-                                            unratedColor: Colors.orange.shade100,
-                                            itemBuilder: (context, index) {
-                                              return Icon(
-                                                Icons.star,
-                                                size: 13.w,
-                                                color: Colors.orange,
-                                              );
-                                            },
-                                          ),
-                                          Text(
-                                            '  2 weeks ago',
-                                            style: TextStyle(
-                                              fontSize: 13.sp,
-                                              fontWeight: FontWeight.w500,
-                                              color: Color(0xff6A6969),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-
-                                      SizedBox(height: 6.h),
-
-                                      //text
-                                      SizedBox(
-                                        width: 280.w,
-                                        child: Text(
-                                          'Column(mainA xisAlig nment: Mai nAx isAli g nment .spac e Be t ween , cro s sAxis Alignm ent:  Cros sAx is nAxisAlignment: MainAxisAlignment.spaceBetween, crossAxisAlignment: CrossAxisAlignment.start, children: [',
-                                          maxLines: 4,
-                                          softWrap: true,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                            fontSize: 13.sp,
-                                            // fontWeight: FontWeight.w500,
-                                            color: Color(0xff6A6969),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-
-                                  SizedBox(width: 7.w),
-
-                                  //ctx menu
-                                  Icon(
-                                    Icons.more_vert,
-                                    size: 20.w,
-                                    color: textBlack,
-                                  ),
-                                ],
-                              ),
-                            );
-                          }
-
-                          //loading
-                          if (state is FilterReviewsLoading) {
-                            return CircularProgressIndicator();
-                          }
-
-                          //failure
-                          if (state is FilterReviewsLoading) {
+                          if (reviewsState is LoadReviewsFailure) {
                             return Container(
                               height: 100,
                               color: Colors.red,
                             );
                           }
 
-                          return Container();
+                          if (reviewsState is LoadReviewsLoading) {
+                            return SizedBox(
+                              height: 20.w,
+                              width: 20.w,
+                              child: CircularProgressIndicator(
+                                backgroundColor: Colors.tealAccent,
+                                color: accentColorDark,
+                              ),
+                            );
+                          }
+
+                          return Container(
+                            height: 100,
+                            color: Colors.yellow,
+                          );
                         },
                       ),
                     ],
