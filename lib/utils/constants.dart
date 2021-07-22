@@ -40,4 +40,5 @@ Color accentColorLight = Color(0xffE7FFFF);
 Color accentColorDark = Color(0xff1A5864);
 Color textBlack = Color(0xff373737);
 final String immunizationEndpoint = "https://ssential.herokuapp.com/api/child_health/immunization_schedule/";
+final String vaccinesEndpoint = "https://ssential.herokuapp.com/api/child_health/immunization_schedule/vaccines/";
 final String allSchedulesEndpoint = "https://ssential.herokuapp.com/api/child_health/immunization_schedule/";

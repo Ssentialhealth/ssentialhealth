@@ -65,6 +65,7 @@ dependencies:
     git:
       url: https://github.com/pikaju/dart-json-patch.git
       ref: master
+  rfc_6902: ^0.1.0
 
 flutter_icons:
   image_path: "assets/images/icons/launcher.png"

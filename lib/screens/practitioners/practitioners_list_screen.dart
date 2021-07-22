@@ -5,8 +5,8 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:pocket_health/bloc/list_practitioners/list_practitioners_cubit.dart';
 import 'package:pocket_health/models/practitioner_profile_model.dart';
 import 'package:pocket_health/screens/practitioners/practitioner_profile_screen.dart';
-import 'package:pocket_health/services/test_service.dart';
 import 'package:pocket_health/utils/constants.dart';
+import 'package:pocket_health/widgets/verified_tag.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'book_appointment_screen.dart';
@@ -32,11 +32,14 @@ class _PractitionersListScreenState extends State<PractitionersListScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     //sort
     bool sortCheapest = prefs.getBool('sortByCheapest');
-    sortCheapest == null ? setState(() => isSortedByCheapest = false) : setState(() => isSortedByCheapest = true);
+    sortCheapest == null
+        ? null
+        : sortCheapest == true
+            ? setState(() => isSortedByCheapest = true)
+            : null;
 
     //filter
     String filterCountry = prefs.getString('filterByCountry');
-    print(filterCountry);
 
     if (filterCountry != null) {
       state.practitionerProfiles.retainWhere((element) => element.phoneNumber.startsWith(filterCountry));
@@ -185,6 +188,7 @@ class _PractitionersListScreenState extends State<PractitionersListScreen> {
                                 .where((element) => (element.surname.toLowerCase().contains(filterByName.toLowerCase())))
                                 .toList()[index]
                             : state.practitionerProfiles[index];
+
                         final surname = practitionerModel.surname;
                         final location = practitionerModel.location;
                         final phoneNumber = practitionerModel.phoneNumber;
@@ -207,11 +211,32 @@ class _PractitionersListScreenState extends State<PractitionersListScreen> {
                         final upto1Hour = practitionerModel.ratesInfo.onlineBooking.upto1Hour;
                         final upto15Mins = practitionerModel.ratesInfo.onlineBooking.upto15Mins;
                         final upto30Mins = practitionerModel.ratesInfo.onlineBooking.upto30Mins;
+
+                        final bool isVerified = phoneNumber != 'null' &&
+                            surname != '' &&
+                            user != null &&
+                            followUpPerHour != null &&
+                            followUpPerVisit != null &&
+                            inPersonPerVisit != null &&
+                            inPersonPerHour != null &&
+                            upto1Hour != null &&
+                            upto30Mins != null &&
+                            upto15Mins != null &&
+                            speciality != null &&
+                            practitioner != null &&
+                            healthInstitution != null &&
+                            careType != null &&
+                            affiliatedInstitution != null &&
+                            region != 'null' &&
+                            location != 'null' &&
+                            profileImgUrl != 'null'; //
+                        // test
                         return GestureDetector(
                           onTap: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(builder: (BuildContext context) {
                                 return PractitionerProfileScreen(
+                                  isVerified: isVerified,
                                   practitionerModel: practitionerModel,
                                 );
                               }),
@@ -289,11 +314,7 @@ class _PractitionersListScreenState extends State<PractitionersListScreen> {
                                               SizedBox(width: 10.w),
 
                                               //verified
-                                              Icon(
-                                                Icons.verified,
-                                                color: Color(0xff1A5864),
-                                                size: 15.sp,
-                                              ),
+                                              isVerified ? VerifiedTag() : Container(),
 
                                               Spacer(),
 
@@ -388,6 +409,7 @@ class _PractitionersListScreenState extends State<PractitionersListScreen> {
                                                   Navigator.of(context).push(
                                                     MaterialPageRoute(builder: (BuildContext context) {
                                                       return PractitionerProfileScreen(
+                                                        isVerified: isVerified,
                                                         practitionerModel: practitionerModel,
                                                       );
                                                     }),

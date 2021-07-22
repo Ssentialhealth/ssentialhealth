@@ -193,6 +193,7 @@ class _FilterPractitionersScreenState extends State<FilterPractitionersScreen> {
                         },
                       ),
                     ),
+                    Divider(height: 0.0, thickness: 0.5, indent: 20.r, endIndent: 20.r, color: Color(0xffB3B3B3)),
 
                     //rating
                     Theme(
@@ -229,6 +230,7 @@ class _FilterPractitionersScreenState extends State<FilterPractitionersScreen> {
                         },
                       ),
                     ),
+                    Divider(height: 0.0, thickness: 0.5, indent: 20.r, endIndent: 20.r, color: Color(0xffB3B3B3)),
 
                     //availability
                     Theme(
@@ -443,21 +445,21 @@ class _FilterPractitionersScreenState extends State<FilterPractitionersScreen> {
                       labelFormatterCallback: (actualValue, label) {
                         final newLabel = distanceUnits == "Miles"
                             ? actualValue == 33
-                            ? "MAX"
-                            : label
+                                ? "MAX"
+                                : label
                             : actualValue == 55
-                            ? "MAX"
-                            : label;
+                                ? "MAX"
+                                : label;
                         return newLabel;
                       },
                       tooltipTextFormatterCallback: (actualValue, label) {
                         final newLabel = distanceUnits == "Miles"
                             ? actualValue == 33
-                            ? "MAX"
-                            : label
+                                ? "MAX"
+                                : label
                             : actualValue == 55
-                            ? "MAX"
-                            : label;
+                                ? "MAX"
+                                : label;
                         return newLabel;
                       },
                       minorTicksPerInterval: 0,
@@ -583,18 +585,18 @@ class _FilterPractitionersScreenState extends State<FilterPractitionersScreen> {
                         final kshLabel = label == "1000"
                             ? '1,000'
                             : label == "2000"
-                            ? '2,000'
-                            : label == "3000"
-                            ? "3,000"
-                            : label == "4000"
-                            ? '4,000'
-                            : label == "5000"
-                            ? "5,000"
-                            : label == "6000"
-                            ? 'MAX'
-                            : label == "0"
-                            ? "0"
-                            : '';
+                                ? '2,000'
+                                : label == "3000"
+                                    ? "3,000"
+                                    : label == "4000"
+                                        ? '4,000'
+                                        : label == "5000"
+                                            ? "5,000"
+                                            : label == "6000"
+                                                ? 'MAX'
+                                                : label == "0"
+                                                    ? "0"
+                                                    : '';
                         final usdLabel = label == "60" ? 'MAX' : label;
                         final newLabel = priceUnits == 'USD' ? usdLabel : kshLabel;
 
@@ -604,18 +606,18 @@ class _FilterPractitionersScreenState extends State<FilterPractitionersScreen> {
                         final kshLabel = label == "1000"
                             ? '1,000'
                             : label == "2000"
-                            ? '2,000'
-                            : label == "3000"
-                            ? "3,000"
-                            : label == "4000"
-                            ? '4,000'
-                            : label == "5000"
-                            ? "5,000"
-                            : label == "6000"
-                            ? 'MAX'
-                            : label == "0"
-                            ? "0"
-                            : '';
+                                ? '2,000'
+                                : label == "3000"
+                                    ? "3,000"
+                                    : label == "4000"
+                                        ? '4,000'
+                                        : label == "5000"
+                                            ? "5,000"
+                                            : label == "6000"
+                                                ? 'MAX'
+                                                : label == "0"
+                                                    ? "0"
+                                                    : '';
                         final usdLabel = label == "60" ? 'MAX' : label;
                         final newLabel = priceUnits == 'USD' ? usdLabel : kshLabel;
 
@@ -657,17 +659,17 @@ class _FilterPractitionersScreenState extends State<FilterPractitionersScreen> {
                     ),
                     child: isFiltering
                         ? CircularProgressIndicator(
-                      color: accentColorLight,
-                      backgroundColor: accentColorDark,
-                    )
+                            color: accentColorLight,
+                            backgroundColor: accentColorDark,
+                          )
                         : Text(
-                      'Apply Filters',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w400,
-                        fontSize: 15.sp,
-                      ),
-                    ),
+                            'Apply Filters',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w400,
+                              fontSize: 15.sp,
+                            ),
+                          ),
                     onPressed: () async {
                       setState(() {
                         isFiltering = true;

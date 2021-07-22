@@ -29,8 +29,8 @@ class _AllImmunizationSchedulesScreenState extends State<AllImmunizationSchedule
       floatingActionButton: Padding(
         padding: const EdgeInsets.all(8.0),
         child: FloatingActionButton(
-	        backgroundColor: Color(0xff163C4D),
-          child: Icon(Icons.add),
+          backgroundColor: Color(0xff163C4D),
+          child: Icon(Icons.add, color: Colors.white),
           onPressed: () {
             BlocProvider.of<ImmunizationScheduleBloc>(context).add(LoadInitial());
 

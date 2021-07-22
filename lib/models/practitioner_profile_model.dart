@@ -1,51 +1,51 @@
 import 'dart:convert';
 
-List<PractitionerProfileModel> practitionerProfileFromJson(String str) =>
+List<PractitionerProfileModel> practitionerProfileModelFromJson(String str) =>
     List<PractitionerProfileModel>.from(json.decode(str).map((x) => PractitionerProfileModel.fromJson(x)));
 
-String practitionerProfileToJson(List<PractitionerProfileModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+String practitionerProfileModelToJson(List<PractitionerProfileModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class PractitionerProfileModel {
   int user;
-  String surname;
-  String phoneNumber;
-  String location;
-  bool available;
-  String region;
-  String profileImgUrl;
   HealthInfo healthInfo;
   RatesInfo ratesInfo;
+  String surname;
+  String phoneNumber;
+  bool available;
+  String location;
+  String region;
+  String profileImgUrl;
 
   PractitionerProfileModel(
-      {this.user, this.surname, this.available, this.phoneNumber, this.location, this.region, this.profileImgUrl, this.healthInfo, this.ratesInfo});
+      {this.user, this.healthInfo, this.ratesInfo, this.surname, this.phoneNumber, this.available, this.location, this.region, this.profileImgUrl});
 
   PractitionerProfileModel.fromJson(Map<String, dynamic> json) {
-    user = json['user'] ?? 'null';
-    surname = json['surname'] ?? 'null';
-    phoneNumber = json['phone_number'] ?? 'null';
-    location = json['location'] ?? 'null';
-    region = json['region'] ?? 'null';
-    available = json['available'] ?? 'null';
-    profileImgUrl = json['profile_img_url'] ?? 'null';
+    user = json['user'];
     healthInfo = json['health_info'] != null ? new HealthInfo.fromJson(json['health_info']) : HealthInfo();
-    ratesInfo = json['rates_info'] != null ? new RatesInfo.fromJson(json['rates_info']) : HealthInfo();
+    ratesInfo = json['rates_info'] != null ? new RatesInfo.fromJson(json['rates_info']) : RatesInfo();
+    surname = json['surname'];
+    phoneNumber = json['phone_number'];
+    available = json['available'];
+    location = json['location'];
+    region = json['region'];
+    profileImgUrl = json['profile_img_url'];
   }
 
   Map<String, dynamic> toJson() {
-	  final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = new Map<String, dynamic>();
     data['user'] = this.user;
-    data['surname'] = this.surname;
-    data['phone_number'] = this.phoneNumber;
-    data['location'] = this.location;
-    data['available'] = this.available;
-    data['region'] = this.region;
-    data['profile_img_url'] = this.profileImgUrl;
     if (this.healthInfo != null) {
       data['health_info'] = this.healthInfo.toJson();
     }
     if (this.ratesInfo != null) {
       data['rates_info'] = this.ratesInfo.toJson();
     }
+    data['surname'] = this.surname;
+    data['phone_number'] = this.phoneNumber;
+    data['available'] = this.available;
+    data['location'] = this.location;
+    data['region'] = this.region;
+    data['profile_img_url'] = this.profileImgUrl;
     return data;
   }
 }
@@ -60,11 +60,11 @@ class HealthInfo {
   HealthInfo({this.healthInstitution, this.careType, this.practitioner, this.speciality, this.affiliatedInstitution});
 
   HealthInfo.fromJson(Map<String, dynamic> json) {
-    healthInstitution = json['health_institution'] ?? 'null';
-    careType = json['care_type'] ?? 'null';
-    practitioner = json['practitioner'] ?? 'null';
-    speciality = json['speciality'] ?? 'null';
-    affiliatedInstitution = json['affiliated_institution'] ?? 'null';
+    healthInstitution = json['health_institution'];
+    careType = json['care_type'];
+    practitioner = json['practitioner'];
+    speciality = json['speciality'];
+    affiliatedInstitution = json['affiliated_institution'];
   }
 
   Map<String, dynamic> toJson() {
@@ -79,7 +79,7 @@ class HealthInfo {
 }
 
 class RatesInfo {
-	OnlineBooking onlineBooking;
+  OnlineBooking onlineBooking;
   InPersonBooking inPersonBooking;
   InPersonBooking followUpVisit;
 
@@ -114,9 +114,9 @@ class OnlineBooking {
   OnlineBooking({this.upto15Mins, this.upto30Mins, this.upto1Hour});
 
   OnlineBooking.fromJson(Map<String, dynamic> json) {
-    upto15Mins = json['upto_15_mins'] ?? 'null';
-    upto30Mins = json['upto_30_mins'] ?? 'null';
-    upto1Hour = json['upto_1_hour'] ?? 'null';
+    upto15Mins = json['upto_15_mins'];
+    upto30Mins = json['upto_30_mins'];
+    upto1Hour = json['upto_1_hour'];
   }
 
   Map<String, dynamic> toJson() {
@@ -135,8 +135,8 @@ class InPersonBooking {
   InPersonBooking({this.perVisit, this.perHour});
 
   InPersonBooking.fromJson(Map<String, dynamic> json) {
-    perVisit = json['per_visit'] ?? 'null';
-    perHour = json['per_hour'] ?? 'null';
+    perVisit = json['per_visit'];
+    perHour = json['per_hour'];
   }
 
   Map<String, dynamic> toJson() {

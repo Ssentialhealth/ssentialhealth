@@ -3,14 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
 import 'package:pocket_health/bloc/child_health/all_schedules/all_schedules_bloc.dart';
-import 'package:pocket_health/bloc/child_health/all_schedules/all_schedules_state.dart';
+import 'package:pocket_health/bloc/child_health/all_schedules/all_schedules_event.dart';
 import 'package:pocket_health/bloc/child_health/schedule_detail/schedule_detail_bloc.dart';
 import 'package:pocket_health/bloc/child_health/schedule_detail/schedule_detail_state.dart';
-import 'package:pocket_health/services/test_service.dart';
+import 'package:pocket_health/services/api_service.dart';
 import 'package:pocket_health/widgets/widget.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class EditScheduleDetailsScreen extends StatefulWidget {
   final id;
@@ -22,53 +20,115 @@ class EditScheduleDetailsScreen extends StatefulWidget {
 }
 
 class _EditScheduleDetailsScreenState extends State<EditScheduleDetailsScreen> {
-  String dateOfBirth;
+	String dateOfBirth;
   String received;
+  final ApiService apiService = ApiService(http.Client());
 
   final httpClient = http.Client();
-  String atBirthVaccineReceived;
-  String atBirthDate;
-  String atBirthDateFormatted;
-  String week6VaccineReceived;
-  String week6Date;
-  String week6DateFormatted;
-  String week10VaccineReceived;
-  String week10Date;
-  String week10DateFormatted;
-  String week14VaccineReceived;
-  String week14Date;
-  String week14DateFormatted;
-  String month6VaccineReceived;
-  String month6Date;
-  String month6DateFormatted;
-  String month7VaccineReceived;
-  String month7Date;
-  String month7DateFormatted;
+
+  Map<String, bool> atBirthReceivedVals = {
+    '0-receivedVal': false,
+    '1-receivedVal': false,
+    '2-receivedVal': false,
+    '3-receivedVal': false,
+  };
+  Map<String, bool> atBirthReceivedChecks = {
+    '0-hasReceivedChanged': false,
+    '1-hasReceivedChanged': false,
+    '2-hasReceivedChanged': false,
+    '3-hasReceivedChanged': false,
+  };
+  Map<String, String> atBirthDates = {
+    '0-dateReceived': null,
+    '1-dateReceived': null,
+    '2-dateReceived': null,
+    '3-dateReceived': null,
+  };
+  Map<String, bool> week6ReceivedVals = {
+    '0-receivedVal': false,
+    '1-receivedVal': false,
+    '2-receivedVal': false,
+    '3-receivedVal': false,
+  };
+  Map<String, bool> week6ReceivedChecks = {
+    '0-hasReceivedChanged': false,
+    '1-hasReceivedChanged': false,
+    '2-hasReceivedChanged': false,
+    '3-hasReceivedChanged': false,
+  };
+  Map<String, String> week6Dates = {
+    '0-dateReceived': null,
+    '1-dateReceived': null,
+    '2-dateReceived': null,
+    '3-dateReceived': null,
+  };
+
+  Map<String, bool> week10ReceivedVals = {
+    '0-receivedVal': false,
+    '1-receivedVal': false,
+    '2-receivedVal': false,
+    '3-receivedVal': false,
+  };
+  Map<String, bool> week10ReceivedChecks = {
+    '0-hasReceivedChanged': false,
+    '1-hasReceivedChanged': false,
+    '2-hasReceivedChanged': false,
+    '3-hasReceivedChanged': false,
+  };
+  Map<String, String> week10Dates = {
+    '0-dateReceived': null,
+    '1-dateReceived': null,
+    '2-dateReceived': null,
+    '3-dateReceived': null,
+  };
+  Map<String, bool> week14ReceivedVals = {
+    '0-receivedVal': false,
+    '1-receivedVal': false,
+    '2-receivedVal': false,
+    '3-receivedVal': false,
+  };
+  Map<String, bool> week14ReceivedChecks = {
+    '0-hasReceivedChanged': false,
+    '1-hasReceivedChanged': false,
+    '2-hasReceivedChanged': false,
+    '3-hasReceivedChanged': false,
+  };
+  Map<String, String> week14Dates = {
+    '0-dateReceived': null,
+    '1-dateReceived': null,
+    '2-dateReceived': null,
+    '3-dateReceived': null,
+  };
+  Map<String, bool> month6ReceivedVals = {
+    '0-receivedVal': false,
+    '1-receivedVal': false,
+    '2-receivedVal': false,
+    '3-receivedVal': false,
+  };
+  Map<String, bool> month6ReceivedChecks = {
+    '0-hasReceivedChanged': false,
+    '1-hasReceivedChanged': false,
+    '2-hasReceivedChanged': false,
+    '3-hasReceivedChanged': false,
+  };
+  Map<String, String> month6Dates = {
+    '0-dateReceived': null,
+    '1-dateReceived': null,
+    '2-dateReceived': null,
+    '3-dateReceived': null,
+  };
+  Map<String, bool> month7ReceivedVals = {
+    '0-receivedVal': false,
+  };
+  Map<String, bool> month7ReceivedChecks = {
+    '0-hasReceivedChanged': false,
+  };
+  Map<String, String> month7Dates = {
+    '0-dateReceived': null,
+  };
 
   TextEditingController dob = new TextEditingController();
   TextEditingController name = new TextEditingController();
-
-  getValuesFromSf() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    atBirthVaccineReceived = prefs.getString('${widget.id}-atBirthVaccineReceived');
-    atBirthDate = prefs.getString('${widget.id}-atBirthDate');
-    week6VaccineReceived = prefs.getString('${widget.id}-week6VaccineReceived');
-    week6Date = prefs.getString('${widget.id}-week6Date');
-    week10VaccineReceived = prefs.getString('${widget.id}-week10VaccineReceived');
-    week10Date = prefs.getString('${widget.id}-week10Date');
-    week14VaccineReceived = prefs.getString('${widget.id}-week14VaccineReceived');
-    week14Date = prefs.getString('${widget.id}-week14Date');
-    month6VaccineReceived = prefs.getString('${widget.id}-month6VaccineReceived');
-    month6Date = prefs.getString('${widget.id}-month6Date');
-    month7VaccineReceived = prefs.getString('${widget.id}-month7VaccineReceived');
-    month7Date = prefs.getString('${widget.id}-month7Date');
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    getValuesFromSf();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,6 +145,7 @@ class _EditScheduleDetailsScreenState extends State<EditScheduleDetailsScreen> {
             color: Colors.black,
           ),
           onPressed: () async {
+	          context.read<AllSchedulesBloc>()..add(FetchAllSchedules());
             Navigator.pop(context);
           },
         ),
@@ -104,804 +165,833 @@ class _EditScheduleDetailsScreenState extends State<EditScheduleDetailsScreen> {
               children: [
                 Column(
                   children: [
-                    BlocBuilder<AllSchedulesBloc, AllSchedulesState>(builder: (context, allState) {
-                      if (allState is AllSchedulesLoaded) {
-                        return Container(
-                          constraints: BoxConstraints(minHeight: 10.h),
-                          child: ListView.builder(
-                              physics: ScrollPhysics(),
-                              shrinkWrap: true,
-                              itemCount: 1,
-                              itemBuilder: (BuildContext context, index) {
-                                //at birth
-                                final atBirth = state.scheduleDetails.schedules.where((element) => element.age == 'At birth').toList()[0];
-                                final week6 = state.scheduleDetails.schedules.where((element) => element.age == '6 Weeks').toList()[0];
-                                final week10 = state.scheduleDetails.schedules.where((element) => element.age == '10 weeks').toList()[0];
-                                final week14 = state.scheduleDetails.schedules.where((element) => element.age == '14 weeks').toList()[0];
-                                final month6 = state.scheduleDetails.schedules.where((element) => element.age == '6 months').toList()[0];
-                                final month7 = state.scheduleDetails.schedules.where((element) => element.age == '7 months').toList()[0];
+                    Container(
+                      constraints: BoxConstraints(minHeight: 10.h),
+                      child: ListView.builder(
+                          physics: ScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: 1,
+                          itemBuilder: (BuildContext context, index) {
+                            //at birth
+                            final atBirth = state.scheduleDetails.schedules.where((element) => element.age == 'At birth').toList()[0];
+                            final week6 = state.scheduleDetails.schedules.where((element) => element.age == '6 Weeks').toList()[0];
+                            final week10 = state.scheduleDetails.schedules.where((element) => element.age == '10 weeks').toList()[0];
+                            final week14 = state.scheduleDetails.schedules.where((element) => element.age == '14 weeks').toList()[0];
+                            final month6 = state.scheduleDetails.schedules.where((element) => element.age == '6 months').toList()[0];
+                            final month7 = state.scheduleDetails.schedules.where((element) => element.age == '7 months').toList()[0];
 
-                                final week6Vaccines = week6.vaccines;
-                                final atBirthVaccines = atBirth.vaccines;
-                                final week10Vaccines = week10.vaccines;
-                                final week14Vaccines = week14.vaccines;
-                                final month6Vaccines = month6.vaccines;
-                                final month7Vaccines = month7.vaccines;
-                                //
-                                // Future<Schedule> updateSchedule({int childId, int scheduleNo, int vaccineNo}) async {
-                                //   final _token = await getStringValuesSF();
-                                //   final scheduleJson = (allState.allSchedulesModel.where((element) => element.id == 18).toList()[0]).toJson();
-                                //   final newJson = JsonPatch.apply(
-                                //     scheduleJson,
-                                //     [
-                                //       {"op": "replace", "path": "/schedules/$scheduleNo/vaccines/$vaccineNo/received", "value": true}
-                                //       //                 schedule index.    ^                    ^vaccine number
-                                //     ],
-                                //     strict: true,
-                                //   );
-                                //   final sdf = json.encode(newJson);
-                                //   print('Object after applying patch operations: ${sdf}');
-                                //   final response = await httpClient.put(
-                                //     immunizationEndpoint + '18',
-                                //     body: sdf,
-                                //     headers: {"Content-Type": "application/json", "Authorization": "Bearer " + _token},
-                                //   );
-                                //   print('update response  | ' + '${response.body}');
-                                //   return Schedule.fromJson(json.decode(response.body));
-                                // }
+                            final week6Vaccines = week6.vaccines;
+                            final atBirthVaccines = atBirth.vaccines;
+                            final week10Vaccines = week10.vaccines;
+                            final week14Vaccines = week14.vaccines;
+                            final month6Vaccines = month6.vaccines;
+                            final month7Vaccines = month7.vaccines;
 
-                                return Container(
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 5.0),
-                                    child: Column(
-                                      children: [
-                                        //at birth
-                                        ...List.generate(
-                                          atBirthVaccines.length,
-                                          (idx) {
-                                            final vaccineNo = 'vaccine-no-$idx';
-                                            return Column(
-                                              children: [
-                                                Container(
-                                                  constraints: BoxConstraints(minHeight: 10.h),
-                                                  decoration: BoxDecoration(
-                                                      color: Color(0xFF00FFFF),
-                                                      borderRadius: BorderRadius.only(topLeft: Radius.circular(6.0), topRight: Radius.circular(6.0))),
-                                                  child: Padding(
-                                                    padding: const EdgeInsets.all(8.0),
-                                                    child: Align(alignment: Alignment.centerLeft, child: Text('At birth')),
-                                                  ),
-                                                ),
-                                                SizedBox(
-                                                  height: 8,
-                                                ),
-                                                Padding(
-                                                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-                                                  child: Column(
+                            return Container(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 5.0),
+                                child: Column(
+                                  children: [
+                                    //at birth
+                                    ...List.generate(
+                                      atBirthVaccines.length,
+                                      (idx) {
+                                        final vaccine = atBirthVaccines[idx];
+                                        return Column(
+                                          children: [
+                                            Container(
+                                              constraints: BoxConstraints(minHeight: 10.h),
+                                              decoration: BoxDecoration(
+                                                  color: Color(0xFF00FFFF),
+                                                  borderRadius: BorderRadius.only(topLeft: Radius.circular(6.0), topRight: Radius.circular(6.0))),
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(8.0),
+                                                child: Align(alignment: Alignment.centerLeft, child: Text('At birth')),
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 8,
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                                              child: Column(
+                                                children: [
+                                                  Container(constraints: BoxConstraints(minHeight: 10.h), child: Text(atBirthVaccines[idx].vaccineName)),
+                                                  Divider(color: Color(0xff163C4D)),
+                                                  Column(
                                                     children: [
-                                                      Container(constraints: BoxConstraints(minHeight: 10.h), child: Text(atBirthVaccines[idx].vaccineName)),
-                                                      Divider(color: Color(0xff163C4D)),
-                                                      Column(
+                                                      Row(
                                                         children: [
-                                                          Row(
-                                                            children: [
-                                                              Expanded(
-                                                                child: Align(alignment: Alignment.centerLeft, child: Text("Due Date: ")),
-                                                              ),
-                                                              Expanded(
-                                                                child: Align(
-                                                                    alignment: Alignment.centerLeft, child: Text(atBirthVaccines[idx].schedule.toString())),
-                                                              ),
-                                                            ],
+                                                          Expanded(
+                                                            child: Align(alignment: Alignment.centerLeft, child: Text("Due Date: ")),
                                                           ),
-                                                          SizedBox(
-                                                            height: 8.h,
-                                                          ),
-                                                          Row(
-                                                            children: [
-                                                              Expanded(
-                                                                child: Align(alignment: Alignment.centerLeft, child: Text("Date Received:")),
-                                                              ),
-                                                              Expanded(
-                                                                child: Text(
-                                                                  '',
-                                                                  style: TextStyle(
-                                                                    color: Colors.black,
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                              GestureDetector(
-                                                                child: Icon(Icons.date_range),
-                                                                onTap: () {
-                                                                  DatePicker.showDatePicker(
-                                                                    context,
-                                                                    showTitleActions: true,
-                                                                    currentTime: DateTime.now(),
-                                                                    locale: LocaleType.en,
-                                                                    minTime: DateTime(1963, 3, 5),
-                                                                    maxTime: DateTime(2021, 6, 7),
-                                                                    onChanged: (date) {},
-                                                                    onConfirm: (date) async {
-                                                                      setState(() {
-                                                                        // atBirthDateFormatted = ;
-                                                                        atBirthDate =
-                                                                            '${widget.id}-atBirth-$vaccineNo-${DateFormat.MMMMEEEEd().format(DateTime.parse(date.toString()))}';
-                                                                      });
-                                                                      SharedPreferences prefs = await SharedPreferences.getInstance();
-
-                                                                      await prefs.setString('${widget.id}-atBirthDate', atBirthDate);
-                                                                      print(prefs.getString('${widget.id}-atBirthDate'));
-                                                                    },
-                                                                  );
-                                                                },
-                                                              )
-                                                            ],
+                                                          Expanded(
+                                                            child: Align(alignment: Alignment.centerLeft, child: Text(atBirth.dueDate.toString())),
                                                           ),
                                                         ],
                                                       ),
-                                                      Divider(color: Color(0xff163C4D)),
-                                                      DropdownButtonFormField(
-                                                        decoration: inputDeco(
-                                                            atBirthVaccineReceived == '${widget.id}-atBirth-$vaccineNo-Received' ? "Received" : "Not Received"),
-                                                        isExpanded: true,
-                                                        iconSize: 30.0,
-                                                        style: TextStyle(color: Colors.deepOrange),
-                                                        items: [
-                                                          'Received',
-                                                          'Not Received',
-                                                        ].map(
-                                                          (val) {
-                                                            return DropdownMenuItem<String>(
-                                                              value: val,
-                                                              child: Text(val),
-                                                            );
-                                                          },
-                                                        ).toList(),
-                                                        onChanged: (val) async {
-                                                          setState(() {
-                                                            atBirthVaccineReceived = '${widget.id}-atBirth-$vaccineNo-$val';
-                                                          });
-
-                                                          // await updateSchedule(childId: 18, scheduleNo: 0, vaccineNo: idx);
-
-                                                          // SharedPreferences prefs = await SharedPreferences.getInstance();
-                                                          // await prefs.setString('${widget.id}-atBirthVaccineReceived', atBirthVaccineReceived);
-                                                          // print(prefs.getString('${widget.id}-atBirthVaccineReceived'));
-                                                        },
+                                                      SizedBox(
+                                                        height: 8.h,
                                                       ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
-                                            );
-                                          },
-                                        ),
-
-                                        //week 6
-                                        ...List.generate(
-                                          week6Vaccines.length,
-                                          (idx) {
-                                            final vaccineNo = 'vaccine-no-$idx';
-                                            return Column(
-                                              children: [
-                                                Container(
-                                                  constraints: BoxConstraints(minHeight: 10.h),
-                                                  decoration: BoxDecoration(
-                                                      color: Color(0xFF00FFFF),
-                                                      borderRadius: BorderRadius.only(topLeft: Radius.circular(6.0), topRight: Radius.circular(6.0))),
-                                                  child: Padding(
-                                                    padding: const EdgeInsets.all(8.0),
-                                                    child: Align(alignment: Alignment.centerLeft, child: Text('6 Weeks')),
-                                                  ),
-                                                ),
-                                                SizedBox(
-                                                  height: 8,
-                                                ),
-                                                Padding(
-                                                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-                                                  child: Column(
-                                                    children: [
-                                                      Container(constraints: BoxConstraints(minHeight: 10.h), child: Text(week6Vaccines[idx].vaccineName)),
-                                                      Divider(color: Color(0xff163C4D)),
-                                                      Column(
+                                                      Row(
                                                         children: [
-                                                          Row(
-                                                            children: [
-                                                              Expanded(
-                                                                child: Align(alignment: Alignment.centerLeft, child: Text("Due Date: ")),
-                                                              ),
-                                                              Expanded(
-                                                                child:
-                                                                    Align(alignment: Alignment.centerLeft, child: Text(week6Vaccines[idx].schedule.toString())),
-                                                              ),
-                                                            ],
+                                                          Expanded(
+                                                            child: Align(alignment: Alignment.centerLeft, child: Text("Date Received:")),
                                                           ),
-                                                          SizedBox(
-                                                            height: 8.h,
+                                                          Expanded(
+                                                            child: Text(
+                                                              atBirthDates['$idx-dateReceived'] == null
+                                                                  ? atBirthVaccines[idx].dateReceived == null
+                                                                      ? ""
+                                                                      : atBirthVaccines[idx].dateReceived
+                                                                  : atBirthDates['$idx-dateReceived'],
+                                                              style: TextStyle(
+                                                                color: Colors.black,
+                                                              ),
+                                                            ),
                                                           ),
-                                                          Row(
-                                                            children: [
-                                                              Expanded(
-                                                                child: Align(alignment: Alignment.centerLeft, child: Text("Date Received:")),
-                                                              ),
-                                                              Expanded(
-                                                                child: Text(
-                                                                  week6Date != null
-                                                                      ? week6Date.split('-')[4] == idx.toString()
-                                                                          ? week6Date.split('-').last
-                                                                          : ''
-                                                                      : '',
-                                                                  style: TextStyle(
-                                                                    color: Colors.black,
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                              GestureDetector(
-                                                                child: Icon(Icons.date_range),
-                                                                onTap: () {
-                                                                  DatePicker.showDatePicker(
-                                                                    context,
-                                                                    showTitleActions: true,
-                                                                    currentTime: DateTime.now(),
-                                                                    locale: LocaleType.en,
-                                                                    minTime: DateTime(1963, 3, 5),
-                                                                    maxTime: DateTime(2021, 6, 7),
-                                                                    onChanged: (date) {},
-                                                                    onConfirm: (date) async {
-                                                                      setState(() {
-                                                                        week6DateFormatted = DateFormat.MMMMEEEEd().format(DateTime.parse(date.toString()));
-                                                                        week6Date = '${widget.id}-atBirth-$vaccineNo-$week6DateFormatted';
-                                                                      });
-                                                                      SharedPreferences prefs = await SharedPreferences.getInstance();
-
-                                                                      await prefs.setString('${widget.id}-week6Date', week6Date);
-                                                                      print(prefs.getString('${widget.id}-week6Date'));
-                                                                    },
+                                                          GestureDetector(
+                                                            child: Icon(Icons.date_range),
+                                                            onTap: () {
+                                                              DatePicker.showDatePicker(
+                                                                context,
+                                                                showTitleActions: true,
+                                                                currentTime: DateTime.now(),
+                                                                locale: LocaleType.en,
+                                                                minTime: DateTime(1963, 3, 5),
+                                                                maxTime: DateTime.now(),
+                                                                onChanged: (date) {},
+                                                                onConfirm: (date) async {
+                                                                  setState(() {
+                                                                    atBirthDates['$idx-dateReceived'] = date.toString().split(' ').first;
+                                                                  });
+                                                                  await apiService.updateReceived(
+                                                                    vaccine: vaccine,
+                                                                    hasReceivedChanged: atBirthReceivedChecks['$idx-hasReceivedChanged'],
+                                                                    initialReceivedDate: atBirthVaccines[idx].dateReceived,
+                                                                    newReceivedDate: atBirthDates['$idx-dateReceived'],
+                                                                    initialReceivedVal: atBirthVaccines[idx].received,
+                                                                    newReceivedVal: atBirthReceivedVals["$idx-receivedVal"],
                                                                   );
                                                                 },
-                                                              )
-                                                            ],
-                                                          ),
+                                                              );
+                                                            },
+                                                          )
                                                         ],
-                                                      ),
-                                                      Divider(color: Color(0xff163C4D)),
-                                                      DropdownButtonFormField(
-                                                        decoration: inputDeco(
-                                                            week6VaccineReceived == '${widget.id}-week6-$vaccineNo-Received' ? "Received" : "Not Received"),
-                                                        isExpanded: true,
-                                                        iconSize: 30.0,
-                                                        style: TextStyle(color: Colors.deepOrange),
-                                                        items: [
-                                                          'Received',
-                                                          'Not Received',
-                                                        ].map(
-                                                          (val) {
-                                                            return DropdownMenuItem<String>(
-                                                              value: val,
-                                                              child: Text(val),
-                                                            );
-                                                          },
-                                                        ).toList(),
-                                                        onChanged: (val) async {
-                                                          setState(() {
-                                                            week6VaccineReceived = '${widget.id}-week6-$vaccineNo-$val';
-                                                          });
-
-                                                          SharedPreferences prefs = await SharedPreferences.getInstance();
-                                                          await prefs.setString('${widget.id}-week6VaccineReceived', week6VaccineReceived);
-                                                          print(prefs.getString('${widget.id}-week6VaccineReceived'));
-                                                        },
                                                       ),
                                                     ],
                                                   ),
-                                                ),
-                                              ],
-                                            );
-                                          },
-                                        ),
+                                                  Divider(color: Color(0xff163C4D)),
+                                                  DropdownButtonFormField(
+                                                    decoration: inputDeco(atBirthVaccines[idx].received ? "Received" : "Not Received"),
+                                                    isExpanded: true,
+                                                    iconSize: 30.0,
+                                                    style: TextStyle(color: Colors.deepOrange),
+                                                    items: [
+                                                      'Received',
+                                                      'Not Received',
+                                                    ].map(
+                                                      (val) {
+                                                        return DropdownMenuItem<String>(
+                                                          value: val,
+                                                          child: Text(val),
+                                                        );
+                                                      },
+                                                    ).toList(),
+                                                    onChanged: (val) async {
+                                                      setState(() {
+                                                        atBirthReceivedChecks['$idx-hasReceivedChanged'] = true;
+                                                        val == "Received"
+                                                            ? atBirthReceivedVals["$idx-receivedVal"] = true
+                                                            : atBirthReceivedVals["$idx-receivedVal"] = false;
+                                                      });
 
-                                        //week 10
-                                        ...List.generate(
-                                          atBirthVaccines.length,
-                                          (idx) {
-                                            final vaccineNo = 'vaccine-no-$idx';
-                                            return Column(
-                                              children: [
-                                                Container(
-                                                  constraints: BoxConstraints(minHeight: 10.h),
-                                                  decoration: BoxDecoration(
-                                                      color: Color(0xFF00FFFF),
-                                                      borderRadius: BorderRadius.only(topLeft: Radius.circular(6.0), topRight: Radius.circular(6.0))),
-                                                  child: Padding(
-                                                    padding: const EdgeInsets.all(8.0),
-                                                    child: Align(alignment: Alignment.centerLeft, child: Text('Week 10')),
+                                                      await apiService.updateReceived(
+                                                        vaccine: vaccine,
+                                                        hasReceivedChanged: atBirthReceivedChecks['$idx-hasReceivedChanged'],
+                                                        newReceivedDate: atBirthDates['$idx-dateReceived'],
+                                                        initialReceivedDate: atBirthVaccines[idx].dateReceived,
+                                                        newReceivedVal: atBirthReceivedVals["$idx-receivedVal"],
+                                                        initialReceivedVal: atBirthVaccines[idx].received,
+                                                      );
+                                                    },
                                                   ),
-                                                ),
-                                                SizedBox(
-                                                  height: 8,
-                                                ),
-                                                Padding(
-                                                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-                                                  child: Column(
-                                                    children: [
-                                                      Container(constraints: BoxConstraints(minHeight: 10.h), child: Text(atBirthVaccines[idx].vaccineName)),
-                                                      Divider(color: Color(0xff163C4D)),
-                                                      Column(
-                                                        children: [
-                                                          Row(
-                                                            children: [
-                                                              Expanded(
-                                                                child: Align(alignment: Alignment.centerLeft, child: Text("Due Date: ")),
-                                                              ),
-                                                              Expanded(
-                                                                child: Align(
-                                                                    alignment: Alignment.centerLeft, child: Text(atBirthVaccines[idx].schedule.toString())),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                          SizedBox(
-                                                            height: 8.h,
-                                                          ),
-                                                          Row(
-                                                            children: [
-                                                              Expanded(
-                                                                child: Align(alignment: Alignment.centerLeft, child: Text("Date Received:")),
-                                                              ),
-                                                              Expanded(
-                                                                child: Text(
-                                                                  atBirthDate != null
-                                                                      ? atBirthDate.split('-')[4] == idx.toString()
-                                                                          ? atBirthDate.split('-').last
-                                                                          : ''
-                                                                      : '',
-                                                                  style: TextStyle(
-                                                                    color: Colors.black,
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                              GestureDetector(
-                                                                child: Icon(Icons.date_range),
-                                                                onTap: () {
-                                                                  DatePicker.showDatePicker(
-                                                                    context,
-                                                                    showTitleActions: true,
-                                                                    currentTime: DateTime.now(),
-                                                                    locale: LocaleType.en,
-                                                                    minTime: DateTime(1963, 3, 5),
-                                                                    maxTime: DateTime(2021, 6, 7),
-                                                                    onChanged: (date) {},
-                                                                    onConfirm: (date) async {
-                                                                      setState(() {
-                                                                        atBirthDateFormatted = DateFormat.MMMMEEEEd().format(DateTime.parse(date.toString()));
-                                                                        atBirthDate = '${widget.id}-atBirth-$vaccineNo-$atBirthDateFormatted';
-                                                                      });
-                                                                      SharedPreferences prefs = await SharedPreferences.getInstance();
-
-                                                                      await prefs.setString('${widget.id}-atBirthDate', atBirthDate);
-                                                                      print(prefs.getString('${widget.id}-atBirthDate'));
-                                                                    },
-                                                                  );
-                                                                },
-                                                              )
-                                                            ],
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      Divider(color: Color(0xff163C4D)),
-                                                      DropdownButtonFormField(
-                                                        decoration: inputDeco(
-                                                            atBirthVaccineReceived == '${widget.id}-atBirth-$vaccineNo-Received' ? "Received" : "Not Received"),
-                                                        isExpanded: true,
-                                                        iconSize: 30.0,
-                                                        style: TextStyle(color: Colors.deepOrange),
-                                                        items: [
-                                                          'Received',
-                                                          'Not Received',
-                                                        ].map(
-                                                          (val) {
-                                                            return DropdownMenuItem<String>(
-                                                              value: val,
-                                                              child: Text(val),
-                                                            );
-                                                          },
-                                                        ).toList(),
-                                                        onChanged: (val) async {
-                                                          setState(() {
-                                                            atBirthVaccineReceived = '${widget.id}-atBirth-$vaccineNo-$val';
-                                                          });
-
-                                                          SharedPreferences prefs = await SharedPreferences.getInstance();
-                                                          await prefs.setString('${widget.id}-atBirthVaccineReceived', atBirthVaccineReceived);
-                                                          print(prefs.getString('${widget.id}-atBirthVaccineReceived'));
-                                                        },
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
-                                            );
-                                          },
-                                        ),
-
-                                        //week 14
-                                        ...List.generate(
-                                          atBirthVaccines.length,
-                                          (idx) {
-                                            final vaccineNo = 'vaccine-no-$idx';
-                                            return Column(
-                                              children: [
-                                                Container(
-                                                  constraints: BoxConstraints(minHeight: 10.h),
-                                                  decoration: BoxDecoration(
-                                                      color: Color(0xFF00FFFF),
-                                                      borderRadius: BorderRadius.only(topLeft: Radius.circular(6.0), topRight: Radius.circular(6.0))),
-                                                  child: Padding(
-                                                    padding: const EdgeInsets.all(8.0),
-                                                    child: Align(alignment: Alignment.centerLeft, child: Text('Week 14')),
-                                                  ),
-                                                ),
-                                                SizedBox(
-                                                  height: 8,
-                                                ),
-                                                Padding(
-                                                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-                                                  child: Column(
-                                                    children: [
-                                                      Container(constraints: BoxConstraints(minHeight: 10.h), child: Text(atBirthVaccines[idx].vaccineName)),
-                                                      Divider(color: Color(0xff163C4D)),
-                                                      Column(
-                                                        children: [
-                                                          Row(
-                                                            children: [
-                                                              Expanded(
-                                                                child: Align(alignment: Alignment.centerLeft, child: Text("Due Date: ")),
-                                                              ),
-                                                              Expanded(
-                                                                child: Align(
-                                                                    alignment: Alignment.centerLeft, child: Text(atBirthVaccines[idx].schedule.toString())),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                          SizedBox(
-                                                            height: 8.h,
-                                                          ),
-                                                          Row(
-                                                            children: [
-                                                              Expanded(
-                                                                child: Align(alignment: Alignment.centerLeft, child: Text("Date Received:")),
-                                                              ),
-                                                              Expanded(
-                                                                child: Text(
-                                                                  atBirthDate != null
-                                                                      ? atBirthDate.split('-')[4] == idx.toString()
-                                                                          ? atBirthDate.split('-').last
-                                                                          : ''
-                                                                      : '',
-                                                                  style: TextStyle(
-                                                                    color: Colors.black,
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                              GestureDetector(
-                                                                child: Icon(Icons.date_range),
-                                                                onTap: () {
-                                                                  DatePicker.showDatePicker(
-                                                                    context,
-                                                                    showTitleActions: true,
-                                                                    currentTime: DateTime.now(),
-                                                                    locale: LocaleType.en,
-                                                                    minTime: DateTime(1963, 3, 5),
-                                                                    maxTime: DateTime(2021, 6, 7),
-                                                                    onChanged: (date) {},
-                                                                    onConfirm: (date) async {
-                                                                      setState(() {
-                                                                        atBirthDateFormatted = DateFormat.MMMMEEEEd().format(DateTime.parse(date.toString()));
-                                                                        atBirthDate = '${widget.id}-atBirth-$vaccineNo-$atBirthDateFormatted';
-                                                                      });
-                                                                      SharedPreferences prefs = await SharedPreferences.getInstance();
-
-                                                                      await prefs.setString('${widget.id}-atBirthDate', atBirthDate);
-                                                                      print(prefs.getString('${widget.id}-atBirthDate'));
-                                                                    },
-                                                                  );
-                                                                },
-                                                              )
-                                                            ],
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      Divider(color: Color(0xff163C4D)),
-                                                      DropdownButtonFormField(
-                                                        decoration: inputDeco(
-                                                            atBirthVaccineReceived == '${widget.id}-atBirth-$vaccineNo-Received' ? "Received" : "Not Received"),
-                                                        isExpanded: true,
-                                                        iconSize: 30.0,
-                                                        style: TextStyle(color: Colors.deepOrange),
-                                                        items: [
-                                                          'Received',
-                                                          'Not Received',
-                                                        ].map(
-                                                          (val) {
-                                                            return DropdownMenuItem<String>(
-                                                              value: val,
-                                                              child: Text(val),
-                                                            );
-                                                          },
-                                                        ).toList(),
-                                                        onChanged: (val) async {
-                                                          setState(() {
-                                                            atBirthVaccineReceived = '${widget.id}-atBirth-$vaccineNo-$val';
-                                                          });
-
-                                                          SharedPreferences prefs = await SharedPreferences.getInstance();
-                                                          await prefs.setString('${widget.id}-atBirthVaccineReceived', atBirthVaccineReceived);
-                                                          print(prefs.getString('${widget.id}-atBirthVaccineReceived'));
-                                                        },
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
-                                            );
-                                          },
-                                        ),
-
-                                        //month 6
-                                        ...List.generate(
-                                          atBirthVaccines.length,
-                                          (idx) {
-                                            final vaccineNo = 'vaccine-no-$idx';
-                                            return Column(
-                                              children: [
-                                                Container(
-                                                  constraints: BoxConstraints(minHeight: 10.h),
-                                                  decoration: BoxDecoration(
-                                                      color: Color(0xFF00FFFF),
-                                                      borderRadius: BorderRadius.only(topLeft: Radius.circular(6.0), topRight: Radius.circular(6.0))),
-                                                  child: Padding(
-                                                    padding: const EdgeInsets.all(8.0),
-                                                    child: Align(alignment: Alignment.centerLeft, child: Text('Month 6')),
-                                                  ),
-                                                ),
-                                                SizedBox(
-                                                  height: 8,
-                                                ),
-                                                Padding(
-                                                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-                                                  child: Column(
-                                                    children: [
-                                                      Container(constraints: BoxConstraints(minHeight: 10.h), child: Text(atBirthVaccines[idx].vaccineName)),
-                                                      Divider(color: Color(0xff163C4D)),
-                                                      Column(
-                                                        children: [
-                                                          Row(
-                                                            children: [
-                                                              Expanded(
-                                                                child: Align(alignment: Alignment.centerLeft, child: Text("Due Date: ")),
-                                                              ),
-                                                              Expanded(
-                                                                child: Align(
-                                                                    alignment: Alignment.centerLeft, child: Text(atBirthVaccines[idx].schedule.toString())),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                          SizedBox(
-                                                            height: 8.h,
-                                                          ),
-                                                          Row(
-                                                            children: [
-                                                              Expanded(
-                                                                child: Align(alignment: Alignment.centerLeft, child: Text("Date Received:")),
-                                                              ),
-                                                              Expanded(
-                                                                child: Text(
-                                                                  atBirthDate != null
-                                                                      ? atBirthDate.split('-')[4] == idx.toString()
-                                                                          ? atBirthDate.split('-').last
-                                                                          : ''
-                                                                      : '',
-                                                                  style: TextStyle(
-                                                                    color: Colors.black,
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                              GestureDetector(
-                                                                child: Icon(Icons.date_range),
-                                                                onTap: () {
-                                                                  DatePicker.showDatePicker(
-                                                                    context,
-                                                                    showTitleActions: true,
-                                                                    currentTime: DateTime.now(),
-                                                                    locale: LocaleType.en,
-                                                                    minTime: DateTime(1963, 3, 5),
-                                                                    maxTime: DateTime(2021, 6, 7),
-                                                                    onChanged: (date) {},
-                                                                    onConfirm: (date) async {
-                                                                      setState(() {
-                                                                        atBirthDateFormatted = DateFormat.MMMMEEEEd().format(DateTime.parse(date.toString()));
-                                                                        atBirthDate = '${widget.id}-atBirth-$vaccineNo-$atBirthDateFormatted';
-                                                                      });
-                                                                      SharedPreferences prefs = await SharedPreferences.getInstance();
-
-                                                                      await prefs.setString('${widget.id}-atBirthDate', atBirthDate);
-                                                                      print(prefs.getString('${widget.id}-atBirthDate'));
-                                                                    },
-                                                                  );
-                                                                },
-                                                              )
-                                                            ],
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      Divider(color: Color(0xff163C4D)),
-                                                      DropdownButtonFormField(
-                                                        decoration: inputDeco(
-                                                            atBirthVaccineReceived == '${widget.id}-atBirth-$vaccineNo-Received' ? "Received" : "Not Received"),
-                                                        isExpanded: true,
-                                                        iconSize: 30.0,
-                                                        style: TextStyle(color: Colors.deepOrange),
-                                                        items: [
-                                                          'Received',
-                                                          'Not Received',
-                                                        ].map(
-                                                          (val) {
-                                                            return DropdownMenuItem<String>(
-                                                              value: val,
-                                                              child: Text(val),
-                                                            );
-                                                          },
-                                                        ).toList(),
-                                                        onChanged: (val) async {
-                                                          setState(() {
-                                                            atBirthVaccineReceived = '${widget.id}-atBirth-$vaccineNo-$val';
-                                                          });
-
-                                                          SharedPreferences prefs = await SharedPreferences.getInstance();
-                                                          await prefs.setString('${widget.id}-atBirthVaccineReceived', atBirthVaccineReceived);
-                                                          print(prefs.getString('${widget.id}-atBirthVaccineReceived'));
-                                                        },
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
-                                            );
-                                          },
-                                        ),
-
-                                        //month 7
-                                        ...List.generate(
-                                          atBirthVaccines.length,
-                                          (idx) {
-                                            final vaccineNo = 'vaccine-no-$idx';
-                                            return Column(
-                                              children: [
-                                                Container(
-                                                  constraints: BoxConstraints(minHeight: 10.h),
-                                                  decoration: BoxDecoration(
-                                                      color: Color(0xFF00FFFF),
-                                                      borderRadius: BorderRadius.only(topLeft: Radius.circular(6.0), topRight: Radius.circular(6.0))),
-                                                  child: Padding(
-                                                    padding: const EdgeInsets.all(8.0),
-                                                    child: Align(alignment: Alignment.centerLeft, child: Text('7 Months')),
-                                                  ),
-                                                ),
-                                                SizedBox(
-                                                  height: 8,
-                                                ),
-                                                Padding(
-                                                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-                                                  child: Column(
-                                                    children: [
-                                                      Container(constraints: BoxConstraints(minHeight: 10.h), child: Text(atBirthVaccines[idx].vaccineName)),
-                                                      Divider(color: Color(0xff163C4D)),
-                                                      Column(
-                                                        children: [
-                                                          Row(
-                                                            children: [
-                                                              Expanded(
-                                                                child: Align(alignment: Alignment.centerLeft, child: Text("Due Date: ")),
-                                                              ),
-                                                              Expanded(
-                                                                child: Align(
-                                                                    alignment: Alignment.centerLeft, child: Text(atBirthVaccines[idx].schedule.toString())),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                          SizedBox(
-                                                            height: 8.h,
-                                                          ),
-                                                          Row(
-                                                            children: [
-                                                              Expanded(
-                                                                child: Align(alignment: Alignment.centerLeft, child: Text("Date Received:")),
-                                                              ),
-                                                              Expanded(
-                                                                child: Text(
-                                                                  atBirthDate != null
-                                                                      ? atBirthDate.split('-')[4] == idx.toString()
-                                                                          ? atBirthDate.split('-').last
-                                                                          : ''
-                                                                      : '',
-                                                                  style: TextStyle(
-                                                                    color: Colors.black,
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                              GestureDetector(
-                                                                child: Icon(Icons.date_range),
-                                                                onTap: () {
-                                                                  DatePicker.showDatePicker(
-                                                                    context,
-                                                                    showTitleActions: true,
-                                                                    currentTime: DateTime.now(),
-                                                                    locale: LocaleType.en,
-                                                                    minTime: DateTime(1963, 3, 5),
-                                                                    maxTime: DateTime(2021, 6, 7),
-                                                                    onChanged: (date) {},
-                                                                    onConfirm: (date) async {
-                                                                      setState(() {
-                                                                        atBirthDateFormatted = DateFormat.MMMMEEEEd().format(DateTime.parse(date.toString()));
-                                                                        atBirthDate = '${widget.id}-atBirth-$vaccineNo-$atBirthDateFormatted';
-                                                                      });
-                                                                      SharedPreferences prefs = await SharedPreferences.getInstance();
-
-                                                                      await prefs.setString('${widget.id}-atBirthDate', atBirthDate);
-                                                                      print(prefs.getString('${widget.id}-atBirthDate'));
-                                                                    },
-                                                                  );
-                                                                },
-                                                              )
-                                                            ],
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      Divider(color: Color(0xff163C4D)),
-                                                      DropdownButtonFormField(
-                                                        decoration: inputDeco(
-                                                            atBirthVaccineReceived == '${widget.id}-atBirth-$vaccineNo-Received' ? "Received" : "Not Received"),
-                                                        isExpanded: true,
-                                                        iconSize: 30.0,
-                                                        style: TextStyle(color: Colors.deepOrange),
-                                                        items: [
-                                                          'Received',
-                                                          'Not Received',
-                                                        ].map(
-                                                          (val) {
-                                                            return DropdownMenuItem<String>(
-                                                              value: val,
-                                                              child: Text(val),
-                                                            );
-                                                          },
-                                                        ).toList(),
-                                                        onChanged: (val) async {
-                                                          test();
-
-                                                          // setState(() {
-                                                          //   atBirthVaccineReceived = '${widget.id}-atBirth-$vaccineNo-$val';
-                                                          // });
-                                                          //
-                                                          // SharedPreferences prefs = await SharedPreferences.getInstance();
-                                                          // await prefs.setString('${widget.id}-atBirthVaccineReceived', atBirthVaccineReceived);
-                                                          // print(prefs.getString('${widget.id}-atBirthVaccineReceived'));
-                                                        },
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
-                                            );
-                                          },
-                                        ),
-                                      ],
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      },
                                     ),
-                                  ),
-                                );
-                              }),
-                        );
-                      } else
-                        return null;
-                    })
+
+                                    //week 6
+                                    ...List.generate(
+                                      week6Vaccines.length,
+                                      (idx) {
+                                        final vaccine = week6Vaccines[idx];
+                                        return Column(
+                                          children: [
+                                            Container(
+                                              constraints: BoxConstraints(minHeight: 10.h),
+                                              decoration: BoxDecoration(
+                                                  color: Color(0xFF00FFFF),
+                                                  borderRadius: BorderRadius.only(topLeft: Radius.circular(6.0), topRight: Radius.circular(6.0))),
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(8.0),
+                                                child: Align(alignment: Alignment.centerLeft, child: Text('6 Weeks')),
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 8,
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                                              child: Column(
+                                                children: [
+                                                  Container(constraints: BoxConstraints(minHeight: 10.h), child: Text(week6Vaccines[idx].vaccineName)),
+                                                  Divider(color: Color(0xff163C4D)),
+                                                  Column(
+                                                    children: [
+                                                      Row(
+                                                        children: [
+                                                          Expanded(
+                                                            child: Align(alignment: Alignment.centerLeft, child: Text("Due Date: ")),
+                                                          ),
+                                                          Expanded(
+                                                            child: Align(alignment: Alignment.centerLeft, child: Text(week6.dueDate.toString())),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      SizedBox(
+                                                        height: 8.h,
+                                                      ),
+                                                      Row(
+                                                        children: [
+                                                          Expanded(
+                                                            child: Align(alignment: Alignment.centerLeft, child: Text("Date Received:")),
+                                                          ),
+                                                          Expanded(
+                                                            child: Text(
+                                                              week6Dates['$idx-dateReceived'] == null
+                                                                  ? week6Vaccines[idx].dateReceived == null
+                                                                      ? ""
+                                                                      : week6Vaccines[idx].dateReceived
+                                                                  : week6Dates['$idx-dateReceived'],
+                                                              style: TextStyle(
+                                                                color: Colors.black,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          GestureDetector(
+                                                            child: Icon(Icons.date_range),
+                                                            onTap: () {
+                                                              DatePicker.showDatePicker(
+                                                                context,
+                                                                showTitleActions: true,
+                                                                currentTime: DateTime.now(),
+                                                                locale: LocaleType.en,
+                                                                minTime: DateTime(1963, 3, 5),
+                                                                maxTime: DateTime.now(),
+                                                                onChanged: (date) {},
+                                                                onConfirm: (date) async {
+                                                                  setState(() {
+                                                                    week6Dates['$idx-dateReceived'] = date.toString().split(' ').first;
+                                                                  });
+                                                                  await apiService.updateReceived(
+                                                                    vaccine: vaccine,
+                                                                    hasReceivedChanged: week6ReceivedChecks['$idx-hasReceivedChanged'],
+                                                                    initialReceivedDate: week6Vaccines[idx].dateReceived,
+                                                                    newReceivedDate: week6Dates['$idx-dateReceived'],
+                                                                    initialReceivedVal: week6Vaccines[idx].received,
+                                                                    newReceivedVal: week6ReceivedVals["$idx-receivedVal"],
+                                                                  );
+                                                                },
+                                                              );
+                                                            },
+                                                          )
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  Divider(color: Color(0xff163C4D)),
+                                                  DropdownButtonFormField(
+                                                    decoration: inputDeco(week6Vaccines[idx].received ? "Received" : "Not Received"),
+                                                    isExpanded: true,
+                                                    iconSize: 30.0,
+                                                    style: TextStyle(color: Colors.deepOrange),
+                                                    items: [
+                                                      'Received',
+                                                      'Not Received',
+                                                    ].map(
+                                                      (val) {
+                                                        return DropdownMenuItem<String>(
+                                                          value: val,
+                                                          child: Text(val),
+                                                        );
+                                                      },
+                                                    ).toList(),
+                                                    onChanged: (val) async {
+                                                      setState(() {
+                                                        week6ReceivedChecks['$idx-hasReceivedChanged'] = true;
+                                                        val == "Received"
+                                                            ? week6ReceivedVals["$idx-receivedVal"] = true
+                                                            : week6ReceivedVals["$idx-receivedVal"] = false;
+                                                      });
+
+                                                      await apiService.updateReceived(
+                                                        vaccine: vaccine,
+                                                        hasReceivedChanged: week6ReceivedChecks['$idx-hasReceivedChanged'],
+                                                        newReceivedDate: week6Dates['$idx-dateReceived'],
+                                                        initialReceivedDate: week6Vaccines[idx].dateReceived,
+                                                        newReceivedVal: week6ReceivedVals["$idx-receivedVal"],
+                                                        initialReceivedVal: week6Vaccines[idx].received,
+                                                      );
+                                                    },
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    ),
+
+                                    //week 10
+                                    ...List.generate(
+                                      week10Vaccines.length,
+                                      (idx) {
+                                        final vaccine = week10Vaccines[idx];
+                                        return Column(
+                                          children: [
+                                            Container(
+                                              constraints: BoxConstraints(minHeight: 10.h),
+                                              decoration: BoxDecoration(
+                                                  color: Color(0xFF00FFFF),
+                                                  borderRadius: BorderRadius.only(topLeft: Radius.circular(6.0), topRight: Radius.circular(6.0))),
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(8.0),
+                                                child: Align(alignment: Alignment.centerLeft, child: Text('10 Weeks')),
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 8,
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                                              child: Column(
+                                                children: [
+                                                  Container(
+                                                    constraints: BoxConstraints(minHeight: 10.h),
+                                                    child: Text(week10Vaccines[idx].vaccineName),
+                                                  ),
+                                                  Divider(color: Color(0xff163C4D)),
+                                                  Column(
+                                                    children: [
+                                                      Row(
+                                                        children: [
+                                                          Expanded(
+                                                            child: Align(alignment: Alignment.centerLeft, child: Text("Due Date: ")),
+                                                          ),
+                                                          Expanded(
+                                                            child: Align(alignment: Alignment.centerLeft, child: Text(week10.dueDate.toString())),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      SizedBox(
+                                                        height: 8.h,
+                                                      ),
+                                                      Row(
+                                                        children: [
+                                                          Expanded(
+                                                            child: Align(alignment: Alignment.centerLeft, child: Text("Date Received:")),
+                                                          ),
+                                                          Expanded(
+                                                            child: Text(
+                                                              week10Dates['$idx-dateReceived'] == null
+                                                                  ? week10Vaccines[idx].dateReceived == null
+                                                                      ? ""
+                                                                      : week10Vaccines[idx].dateReceived
+                                                                  : week10Dates['$idx-dateReceived'],
+                                                              style: TextStyle(
+                                                                color: Colors.black,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          GestureDetector(
+                                                            child: Icon(Icons.date_range),
+                                                            onTap: () {
+                                                              DatePicker.showDatePicker(
+                                                                context,
+                                                                showTitleActions: true,
+                                                                currentTime: DateTime.now(),
+                                                                locale: LocaleType.en,
+                                                                minTime: DateTime(1963, 3, 5),
+                                                                maxTime: DateTime.now(),
+                                                                onChanged: (date) {},
+                                                                onConfirm: (date) async {
+                                                                  setState(() {
+                                                                    week10Dates['$idx-dateReceived'] = date.toString().split(' ').first;
+                                                                  });
+                                                                  await apiService.updateReceived(
+                                                                    vaccine: vaccine,
+                                                                    hasReceivedChanged: week10ReceivedChecks['$idx-hasReceivedChanged'],
+                                                                    initialReceivedDate: week10Vaccines[idx].dateReceived,
+                                                                    newReceivedDate: week10Dates['$idx-dateReceived'],
+                                                                    initialReceivedVal: week10Vaccines[idx].received,
+                                                                    newReceivedVal: week10ReceivedVals["$idx-receivedVal"],
+                                                                  );
+                                                                },
+                                                              );
+                                                            },
+                                                          )
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  Divider(color: Color(0xff163C4D)),
+                                                  DropdownButtonFormField(
+                                                    decoration: inputDeco(week10Vaccines[idx].received ? "Received" : "Not Received"),
+                                                    isExpanded: true,
+                                                    iconSize: 30.0,
+                                                    style: TextStyle(color: Colors.deepOrange),
+                                                    items: [
+                                                      'Received',
+                                                      'Not Received',
+                                                    ].map(
+                                                      (val) {
+                                                        return DropdownMenuItem<String>(
+                                                          value: val,
+                                                          child: Text(val),
+                                                        );
+                                                      },
+                                                    ).toList(),
+                                                    onChanged: (val) async {
+                                                      setState(() {
+                                                        week10ReceivedChecks['$idx-hasReceivedChanged'] = true;
+                                                        val == "Received"
+                                                            ? week10ReceivedVals["$idx-receivedVal"] = true
+                                                            : week10ReceivedVals["$idx-receivedVal"] = false;
+                                                      });
+
+                                                      await apiService.updateReceived(
+                                                        vaccine: vaccine,
+                                                        hasReceivedChanged: week10ReceivedChecks['$idx-hasReceivedChanged'],
+                                                        newReceivedDate: week10Dates['$idx-dateReceived'],
+                                                        initialReceivedDate: week10Vaccines[idx].dateReceived,
+                                                        newReceivedVal: week10ReceivedVals["$idx-receivedVal"],
+                                                        initialReceivedVal: week10Vaccines[idx].received,
+                                                      );
+                                                    },
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    ),
+
+                                    //week 14
+                                    ...List.generate(
+                                      week14Vaccines.length,
+                                      (idx) {
+                                        final vaccine = week14Vaccines[idx];
+                                        return Column(
+                                          children: [
+                                            Container(
+                                              constraints: BoxConstraints(minHeight: 10.h),
+                                              decoration: BoxDecoration(
+                                                  color: Color(0xFF00FFFF),
+                                                  borderRadius: BorderRadius.only(topLeft: Radius.circular(6.0), topRight: Radius.circular(6.0))),
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(8.0),
+                                                child: Align(alignment: Alignment.centerLeft, child: Text('14 Weeks')),
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 8,
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                                              child: Column(
+                                                children: [
+                                                  Container(constraints: BoxConstraints(minHeight: 10.h), child: Text(week14Vaccines[idx].vaccineName)),
+                                                  Divider(color: Color(0xff163C4D)),
+                                                  Column(
+                                                    children: [
+                                                      Row(
+                                                        children: [
+                                                          Expanded(
+                                                            child: Align(alignment: Alignment.centerLeft, child: Text("Due Date: ")),
+                                                          ),
+                                                          Expanded(
+                                                            child: Align(alignment: Alignment.centerLeft, child: Text(week14.dueDate.toString())),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      SizedBox(
+                                                        height: 8.h,
+                                                      ),
+                                                      Row(
+                                                        children: [
+                                                          Expanded(
+                                                            child: Align(alignment: Alignment.centerLeft, child: Text("Date Received:")),
+                                                          ),
+                                                          Expanded(
+                                                            child: Text(
+                                                              week14Dates['$idx-dateReceived'] == null
+                                                                  ? week14Vaccines[idx].dateReceived == null
+                                                                      ? ""
+                                                                      : week14Vaccines[idx].dateReceived
+                                                                  : week14Dates['$idx-dateReceived'],
+                                                              style: TextStyle(
+                                                                color: Colors.black,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          GestureDetector(
+                                                            child: Icon(Icons.date_range),
+                                                            onTap: () {
+                                                              DatePicker.showDatePicker(
+                                                                context,
+                                                                showTitleActions: true,
+                                                                currentTime: DateTime.now(),
+                                                                locale: LocaleType.en,
+                                                                minTime: DateTime(1963, 3, 5),
+                                                                maxTime: DateTime.now(),
+                                                                onChanged: (date) {},
+                                                                onConfirm: (date) async {
+                                                                  setState(() {
+                                                                    week14Dates['$idx-dateReceived'] = date.toString().split(' ').first;
+                                                                  });
+                                                                  await apiService.updateReceived(
+                                                                    vaccine: vaccine,
+                                                                    hasReceivedChanged: week14ReceivedChecks['$idx-hasReceivedChanged'],
+                                                                    initialReceivedDate: week14Vaccines[idx].dateReceived,
+                                                                    newReceivedDate: week14Dates['$idx-dateReceived'],
+                                                                    initialReceivedVal: week14Vaccines[idx].received,
+                                                                    newReceivedVal: week14ReceivedVals["$idx-receivedVal"],
+                                                                  );
+                                                                },
+                                                              );
+                                                            },
+                                                          )
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  Divider(color: Color(0xff163C4D)),
+                                                  DropdownButtonFormField(
+                                                    decoration: inputDeco(week14Vaccines[idx].received ? "Received" : "Not Received"),
+                                                    isExpanded: true,
+                                                    iconSize: 30.0,
+                                                    style: TextStyle(color: Colors.deepOrange),
+                                                    items: [
+                                                      'Received',
+                                                      'Not Received',
+                                                    ].map(
+                                                      (val) {
+                                                        return DropdownMenuItem<String>(
+                                                          value: val,
+                                                          child: Text(val),
+                                                        );
+                                                      },
+                                                    ).toList(),
+                                                    onChanged: (val) async {
+                                                      setState(() {
+                                                        week14ReceivedChecks['$idx-hasReceivedChanged'] = true;
+                                                        val == "Received"
+                                                            ? week14ReceivedVals["$idx-receivedVal"] = true
+                                                            : week14ReceivedVals["$idx-receivedVal"] = false;
+                                                      });
+
+                                                      await apiService.updateReceived(
+                                                        vaccine: vaccine,
+                                                        hasReceivedChanged: week14ReceivedChecks['$idx-hasReceivedChanged'],
+                                                        newReceivedDate: week14Dates['$idx-dateReceived'],
+                                                        initialReceivedDate: week14Vaccines[idx].dateReceived,
+                                                        newReceivedVal: week14ReceivedVals["$idx-receivedVal"],
+                                                        initialReceivedVal: week14Vaccines[idx].received,
+                                                      );
+                                                    },
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    ),
+
+                                    //month 6
+                                    ...List.generate(
+                                      month6Vaccines.length,
+                                      (idx) {
+                                        final vaccine = month6Vaccines[idx];
+                                        return Column(
+                                          children: [
+                                            Container(
+                                              constraints: BoxConstraints(minHeight: 10.h),
+                                              decoration: BoxDecoration(
+                                                  color: Color(0xFF00FFFF),
+                                                  borderRadius: BorderRadius.only(topLeft: Radius.circular(6.0), topRight: Radius.circular(6.0))),
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(8.0),
+                                                child: Align(alignment: Alignment.centerLeft, child: Text('6 Months')),
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 8,
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                                              child: Column(
+                                                children: [
+                                                  Container(constraints: BoxConstraints(minHeight: 10.h), child: Text(month6Vaccines[idx].vaccineName)),
+                                                  Divider(color: Color(0xff163C4D)),
+                                                  Column(
+                                                    children: [
+                                                      Row(
+                                                        children: [
+                                                          Expanded(
+                                                            child: Align(alignment: Alignment.centerLeft, child: Text("Due Date: ")),
+                                                          ),
+                                                          Expanded(
+                                                            child: Align(alignment: Alignment.centerLeft, child: Text(month6.dueDate.toString())),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      SizedBox(
+                                                        height: 8.h,
+                                                      ),
+                                                      Row(
+                                                        children: [
+                                                          Expanded(
+                                                            child: Align(alignment: Alignment.centerLeft, child: Text("Date Received:")),
+                                                          ),
+                                                          Expanded(
+                                                            child: Text(
+                                                              month6Dates['$idx-dateReceived'] == null
+                                                                  ? month6Vaccines[idx].dateReceived == null
+                                                                      ? ""
+                                                                      : month6Vaccines[idx].dateReceived
+                                                                  : month6Dates['$idx-dateReceived'],
+                                                              style: TextStyle(
+                                                                color: Colors.black,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          GestureDetector(
+                                                            child: Icon(Icons.date_range),
+                                                            onTap: () {
+                                                              DatePicker.showDatePicker(
+                                                                context,
+                                                                showTitleActions: true,
+                                                                currentTime: DateTime.now(),
+                                                                locale: LocaleType.en,
+                                                                minTime: DateTime(1963, 3, 5),
+                                                                maxTime: DateTime.now(),
+                                                                onChanged: (date) {},
+                                                                onConfirm: (date) async {
+                                                                  setState(() {
+                                                                    month6Dates['$idx-dateReceived'] = date.toString().split(' ').first;
+                                                                  });
+                                                                  await apiService.updateReceived(
+                                                                    vaccine: vaccine,
+                                                                    hasReceivedChanged: month6ReceivedChecks['$idx-hasReceivedChanged'],
+                                                                    initialReceivedDate: month6Vaccines[idx].dateReceived,
+                                                                    newReceivedDate: month6Dates['$idx-dateReceived'],
+                                                                    initialReceivedVal: month6Vaccines[idx].received,
+                                                                    newReceivedVal: month6ReceivedVals["$idx-receivedVal"],
+                                                                  );
+                                                                },
+                                                              );
+                                                            },
+                                                          )
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  Divider(color: Color(0xff163C4D)),
+                                                  DropdownButtonFormField(
+                                                    decoration: inputDeco(month6Vaccines[idx].received ? "Received" : "Not Received"),
+                                                    isExpanded: true,
+                                                    iconSize: 30.0,
+                                                    style: TextStyle(color: Colors.deepOrange),
+                                                    items: [
+                                                      'Received',
+                                                      'Not Received',
+                                                    ].map(
+                                                      (val) {
+                                                        return DropdownMenuItem<String>(
+                                                          value: val,
+                                                          child: Text(val),
+                                                        );
+                                                      },
+                                                    ).toList(),
+                                                    onChanged: (val) async {
+                                                      setState(() {
+                                                        month6ReceivedChecks['$idx-hasReceivedChanged'] = true;
+                                                        val == "Received"
+                                                            ? month6ReceivedVals["$idx-receivedVal"] = true
+                                                            : month6ReceivedVals["$idx-receivedVal"] = false;
+                                                      });
+
+                                                      await apiService.updateReceived(
+                                                        vaccine: vaccine,
+                                                        hasReceivedChanged: month6ReceivedChecks['$idx-hasReceivedChanged'],
+                                                        newReceivedDate: month6Dates['$idx-dateReceived'],
+                                                        initialReceivedDate: month6Vaccines[idx].dateReceived,
+                                                        newReceivedVal: month6ReceivedVals["$idx-receivedVal"],
+                                                        initialReceivedVal: month6Vaccines[idx].received,
+                                                      );
+                                                    },
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    ),
+
+                                    //month 7
+                                    ...List.generate(
+                                      month7Vaccines.length,
+                                      (idx) {
+                                        final vaccine = month7Vaccines[idx];
+                                        return Column(
+                                          children: [
+                                            Container(
+                                              constraints: BoxConstraints(minHeight: 10.h),
+                                              decoration: BoxDecoration(
+                                                  color: Color(0xFF00FFFF),
+                                                  borderRadius: BorderRadius.only(topLeft: Radius.circular(6.0), topRight: Radius.circular(6.0))),
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(8.0),
+                                                child: Align(alignment: Alignment.centerLeft, child: Text('7 Months')),
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 8,
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                                              child: Column(
+                                                children: [
+                                                  Container(constraints: BoxConstraints(minHeight: 10.h), child: Text(month7Vaccines[idx].vaccineName)),
+                                                  Divider(color: Color(0xff163C4D)),
+                                                  Column(
+                                                    children: [
+                                                      Row(
+                                                        children: [
+                                                          Expanded(
+                                                            child: Align(alignment: Alignment.centerLeft, child: Text("Due Date: ")),
+                                                          ),
+                                                          Expanded(
+                                                            child: Align(alignment: Alignment.centerLeft, child: Text(month7.dueDate.toString())),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      SizedBox(
+                                                        height: 8.h,
+                                                      ),
+                                                      Row(
+                                                        children: [
+                                                          Expanded(
+                                                            child: Align(alignment: Alignment.centerLeft, child: Text("Date Received:")),
+                                                          ),
+                                                          Expanded(
+                                                            child: Text(
+                                                              month7Dates['$idx-dateReceived'] == null
+                                                                  ? month7Vaccines[idx].dateReceived == null
+                                                                      ? ""
+                                                                      : month7Vaccines[idx].dateReceived
+                                                                  : month7Dates['$idx-dateReceived'],
+                                                              style: TextStyle(
+                                                                color: Colors.black,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          GestureDetector(
+                                                            child: Icon(Icons.date_range),
+                                                            onTap: () {
+                                                              DatePicker.showDatePicker(
+                                                                context,
+                                                                showTitleActions: true,
+                                                                currentTime: DateTime.now(),
+                                                                locale: LocaleType.en,
+                                                                minTime: DateTime(1963, 3, 5),
+                                                                maxTime: DateTime.now(),
+                                                                onChanged: (date) {},
+                                                                onConfirm: (date) async {
+                                                                  setState(() {
+                                                                    month7Dates['$idx-dateReceived'] = date.toString().split(' ').first;
+                                                                  });
+                                                                  await apiService.updateReceived(
+                                                                    vaccine: vaccine,
+                                                                    hasReceivedChanged: month7ReceivedChecks['$idx-hasReceivedChanged'],
+                                                                    initialReceivedDate: month7Vaccines[idx].dateReceived,
+                                                                    newReceivedDate: month7Dates['$idx-dateReceived'],
+                                                                    initialReceivedVal: month7Vaccines[idx].received,
+                                                                    newReceivedVal: month7ReceivedVals["$idx-receivedVal"],
+                                                                  );
+                                                                },
+                                                              );
+                                                            },
+                                                          )
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  Divider(color: Color(0xff163C4D)),
+                                                  DropdownButtonFormField(
+                                                    decoration: inputDeco(month7Vaccines[idx].received ? "Received" : "Not Received"),
+                                                    isExpanded: true,
+                                                    iconSize: 30.0,
+                                                    style: TextStyle(color: Colors.deepOrange),
+                                                    items: [
+                                                      'Received',
+                                                      'Not Received',
+                                                    ].map(
+                                                      (val) {
+                                                        return DropdownMenuItem<String>(
+                                                          value: val,
+                                                          child: Text(val),
+                                                        );
+                                                      },
+                                                    ).toList(),
+                                                    onChanged: (val) async {
+                                                      setState(() {
+                                                        month7ReceivedChecks['$idx-hasReceivedChanged'] = true;
+                                                        val == "Received"
+                                                            ? month7ReceivedVals["$idx-receivedVal"] = true
+                                                            : month7ReceivedVals["$idx-receivedVal"] = false;
+                                                      });
+
+                                                      await apiService.updateReceived(
+                                                        vaccine: vaccine,
+                                                        hasReceivedChanged: month7ReceivedChecks['$idx-hasReceivedChanged'],
+                                                        newReceivedDate: month7Dates['$idx-dateReceived'],
+                                                        initialReceivedDate: month7Vaccines[idx].dateReceived,
+                                                        newReceivedVal: month7ReceivedVals["$idx-receivedVal"],
+                                                        initialReceivedVal: month7Vaccines[idx].received,
+                                                      );
+                                                    },
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          }),
+                    ),
                   ],
                 ),
               ],

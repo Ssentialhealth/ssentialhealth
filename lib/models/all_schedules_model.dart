@@ -57,13 +57,13 @@ class Schedule {
   final int id;
   final List<Vaccine> vaccines;
   final String age;
-  final DateTime dueDate;
+  final dynamic dueDate;
 
   factory Schedule.fromJson(Map<String, dynamic> json) => Schedule(
         id: json["id"],
         vaccines: List<Vaccine>.from(json["vaccines"].map((x) => Vaccine.fromJson(x))),
         age: json["age"],
-        dueDate: DateTime.parse(json["due_date"]),
+        dueDate: json["due_date"],
       );
 
   Map<String, dynamic> toJson() => {

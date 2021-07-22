@@ -35,7 +35,7 @@ class _GenerateImmunizationScheduleDataState extends State<GenerateImmunizationS
   @override
   Widget build(BuildContext context) {
     // initializeDateFormatting('en_US');
-	  Intl.defaultLocale = 'en';
+    Intl.defaultLocale = 'en';
     return BlocBuilder<ImmunizationScheduleBloc, ImmunizationScheduleState>(
       builder: (BuildContext context, state) {
         if (state is ImmunizationScheduleInitial) {
@@ -110,7 +110,7 @@ class _GenerateImmunizationScheduleDataState extends State<GenerateImmunizationS
                                                         child: Align(alignment: Alignment.centerLeft, child: Text("Due Date: ")),
                                                       ),
                                                       Expanded(
-                                                        child: Align(alignment: Alignment.centerLeft, child: Text(atBirthVaccines[idx].schedule.toString())),
+	                                                      child: Align(alignment: Alignment.centerLeft, child: Text(atBirth.dueDate.toString())),
                                                       ),
                                                     ],
                                                   ),
@@ -137,28 +137,17 @@ class _GenerateImmunizationScheduleDataState extends State<GenerateImmunizationS
                                               ),
                                               Divider(color: Color(0xff163C4D)),
                                               DropdownButtonFormField(
-                                                decoration: inputDeco(atBirthReceived != null ? "" : "Received"),
-                                                hint: atBirthReceived == null
-                                                    ? Text('')
-                                                    : Text(
-                                                        atBirthReceived,
-                                                        style: TextStyle(color: Colors.deepOrange),
-                                                      ),
+                                                decoration: inputDeco(""),
+                                                hint: Text("Not Received"),
                                                 isExpanded: true,
                                                 iconSize: 30.0,
                                                 style: TextStyle(color: Colors.deepOrange),
-                                                items: [
-                                                  'Received',
-                                                  'Not Received',
-                                                ].map(
-                                                  (val) {
-                                                    return DropdownMenuItem<String>(
-                                                      value: val,
-                                                      child: Text(val),
-                                                    );
-                                                  },
-                                                ).toList(),
-                                                onChanged: (val) {},
+                                                items: ['Received', 'Not Received'].map((val) {
+                                                  return DropdownMenuItem<String>(
+                                                    value: val,
+                                                    child: Text(val),
+                                                  );
+                                                }).toList(),
                                               ),
                                             ],
                                           ),
@@ -197,7 +186,7 @@ class _GenerateImmunizationScheduleDataState extends State<GenerateImmunizationS
                                                         child: Align(alignment: Alignment.centerLeft, child: Text("Due Date: ")),
                                                       ),
                                                       Expanded(
-                                                        child: Align(alignment: Alignment.centerLeft, child: Text(week6Vaccines[idx].schedule.toString())),
+	                                                      child: Align(alignment: Alignment.centerLeft, child: Text(week6.dueDate.toString())),
                                                       ),
                                                     ],
                                                   ),
@@ -224,28 +213,17 @@ class _GenerateImmunizationScheduleDataState extends State<GenerateImmunizationS
                                               ),
                                               Divider(color: Color(0xff163C4D)),
                                               DropdownButtonFormField(
-                                                decoration: inputDeco(week6Receieved != null ? "" : "Received"),
-                                                hint: week6Receieved == null
-                                                    ? Text('')
-                                                    : Text(
-                                                        week6Receieved,
-                                                        style: TextStyle(color: Colors.deepOrange),
-                                                      ),
+                                                decoration: inputDeco(""),
+                                                hint: Text("Not Received"),
                                                 isExpanded: true,
                                                 iconSize: 30.0,
                                                 style: TextStyle(color: Colors.deepOrange),
-                                                items: [
-                                                  'Received',
-                                                  'Not Received',
-                                                ].map(
-                                                  (val) {
-                                                    return DropdownMenuItem<String>(
-                                                      value: val,
-                                                      child: Text(val),
-                                                    );
-                                                  },
-                                                ).toList(),
-                                                onChanged: (val) {},
+                                                items: ['Received', 'Not Received'].map((val) {
+                                                  return DropdownMenuItem<String>(
+                                                    value: val,
+                                                    child: Text(val),
+                                                  );
+                                                }).toList(),
                                               ),
                                             ],
                                           ),
@@ -284,7 +262,7 @@ class _GenerateImmunizationScheduleDataState extends State<GenerateImmunizationS
                                                         child: Align(alignment: Alignment.centerLeft, child: Text("Due Date: ")),
                                                       ),
                                                       Expanded(
-                                                        child: Align(alignment: Alignment.centerLeft, child: Text(week10Vaccines[idx].schedule.toString())),
+	                                                      child: Align(alignment: Alignment.centerLeft, child: Text(week10.dueDate.toString())),
                                                       ),
                                                     ],
                                                   ),
@@ -311,28 +289,17 @@ class _GenerateImmunizationScheduleDataState extends State<GenerateImmunizationS
                                               ),
                                               Divider(color: Color(0xff163C4D)),
                                               DropdownButtonFormField(
-                                                decoration: inputDeco(week10Receieved != null ? "" : "Received"),
-                                                hint: week10Receieved == null
-                                                    ? Text('')
-                                                    : Text(
-                                                        week10Receieved,
-                                                        style: TextStyle(color: Colors.deepOrange),
-                                                      ),
+                                                decoration: inputDeco(""),
+                                                hint: Text("Not Received"),
                                                 isExpanded: true,
                                                 iconSize: 30.0,
                                                 style: TextStyle(color: Colors.deepOrange),
-                                                items: [
-                                                  'Received',
-                                                  'Not Received',
-                                                ].map(
-                                                  (val) {
-                                                    return DropdownMenuItem<String>(
-                                                      value: val,
-                                                      child: Text(val),
-                                                    );
-                                                  },
-                                                ).toList(),
-                                                onChanged: (val) {},
+                                                items: ['Received', 'Not Received'].map((val) {
+                                                  return DropdownMenuItem<String>(
+                                                    value: val,
+                                                    child: Text(val),
+                                                  );
+                                                }).toList(),
                                               ),
                                             ],
                                           ),
@@ -371,7 +338,7 @@ class _GenerateImmunizationScheduleDataState extends State<GenerateImmunizationS
                                                         child: Align(alignment: Alignment.centerLeft, child: Text("Due Date: ")),
                                                       ),
                                                       Expanded(
-                                                        child: Align(alignment: Alignment.centerLeft, child: Text(week14Vaccines[idx].schedule.toString())),
+	                                                      child: Align(alignment: Alignment.centerLeft, child: Text(week14.dueDate.toString())),
                                                       ),
                                                     ],
                                                   ),
@@ -398,28 +365,17 @@ class _GenerateImmunizationScheduleDataState extends State<GenerateImmunizationS
                                               ),
                                               Divider(color: Color(0xff163C4D)),
                                               DropdownButtonFormField(
-                                                decoration: inputDeco(week14Receieved != null ? "" : "Received"),
-                                                hint: week14Receieved == null
-                                                    ? Text('')
-                                                    : Text(
-                                                        week14Receieved,
-                                                        style: TextStyle(color: Colors.deepOrange),
-                                                      ),
+                                                decoration: inputDeco(""),
+                                                hint: Text("Not Received"),
                                                 isExpanded: true,
                                                 iconSize: 30.0,
                                                 style: TextStyle(color: Colors.deepOrange),
-                                                items: [
-                                                  'Received',
-                                                  'Not Received',
-                                                ].map(
-                                                  (val) {
-                                                    return DropdownMenuItem<String>(
-                                                      value: val,
-                                                      child: Text(val),
-                                                    );
-                                                  },
-                                                ).toList(),
-                                                onChanged: (val) {},
+                                                items: ['Received', 'Not Received'].map((val) {
+                                                  return DropdownMenuItem<String>(
+                                                    value: val,
+                                                    child: Text(val),
+                                                  );
+                                                }).toList(),
                                               ),
                                             ],
                                           ),
@@ -458,7 +414,7 @@ class _GenerateImmunizationScheduleDataState extends State<GenerateImmunizationS
                                                         child: Align(alignment: Alignment.centerLeft, child: Text("Due Date: ")),
                                                       ),
                                                       Expanded(
-                                                        child: Align(alignment: Alignment.centerLeft, child: Text(month6Vaccines[idx].schedule.toString())),
+	                                                      child: Align(alignment: Alignment.centerLeft, child: Text(month6.dueDate.toString())),
                                                       ),
                                                     ],
                                                   ),
@@ -485,28 +441,17 @@ class _GenerateImmunizationScheduleDataState extends State<GenerateImmunizationS
                                               ),
                                               Divider(color: Color(0xff163C4D)),
                                               DropdownButtonFormField(
-                                                decoration: inputDeco(month6Receieved != null ? "" : "Received"),
-                                                hint: month6Receieved == null
-                                                    ? Text('')
-                                                    : Text(
-                                                        month6Receieved,
-                                                        style: TextStyle(color: Colors.deepOrange),
-                                                      ),
+                                                decoration: inputDeco(""),
+                                                hint: Text("Not Received"),
                                                 isExpanded: true,
                                                 iconSize: 30.0,
                                                 style: TextStyle(color: Colors.deepOrange),
-                                                items: [
-                                                  'Received',
-                                                  'Not Received',
-                                                ].map(
-                                                  (val) {
-                                                    return DropdownMenuItem<String>(
-                                                      value: val,
-                                                      child: Text(val),
-                                                    );
-                                                  },
-                                                ).toList(),
-                                                onChanged: (val) {},
+                                                items: ['Received', 'Not Received'].map((val) {
+                                                  return DropdownMenuItem<String>(
+                                                    value: val,
+                                                    child: Text(val),
+                                                  );
+                                                }).toList(),
                                               ),
                                             ],
                                           ),
@@ -545,7 +490,7 @@ class _GenerateImmunizationScheduleDataState extends State<GenerateImmunizationS
                                                         child: Align(alignment: Alignment.centerLeft, child: Text("Due Date: ")),
                                                       ),
                                                       Expanded(
-                                                        child: Align(alignment: Alignment.centerLeft, child: Text(month7Vaccines[idx].schedule.toString())),
+	                                                      child: Align(alignment: Alignment.centerLeft, child: Text(month7.dueDate.toString())),
                                                       ),
                                                     ],
                                                   ),
@@ -572,28 +517,17 @@ class _GenerateImmunizationScheduleDataState extends State<GenerateImmunizationS
                                               ),
                                               Divider(color: Color(0xff163C4D)),
                                               DropdownButtonFormField(
-                                                decoration: inputDeco(month7Receieved != null ? "" : "Received"),
-                                                hint: month7Receieved == null
-                                                    ? Text('')
-                                                    : Text(
-                                                        month7Receieved,
-                                                        style: TextStyle(color: Colors.deepOrange),
-                                                      ),
+                                                decoration: inputDeco(""),
+                                                hint: Text("Not Received"),
                                                 isExpanded: true,
                                                 iconSize: 30.0,
                                                 style: TextStyle(color: Colors.deepOrange),
-                                                items: [
-                                                  'Received',
-                                                  'Not Received',
-                                                ].map(
-                                                  (val) {
-                                                    return DropdownMenuItem<String>(
-                                                      value: val,
-                                                      child: Text(val),
-                                                    );
-                                                  },
-                                                ).toList(),
-                                                onChanged: (val) {},
+                                                items: ['Received', 'Not Received'].map((val) {
+                                                  return DropdownMenuItem<String>(
+                                                    value: val,
+                                                    child: Text(val),
+                                                  );
+                                                }).toList(),
                                               ),
                                             ],
                                           ),

@@ -37,7 +37,7 @@ class _GenerateImmunizationScheduleScreenState extends State<GenerateImmunizatio
           leading: new IconButton(
               icon: new Icon(Icons.arrow_back),
               onPressed: () async {
-                await BlocProvider.of<AllSchedulesBloc>(context).add(FetchAllSchedules());
+                BlocProvider.of<AllSchedulesBloc>(context).add(FetchAllSchedules());
                 Navigator.pop(context, true);
               })),
       body: SingleChildScrollView(

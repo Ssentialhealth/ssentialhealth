@@ -12,13 +12,15 @@ import 'package:pocket_health/screens/practitioners/reviews_list.dart';
 import 'package:pocket_health/screens/practitioners/sort_reviews_row.dart';
 import 'package:pocket_health/screens/practitioners/write_review_dialog.dart';
 import 'package:pocket_health/utils/constants.dart';
+import 'package:pocket_health/widgets/verified_tag.dart';
 
 import 'book_appointment_screen.dart';
 
 class PractitionerProfileScreen extends StatefulWidget {
   final PractitionerProfileModel practitionerModel;
+  final isVerified;
 
-  const PractitionerProfileScreen({Key key, this.practitionerModel}) : super(key: key);
+  const PractitionerProfileScreen({Key key, this.practitionerModel, this.isVerified}) : super(key: key);
 
   @override
   _PractitionerProfileScreenState createState() => _PractitionerProfileScreenState();
@@ -150,29 +152,22 @@ class _PractitionerProfileScreenState extends State<PractitionerProfileScreen> w
                                           crossAxisAlignment: CrossAxisAlignment.center,
                                           children: [
                                             //name
-                                            SizedBox(
-                                              width: 100.w,
-                                              child: Text(
-                                                'practitionerModel.surname',
-                                                overflow: TextOverflow.ellipsis,
-                                                maxLines: 1,
-                                                softWrap: false,
-                                                style: TextStyle(
-                                                  fontSize: 17.sp,
-                                                  fontWeight: FontWeight.w600,
-                                                  color: Color(0xff242424),
-                                                ),
+                                            Text(
+                                              widget.practitionerModel.surname,
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 1,
+                                              softWrap: false,
+                                              style: TextStyle(
+                                                fontSize: 17.sp,
+                                                fontWeight: FontWeight.w600,
+                                                color: Color(0xff242424),
                                               ),
                                             ),
 
                                             SizedBox(width: 10.w),
 
                                             //verified
-                                            Icon(
-                                              Icons.verified,
-                                              color: Color(0xff1A5864),
-                                              size: 15.sp,
-                                            ),
+                                            widget.isVerified ? VerifiedTag() : Container(),
                                           ],
                                         ),
 
@@ -342,7 +337,7 @@ class _PractitionerProfileScreenState extends State<PractitionerProfileScreen> w
 
                         //tab switcher
                         TabBar(
-	                        indicatorColor: accentColorDark,
+                          indicatorColor: accentColorDark,
                           indicatorSize: TabBarIndicatorSize.label,
                           isScrollable: false,
                           labelColor: accentColorDark,
@@ -930,7 +925,7 @@ class _PractitionerProfileScreenState extends State<PractitionerProfileScreen> w
                             Text('Sort by:', style: sectionTitle),
                             GestureDetector(
                               onTap: () {
-	                              context.read<PostReviewCubit>()..loadInitial();
+                                context.read<PostReviewCubit>()..loadInitial();
                                 showDialog(
                                   context: context,
                                   builder: (context) => WriteReviewDialog(),
@@ -945,7 +940,7 @@ class _PractitionerProfileScreenState extends State<PractitionerProfileScreen> w
                       SizedBox(height: 10.h),
 
                       //filter chips
-	                    BlocBuilder<ReviewsCubit, ReviewsState>(
+                      BlocBuilder<ReviewsCubit, ReviewsState>(
                         builder: (context, state) {
                           if (state is LoadReviewsLoaded) {
                             final List<ReviewModel> toSort = state.reviewModels;

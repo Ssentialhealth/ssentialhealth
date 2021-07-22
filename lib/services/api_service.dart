@@ -1,8 +1,10 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:json_patch/json_patch.dart';
 import 'package:pocket_health/models/ForgotPassword.dart';
 import 'package:pocket_health/models/all_schedules_model.dart';
 import 'package:pocket_health/models/child_chronic_condition_model.dart';
@@ -16,7 +18,7 @@ import 'package:pocket_health/models/delayed_milestone_model.dart';
 import 'package:pocket_health/models/emergency_contact.dart';
 import 'package:pocket_health/models/growth_chart_model.dart';
 import 'package:pocket_health/models/hotlines.dart';
-import 'package:pocket_health/models/immunization_schedule_model.dart';
+import 'package:pocket_health/models/immunization_schedule_model.dart' hide Vaccine;
 import 'package:pocket_health/models/loginModel.dart';
 import 'package:pocket_health/models/normal_development_Model.dart';
 import 'package:pocket_health/models/nutrition_model.dart';
@@ -255,6 +257,66 @@ class ApiService {
 
   //UPDATE SCHEDULE
 
+  Future<void> updateReceived({
+    Vaccine vaccine,
+    bool hasReceivedChanged,
+    bool initialReceivedVal,
+    bool newReceivedVal,
+    String newReceivedDate,
+    String initialReceivedDate,
+  }) async {
+    //if initial date is null & dateReceived is not null pass dateReceived
+    //if inital date is null & dateReceieved is null pass null
+    //if initital date is not null & date receievd is null pass initalDate
+    // if initital date is not null & date received i
+    // s not null pass dateReceived
+    final newestReceivedDate = initialReceivedDate == null && newReceivedDate == null
+        ? null
+        : initialReceivedDate == null && newReceivedDate != null
+            ? newReceivedDate
+            : initialReceivedDate != null && newReceivedDate == null
+                ? initialReceivedDate
+                : initialReceivedDate != null && newReceivedDate != null
+                    ? newReceivedDate
+                    : 'what?';
+
+    //if inital val is false & receivedVal is true pass true
+    //if inital val is false & receivedVal is false pass false
+    //if initial val is true & receivedval is false pass false
+    //if initial val is true & receoveval is true pass true
+
+    //if receivedHasChanged is true pass receivedVal
+    //else if inital is true
+
+    final newestRecievedVal = hasReceivedChanged == true ? newReceivedVal : initialReceivedVal;
+    final _token = await getStringValuesSF();
+    final vaccineToPatch = vaccine.toJson();
+    final patchedJson = JsonPatch.apply(
+      vaccineToPatch,
+      [
+        {
+          "op": "replace",
+          "path": "/received",
+          "value": newestRecievedVal,
+        },
+        {
+          "op": "replace",
+          "path": "/date_received",
+          "value": newestReceivedDate,
+        }
+      ],
+      strict: true,
+    );
+    final payload = json.encode(patchedJson);
+    print('vaccine after applying patch operations: $payload');
+    final response = await httpClient.patch(
+      vaccinesEndpoint + vaccine.id.toString(),
+      body: payload,
+      headers: {"Content-Type": "application/json", "Authorization": "Bearer " + _token},
+    );
+    log('vaccine update response  | ' + '${response.body}');
+  }
+
   //Fetching all Schedules
   Future<List<AllScheduleModel>> fetchAllSchedule() async {
     _token = await getStringValuesSF();
@@ -264,7 +326,7 @@ class ApiService {
       headers: {"Content-Type": "application/json", "Authorization": "Bearer " + _token},
     );
     print(_token);
-    print(response.body);
+    print("alL schedules" + response.body);
     if (response.statusCode != 200) {
       throw Exception("Error Fetching condition");
     }
@@ -382,7 +444,7 @@ class ApiService {
 
     print(response.body);
     // return practitionerProfileFromJson(response.body).where((element) => element.healthInfo != null && element.healthInfo.practitioner == practitionersCategory).toList();
-    return practitionerProfileFromJson(response.body).where((element) => element.healthInfo != null).toList();
+    return practitionerProfileModelFromJson(response.body).where((element) => element.healthInfo != null).toList();
   }
 
   //fetch practitioners by filters
@@ -400,17 +462,16 @@ class ApiService {
     if (response.statusCode != 200) {
       throw Exception('Error Fetching practitioners');
     }
-    final whereNotNull = practitionerProfileFromJson(response.body)
-        .where(
-          (element) => (element.user != null &&
-              element.region != null &&
-              element.location != null &&
-              element.healthInfo != null &&
-              element.ratesInfo != null &&
-              element.surname != null),
-        )
-        .toList();
-    print(filterByDistance);
+    final whereNotNull = practitionerProfileModelFromJson(response.body);
+    // .where(
+    //   (element) => (element.user != null &&
+    //       element.region != null &&
+    //       element.location != null &&
+    //       element.healthInfo != null &&
+    //       element.ratesInfo != null &&
+    //       element.surname != null),
+    // )
+    // .toList();
 
     final filtered = practitionersCategory == 'Doctors'
         ? (filterByPrice != 'null' && filterByDistance != 'null' && filterBySpeciality != 'null' && filterByAvailability != 'null')
@@ -573,20 +634,20 @@ class ApiService {
 
   //User Reset Password Endpoint
   Future<ForgotPassword> resetPassword(String email) async {
-	  Map<String, String> _payLoad = Map();
-	  _payLoad['email'] = email;
-	  final response = await this.httpClient.post(Uri.encodeFull(forgotPassEndpoint), headers: {"Content-Type": "application/json"}, body: jsonEncode(_payLoad));
-	  print(response.body);
-	  if (response.statusCode != 204) {
-		  throw Exception('Error creating Profile');
-	  }
-	  final resetPasswordJson = jsonDecode(response.body);
-	  return ForgotPassword.fromJson(resetPasswordJson);
+    Map<String, String> _payLoad = Map();
+    _payLoad['email'] = email;
+    final response = await this.httpClient.post(Uri.encodeFull(forgotPassEndpoint), headers: {"Content-Type": "application/json"}, body: jsonEncode(_payLoad));
+    print(response.body);
+    if (response.statusCode != 204) {
+      throw Exception('Error creating Profile');
+    }
+    final resetPasswordJson = jsonDecode(response.body);
+    return ForgotPassword.fromJson(resetPasswordJson);
   }
 
   //User Login Endpoint
   Future<LoginModel> login(String email, String password) async {
-	  Map<String, String> payLoad = Map();
+    Map<String, String> payLoad = Map();
     payLoad['email'] = email;
     payLoad['password'] = password;
 
@@ -649,7 +710,7 @@ getStringValuesSF() async {
 }
 
 void _showSnackBar(message) {
-	final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   _scaffoldKey.currentState.showSnackBar(SnackBar(
     content: Text(message),
   ));
