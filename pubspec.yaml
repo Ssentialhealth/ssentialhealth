@@ -29,25 +29,26 @@ dependencies:
   rxdart: ^0.25.0
   http: ^0.12.2
   flutter_session: ^0.1.1
-  fluttertoast: ^7.1.6
+  fluttertoast: ^8.0.7
   shared_preferences: ^0.5.12+4
   country_list_pick: ^1.0.1+3
   flutter_statusbarcolor: ^0.2.3
   flutter_launcher_icons: ^0.8.1
-  percent_indicator: ^2.1.7+2
+  percent_indicator: ^3.0.1
   steps: ^1.0.1
-  equatable: ^1.2.5
-  flutter_bloc: ^6.0.6
-  bloc: ^6.0.3
+  equatable: ^2.0.3
+  flutter_bloc: ^7.0.1
+  bloc: ^7.0.0
   url_launcher: ^5.4.5
-  flutter_phone_direct_caller: ^1.0.1
+  flutter_phone_direct_caller: ^2.0.0
   flutter_datetime_picker:
     git:
       url: https://github.com/Realank/flutter_datetime_picker.git
       ref: master
   image_picker: ^0.6.7+22
   platform_alert_dialog: ^1.0.0+2
-  flutter_screenutil: ^4.0.3+2
+  flutter_screenutil: ^5.0.0+2
+  photo_manager:
   flutter_markdown: ^0.5.2
   flutter_svg: ^0.19.2
   syncfusion_flutter_pdfviewer: any
@@ -55,17 +56,23 @@ dependencies:
   material_design_icons_flutter: ^4.0.5955
   syncfusion_flutter_sliders: any
   supercharged: ^2.0.0
-  flutter_riverpod: ^0.14.0+3
   flutter_rating_bar: ^4.0.0
   chips_choice: ^2.0.1
   buttons_tabbar: ^1.3.0
   intl: ^0.16.1
   syncfusion_flutter_datepicker: ^18.4.49-beta
+  agora_rtc_engine: ^3.3.3
+  chewie: ^1.2.2
+  flutter_gallery_assets: ^1.0.2
   json_patch:
     git:
       url: https://github.com/pikaju/dart-json-patch.git
       ref: master
-  rfc_6902: ^0.1.0
+  share_plus_web:
+  stream_chat_flutter: ^1.5.4
+  get_it: ^7.2.0
+  permission_handler:
+  start_jwt:
 
 flutter_icons:
   image_path: "assets/images/icons/launcher.png"

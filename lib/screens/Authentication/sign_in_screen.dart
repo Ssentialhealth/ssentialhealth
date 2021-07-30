@@ -1,25 +1,19 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pocket_health/bloc/initialize_stream_chat/initialize_stream_chat_cubit.dart';
 import 'package:pocket_health/bloc/login/loginBloc.dart';
 import 'package:pocket_health/bloc/login/loginEvent.dart';
 import 'package:pocket_health/bloc/login/loginState.dart';
 import 'package:pocket_health/screens/home/home.dart';
-import 'package:pocket_health/screens/home/home_screen.dart';
 import 'package:pocket_health/widgets/widget.dart';
+import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 import 'forgot_password.dart';
 
-
 class SignInScreen extends StatefulWidget {
-
   final Function toggle;
   SignInScreen(this.toggle);
-
-
-
 
   @override
   _SignInScreenState createState() => _SignInScreenState();
@@ -29,30 +23,33 @@ class _SignInScreenState extends State<SignInScreen> {
   final formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
-
   TextEditingController passWordTextEditingController = new TextEditingController();
   TextEditingController emailTextEditingController = new TextEditingController();
 
-
   @override
   Widget build(BuildContext context) {
-    // Widget loadingIndicator =_isLoading? new Container(
-    //   color: Colors.white,
-    //   width: 70.0,
-    //   height: 70.0,
-    //   child: new Padding(padding: const EdgeInsets.all(5.0),child: new Center(child: new CircularProgressIndicator())),
-    // ):new Container();
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
         title: Text("Sign In"),
         centerTitle: true,
       ),
-      body:  SingleChildScrollView(
-        child: BlocListener<LoginBloc,LoginState>(
+      body: SingleChildScrollView(
+        child: BlocListener<LoginBloc, LoginState>(
           listener: (context, state) {
             if (state is LoginLoaded) {
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Home()));
+              final client = context.read<InitializeStreamChatCubit>().client;
+              context.read<InitializeStreamChatCubit>().initializeUser(state.loginModel.user.userCategory);
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
+                  builder: (context) {
+                    return StreamChat(
+                      client: client,
+                      child: Home(),
+                    );
+                  },
+                ),
+              );
             }
             if (state is LoginError) {
               Scaffold.of(context)
@@ -72,25 +69,25 @@ class _SignInScreenState extends State<SignInScreen> {
                   children: [
                     Container(
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Image.asset(
-                              'assets/images/logonotag.png',
-                              height: 150,
-                              width: 150,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 39.0),
-                            ),
-                          ],
-                        )),
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Image.asset(
+                          'assets/images/logonotag.png',
+                          height: 150,
+                          width: 150,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 39.0),
+                        ),
+                      ],
+                    )),
                     Text(
                       "Please Login to Access more features",
-                      style: TextStyle(
-                          color: Colors.black
-                      ),
+                      style: TextStyle(color: Colors.black),
                     ),
-                    SizedBox(height: 8,),
+                    SizedBox(
+                      height: 8,
+                    ),
                     TextFormField(
                       validator: (val) {
                         return RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(val) ? null : "Enter a valid Email";
@@ -103,7 +100,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       height: 8,
                     ),
                     TextFormField(
-		                    maxLength: 4,
+                        maxLength: 4,
                         obscureText: true,
                         inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
                         validator: (val) {
@@ -112,15 +109,16 @@ class _SignInScreenState extends State<SignInScreen> {
                         controller: passWordTextEditingController,
                         style: simpleTextStyle(),
                         decoration: textFieldInputDecoration("Pin")),
-                    SizedBox(height: 8,),
+                    SizedBox(
+                      height: 8,
+                    ),
                     GestureDetector(
-                      onTap: (){
+                      onTap: () {
                         Navigator.push(context, MaterialPageRoute(builder: (context) => ForgotPasswordScreen()));
-
                       },
                       child: Container(
                         alignment: Alignment.centerRight,
-                        child:   Container(
+                        child: Container(
                           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                           child: Text(
                             "Forgot Pin ?",
@@ -130,9 +128,10 @@ class _SignInScreenState extends State<SignInScreen> {
                       ),
                     ),
                     GestureDetector(
-                      onTap: (){
-                        if(formKey.currentState.validate()){
-                          BlocProvider.of<LoginBloc>(context).add(SendLoginPayLoad(email: emailTextEditingController.text,password: passWordTextEditingController.text));
+                      onTap: () {
+                        if (formKey.currentState.validate()) {
+                          BlocProvider.of<LoginBloc>(context)
+                              .add(SendLoginPayLoad(email: emailTextEditingController.text, password: passWordTextEditingController.text));
                         }
                       },
                       child: Container(
@@ -140,15 +139,8 @@ class _SignInScreenState extends State<SignInScreen> {
                         width: MediaQuery.of(context).size.width,
                         padding: EdgeInsets.symmetric(vertical: 16),
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            gradient: LinearGradient(
-                                colors: [
-                                  const Color(0xff163C4D),
-                                  const Color(0xff32687F)
-                                ]
-                            )
-                        ),
-                        child: BlocBuilder<LoginBloc , LoginState>(builder: (context, state) {
+                            borderRadius: BorderRadius.circular(5), gradient: LinearGradient(colors: [const Color(0xff163C4D), const Color(0xff32687F)])),
+                        child: BlocBuilder<LoginBloc, LoginState>(builder: (context, state) {
                           if (state is LoginLoading) {
                             return CircularProgressIndicator();
                           }
@@ -159,30 +151,33 @@ class _SignInScreenState extends State<SignInScreen> {
                         }),
                       ),
                     ),
-                    SizedBox(height: 10,),
+                    SizedBox(
+                      height: 10,
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text("Need an Account?",style: mediumTextStyle(),),
+                        Text(
+                          "Need an Account?",
+                          style: mediumTextStyle(),
+                        ),
                         GestureDetector(
-                          onTap: (){
-	                          widget.toggle();
+                          onTap: () {
+                            widget.toggle();
                           },
                           child: Container(
                             padding: EdgeInsets.symmetric(vertical: 8),
-                            child: Text("Sign Up",style: TextStyle(
-                                color: Color(0xFF163C4D),
-                                fontSize: 17,
-                                decoration: TextDecoration.underline
-                            )
-                              ,),
+                            child: Text(
+                              "Sign Up",
+                              style: TextStyle(color: Color(0xFF163C4D), fontSize: 17, decoration: TextDecoration.underline),
+                            ),
                           ),
                         )
                       ],
                     ),
-                    SizedBox(height: 50,),
-
-
+                    SizedBox(
+                      height: 50,
+                    ),
                   ],
                 ),
               ),
@@ -191,18 +186,5 @@ class _SignInScreenState extends State<SignInScreen> {
         ),
       ),
     );
-
   }
-
-
-  void _login(BuildContext buildContext){
-    Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
-
-  }
-
-
-
 }
-
-
-

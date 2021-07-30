@@ -1,18 +1,25 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pocket_health/bloc/filter_reviews/filter_reviews_cubit.dart';
+import 'package:pocket_health/bloc/initialize_stream_chat/initialize_stream_chat_cubit.dart';
+import 'package:pocket_health/bloc/login/loginBloc.dart';
+import 'package:pocket_health/bloc/login/loginState.dart';
 import 'package:pocket_health/bloc/post_review/post_review_cubit.dart';
 import 'package:pocket_health/bloc/reviews/reviews_cubit.dart';
 import 'package:pocket_health/models/practitioner_profile_model.dart';
 import 'package:pocket_health/models/review_model.dart';
+import 'package:pocket_health/screens/doctor_consult/chat/channel_page.dart';
 import 'package:pocket_health/screens/practitioners/reviews_list.dart';
 import 'package:pocket_health/screens/practitioners/sort_reviews_row.dart';
 import 'package:pocket_health/screens/practitioners/write_review_dialog.dart';
 import 'package:pocket_health/utils/constants.dart';
 import 'package:pocket_health/widgets/verified_tag.dart';
+import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 import 'book_appointment_screen.dart';
 
@@ -27,7 +34,6 @@ class PractitionerProfileScreen extends StatefulWidget {
 }
 
 class _PractitionerProfileScreenState extends State<PractitionerProfileScreen> with SingleTickerProviderStateMixin {
-  TabController _tabController;
   bool filterIsSelected = false;
   List reportCategories = [
     'Spam and Misleading',
@@ -37,9 +43,14 @@ class _PractitionerProfileScreenState extends State<PractitionerProfileScreen> w
     'Others',
   ];
 
+  //tab bar
+  TabController _tabController;
+
   @override
   void initState() {
     super.initState();
+    context.read<InitializeStreamChatCubit>()..loadInitial(); //test
+
     _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(() => setState(() {}));
   }
@@ -287,26 +298,150 @@ class _PractitionerProfileScreenState extends State<PractitionerProfileScreen> w
                               },
                             ),
                             //chat
-                            TextButton(
-                              child: Icon(
-                                Icons.chat_bubble_outline,
-                                color: accentColorDark,
-                                size: 21.w,
-                              ),
-                              style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all(Colors.white),
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                minimumSize: MaterialStateProperty.all(Size(0, 0)),
-                                padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h)),
-                                shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5.w),
-                                  side: BorderSide(
+                            BlocBuilder<LoginBloc, LoginState>(
+                              builder: (context, state) {
+                                if (state is LoginLoaded) {
+                                  final userID = state.loginModel.user.fullNames.split(' ').first + state.loginModel.user.fullNames.split(' ').last;
+                                  // final docID = widget.practitionerModel.surname.split(' ').first;
+                                  final docID = 'DrTest' + '${Random().nextInt(40).toString()}';
+
+                                  return BlocConsumer<InitializeStreamChatCubit, InitializeStreamChatState>(
+                                    listener: (context, state) {
+                                      if (state is StreamChannelSuccess) {
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (context) {
+                                              print('navigated');
+                                              return StreamChat(
+                                                client: context.read<InitializeStreamChatCubit>().client,
+                                                child: StreamChannel(
+                                                  channel: state.channel,
+                                                  child: ChannelPage(),
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        );
+                                      }
+
+                                      if (state is StreamChannelError) {
+                                        ScaffoldMessenger.of(context)
+                                          ..clearSnackBars()
+                                          ..showSnackBar(
+                                            SnackBar(
+                                              behavior: SnackBarBehavior.floating,
+                                              backgroundColor: Color(0xff163C4D),
+                                              duration: Duration(milliseconds: 6000),
+                                              content: Text(
+                                                state.err,
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                      }
+                                    },
+                                    builder: (context, state) {
+                                      if (state is StreamChannelLoading) {
+                                        return TextButton(
+                                          child: SizedBox(
+                                            height: 20,
+                                            width: 20,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 1,
+                                              color: accentColorDark,
+                                              backgroundColor: Colors.white,
+                                            ),
+                                          ),
+                                          style: ButtonStyle(
+                                            backgroundColor: MaterialStateProperty.all(Colors.white),
+                                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                            minimumSize: MaterialStateProperty.all(Size(0, 0)),
+                                            padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h)),
+                                            shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(5.w),
+                                              side: BorderSide(
+                                                color: accentColorDark,
+                                                width: 1.w,
+                                              ),
+                                            )),
+                                          ),
+                                          onPressed: () {},
+                                        );
+                                      }
+                                      if (state is StreamChannelSuccess) {
+                                        return TextButton(
+                                          child: Icon(
+                                            Icons.chat_bubble_outline,
+                                            color: accentColorDark,
+                                            size: 21.w,
+                                          ),
+                                          style: ButtonStyle(
+                                            backgroundColor: MaterialStateProperty.all(Colors.white),
+                                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                            minimumSize: MaterialStateProperty.all(Size(0, 0)),
+                                            padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h)),
+                                            shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(5.w),
+                                              side: BorderSide(
+                                                color: accentColorDark,
+                                                width: 1.w,
+                                              ),
+                                            )),
+                                          ),
+                                          onPressed: () {},
+                                        );
+                                      }
+                                      return TextButton(
+                                        child: Icon(
+                                          Icons.chat_bubble_outline,
+                                          color: accentColorDark,
+                                          size: 21.w,
+                                        ),
+                                        style: ButtonStyle(
+                                          backgroundColor: MaterialStateProperty.all(Colors.white),
+                                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                          minimumSize: MaterialStateProperty.all(Size(0, 0)),
+                                          padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h)),
+                                          shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(5.w),
+                                            side: BorderSide(
+                                              color: accentColorDark,
+                                              width: 1.w,
+                                            ),
+                                          )),
+                                        ),
+                                        onPressed: () {
+                                          context.read<InitializeStreamChatCubit>().initializeChannel(docID, userID);
+                                        },
+                                      );
+                                    },
+                                  );
+                                }
+                                return TextButton(
+                                  child: Icon(
+                                    Icons.chat_bubble_outline,
                                     color: accentColorDark,
-                                    width: 1.w,
+                                    size: 21.w,
                                   ),
-                                )),
-                              ),
-                              onPressed: () {},
+                                  style: ButtonStyle(
+                                    backgroundColor: MaterialStateProperty.all(Colors.white),
+                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                    minimumSize: MaterialStateProperty.all(Size(0, 0)),
+                                    padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h)),
+                                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5.w),
+                                      side: BorderSide(
+                                        color: accentColorDark,
+                                        width: 1.w,
+                                      ),
+                                    )),
+                                  ),
+                                  onPressed: () async {},
+                                );
+                              },
                             ),
                             //call
                             TextButton(

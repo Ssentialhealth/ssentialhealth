@@ -40,19 +40,20 @@ class _SplashScreenState extends State<SplashScreen> {
                 Expanded(
                   flex: 7,
                   child: Container(
-                      child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Image.asset(
-                        'assets/images/Logo.png',
-                        height: 250,
-                        width: 250,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 10.0),
-                      ),
-                    ],
-                  )),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Image.asset(
+                          'assets/images/Logo.png',
+                          height: 250,
+                          width: 250,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10.0),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),
