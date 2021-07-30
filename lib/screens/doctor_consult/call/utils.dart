@@ -1,0 +1,4 @@
+const APP_ID = 'e66d290339ee47d3b29f172d9f5a168b';
+const TEST_TOKEN = '006e66d290339ee47d3b29f172d9f5a168bIAAy7AiEiK0RJcLerxZ5Itdr4UcGKKR7vcCOdYEVPEQKv7/3z8MAAAAAEAAZP2Q5fC4DYQEAAQB7LgNh';
+const channelId = 'testchannel1';
+// const uid = 1;
