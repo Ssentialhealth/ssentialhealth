@@ -20,18 +20,27 @@ class InitializeStreamChatCubit extends Cubit<InitializeStreamChatState> {
     emit(StreamChannelInitial());
   }
 
-  void initializeUser(String streamUserID) async {
-    print(streamUserID);
+  void initializeUser(String streamUserID, String userCategory) async {
+    //TODO: inProduction | add real data
     emit(StreamChatLoading());
-    // final userID = streamUserID.split(' ').first + streamUserID.split(' ').last;
-    final userID = 'TestLewis';
+    final userID = streamUserID.split(' ').first + streamUserID.split(' ').last;
     try {
       await _client.disconnect();
       await _client.connectUserWithProvider(
+        // User(
+        //   id: 'TestLewis',
+        //   extraData: {
+        //     "userCategory": 'individual',
+        //   },
+        // ),
         User(
-          id: userID,
+          id: 'DrTestDoctor47',
+          extraData: {
+            "userCategory": 'doctor',
+          },
         ),
       );
+
       emit(StreamChatSuccess(_client));
     } catch (e) {
       emit(StreamChatFailure());
@@ -39,21 +48,23 @@ class InitializeStreamChatCubit extends Cubit<InitializeStreamChatState> {
     }
   }
 
-  void initializeChannel(String streamDocID, String streamUserID) async {
+  void initializeChannel(String streamUserID, String streamDocID, String userCategory) async {
+    //TODO: inProduction | add real data
     emit(StreamChannelLoading());
-
-    // final docID = streamDocID.split(' ').first + streamDocID.split(' ')?.last;
-    // final docID = 'NewDoctorsTest' + '${Random().nextInt(40).toString()}';
-    final docID = 'TestDoctor12';
+    // final docID = streamDocID.split(' ').first;
     // final userID = streamUserID.split(' ').first;
-    final userID = 'TestLewis';
 
+    final docID = 'DrTestDoctor47';
+    final userID = 'TestLewis';
     try {
       await client.disconnect();
 
       await client.connectUserWithProvider(
         User(
           id: docID,
+          extraData: {
+            "userCategory": 'doctor',
+          },
         ),
       );
 
@@ -62,6 +73,9 @@ class InitializeStreamChatCubit extends Cubit<InitializeStreamChatState> {
       await client.connectUserWithProvider(
         User(
           id: userID,
+          extraData: {
+            "userCategory": 'individual',
+          },
         ),
       );
 
@@ -71,26 +85,9 @@ class InitializeStreamChatCubit extends Cubit<InitializeStreamChatState> {
       );
 
       await channel.create();
-      await channel.inviteMembers([docID], Message(text: '$userID wants to consult you!', parentId: userID));
       await channel.addMembers([docID, userID]);
-      // await channel.rejectInvite();
-
-      // print('inviteResponse.message');
-      // print(inviteResponse.message?.user?.id);
-      // print('acceptResponse.message');
-      // inviteResponse.members.forEach((element) async {
-      //   print(element.user.id);
-      //   if (rejectResponse.members.isNotEmpty) {
-      //     print('denied');
-      //   }
-      //   await channel.addMembers(
-      //     [docID, userID],
-      //   );
-      // });
-      // final sdds = await channel.acceptInvite();
-
       await channel.watch();
-      emit(StreamChannelSuccess(channel));
+      emit(StreamChannelSuccess(channel, docID));
     } catch (err) {
       emit(StreamChannelError(err.toString()));
       print("create channel failed | $err");

@@ -162,8 +162,8 @@ class _ChannelListState extends State<ChannelList> {
                           'members': {
                             '\$in': [StreamChat.of(context).user.id],
                           },
-                          'invite': 'accepted'
                         },
+                        swipeToAction: true,
                         sort: [SortOption('last_message_at')],
                         pagination: PaginationParams(limit: 20),
                         channelWidget: StreamChat(client: context.read<InitializeStreamChatCubit>().client, child: ChannelPage()),

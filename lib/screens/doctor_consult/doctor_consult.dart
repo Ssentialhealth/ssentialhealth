@@ -20,7 +20,7 @@ class _DoctorConsultState extends State<DoctorConsult> with SingleTickerProvider
   @override
   void initState() {
     super.initState();
-    context.read<InitializeStreamChatCubit>()..initializeUser('streamUserID'); //testing
+    context.read<InitializeStreamChatCubit>()..initializeUser('', ''); // TODO: inProduction | add dynamic data
     _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(() => setState(() {}));
   }
@@ -30,8 +30,6 @@ class _DoctorConsultState extends State<DoctorConsult> with SingleTickerProvider
     _tabController.dispose();
     super.dispose();
   }
-
-  // TabBar get _tabBar => ;
 
   @override
   Widget build(BuildContext context) {

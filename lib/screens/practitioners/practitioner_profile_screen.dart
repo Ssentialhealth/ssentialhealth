@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -301,9 +299,11 @@ class _PractitionerProfileScreenState extends State<PractitionerProfileScreen> w
                             BlocBuilder<LoginBloc, LoginState>(
                               builder: (context, state) {
                                 if (state is LoginLoaded) {
-                                  final userID = state.loginModel.user.fullNames.split(' ').first + state.loginModel.user.fullNames.split(' ').last;
+                                  // final userID = state.loginModel.user.fullNames.split(' ').first + state.loginModel.user.fullNames.split(' ').last;
                                   // final docID = widget.practitionerModel.surname.split(' ').first;
-                                  final docID = 'DrTest' + '${Random().nextInt(40).toString()}';
+                                  final userCategory = state.loginModel.user.userCategory;
+                                  final userID = 'TestLewis';
+                                  final docID = 'DrTestDoctor15';
 
                                   return BlocConsumer<InitializeStreamChatCubit, InitializeStreamChatState>(
                                     listener: (context, state) {
@@ -311,7 +311,6 @@ class _PractitionerProfileScreenState extends State<PractitionerProfileScreen> w
                                         Navigator.of(context).push(
                                           MaterialPageRoute(
                                             builder: (context) {
-                                              print('navigated');
                                               return StreamChat(
                                                 client: context.read<InitializeStreamChatCubit>().client,
                                                 child: StreamChannel(
@@ -414,7 +413,7 @@ class _PractitionerProfileScreenState extends State<PractitionerProfileScreen> w
                                           )),
                                         ),
                                         onPressed: () {
-                                          context.read<InitializeStreamChatCubit>().initializeChannel(docID, userID);
+                                          context.read<InitializeStreamChatCubit>().initializeChannel(userID, docID, userCategory);
                                         },
                                       );
                                     },
@@ -439,7 +438,7 @@ class _PractitionerProfileScreenState extends State<PractitionerProfileScreen> w
                                       ),
                                     )),
                                   ),
-                                  onPressed: () async {},
+                                  onPressed: () {},
                                 );
                               },
                             ),

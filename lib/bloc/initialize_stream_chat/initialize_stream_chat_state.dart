@@ -29,10 +29,12 @@ class StreamChatFailure extends InitializeStreamChatState {
 
 class StreamChannelSuccess extends InitializeStreamChatState {
   final Channel channel;
+  final String docID;
 
-  StreamChannelSuccess(this.channel);
+  StreamChannelSuccess(this.channel, this.docID);
+
   @override
-  List<Object> get props => [channel];
+  List<Object> get props => [channel, docID];
 }
 
 class StreamChannelLoading extends InitializeStreamChatState {
