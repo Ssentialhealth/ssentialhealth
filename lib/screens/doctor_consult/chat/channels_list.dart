@@ -2,18 +2,21 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pocket_health/bloc/initialize_stream_chat/initialize_stream_chat_cubit.dart';
 import 'package:pocket_health/screens/doctor_consult/chat/search_text_field.dart';
+import 'package:pocket_health/utils/constants.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
+import 'channel_details_page.dart';
 import 'channel_page.dart';
 
-class ChannelList extends StatefulWidget {
+class ChannelsList extends StatefulWidget {
   @override
-  _ChannelListState createState() => _ChannelListState();
+  _ChannelsListState createState() => _ChannelsListState();
 }
 
-class _ChannelListState extends State<ChannelList> {
+class _ChannelsListState extends State<ChannelsList> {
   TextEditingController _controller;
 
   String _channelQuery = '';
@@ -166,7 +169,55 @@ class _ChannelListState extends State<ChannelList> {
                         swipeToAction: true,
                         sort: [SortOption('last_message_at')],
                         pagination: PaginationParams(limit: 20),
-                        channelWidget: StreamChat(client: context.read<InitializeStreamChatCubit>().client, child: ChannelPage()),
+                        onViewInfoTap: (ca) {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (ctx) => ChannelDetailsPage(),
+                            ),
+                          );
+                        },
+                        channelWidget: StreamChat(
+                          client: context.read<InitializeStreamChatCubit>().client,
+                          child: ChannelPage(),
+                          streamChatThemeData: StreamChatThemeData(
+                            //input bar
+                            messageInputTheme: MessageInputTheme(
+                              sendAnimationDuration: Duration(milliseconds: 500),
+                            ),
+
+                            //messages styling
+                            ownMessageTheme: MessageTheme(
+                              messageBorderColor: accentColorDark,
+                              messageBackgroundColor: accentColorLight,
+                              messageText: TextStyle(
+                                color: Color(0xff373737),
+                              ),
+                            ),
+                            otherMessageTheme: MessageTheme(
+                              messageBorderColor: Color(0x19000000),
+                              messageBackgroundColor: Color(0xF000000),
+                              messageText: TextStyle(
+                                color: Color(0xff373737),
+                              ),
+                            ),
+
+                            //list styling
+                            channelPreviewTheme: ChannelPreviewTheme(
+                              unreadCounterColor: accentColorDark,
+                            ),
+
+                            //channel styling
+                            channelTheme: ChannelTheme(
+                              channelHeaderTheme: ChannelHeaderTheme(
+                                color: accentColor,
+                                subtitle: TextStyle(
+                                  fontSize: 11.5.sp,
+                                  color: Colors.grey[700],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
             ),

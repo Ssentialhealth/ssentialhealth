@@ -5,8 +5,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pocket_health/bloc/initialize_stream_chat/initialize_stream_chat_cubit.dart';
 import 'package:pocket_health/utils/constants.dart';
 
-import 'call/index_page.dart';
-import 'chat/channel_list.dart';
+import 'call/calls_list.dart';
+import 'chat/channels_list.dart';
 
 class DoctorConsult extends StatefulWidget {
   @override
@@ -127,8 +127,8 @@ class _DoctorConsultState extends State<DoctorConsult> with SingleTickerProvider
           body: TabBarView(
             controller: _tabController,
             children: [
-              IndexPage(),
-              ChannelList(),
+              CallsList(),
+              ChannelsList(),
               Container(),
             ],
           ),

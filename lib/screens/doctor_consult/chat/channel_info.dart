@@ -55,6 +55,8 @@ class ChannelInfo extends StatelessWidget {
         children: [
           Text(
             text,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: StreamChatTheme.of(context).channelTheme.channelHeaderTheme.subtitle,
           ),
         ],
@@ -82,6 +84,8 @@ class ChannelInfo extends StatelessWidget {
             children: [
               Text(
                 'Last seen ${Jiffy(otherMember.user.lastActive).fromNow()}',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: textStyle,
               ),
             ],
@@ -105,16 +109,10 @@ class ChannelInfo extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Container(
-          height: 16,
-          width: 16,
-          child: Center(
-            child: CircularProgressIndicator(),
-          ),
-        ),
-        SizedBox(width: 10),
         Text(
-          'Searching for Network',
+          'Searching for network...',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
           style: textStyle,
         ),
       ],

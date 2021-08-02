@@ -1,8 +1,10 @@
+import 'package:agora_rtc_engine/rtc_engine.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:pocket_health/bloc/filter_reviews/filter_reviews_cubit.dart';
 import 'package:pocket_health/bloc/initialize_stream_chat/initialize_stream_chat_cubit.dart';
 import 'package:pocket_health/bloc/login/loginBloc.dart';
@@ -11,6 +13,7 @@ import 'package:pocket_health/bloc/post_review/post_review_cubit.dart';
 import 'package:pocket_health/bloc/reviews/reviews_cubit.dart';
 import 'package:pocket_health/models/practitioner_profile_model.dart';
 import 'package:pocket_health/models/review_model.dart';
+import 'package:pocket_health/screens/doctor_consult/call/call_page.dart';
 import 'package:pocket_health/screens/doctor_consult/chat/channel_page.dart';
 import 'package:pocket_health/screens/practitioners/reviews_list.dart';
 import 'package:pocket_health/screens/practitioners/sort_reviews_row.dart';
@@ -442,6 +445,7 @@ class _PractitionerProfileScreenState extends State<PractitionerProfileScreen> w
                                 );
                               },
                             ),
+
                             //call
                             TextButton(
                               child: Icon(
@@ -462,7 +466,21 @@ class _PractitionerProfileScreenState extends State<PractitionerProfileScreen> w
                                   ),
                                 )),
                               ),
-                              onPressed: () {},
+                              onPressed: () async {
+                                // await for camera and mic permissions before pu-shing video page
+                                await Permission.camera.request();
+                                await Permission.microphone.request();
+                                // push video page with given channel name
+                                await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => CallPage(
+                                      channelName: 'testchannel1',
+                                      role: ClientRole.Broadcaster,
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
                           ],
                         ),

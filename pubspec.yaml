@@ -73,6 +73,8 @@ dependencies:
   get_it: ^7.2.0
   permission_handler:
   start_jwt:
+  flutterwave: ^0.0.2
+
 
 flutter_icons:
   image_path: "assets/images/icons/launcher.png"

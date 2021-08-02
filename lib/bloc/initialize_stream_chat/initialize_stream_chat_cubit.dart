@@ -27,18 +27,18 @@ class InitializeStreamChatCubit extends Cubit<InitializeStreamChatState> {
     try {
       await _client.disconnect();
       await _client.connectUserWithProvider(
-        // User(
-        //   id: 'TestLewis',
-        //   extraData: {
-        //     "userCategory": 'individual',
-        //   },
-        // ),
         User(
-          id: 'DrTestDoctor47',
+          id: 'TestLewis',
           extraData: {
-            "userCategory": 'doctor',
+            "userCategory": 'individual',
           },
         ),
+        // User(
+        //   id: 'DrTestDoctor47',
+        //   extraData: {
+        //     "userCategory": 'doctor',
+        //   },
+        // ),
       );
 
       emit(StreamChatSuccess(_client));
