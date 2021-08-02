@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:pocket_health/screens/Authentication/sign_in_screen.dart';
 import 'package:pocket_health/screens/home/home.dart';
-import 'package:pocket_health/screens/home/home_screen.dart';
 import 'package:pocket_health/widgets/widget.dart';
 
 import '../Authentication/Authenticate.dart';
 
 class WaitScreen extends StatefulWidget {
-
-
   @override
   _WaitScreenState createState() => _WaitScreenState();
 }
@@ -25,40 +21,37 @@ class _WaitScreenState extends State<WaitScreen> {
             Expanded(
               child: Container(
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Image.asset(
-                        'assets/images/undraw_Mobile_life_re_jtih.png',
-                        height: 250,
-                        width: 250,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 10.0),
-                      ),
-                    ],
-                  )),
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Image.asset(
+                    'assets/images/undraw_Mobile_life_re_jtih.png',
+                    height: 250,
+                    width: 250,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                  ),
+                ],
+              )),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  "Create an Account ?", style: mediumTextStyle(),),
+                  "Create an Account ?",
+                  style: mediumTextStyle(),
+                ),
                 GestureDetector(
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(
-                        builder: (context) => Authenticate()
-                    ));
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => Authenticate()));
                   },
                   child: Container(
                     padding: EdgeInsets.symmetric(vertical: 8),
-                    child: Text("Sign Up",
+                    child: Text(
+                      "Sign Up",
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Color(0xFF163C4D),
-                        fontSize: 17,
-                        decoration: TextDecoration.underline
-                    )
-                      ,),
+                      style: TextStyle(color: Color(0xFF163C4D), fontSize: 17, decoration: TextDecoration.underline),
+                    ),
                   ),
                 )
               ],
@@ -67,23 +60,20 @@ class _WaitScreenState extends State<WaitScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  "Already have an Account ?", style: mediumTextStyle(),),
+                  "Already have an Account ?",
+                  style: mediumTextStyle(),
+                ),
                 GestureDetector(
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(
-                        builder: (context) => Authenticate()
-                    ));
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => Authenticate()));
                   },
                   child: Container(
                     padding: EdgeInsets.symmetric(vertical: 8),
-                    child: Text("Sign In",
+                    child: Text(
+                      "Sign In",
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Color(0xFF163C4D),
-                        fontSize: 17,
-                        decoration: TextDecoration.underline
-                    )
-                      ,),
+                      style: TextStyle(color: Color(0xFF163C4D), fontSize: 17, decoration: TextDecoration.underline),
+                    ),
                   ),
                 )
               ],
@@ -91,33 +81,19 @@ class _WaitScreenState extends State<WaitScreen> {
             Padding(
               padding: const EdgeInsets.all(26.0),
               child: GestureDetector(
-                onTap: (){
-                  Navigator.pushReplacement(context, MaterialPageRoute(
-                    builder: (context) => Home()
-                  ));
+                onTap: () {
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Home()));
                 },
                 child: Container(
                   alignment: Alignment.center,
                   width: MediaQuery.of(context).size.width,
                   padding: EdgeInsets.symmetric(vertical: 16),
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      gradient: LinearGradient(
-                          colors: [
-                            const Color(0xff163C4D),
-                            const Color(0xff32687F)
-                          ]
-                      )
+                      borderRadius: BorderRadius.circular(5), gradient: LinearGradient(colors: [const Color(0xff163C4D), const Color(0xff32687F)])),
+                  child: Text(
+                    "Explore App",
+                    style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold),
                   ),
-                  child: Text("Explore App",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 17,
-                        fontWeight: FontWeight.bold
-
-                    ),
-                  ),
-
                 ),
               ),
             ),

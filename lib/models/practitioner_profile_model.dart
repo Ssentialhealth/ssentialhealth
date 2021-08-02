@@ -1,48 +1,51 @@
-class PractitionerProfile {
-  String user_id;
-  String surname;
-  String phoneNumber;
-  String location;
-  String region;
+import 'dart:convert';
+
+List<PractitionerProfileModel> practitionerProfileModelFromJson(String str) =>
+    List<PractitionerProfileModel>.from(json.decode(str).map((x) => PractitionerProfileModel.fromJson(x)));
+
+String practitionerProfileModelToJson(List<PractitionerProfileModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+
+class PractitionerProfileModel {
+  int user;
   HealthInfo healthInfo;
   RatesInfo ratesInfo;
+  String surname;
+  String phoneNumber;
+  bool available;
+  String location;
+  String region;
+  String profileImgUrl;
 
-  PractitionerProfile(
-      {this.surname,
-        this.phoneNumber,
-        this.user_id,
-        this.location,
-        this.region,
-        this.healthInfo,
-        this.ratesInfo});
+  PractitionerProfileModel(
+      {this.user, this.healthInfo, this.ratesInfo, this.surname, this.phoneNumber, this.available, this.location, this.region, this.profileImgUrl});
 
-  PractitionerProfile.fromJson(Map<String, dynamic> json) {
+  PractitionerProfileModel.fromJson(Map<String, dynamic> json) {
+    user = json['user'];
+    healthInfo = json['health_info'] != null ? new HealthInfo.fromJson(json['health_info']) : HealthInfo();
+    ratesInfo = json['rates_info'] != null ? new RatesInfo.fromJson(json['rates_info']) : RatesInfo();
     surname = json['surname'];
-    user_id = json['user_id'];
     phoneNumber = json['phone_number'];
+    available = json['available'];
     location = json['location'];
     region = json['region'];
-    healthInfo = json['health_info'] != null
-        ? new HealthInfo.fromJson(json['health_info'])
-        : null;
-    ratesInfo = json['rates_info'] != null
-        ? new RatesInfo.fromJson(json['rates_info'])
-        : null;
+    profileImgUrl = json['profile_img_url'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['surname'] = this.surname;
-    data['user_id'] = this.user_id;
-    data['phone_number'] = this.phoneNumber;
-    data['location'] = this.location;
-    data['region'] = this.region;
+    data['user'] = this.user;
     if (this.healthInfo != null) {
       data['health_info'] = this.healthInfo.toJson();
     }
     if (this.ratesInfo != null) {
       data['rates_info'] = this.ratesInfo.toJson();
     }
+    data['surname'] = this.surname;
+    data['phone_number'] = this.phoneNumber;
+    data['available'] = this.available;
+    data['location'] = this.location;
+    data['region'] = this.region;
+    data['profile_img_url'] = this.profileImgUrl;
     return data;
   }
 }
@@ -54,12 +57,7 @@ class HealthInfo {
   String speciality;
   String affiliatedInstitution;
 
-  HealthInfo(
-      {this.healthInstitution,
-        this.careType,
-        this.practitioner,
-        this.speciality,
-        this.affiliatedInstitution});
+  HealthInfo({this.healthInstitution, this.careType, this.practitioner, this.speciality, this.affiliatedInstitution});
 
   HealthInfo.fromJson(Map<String, dynamic> json) {
     healthInstitution = json['health_institution'];
@@ -82,21 +80,15 @@ class HealthInfo {
 
 class RatesInfo {
   OnlineBooking onlineBooking;
-  FollowUpVisit followUpVisit;
-  FollowUpVisit inPersonBooking;
+  InPersonBooking inPersonBooking;
+  InPersonBooking followUpVisit;
 
-  RatesInfo({this.onlineBooking, this.followUpVisit, this.inPersonBooking});
+  RatesInfo({this.onlineBooking, this.inPersonBooking, this.followUpVisit});
 
   RatesInfo.fromJson(Map<String, dynamic> json) {
-    onlineBooking = json['online_booking'] != null
-        ? new OnlineBooking.fromJson(json['online_booking'])
-        : null;
-    followUpVisit = json['follow_up_visit'] != null
-        ? new FollowUpVisit.fromJson(json['follow_up_visit'])
-        : null;
-    inPersonBooking = json['in_person_booking'] != null
-        ? new FollowUpVisit.fromJson(json['in_person_booking'])
-        : null;
+    onlineBooking = json['online_booking'] != null ? new OnlineBooking.fromJson(json['online_booking']) : OnlineBooking();
+    inPersonBooking = json['in_person_booking'] != null ? new InPersonBooking.fromJson(json['in_person_booking']) : InPersonBooking();
+    followUpVisit = json['follow_up_visit'] != null ? new InPersonBooking.fromJson(json['follow_up_visit']) : InPersonBooking();
   }
 
   Map<String, dynamic> toJson() {
@@ -104,20 +96,20 @@ class RatesInfo {
     if (this.onlineBooking != null) {
       data['online_booking'] = this.onlineBooking.toJson();
     }
-    if (this.followUpVisit != null) {
-      data['follow_up_visit'] = this.followUpVisit.toJson();
-    }
     if (this.inPersonBooking != null) {
       data['in_person_booking'] = this.inPersonBooking.toJson();
+    }
+    if (this.followUpVisit != null) {
+      data['follow_up_visit'] = this.followUpVisit.toJson();
     }
     return data;
   }
 }
 
 class OnlineBooking {
-  int upto15Mins;
-  int upto30Mins;
-  int upto1Hour;
+  String upto15Mins;
+  String upto30Mins;
+  String upto1Hour;
 
   OnlineBooking({this.upto15Mins, this.upto30Mins, this.upto1Hour});
 
@@ -136,13 +128,13 @@ class OnlineBooking {
   }
 }
 
-class FollowUpVisit {
-  int perVisit;
-  int perHour;
+class InPersonBooking {
+  String perVisit;
+  String perHour;
 
-  FollowUpVisit({this.perVisit, this.perHour});
+  InPersonBooking({this.perVisit, this.perHour});
 
-  FollowUpVisit.fromJson(Map<String, dynamic> json) {
+  InPersonBooking.fromJson(Map<String, dynamic> json) {
     perVisit = json['per_visit'];
     perHour = json['per_hour'];
   }
@@ -154,4 +146,3 @@ class FollowUpVisit {
     return data;
   }
 }
-

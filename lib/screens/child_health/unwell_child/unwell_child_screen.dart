@@ -10,6 +10,7 @@ import 'package:pocket_health/bloc/search_conditions/search_condition_state.dart
 import 'package:pocket_health/bloc/symptoms/details/symptoms_bloc.dart';
 import 'package:pocket_health/bloc/symptoms/details/symptoms_event.dart';
 import 'package:pocket_health/repository/child_conditions_repo.dart';
+import 'package:pocket_health/screens/AdultUnwell/organs/organs.dart';
 import 'package:pocket_health/screens/AdultUnwell/symptoms/symptom_details_screen.dart';
 import 'package:pocket_health/screens/child_health/unwell_child/unwell_child_condition_screen.dart';
 import 'package:pocket_health/screens/doctor_consult/doctor_consult_screen.dart';
@@ -50,27 +51,25 @@ class _UnwellChildScreenState extends State<UnwellChildScreen> {
                             padding: const EdgeInsets.all(8.0),
                             child: TextField(
                               cursorColor: Colors.grey,
-                              decoration: searchFieldInputDecoration("Search symptom or condition"),
-                              onChanged: (value){
-                                setState(() {
-                                  textValue = value;
-                                  BlocProvider.of<SearchConditionBloc>(context).add(FetchSearchCondition(condition: textValue));
-                                });
-                              },
-                            ),
-                          ),
+                          decoration: searchFieldInputDecoration("Search symptom or condition"),
+                          onChanged: (value) {
+                            setState(() {
+                              textValue = value;
+                              BlocProvider.of<SearchConditionBloc>(context).add(FetchSearchCondition(condition: textValue));
+                            });
+                          },
                         ),
-                        // Padding(
-                        //   padding: const EdgeInsets.all(8.0),
-                        //   child: GestureDetector(
-                        //       onTap: ()async{
-                        //         // Navigator.push(context, MaterialPageRoute(builder: (context) => Organs()));
-                        //
-                        //       },
-                        //       child: Icon(Icons.menu,size: 32.0)
-                        //   ),
-                        // ),
-                      ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: GestureDetector(
+                          onTap: () async {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => Organs()));
+                          },
+                          child: Icon(Icons.menu, size: 32.0)),
+                    ),
+                  ],
                     ),
                     textValue == null ?
                     Expanded(

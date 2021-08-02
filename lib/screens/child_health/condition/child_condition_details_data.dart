@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pocket_health/bloc/child_health/details_bloc/child_condition_detail_bloc.dart';
 import 'package:pocket_health/bloc/child_health/details_bloc/child_condition_detail_state.dart';
 import 'package:pocket_health/bloc/conditionDetails/conditionDetailState.dart';
-import 'package:pocket_health/bloc/conditionDetails/conditionDetailsBloc.dart';
 import 'package:pocket_health/widgets/widget.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 
 
@@ -185,8 +184,7 @@ class ChildDetailsData extends StatelessWidget {
                 ),
               ),
             );
-            print(state.childConditionsDetailModel.name);
-          }
+      }
           if(state is ConditionDetailsError){
             return Container(color: Colors.blueGrey,height: 40,);
           }else{

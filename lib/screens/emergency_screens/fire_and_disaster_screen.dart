@@ -5,8 +5,6 @@ import 'package:pocket_health/bloc/hotlines/hotlinesEvent.dart';
 import 'package:pocket_health/screens/emergency_screens/hotline_widgets/fire_disaster_card.dart';
 import 'package:pocket_health/widgets/widget.dart';
 
-import 'hotline_widgets/insurer_card.dart';
-
 class FireAndDisaster extends StatefulWidget {
   @override
   _FireAndDisasterState createState() => _FireAndDisasterState();
@@ -24,26 +22,29 @@ class _FireAndDisasterState extends State<FireAndDisaster> {
           backgroundColor: Color(0xFF00FFFF),
           centerTitle: true,
         ),
-        body:Container(
+        body: Container(
           child: Column(
             children: [
               Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal:16.0,vertical: 24),
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24),
                     child: DropdownButtonFormField(
                       decoration: countryFieldInputDecoration("Country"),
                       hint: code == null
                           ? Text('')
                           : Text(
-                        code,
-                        style: TextStyle(color: Colors.black),
-                      ),
+                              code,
+                              style: TextStyle(color: Colors.black),
+                            ),
                       isExpanded: true,
                       iconSize: 30.0,
                       style: TextStyle(color: Colors.black),
-                      items: ['kenya','nigeria',].map(
-                            (val) {
+                      items: [
+                        'kenya',
+                        'nigeria',
+                      ].map(
+                        (val) {
                           return DropdownMenuItem<String>(
                             value: val,
                             child: Text(val),
@@ -52,7 +53,7 @@ class _FireAndDisasterState extends State<FireAndDisaster> {
                       ).toList(),
                       onChanged: (val) {
                         setState(
-                              () {
+                          () {
                             code = val;
                             BlocProvider.of<HotlinesBloc>(context).add(FetchHotline(country: code));
                           },
@@ -61,12 +62,10 @@ class _FireAndDisasterState extends State<FireAndDisaster> {
                     ),
                   ),
                   FireAndDisasterCard()
-
                 ],
               ),
             ],
           ),
-        )
-    );
+        ));
   }
 }

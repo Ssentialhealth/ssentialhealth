@@ -1,23 +1,24 @@
 import 'package:equatable/equatable.dart';
-import 'package:pocket_health/models/PractitionerProfile.dart';
+import 'package:pocket_health/models/practitioner_profile_model.dart';
 
-abstract class PractitionerProfileState extends Equatable{
+abstract class PractitionerProfileState extends Equatable {
   const PractitionerProfileState();
 
   @override
   List<Object> get props => [];
 }
 
-class  PractitionerProfileInitial extends PractitionerProfileState {}
+class PractitionerProfileInitial extends PractitionerProfileState {}
 
 class PractitionerProfileLoading extends PractitionerProfileState {}
 
 class PractitionerProfileLoaded extends PractitionerProfileState {
-  final PractitionerProfile practitionerProfile;
-  @override
-  List<PractitionerProfile> get props => [practitionerProfile];
+  final PractitionerProfileModel practitionerProfile;
 
-  PractitionerProfileLoaded(this.practitionerProfile): assert(practitionerProfile != null);
+  @override
+  List<PractitionerProfileModel> get props => [practitionerProfile];
+
+  PractitionerProfileLoaded(this.practitionerProfile) : assert(practitionerProfile != null);
 }
 
 class PractitionerProfileError extends PractitionerProfileState {

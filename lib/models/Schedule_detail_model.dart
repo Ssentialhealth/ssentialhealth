@@ -4,74 +4,105 @@
 
 import 'dart:convert';
 
-ScheduleDetail scheduleDetailFromJson(String str) => ScheduleDetail.fromJson(json.decode(str));
+List<ScheduleDetail> scheduleDetailFromJson(String str) => List<ScheduleDetail>.from(json.decode(str).map((x) => ScheduleDetail.fromJson(x)));
 
-String scheduleDetailToJson(ScheduleDetail data) => json.encode(data.toJson());
+ScheduleDetail oneScheduleDetailFromJson(String str) => ScheduleDetail.fromJson(json.decode(str));
+
+String oneScheduleDetailToJson(ScheduleDetail data) => json.encode(data.toJson());
+
+String scheduleDetailToJson(List<ScheduleDetail> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class ScheduleDetail {
-  ScheduleDetail({
-    this.id,
-    this.schedules,
-    this.childName,
-    this.childDob,
-    this.user,
-  });
-
-  int id;
-  List<Schedule> schedules;
+	int id;
+  List<Schedules> schedules;
   String childName;
-  DateTime childDob;
+  String childDob;
   int user;
 
-  factory ScheduleDetail.fromJson(Map<String, dynamic> json) => ScheduleDetail(
-    id: json["id"],
-    schedules: List<Schedule>.from(json["schedules"].map((x) => Schedule.fromJson(x))),
-    childName: json["child_name"],
-    childDob: DateTime.parse(json["child_dob"]),
-    user: json["user"],
-  );
+  ScheduleDetail({this.id, this.schedules, this.childName, this.childDob, this.user});
 
-  Map<String, dynamic> toJson() => {
-    "id": id,
-    "schedules": List<dynamic>.from(schedules.map((x) => x.toJson())),
-    "child_name": childName,
-    "child_dob": "${childDob.year.toString().padLeft(4, '0')}-${childDob.month.toString().padLeft(2, '0')}-${childDob.day.toString().padLeft(2, '0')}",
-    "user": user,
-  };
+  ScheduleDetail.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    if (json['schedules'] != null) {
+      schedules = new List<Schedules>();
+      json['schedules'].forEach((v) {
+        schedules.add(new Schedules.fromJson(v));
+      });
+    }
+    childName = json['child_name'];
+    childDob = json['child_dob'];
+    user = json['user'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    if (this.schedules != null) {
+      data['schedules'] = this.schedules.map((v) => v.toJson()).toList();
+    }
+    data['child_name'] = this.childName;
+    data['child_dob'] = this.childDob;
+    data['user'] = this.user;
+    return data;
+  }
 }
 
-class Schedule {
-  Schedule({
-    this.id,
-    this.age,
-    this.vaccines,
-    this.dueDate,
-    this.received,
-    this.dateReceived,
-  });
-
+class Schedules {
   int id;
+  List<Vaccines> vaccines;
   String age;
-  List<String> vaccines;
-  DateTime dueDate;
+  String dueDate;
+
+  Schedules({this.id, this.vaccines, this.age, this.dueDate});
+
+  Schedules.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    if (json['vaccines'] != null) {
+      vaccines = new List<Vaccines>();
+      json['vaccines'].forEach((v) {
+        vaccines.add(new Vaccines.fromJson(v));
+      });
+    }
+    age = json['age'];
+    dueDate = json['due_date'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    if (this.vaccines != null) {
+      data['vaccines'] = this.vaccines.map((v) => v.toJson()).toList();
+    }
+    data['age'] = this.age;
+    data['due_date'] = this.dueDate;
+    return data;
+  }
+}
+
+class Vaccines {
+  int id;
+  String vaccineName;
   bool received;
-  dynamic dateReceived;
+  String dateReceived;
+  int schedule;
 
-  factory Schedule.fromJson(Map<String, dynamic> json) => Schedule(
-    id: json["id"],
-    age: json["age"],
-    vaccines: List<String>.from(json["vaccines"].map((x) => x)),
-    dueDate: DateTime.parse(json["due_date"]),
-    received: json["received"],
-    dateReceived: json["date_received"],
-  );
+  Vaccines({this.id, this.vaccineName, this.received, this.dateReceived, this.schedule});
 
-  Map<String, dynamic> toJson() => {
-    "id": id,
-    "age": age,
-    "vaccines": List<dynamic>.from(vaccines.map((x) => x)),
-    "due_date": "${dueDate.year.toString().padLeft(4, '0')}-${dueDate.month.toString().padLeft(2, '0')}-${dueDate.day.toString().padLeft(2, '0')}",
-    "received": received,
-    "date_received": dateReceived,
-  };
+  Vaccines.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    vaccineName = json['vaccine_name'];
+    received = json['received'];
+    dateReceived = json['date_received'];
+    schedule = json['schedule'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['vaccine_name'] = this.vaccineName;
+    data['received'] = this.received;
+    data['date_received'] = this.dateReceived;
+    data['schedule'] = this.schedule;
+    return data;
+  }
 }

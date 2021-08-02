@@ -1,7 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class Hotline extends StatelessWidget {
   const Hotline({
@@ -37,31 +35,32 @@ class Hotline extends StatelessWidget {
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Align(
-                      alignment: Alignment.centerRight,
-                      child: Text(location)),
+                  child: Align(alignment: Alignment.centerRight, child: Text(location)),
                 ),
               ),
             ],
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Align(
-                alignment: Alignment.centerLeft,
-                child:Container(
-                  height: 20,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: phones.length,
-                    itemBuilder: (context,index){
-                      final phone = phones[index];
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal:8.0),
-                        child: Text(phone,style: TextStyle(color: Colors.lightBlueAccent),),
-                      );
-                    },
-                  ),
-                ))),
+              padding: const EdgeInsets.all(8.0),
+              child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Container(
+                    height: 20,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: phones.length,
+                      itemBuilder: (context, index) {
+                        final phone = phones[index];
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Text(
+                            phone,
+                            style: TextStyle(color: Colors.lightBlueAccent),
+                          ),
+                        );
+                      },
+                    ),
+                  ))),
         ],
       ),
     );
@@ -69,7 +68,6 @@ class Hotline extends StatelessWidget {
 
 
 }
-
 
 
 

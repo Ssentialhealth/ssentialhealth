@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pocket_health/bloc/profile/userProfileEvent.dart';
 import 'package:pocket_health/bloc/profile/userProfileState.dart';
-
 import 'package:pocket_health/models/profile.dart';
 import 'package:pocket_health/repository/userProfile_repo.dart';
 
@@ -12,11 +11,10 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
 
   UserProfileState get initialState => UserProfileInitial();
 
-
   @override
   Stream<UserProfileState> mapEventToState(
-      UserProfileEvent event,
-      ) async* {
+    UserProfileEvent event,
+  ) async* {
     if (event is CreateUserProfile) {
       yield UserProfileLoading();
       try {
@@ -40,14 +38,11 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
           event.foodAllergies,
         );
 
-          yield UserProfileLoaded(profile);
-
+			  yield UserProfileLoaded(profile);
       } catch (e) {
-        yield UserProfileError(e.toString());
-        print("Name:"+e.toString());
+			  yield UserProfileError(e.toString());
+        print("Name:" + e.toString());
       }
     }
   }
-
-
 }

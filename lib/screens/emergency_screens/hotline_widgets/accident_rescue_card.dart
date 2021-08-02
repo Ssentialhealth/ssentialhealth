@@ -7,18 +7,22 @@ import 'package:pocket_health/widgets/hotline_card.dart';
 class AccidentRescueCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<HotlinesBloc,HotlineState>(
-      builder: (context , state){
-        if(state is HotlinesInitial){
-          return Container(color: Colors.black,height: 300,);
-        }if(state is HotlinesLoaded){
+    return BlocBuilder<HotlinesBloc, HotlineState>(
+      builder: (context, state) {
+        if (state is HotlinesInitial) {
+          return Container(
+            color: Colors.black,
+            height: 300,
+          );
+        }
+        if (state is HotlinesLoaded) {
           print(state.hotlines.accidentAndRescue.length);
           return Container(
             height: 470,
             child: ListView.builder(
               shrinkWrap: true,
               itemCount: state.hotlines.accidentAndRescue.length,
-              itemBuilder: (BuildContext context,index){
+              itemBuilder: (BuildContext context, index) {
                 final accident = state.hotlines.healthInsurer[index];
                 return Container(
                   child: Padding(
@@ -30,10 +34,16 @@ class AccidentRescueCard extends StatelessWidget {
             ),
           );
         }
-        if(state is HotlinesError){
-          return Container(color: Colors.blueGrey,height: 40,);
-        } else{
-          return Container(color: Colors.red,height: 40,);
+        if (state is HotlinesError) {
+          return Container(
+            color: Colors.blueGrey,
+            height: 40,
+          );
+        } else {
+          return Container(
+            color: Colors.red,
+            height: 40,
+          );
         }
       },
     );

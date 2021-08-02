@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pocket_health/bloc/hotlines/hotlinesBloc.dart';
 import 'package:pocket_health/bloc/hotlines/hotlinesState.dart';
-import 'package:pocket_health/models/hotlines.dart';
 import 'package:pocket_health/widgets/hotline_card.dart';
 
 class InsurerCard extends StatelessWidget {

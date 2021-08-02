@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:pocket_health/bloc/child_health/all_schedules/all_schedules_bloc.dart';
 import 'package:pocket_health/bloc/child_health/all_schedules/all_schedules_event.dart';
-import 'package:pocket_health/screens/child_health/all_schedules/all_schedules_screen.dart';
+import 'package:pocket_health/screens/child_health/all_immunization_schedules/all_immunization_schedules_screen.dart';
 import 'package:pocket_health/screens/child_health/congenital_conditions/congenital_condition_screen.dart';
-import 'package:pocket_health/screens/child_health/immunization_schedule/immunization_schedule_screen.dart';
 import 'package:pocket_health/screens/child_health/nutrition/nutrition_screen.dart';
 import 'package:pocket_health/screens/child_health/resource/child_resource_screen.dart';
 import 'package:pocket_health/screens/child_health/unwell_child/unwell_child_screen.dart';
@@ -25,58 +23,71 @@ class _CHIScreenState extends State<CHIScreen> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   String _token = "...";
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: Color(0xFFEAFCF6),
       appBar: AppBar(
-        title: Text("Child Health & Immunization",style: TextStyle(fontSize: 18),),
+        title: Text(
+          "Child Health & Immunization",
+          style: TextStyle(fontSize: 18),
+        ),
         backgroundColor: Color(0xFF00FFFF),
         centerTitle: true,
       ),
       body: Container(
-          child: Column(
-            children: [
-              ChildCardItem(image: "assets/images/child_unwell.png", press: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context) => UnwellChildScreen()));
-              }),
-              ChildCardItem(image: "assets/images/immunisation_chart.png", press: ()async{
-                _token = await getStringValuesSF();
-                if(_token != null){
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => AllSchedules()));
-                }else{
-                  _showErrorSnack("Login To Access This Feature");
-                }
-
-              }),
-              ChildCardItem(image: "assets/images/growth_and_milestones.png", press: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context) => GrowthAndMilestones()));
-              }),
-              ChildCardItem(image: "assets/images/child_n.png", press: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context) => NutritionScreen()));
-              }),
-              ChildCardItem(image: "assets/images/chronic_conditions.png", press: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context) => CongenitalScreen()));
-              }),
-              ChildCardItem(image: "assets/images/child_resource.png", press: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context) => ChildResourceScreen()));
-              }),
-
-
-            ],
-          ),
+        child: Column(
+          children: [
+            ChildCardItem(
+                image: "assets/images/child_unwell.png",
+                press: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => UnwellChildScreen()));
+                }),
+            ChildCardItem(
+                image: "assets/images/immunisation_chart.png",
+                press: () async {
+                  _token = await getStringValuesSF();
+                  if (_token != null) {
+	                  context.read<AllSchedulesBloc>()..add(FetchAllSchedules());
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => AllImmunizationSchedulesScreen()));
+                  } else {
+                    _showErrorSnack("Login To Access This Feature");
+                  }
+                }),
+            ChildCardItem(
+                image: "assets/images/growth_and_milestones.png",
+                press: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => GrowthAndMilestones()));
+                }),
+            ChildCardItem(
+                image: "assets/images/child_n.png",
+                press: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => NutritionScreen()));
+                }),
+            ChildCardItem(
+                image: "assets/images/chronic_conditions.png",
+                press: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => CongenitalScreen()));
+                }),
+            ChildCardItem(
+                image: "assets/images/child_resource.png",
+                press: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => ChildResourceScreen()));
+                }),
+          ],
+        ),
       ),
-
     );
   }
+
   getStringValuesSF() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     //Return String
     String stringValue = prefs.getString('token');
     return stringValue;
   }
+
   _showErrorSnack(String message) {
     final snackbar = SnackBar(
       behavior: SnackBarBehavior.floating,

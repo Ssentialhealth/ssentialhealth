@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 
-abstract class PractitionerProfileEvent extends Equatable{
+abstract class PractitionerProfileEvent extends Equatable {
   const PractitionerProfileEvent();
 
   @override
@@ -9,7 +9,6 @@ abstract class PractitionerProfileEvent extends Equatable{
 }
 
 class CreatePractitionerProfile extends PractitionerProfileEvent {
-
   //General//
   final String surname;
   final String location;
@@ -34,7 +33,6 @@ class CreatePractitionerProfile extends PractitionerProfileEvent {
   final String followPrice;
   final String followBPrice;
 
-
   CreatePractitionerProfile({
     @required this.surname,
     @required this.location,
@@ -53,9 +51,5 @@ class CreatePractitionerProfile extends PractitionerProfileEvent {
     @required this.personalBPrice,
     @required this.followPrice,
     @required this.followBPrice,
-
   });
-
-
 }
-
