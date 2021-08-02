@@ -6,16 +6,18 @@ import 'package:agora_rtc_engine/rtc_local_view.dart' as RtcLocalView;
 import 'package:agora_rtc_engine/rtc_remote_view.dart' as RtcRemoteView;
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:http/http.dart' as http;
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:pocket_health/screens/doctor_consult/call/utils.dart';
 import 'package:pocket_health/widgets/verified_tag.dart';
 
 class CallPage extends StatefulWidget {
+  bool mutedAudio;
+  bool mutedVideo;
   final String channelName;
   final ClientRole role;
-  const CallPage({Key key, this.channelName, this.role}) : super(key: key);
+
+  CallPage({Key key, this.channelName, this.role, this.mutedAudio, this.mutedVideo}) : super(key: key);
 
   @override
   _CallPageState createState() => _CallPageState();
@@ -24,8 +26,7 @@ class CallPage extends StatefulWidget {
 class _CallPageState extends State<CallPage> {
   final _users = <int>[];
   final _infoStrings = <String>[];
-  bool mutedAudio = false;
-  bool mutedVideo = true;
+
   RtcEngine _engine;
   String baseUrl = ''; //Add the link to your deployed server here
 
@@ -196,13 +197,13 @@ class _CallPageState extends State<CallPage> {
                 ),
                 onPressed: _onToggleMuteAudio,
                 child: Icon(
-                  mutedAudio ? Icons.mic_off : Icons.mic,
+                  widget.mutedAudio ? Icons.mic_off : Icons.mic,
                   color: Colors.white,
                   size: 24.0,
                 ),
                 shape: CircleBorder(),
                 elevation: 2.0,
-                fillColor: mutedAudio ? Color(0xffEA493C) : Color(0xff434649),
+                fillColor: widget.mutedAudio ? Color(0xffEA493C) : Color(0xff434649),
                 padding: EdgeInsets.zero,
               ),
 
@@ -216,13 +217,13 @@ class _CallPageState extends State<CallPage> {
                 ),
                 onPressed: _onToggleMuteVideo,
                 child: Icon(
-                  mutedVideo ? MdiIcons.videoOffOutline : MdiIcons.videoOutline,
+                  widget.mutedVideo ? MdiIcons.videoOffOutline : MdiIcons.videoOutline,
                   color: Colors.white,
                   size: 24.0,
                 ),
                 shape: CircleBorder(),
                 elevation: 2.0,
-                fillColor: mutedVideo ? Color(0xffEA493C) : Color(0xff434649),
+                fillColor: widget.mutedVideo ? Color(0xffEA493C) : Color(0xff434649),
                 padding: EdgeInsets.zero,
               ),
 
@@ -527,19 +528,19 @@ class _CallPageState extends State<CallPage> {
       );
 
   //calling state
-  Widget _callingView() => AnimatedContainer(
+  Widget _callingView(String status) => AnimatedContainer(
         duration: Duration(milliseconds: 1000),
         alignment: Alignment.topCenter,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(height: 80),
+            SizedBox(height: 80.h),
             CircleAvatar(
-              radius: 40,
+              radius: 40.w,
               backgroundImage: AssetImage("assets/images/progile.jpeg"),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 20.h),
             Column(
               mainAxisAlignment: MainAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
@@ -574,7 +575,7 @@ class _CallPageState extends State<CallPage> {
             ),
             SizedBox(height: 30),
             Text(
-              'Calling...',
+              status,
               style: TextStyle(
                 fontSize: 18,
                 color: Colors.white,
@@ -587,28 +588,28 @@ class _CallPageState extends State<CallPage> {
       );
 
   //connected
-  Widget _callConnectedView() => mutedVideo ? _audioCallView() : _videoCallView();
+  Widget _callConnectedView() => widget.mutedVideo ? _audioCallView() : _videoCallView();
 
   //btn actions
   _onCallEnd(BuildContext context) async {
     Navigator.pop(context);
+    print(await _engine.getCallId());
     await _engine.leaveChannel();
   }
 
   _onToggleMuteAudio() async {
     setState(() {
-      mutedAudio = !mutedAudio;
+      widget.mutedAudio = !widget.mutedAudio;
     });
-    await _engine.muteLocalAudioStream(mutedAudio);
+    await _engine.muteLocalAudioStream(widget.mutedAudio);
   }
 
   _onToggleMuteVideo() async {
     setState(() {
-      mutedVideo = !mutedVideo;
+      widget.mutedVideo = !widget.mutedVideo;
     });
 
-    // await _engine.muteLocalVideoStream(mutedVideo);
-    mutedVideo ? await _engine.disableVideo() : await _engine.enableVideo();
+    widget.mutedVideo ? await _engine.disableVideo() : await _engine.enableVideo();
   }
 
   _onSwitchCamera() async {
@@ -617,16 +618,17 @@ class _CallPageState extends State<CallPage> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterStatusbarcolor.setStatusBarWhiteForeground(true);
-    FlutterStatusbarcolor.setStatusBarColor(Color(0xff202124));
-
     return SafeArea(
       child: Scaffold(
         backgroundColor: Color(0xff202124),
         body: Center(
           child: Stack(
             children: <Widget>[
-              _users.isEmpty ? _callingView() : _callConnectedView(),
+              _users.isEmpty
+                  ? _infoStrings.contains('userOffline')
+                      ? _callingView("Disconnected")
+                      : _callingView('Calling...')
+                  : _callConnectedView(),
               _logs(),
               _actionsToolbar(),
             ],
@@ -636,148 +638,3 @@ class _CallPageState extends State<CallPage> {
     );
   }
 }
-
-// import 'dart:developer';
-//
-// import 'package:agora_rtc_engine/rtc_engine.dart';
-// import 'package:flutter/cupertino.dart';
-// import 'package:flutter/foundation.dart';
-// import 'package:flutter/material.dart';
-// import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-// import 'package:permission_handler/permission_handler.dart';
-// import 'package:pocket_health/screens/doctor_consult/call/utils.dart' as config;
-//
-// class JoinChannelAudio extends StatefulWidget {
-//   @override
-//   State<StatefulWidget> createState() => _State();
-// }
-//
-// class _State extends State<JoinChannelAudio> {
-//   RtcEngine engine;
-//   String channelId = config.channelId;
-//   bool isJoined = false, openMicrophone = true, enableSpeakerphone = true, playEffect = false;
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//     this._initEngine();
-//   }
-//
-//   @override
-//   void dispose() {
-//     super.dispose();
-//     engine.destroy();
-//   }
-//
-//   _initEngine() async {
-//     engine = await RtcEngine.create(config.APP_ID);
-//     this._addListeners();
-//
-//     await engine.enableAudio();
-//     await engine.setChannelProfile(ChannelProfile.LiveBroadcasting);
-//     await engine.setClientRole(ClientRole.Broadcaster);
-//   }
-//
-//   _addListeners() {
-//     engine.setEventHandler(RtcEngineEventHandler(
-//       joinChannelSuccess: (channel, uid, elapsed) {
-//         log('joinChannelSuccess $channel $uid $elapsed');
-//         setState(() {
-//           isJoined = true;
-//         });
-//       },
-//       leaveChannel: (stats) async {
-//         log('leaveChannel ${stats.toJson()}');
-//         setState(() {
-//           isJoined = false;
-//         });
-//       },
-//     ));
-//   }
-//
-//   _joinChannel() async {
-//     if (defaultTargetPlatform == TargetPlatform.android) {
-//       await Permission.microphone.request();
-//     }
-//
-//     await engine.joinChannel(config.token, config.channelId, null, config.uid).catchError((onError) {
-//       print('error ${onError.toString()}');
-//     });
-//
-//     Navigator.of(context).push(
-//       MaterialPageRoute(builder: (context) => AudioCallPageScreen(engine: engine)),
-//     );
-//   }
-//
-//   _leaveChannel() async {
-//     await engine.leaveChannel();
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return SafeArea(
-//       child: Scaffold(
-//         body: Stack(
-//           children: [
-//             Column(
-//               children: [
-//                 Row(
-//                   children: [
-//                     Expanded(
-//                       flex: 1,
-//                       child: ElevatedButton(
-//                         onPressed: isJoined ? this._leaveChannel : this._joinChannel,
-//                         child: Text('${isJoined ? 'Leave' : 'Join'} channel'),
-//                       ),
-//                     )
-//                   ],
-//                 ),
-//               ],
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-//
-// class AudioCallPageScreen extends StatelessWidget {
-//   final RtcEngine engine;
-//
-//    AudioCallPageScreen({Key key, this.engine}) : super(key: key);
-//   @override
-//   Widget build(BuildContext context) {
-//     return SafeArea(
-//       child: Scaffold(
-//         backgroundColor: Colors.grey[900],
-//         body: Column(
-//           children: [
-//             CircleAvatar(
-//               radius: 80,
-//               backgroundImage: AssetImage("assets/images/progile.jpeg"),
-//             ),
-//             RawMaterialButton(
-//               shape: CircleBorder(),
-//               onPressed: () async {
-//                 await engine.leaveChannel();
-//                 Navigator.pop(context);
-//               },
-//               fillColor: Colors.red,
-//               child: Icon(Icons.call_end, color: Colors.white),
-//             ),
-//
-//             RawMaterialButton(
-//               shape: CircleBorder(),
-//               onPressed: () async {
-//                 // await engine.enable;
-//                 Navigator.pop(context);
-//               },
-//               fillColor: Colors.red,
-//               child: Icon(MdiIcons.video, color: Colors.white),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
