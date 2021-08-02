@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
+import 'package:pocket_health/bloc/login/loginBloc.dart';
+import 'package:pocket_health/bloc/login/loginState.dart';
 import 'package:pocket_health/screens/AdultUnwell/adult_unwell_screens/adult_unwell.dart';
 import 'package:pocket_health/screens/child_health/condition/child_health_immunization_screen.dart';
 import 'package:pocket_health/screens/practitioners/practitioners_categories_screen.dart';
@@ -46,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
         key: _scaffoldKey,
         backgroundColor: Color(0xFFE7FFFF),
         appBar: AppBar(
-	        automaticallyImplyLeading: false,
+          automaticallyImplyLeading: false,
           title: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Image.asset(
@@ -58,98 +61,121 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         body: SingleChildScrollView(
           child: Container(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                SizedBox(
-                  height: 5,
-                ),
-                Container(
-                  height: 55,
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: TextFormField(
-                            cursorColor: Colors.grey,
-                            decoration: searchFieldInputDecoration("Search for services"),
+            child: BlocBuilder<LoginBloc, LoginState>(
+              builder: (context, state) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Container(
+                      height: 55,
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: TextFormField(
+                                cursorColor: Colors.grey,
+                                decoration: searchFieldInputDecoration("Search for services"),
+                              ),
+                            ),
                           ),
-                        ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: GestureDetector(onTap: () async {}, child: Icon(Icons.settings)),
+                          ),
+                        ],
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: GestureDetector(onTap: () async {}, child: Icon(Icons.settings)),
+                    ),
+                    CardItem(
+                      press: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => AdultUnwell()));
+                      },
+                      image: "assets/images/adult_unwell.png",
+                      text: "Adult Unwell- Check Symptoms \n& Conditions",
+                    ),
+                    CardItem(
+                      press: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => CHIScreen()));
+                      },
+                      image: "assets/images/child_health_ immunisation.png",
+                      text: "Child Health & Immunisation",
+                    ),
+                    CardItem(
+                      press: () {},
+                      image: "assets/images/pregnancy_lactation.png",
+                      text: "Pregnancy & Lactation",
+                    ),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    Visibility(visible: visibilityController, child: WelcomeCard()),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ...List.generate(
+                            categories.length,
+                            (index) => CategoryCard(
+                              icon: categories[index]["icon"],
+                              text: categories[index]["text"],
+                              press: () {},
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
-                CardItem(
-	                press: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => AdultUnwell()));
-                  },
-                  image: "assets/images/adult_unwell.png",
-                  text: "Adult Unwell- Check Symptoms \n& Conditions",
-                ),
-                CardItem(
-	                press: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => CHIScreen()));
-                  },
-                  image: "assets/images/child_health_ immunisation.png",
-                  text: "Child Health & Immunisation",
-                ),
-                CardItem(
-                  press: () {},
-                  image: "assets/images/pregnancy_lactation.png",
-                  text: "Pregnancy & Lactation",
-                ),
-                SizedBox(
-                  height: 8,
-                ),
-                Visibility(visible: visibilityController, child: WelcomeCard()),
-                SizedBox(
-                  height: 8,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ...List.generate(
-                        categories.length,
-                        (index) => CategoryCard(
-                          icon: categories[index]["icon"],
-                          text: categories[index]["text"],
-                          press: () {},
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 8,
-                ),
-                CardItem(
-                  press: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) {
-                          return PractitionersCategoriesScreen();
-                        },
-                      ),
-                    );
-                  },
-                  image: "assets/images/doctors_practitioners.png",
-                  text: "Doctors & Practitioners",
-                ),
-                CardItem(
-	                press: () {},
-                  image: "assets/images/hospital_facilities.png",
-                  text: "Health Facilities",
-                ),
-              ],
+                    ),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    CardItem(
+                      press: state is LoginLoaded && state.loginModel.user.userCategory == 'individual'
+                          ? () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return PractitionersCategoriesScreen();
+                                  },
+                                ),
+                              );
+                            }
+                          : () {
+                              ScaffoldMessenger.of(context)
+                                ..clearSnackBars()
+                                ..showSnackBar(
+                                  SnackBar(
+                                    behavior: SnackBarBehavior.floating,
+                                    backgroundColor: Color(0xff163C4D),
+                                    duration: Duration(milliseconds: 6000),
+                                    content: Text(
+                                      'This feature is only available to users registered as individuals!',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                            },
+                      image: "assets/images/doctors_practitioners.png",
+                      text: "Doctors & Practitioners",
+                    ),
+                    CardItem(
+                      press: () {},
+                      image: "assets/images/hospital_facilities.png",
+                      text: "Health Facilities",
+                    ),
+                  ],
+                );
+              },
             ),
           ),
         ),

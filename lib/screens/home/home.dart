@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:pocket_health/screens/doctor_consult/doctor_consult.dart';
 import 'package:pocket_health/screens/emergency_screens/hotlines_landing_screen.dart';
 import 'package:pocket_health/screens/profile/profile_screen.dart';
 
-import 'doctor_consult.dart';
 import 'home_screen.dart';
 
 class Home extends StatefulWidget {
@@ -11,15 +11,9 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-	int _selectedIndex = 0;
+  int _selectedIndex = 0;
 
   List<Widget> tabPages = [HomeScreen(), HotlineScreen(), DoctorConsult(), ProfileScreen()];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +23,7 @@ class _HomeState extends State<Home> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         type: BottomNavigationBarType.fixed,
-	      items: <BottomNavigationBarItem>[
+        items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: new Image.asset(
               'assets/images/icons/Home_colored.png',
@@ -65,7 +59,14 @@ class _HomeState extends State<Home> {
         ],
         selectedItemColor: Color(0xff163C4D),
         unselectedItemColor: Colors.grey,
-        onTap: _onItemTapped,
+        onTap: (int index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+          if (index == 2) {
+            // context.read<InitializeStreamChatCubit>().initialize('MochogeDavid');
+          }
+        },
       ),
     );
   }

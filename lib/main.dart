@@ -56,17 +56,30 @@ import 'package:pocket_health/repository/userProfile_repo.dart';
 import 'package:pocket_health/screens/boarding/splash_screen.dart';
 import 'package:pocket_health/services/api_service.dart';
 import 'package:pocket_health/simple_bloc_observer.dart';
+import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 import 'bloc/conditionDetails/conditionDetailsBloc.dart';
 import 'bloc/filter_reviews/filter_reviews_cubit.dart';
 import 'bloc/forgotPassword/forgotPasswordBloc.dart';
+import 'bloc/initialize_stream_chat/initialize_stream_chat_cubit.dart';
 import 'bloc/list_practitioners/list_practitioners_cubit.dart';
 import 'bloc/organDetails/organDetailsBloc.dart';
 import 'bloc/post_review/post_review_cubit.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Bloc.observer = SimpleBlocObserver();
+  Bloc.observer = SimpleBlocObserver();
+  //
+  // final client = StreamChatClient(
+  //   '5ce52vsjkw26',
+  //   logLevel: Level.OFF,
+  // );
+
+  // await client.connectUser(
+  //   User(id: 'MochogeDavid'),
+  //   client.devToken('MochogeDavid'),
+  // );
 
   //repos
   final LoginRepository loginRepository = LoginRepository(ApiService(http.Client()));
@@ -96,8 +109,6 @@ void main() {
   final AllScheduleRepo allScheduleRepo = AllScheduleRepo(ApiService(http.Client()));
   final ScheduleDetailRepo scheduleDetailRepo = ScheduleDetailRepo(ApiService(http.Client()));
   final ReviewsRepo reviewsRepo = ReviewsRepo(ApiService(http.Client()));
-
-  Bloc.observer = SimpleBlocObserver();
   runApp(MyApp(
     forgotPasswordRepo: forgotPasswordRepo,
     loginRepository: loginRepository,
@@ -126,6 +137,7 @@ void main() {
     allScheduleRepo: allScheduleRepo,
     scheduleDetailRepo: scheduleDetailRepo,
     reviewsRepo: reviewsRepo,
+    // client: client,
   ));
 }
 
@@ -158,7 +170,7 @@ class MyApp extends StatelessWidget {
   final ScheduleDetailRepo scheduleDetailRepo;
   final ReviewsRepo reviewsRepo;
 
-  const MyApp({
+  MyApp({
     Key key,
     @required this.forgotPasswordRepo,
     @required this.normalDevelopmentRepo,
@@ -189,11 +201,13 @@ class MyApp extends StatelessWidget {
     @required this.reviewsRepo,
   }) : super(key: key);
 
+  final GlobalKey<NavigatorState> _navigator = new GlobalKey<NavigatorState>();
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext mainContext) {
     return ScreenUtilInit(
       designSize: Size(414, 736),
-      allowFontScaling: false,
+      // allowFontScaling: false,
       builder: () => MultiBlocProvider(
         providers: [
           BlocProvider(create: (context) => ForgotPasswordBloc(forgotPasswordRepo: forgotPasswordRepo)),
@@ -210,75 +224,43 @@ class MyApp extends StatelessWidget {
           BlocProvider(create: (context) => SearchOrganBloc(searchOrganRepo: searchOrganRepo)),
           BlocProvider(create: (context) => ListPractitionersCubit(practitionerProfileRepo: practitionerProfileRepo)),
           BlocProvider(create: (context) => FilterReviewsCubit()..loadRecentlyRated()),
-          BlocProvider(
-            create: (context) => AdultUnwellBloc(adultUnwellRepo: adultUnwellRepo),
-          ),
-          BlocProvider(
-            create: (context) => ChildConditionBloc(childConditionsRepo: childConditionRepo),
-          ),
-          BlocProvider(
-            create: (context) => OrgansBloc(organsRepo: organsRepo),
-          ),
-          BlocProvider(
-            create: (context) => OrgansDetailsBloc(organDetailsRepo: organDetailRepo),
-          ),
-          BlocProvider(
-            create: (context) => SearchOrganBloc(searchOrganRepo: searchOrganRepo),
-          ),
-          BlocProvider(
-            create: (context) => SymptomDetailsBloc(symptomDetailsRepo: symptomDetailsRepo),
-          ),
-          BlocProvider(
-            create: (context) => ChildConditionDetailsBloc(childConditionDetailRepo: childConditionDetailRepo),
-          ),
-          BlocProvider(
-            create: (context) => NutritionBloc(nutritionRepo: nutritionRepo),
-          ),
-          BlocProvider(
-            create: (context) => NormalDevelopmentBloc(normalDevelopmentRepo: normalDevelopmentRepo),
-          ),
-          BlocProvider(
-            create: (context) => ChildResourceBloc(childResourceRepo: childResourceRepo),
-          ),
-          BlocProvider(
-            create: (context) => ChildResourceDetailsBloc(childResourceDetailRepo: childResourceDetailRepo),
-          ),
-          BlocProvider(
-            create: (context) => CongenitalConditionBloc(congenitalConditionsRepo: congenitalConditionsRepo),
-          ),
-          BlocProvider(
-            create: (context) => CongenitalConditionDetailsBloc(congenitalDetailDetailRepo: congenitalConditionDetailRepo),
-          ),
-          BlocProvider(
-            create: (context) => GrowthChartBloc(growthChartsRepo: growthChartsRepo),
-          ),
-          BlocProvider(
-            create: (context) => DelayedMilestoneBloc(delayedMilestonesRepo: delayedMilestonesRepo),
-          ),
-          BlocProvider(
-            create: (context) => ImmunizationScheduleBloc(immunizationScheduleRepo: immunizationScheduleRepo),
-          ),
-          BlocProvider(
-            create: (context) => AllSchedulesBloc(allSchedulesRepo: allScheduleRepo),
-          ),
-          BlocProvider(
-            create: (context) => ScheduleDetailsBloc(scheduleDetailRepo: scheduleDetailRepo),
-          ),
-          BlocProvider(
-            create: (context) => ReviewsCubit(reviewsRepo: reviewsRepo),
-          ),
-          BlocProvider(
-            create: (context) => PostReviewCubit(reviewsRepo),
-          ),
+          BlocProvider(create: (context) => AdultUnwellBloc(adultUnwellRepo: adultUnwellRepo)),
+          BlocProvider(create: (context) => ChildConditionBloc(childConditionsRepo: childConditionRepo)),
+          BlocProvider(create: (context) => OrgansBloc(organsRepo: organsRepo)),
+          BlocProvider(create: (context) => OrgansDetailsBloc(organDetailsRepo: organDetailRepo)),
+          BlocProvider(create: (context) => SearchOrganBloc(searchOrganRepo: searchOrganRepo)),
+          BlocProvider(create: (context) => SymptomDetailsBloc(symptomDetailsRepo: symptomDetailsRepo)),
+          BlocProvider(create: (context) => ChildConditionDetailsBloc(childConditionDetailRepo: childConditionDetailRepo)),
+          BlocProvider(create: (context) => NutritionBloc(nutritionRepo: nutritionRepo)),
+          BlocProvider(create: (context) => NormalDevelopmentBloc(normalDevelopmentRepo: normalDevelopmentRepo)),
+          BlocProvider(create: (context) => ChildResourceBloc(childResourceRepo: childResourceRepo)),
+          BlocProvider(create: (context) => ChildResourceDetailsBloc(childResourceDetailRepo: childResourceDetailRepo)),
+          BlocProvider(create: (context) => CongenitalConditionBloc(congenitalConditionsRepo: congenitalConditionsRepo)),
+          BlocProvider(create: (context) => CongenitalConditionDetailsBloc(congenitalDetailDetailRepo: congenitalConditionDetailRepo)),
+          BlocProvider(create: (context) => GrowthChartBloc(growthChartsRepo: growthChartsRepo)),
+          BlocProvider(create: (context) => DelayedMilestoneBloc(delayedMilestonesRepo: delayedMilestonesRepo)),
+          BlocProvider(create: (context) => ImmunizationScheduleBloc(immunizationScheduleRepo: immunizationScheduleRepo)),
+          BlocProvider(create: (context) => AllSchedulesBloc(allSchedulesRepo: allScheduleRepo)),
+          BlocProvider(create: (context) => ScheduleDetailsBloc(scheduleDetailRepo: scheduleDetailRepo)),
+          BlocProvider(create: (context) => ReviewsCubit(reviewsRepo: reviewsRepo)),
+          BlocProvider(create: (context) => PostReviewCubit(reviewsRepo)),
+          BlocProvider(create: (context) => InitializeStreamChatCubit()),
         ],
         child: MaterialApp(
+          navigatorKey: _navigator,
           debugShowCheckedModeBanner: false,
           title: 'Ssential App',
           theme: ThemeData(
-	          primaryColor: Colors.white,
+            primaryColor: Colors.white,
             scaffoldBackgroundColor: Colors.white,
             accentColor: Color(0xff00FFFF),
           ),
+          builder: (context, child) {
+            return StreamChat(
+              child: child,
+              client: context.read<InitializeStreamChatCubit>().client,
+            );
+          },
           home: SplashScreen(),
         ),
       ),

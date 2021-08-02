@@ -20,19 +20,20 @@ class _WaitScreenState extends State<WaitScreen> {
           children: <Widget>[
             Expanded(
               child: Container(
-                  child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Image.asset(
-                    'assets/images/undraw_Mobile_life_re_jtih.png',
-                    height: 250,
-                    width: 250,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10.0),
-                  ),
-                ],
-              )),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Image.asset(
+                      'assets/images/undraw_Mobile_life_re_jtih.png',
+                      height: 250,
+                      width: 250,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10.0),
+                    ),
+                  ],
+                ),
+              ),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,

@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pocket_health/utils/constants.dart';
 
 class VerifiedTag extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Color(0xff07F927),
+      decoration: BoxDecoration(
+        color: accentColorDark,
+        borderRadius: BorderRadius.circular(4),
+      ),
       padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.w),
       child: Text(
         'Verified',
