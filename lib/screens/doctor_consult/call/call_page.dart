@@ -439,21 +439,6 @@ class _CallPageState extends State<CallPage> {
               ],
             ),
           ),
-          // connection state
-          // Container(
-          //   color: accentColorLight,
-          //   width: 414,
-          //   height: 24,
-          //   alignment: Alignment.center,
-          //   child: Text(
-          //     'Connected',
-          //     style: TextStyle(
-          //       fontWeight: FontWeight.w600,
-          //       fontSize: 14,
-          //       color: accentColorDark,
-          //     ),
-          //   ),
-          // ),
           Center(
             child: Padding(
               padding: EdgeInsets.only(top: 60.0),

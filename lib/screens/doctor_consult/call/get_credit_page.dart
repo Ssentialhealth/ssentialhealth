@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutterwave/core/flutterwave.dart';
-import 'package:flutterwave/models/responses/charge_response.dart';
-import 'package:flutterwave/utils/flutterwave_constants.dart';
 import 'package:pocket_health/utils/constants.dart';
+import 'package:rave_flutter/rave_flutter.dart';
 
 class GetCreditPage extends StatefulWidget {
   @override
@@ -162,55 +160,57 @@ class _GetCreditPageState extends State<GetCreditPage> {
                   style: TextStyle(color: Colors.white),
                 ),
                 onPressed: () async {
-                  bool checkPaymentIsSuccessful(final ChargeResponse response) {
-                    return response.data.status == FlutterwaveConstants.SUCCESSFUL &&
-                        response.data.currency == 'KES' &&
-                        response.data.amount == '11' &&
-                        response.data.txRef == 'txRe7fs';
-                  }
+                  // bool checkPaymentIsSuccessful(final RaveResult response) {
+                  //   return response.status == RaveStatus.success &&
+                  //       response.rawResponse['currency'] == 'KES' &&
+                  //       response.rawResponse['amount'] == '11' &&
+                  //       response.rawResponse['txRef'] == 'txRe7fsss';
+                  // }
 
-                  final Flutterwave flutterwave = Flutterwave.forUIPayment(
-                    context: context,
-                    encryptionKey: "8fd2e3979d9231405ae6da3f",
-                    publicKey: "FLWPUBK-f6e41ec084160598e71ddaf927fd05fc-X",
-                    currency: 'KES',
-                    amount: '11',
+                  // Get a reference to RavePayInitializer
+                  RavePayInitializer initializer = RavePayInitializer(
+                    amount: 1000.0,
+                    country: "KE",
+                    currency: "KES",
+                    txRef: 'txRe7fsss',
                     email: "mwakicodes@gmail.com",
-                    fullName: "Lewis Mwaki",
-                    txRef: 'txRe7fs',
-                    isDebugMode: false,
-                    phoneNumber: "0722959269",
-                    acceptCardPayment: false,
-                    acceptUSSDPayment: false,
-                    acceptAccountPayment: false,
-                    acceptFrancophoneMobileMoney: false,
-                    acceptGhanaPayment: false,
-                    acceptMpesaPayment: true,
-                    acceptRwandaMoneyPayment: false,
-                    acceptUgandaPayment: false,
-                    acceptZambiaPayment: false,
+                    fName: "Lewis",
+                    lName: "Mwaki",
+                    acceptMpesaPayments: true,
+                    acceptAccountPayments: false,
+                    acceptCardPayments: true,
+                    companyLogo: Container(color: Colors.red, height: 40, width: 30),
+                    acceptAchPayments: false,
+                    acceptGHMobileMoneyPayments: false,
+                    acceptUgMobileMoneyPayments: false,
+                    staging: false,
+                    isPreAuth: true,
+                    displayFee: false,
+                    publicKey: 'FLWPUBK-01d949a9c04f029cc1f1a927af871079-X',
+                    encryptionKey: '4c6325b0afa75beb8a0dc641',
                   );
 
+                  // Initialize and get the transaction result
                   try {
-                    // final FlutterwavePaymentManager ss;
-                    final ChargeResponse response = await flutterwave.initializeForUiPayments();
+                    RaveResult response = await RavePayManager().initialize(context: context, initializer: initializer);
+                    print(response.status);
                     if (response == null) {
                       print("// user didn't complete the transaction. Payment wasn't successful.");
                     } else {
-                      final isSuccessful = checkPaymentIsSuccessful(response);
-                      if (isSuccessful) {
-                        print("// provide value to customer");
-                      } else {
-                        // check message
-                        print("message --------------- " + response.message);
-                        print("authModel --------------- " + response.data.authModel);
+                      // final isSuccessful = checkPaymentIsSuccessful(response);
+                      // if (isSuccessful) {
+                      //   print("// provide value to customer");
+                      // } else {
+                      // check message
+                      // print("message --------------- " + response.rawResponse['message']);
+                      // print("authModel --------------- " + response.rawResponse['authModel']);
 
-                        // check status
-                        print("status --------------- " + response.status);
+                      // check status
+                      // print("status --------------- " + response.status.toString());
 
-                        // check processor error
-                        print("processor --------------- " + response.data.processorResponse);
-                      }
+                      // check processor error
+                      // print("processor --------------- " + response.rawResponse['processorResponse']);
+                      // }
                     }
                   } catch (e) {
                     print('flutterwave error --------------- $e');

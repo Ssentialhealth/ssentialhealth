@@ -36,7 +36,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
   final http.Client httpClient;
-  String _token = "...";
+  String _token;
   BuildContext buildContext;
 
   ApiService(this.httpClient) : assert(httpClient != null);
@@ -284,12 +284,11 @@ class ApiService {
     //if inital val is false & receivedVal is false pass false
     //if initial val is true & receivedval is false pass false
     //if initial val is true & receoveval is true pass true
-
     //if receivedHasChanged is true pass receivedVal
     //else if inital is true
 
     final newestRecievedVal = hasReceivedChanged == true ? newReceivedVal : initialReceivedVal;
-    final _token = await getStringValuesSF();
+    _token = await getStringValuesSF();
     final vaccineToPatch = vaccine.toJson();
     final patchedJson = JsonPatch.apply(
       vaccineToPatch,
@@ -437,7 +436,14 @@ class ApiService {
 
   //fetch practitioners by category
   Future<List<PractitionerProfileModel>> fetchPractitioners(practitionersCategory) async {
-    final response = await this.httpClient.get("https://ssential.herokuapp.com/api/user/practitioner_profiles/");
+    _token = await getStringValuesSF();
+    final response = await this.httpClient.get(
+      "https://ssential.herokuapp.com/api/user/practitioner_profiles/",
+      headers: {
+        "Authorization": "Bearer " +
+            "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjI4MjA1NjI5LCJqdGkiOiJmZjVhOTlkNmExZTY0NzA2YTU5OWM2ODc3OTVjZWJmYiIsInVzZXJfaWQiOjV9.7WBfZwnIMvy5f5Xtc_aL0OuNhcY_CPo0zyVWbKUfuSY",
+      },
+    );
     if (response.statusCode != 200) {
       throw Exception('Error Fetching practitioners');
     }
@@ -458,7 +464,13 @@ class ApiService {
     @required String filterBySpeciality,
     @required String practitionersCategory,
   }) async {
-    final response = await this.httpClient.get("https://ssential.herokuapp.com/api/user/practitioner_profiles/");
+    _token = await getStringValuesSF();
+    final response = await this.httpClient.get(
+      "https://ssential.herokuapp.com/api/user/practitioner_profiles/",
+      headers: {
+        "Authorization": "Bearer " + _token,
+      },
+    );
     if (response.statusCode != 200) {
       throw Exception('Error Fetching practitioners');
     }
