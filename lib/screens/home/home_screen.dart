@@ -49,6 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
         key: _scaffoldKey,
         backgroundColor: Color(0xFFE7FFFF),
         appBar: AppBar(
+          elevation: 0.0,
           automaticallyImplyLeading: false,
           title: Padding(
             padding: const EdgeInsets.all(8.0),
@@ -66,9 +67,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    SizedBox(
-                      height: 5,
-                    ),
+                    SizedBox(height: 5),
+
+                    //search box
                     Container(
                       height: 55,
                       child: Row(
@@ -89,6 +90,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                     ),
+
+                    //adult unwell
                     CardItem(
                       press: () {
                         Navigator.push(context, MaterialPageRoute(builder: (context) => AdultUnwell()));
@@ -96,6 +99,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       image: "assets/images/adult_unwell.png",
                       text: "Adult Unwell- Check Symptoms \n& Conditions",
                     ),
+
+                    //immunization
                     CardItem(
                       press: () {
                         Navigator.push(context, MaterialPageRoute(builder: (context) => CHIScreen()));
@@ -103,18 +108,20 @@ class _HomeScreenState extends State<HomeScreen> {
                       image: "assets/images/child_health_ immunisation.png",
                       text: "Child Health & Immunisation",
                     ),
+
+                    //pregnancy
                     CardItem(
                       press: () {},
                       image: "assets/images/pregnancy_lactation.png",
                       text: "Pregnancy & Lactation",
                     ),
-                    SizedBox(
-                      height: 8,
-                    ),
+                    SizedBox(height: 8),
+
+                    //welcome
                     Visibility(visible: visibilityController, child: WelcomeCard()),
-                    SizedBox(
-                      height: 8,
-                    ),
+                    SizedBox(height: 8),
+
+                    //categories
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Row(
@@ -132,9 +139,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                     ),
-                    SizedBox(
-                      height: 8,
-                    ),
+                    SizedBox(height: 8),
+
+                    //doctors and practitioners
                     CardItem(
                       press: state is LoginLoaded && state.loginModel.user.userCategory == 'individual'
                           ? () {
@@ -168,6 +175,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       image: "assets/images/doctors_practitioners.png",
                       text: "Doctors & Practitioners",
                     ),
+
+                    //health facilities
                     CardItem(
                       press: () {},
                       image: "assets/images/hospital_facilities.png",

@@ -9,7 +9,7 @@ import 'package:pocket_health/utils/constants.dart';
 import 'package:pocket_health/widgets/verified_tag.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'book_appointment_screen.dart';
+import 'appointments/book_appointment_screen.dart';
 import 'filter_practitioners_screen.dart';
 
 class PractitionersListScreen extends StatefulWidget {

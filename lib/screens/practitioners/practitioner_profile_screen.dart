@@ -22,7 +22,7 @@ import 'package:pocket_health/utils/constants.dart';
 import 'package:pocket_health/widgets/verified_tag.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
-import 'book_appointment_screen.dart';
+import 'appointments/book_appointment_screen.dart';
 
 class PractitionerProfileScreen extends StatefulWidget {
   final PractitionerProfileModel practitionerModel;
@@ -50,8 +50,7 @@ class _PractitionerProfileScreenState extends State<PractitionerProfileScreen> w
   @override
   void initState() {
     super.initState();
-    context.read<InitializeStreamChatCubit>()..loadInitial(); //test
-
+    context.read<InitializeStreamChatCubit>()..loadInitial();
     _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(() => setState(() {}));
   }
@@ -266,35 +265,53 @@ class _PractitionerProfileScreenState extends State<PractitionerProfileScreen> w
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             //book appointment btn
-                            TextButton(
-                              child: Text(
-                                'Book Appointment',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16.sp,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              style: ButtonStyle(
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                backgroundColor: MaterialStateProperty.all(Color(0xff1A5864)),
-                                minimumSize: MaterialStateProperty.all(Size(0, 0)),
-                                padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 60.w, vertical: 10.h)),
-                                shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5.w),
-                                  side: BorderSide(
-                                    color: Color(0xff1A5864),
-                                    width: 1.w,
+                            BlocBuilder<LoginBloc, LoginState>(
+                              builder: (context, state) {
+                                return TextButton(
+                                  child: Text(
+                                    'Book Appointment',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
-                                )),
-                              ),
-                              onPressed: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(builder: (BuildContext context) {
-                                    return BookAppointmentScreen(
-                                      practitionerModel: widget.practitionerModel,
-                                    );
-                                  }),
+                                  style: ButtonStyle(
+                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                    backgroundColor: MaterialStateProperty.all(Color(0xff1A5864)),
+                                    minimumSize: MaterialStateProperty.all(Size(0, 0)),
+                                    padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 60.w, vertical: 10.h)),
+                                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5.w),
+                                      side: BorderSide(
+                                        color: Color(0xff1A5864),
+                                        width: 1.w,
+                                      ),
+                                    )),
+                                  ),
+                                  onPressed: () {
+                                    state is LoginLoaded && state.loginModel.user.userCategory == 'individual'
+                                        ? Navigator.of(context).push(
+                                            MaterialPageRoute(builder: (BuildContext context) {
+                                              return BookAppointmentScreen(
+                                                userID: state.loginModel.user.userID,
+                                                practitionerModel: widget.practitionerModel,
+                                              );
+                                            }),
+                                          )
+                                        : SnackBar(
+                                            behavior: SnackBarBehavior.floating,
+                                            backgroundColor: Color(0xff163C4D),
+                                            duration: Duration(milliseconds: 6000),
+                                            content: Text(
+                                              'This feature is only available to users registered as individuals!',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          );
+                                  },
                                 );
                               },
                             ),
