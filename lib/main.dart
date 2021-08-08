@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:pocket_health/bloc/adult_unwell/adultUnwellBloc.dart';
+import 'package:pocket_health/bloc/booking_history/booking_history_cubit.dart';
 import 'package:pocket_health/bloc/child_health/all_schedules/all_schedules_bloc.dart';
 import 'package:pocket_health/bloc/child_health/child_conditions_bloc.dart';
 import 'package:pocket_health/bloc/child_health/child_resource/child_resource_bloc.dart';
@@ -28,6 +29,8 @@ import 'package:pocket_health/bloc/search_organ/search_organ_bloc.dart';
 import 'package:pocket_health/bloc/symptoms/details/symptoms_bloc.dart';
 import 'package:pocket_health/repository/adultUnwellRepo.dart';
 import 'package:pocket_health/repository/all_schedules_repo.dart';
+import 'package:pocket_health/repository/appointments_repo.dart';
+import 'package:pocket_health/repository/booking_history_repo.dart';
 import 'package:pocket_health/repository/child_condition_detail_repo.dart';
 import 'package:pocket_health/repository/child_conditions_repo.dart';
 import 'package:pocket_health/repository/child_resource_repo.dart';
@@ -58,6 +61,7 @@ import 'package:pocket_health/services/api_service.dart';
 import 'package:pocket_health/simple_bloc_observer.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
+import 'bloc/appointments/appointments_cubit.dart';
 import 'bloc/conditionDetails/conditionDetailsBloc.dart';
 import 'bloc/filter_reviews/filter_reviews_cubit.dart';
 import 'bloc/forgotPassword/forgotPasswordBloc.dart';
@@ -68,7 +72,6 @@ import 'bloc/post_review/post_review_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Bloc.observer = SimpleBlocObserver();
   Bloc.observer = SimpleBlocObserver();
   //
   // final client = StreamChatClient(
@@ -109,9 +112,13 @@ void main() async {
   final AllScheduleRepo allScheduleRepo = AllScheduleRepo(ApiService(http.Client()));
   final ScheduleDetailRepo scheduleDetailRepo = ScheduleDetailRepo(ApiService(http.Client()));
   final ReviewsRepo reviewsRepo = ReviewsRepo(ApiService(http.Client()));
+  final AppointmentsRepo appointmentsRepo = AppointmentsRepo(ApiService(http.Client()));
+  final BookingHistoryRepo bookingHistoryRepo = BookingHistoryRepo(ApiService(http.Client()));
   runApp(MyApp(
+    bookingHistoryRepo: bookingHistoryRepo,
     forgotPasswordRepo: forgotPasswordRepo,
     loginRepository: loginRepository,
+    appointmentsRepo: appointmentsRepo,
     userProfileRepo: userProfileRepo,
     practitionerProfileRepo: practitionerProfileRepo,
     emergencyContactRepo: emergencyContactRepo,
@@ -169,6 +176,8 @@ class MyApp extends StatelessWidget {
   final AllScheduleRepo allScheduleRepo;
   final ScheduleDetailRepo scheduleDetailRepo;
   final ReviewsRepo reviewsRepo;
+  final AppointmentsRepo appointmentsRepo;
+  final BookingHistoryRepo bookingHistoryRepo;
 
   MyApp({
     Key key,
@@ -199,9 +208,9 @@ class MyApp extends StatelessWidget {
     @required this.allScheduleRepo,
     @required this.scheduleDetailRepo,
     @required this.reviewsRepo,
+    @required this.appointmentsRepo,
+    this.bookingHistoryRepo,
   }) : super(key: key);
-
-  final GlobalKey<NavigatorState> _navigator = new GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext mainContext) {
@@ -245,9 +254,10 @@ class MyApp extends StatelessWidget {
           BlocProvider(create: (context) => ReviewsCubit(reviewsRepo: reviewsRepo)),
           BlocProvider(create: (context) => PostReviewCubit(reviewsRepo)),
           BlocProvider(create: (context) => InitializeStreamChatCubit()),
+          BlocProvider(create: (context) => AppointmentsCubit(appointmentsRepo)),
+          BlocProvider(create: (context) => BookingHistoryCubit(bookingHistoryRepo)),
         ],
         child: MaterialApp(
-          navigatorKey: _navigator,
           debugShowCheckedModeBanner: false,
           title: 'Ssential App',
           theme: ThemeData(
@@ -255,6 +265,9 @@ class MyApp extends StatelessWidget {
             scaffoldBackgroundColor: Colors.white,
             accentColor: Color(0xff00FFFF),
           ),
+          // routes: <String, WidgetBuilder>{
+          //   PractitionerProfile.routeName: (BuildContext context) => new MyItemsPage(title: "MyItemsPage"),
+          // },
           builder: (context, child) {
             return StreamChat(
               child: child,
