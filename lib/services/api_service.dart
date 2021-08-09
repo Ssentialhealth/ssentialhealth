@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:json_patch/json_patch.dart';
 import 'package:pocket_health/models/ForgotPassword.dart';
 import 'package:pocket_health/models/all_schedules_model.dart';
+import 'package:pocket_health/models/call_history_model.dart';
 import 'package:pocket_health/models/child_chronic_condition_model.dart';
 import 'package:pocket_health/models/child_chronic_detail_model.dart';
 import 'package:pocket_health/models/child_condition_detail_model.dart';
@@ -694,6 +695,39 @@ class ApiService {
     final response = await this.httpClient.get('https://ssential.herokuapp.com/api/practitionerProfile/reviews/');
     print("review respsonse | ${response.body}");
     return listOfReviewModelFromJson(response.body);
+  }
+
+  Future<CallHistoryModel> addCallHistoryToDB(CallHistoryModel callHistoryModel) async {
+    final mapData = callHistoryModelToJson(callHistoryModel);
+
+    final response = await http.post(
+      'https://ssential.herokuapp.com/api/doctors_consult/call_history/',
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " +
+            "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjI4NDc5MjM2LCJqdGkiOiIyYzBiMTMwMTY3N2U0MWY2OWMyYjgwYmY0YmFmODc0YSIsInVzZXJfaWQiOjV9.-0NNYUtgKo6GmHWcyB9dRMggHAWXsmM6QFozzg7toLk"
+      },
+      body: mapData,
+    );
+
+    print(response.body);
+
+    return callHistoryModelFromJson(response.body);
+  }
+
+  Future<List<CallHistoryModel>> fetchAllCallHistory(userID) async {
+    final response = await http.get(
+      "https://ssential.herokuapp.com/api/doctors_consult/call_history/",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " +
+            "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjI4NDc5MjM2LCJqdGkiOiIyYzBiMTMwMTY3N2U0MWY2OWMyYjgwYmY0YmFmODc0YSIsInVzZXJfaWQiOjV9.-0NNYUtgKo6GmHWcyB9dRMggHAWXsmM6QFozzg7toLk",
+      },
+    );
+
+    final callList = callHistoryListModelFromJson(response.body).where((element) => element.user == userID).toList();
+    print(response.body);
+    return callList;
   }
 }
 

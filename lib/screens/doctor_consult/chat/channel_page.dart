@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pocket_health/screens/doctor_consult/call/call_page.dart';
+import 'package:pocket_health/screens/doctor_consult/call/get_credit_page.dart';
 import 'package:pocket_health/screens/doctor_consult/chat/thread_page.dart';
 import 'package:pocket_health/utils/constants.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
@@ -18,6 +19,7 @@ class ChannelPage extends StatefulWidget {
 
 class _ChannelPageState extends State<ChannelPage> {
   Message _quotedMessage;
+  String durationVal = "5 minutes";
 
   @override
   Widget build(BuildContext context) {
@@ -97,19 +99,208 @@ class _ChannelPageState extends State<ChannelPage> {
           //audio call
           IconButton(
             onPressed: () async {
-              await Permission.camera.request();
-              await Permission.microphone.request();
-              await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => CallPage(
-                    channelName: 'testchannel1',
-                    role: ClientRole.Broadcaster,
-                    mutedAudio: false,
-                    mutedVideo: true,
-                  ),
-                ),
+              await showDialog(
+                context: context,
+                builder: (dialogContext) {
+                  return Dialog(
+                    backgroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0.w)),
+                    child: Container(
+                      width: 1.sw,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(height: 15.h),
+
+                          //doc name
+                          Text(
+                            'Call $channelID',
+                            style: TextStyle(
+                              fontSize: 15.sp,
+                              color: Colors.black87,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          SizedBox(height: 15.h),
+
+                          Divider(height: 1, thickness: 1.r, color: Color(0xffB3B3B3)),
+
+                          SizedBox(height: 15.h),
+                          Text(
+                            'Estimated Call Cost',
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+
+                          //cost
+                          Text(
+                            'USD 10',
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.orange,
+                            ),
+                          ),
+                          SizedBox(height: 10.h),
+
+                          //drop down
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 20.w),
+                            child: DropdownButtonFormField(
+                              value: durationVal,
+                              isExpanded: true,
+                              onTap: () {},
+                              onChanged: (val) {
+                                setState(() {
+                                  durationVal = val;
+                                });
+                              },
+                              icon: Icon(
+                                Icons.keyboard_arrow_down,
+                                size: 24.r,
+                                color: accentColorDark,
+                              ),
+                              decoration: InputDecoration(
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: accentColorDark,
+                                    width: 1.w,
+                                  ),
+                                ),
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: accentColorDark,
+                                    width: 1.w,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: accentColorDark,
+                                    width: 1.w,
+                                  ),
+                                ),
+                                fillColor: Colors.white,
+                                filled: true,
+                                contentPadding: EdgeInsets.symmetric(horizontal: 20.r),
+                              ),
+                              elevation: 0,
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                color: Color(0xff707070),
+                                fontWeight: FontWeight.w600,
+                              ),
+                              dropdownColor: Colors.white,
+                              hint: Text(
+                                'Select Duration',
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  color: Color(0xff707070),
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              items: ["5 minutes", "10 minutes", "15 minutes"]
+                                  .map(
+                                    (e) => DropdownMenuItem(
+                                      value: e,
+                                      child: Text(
+                                        e,
+                                        style: TextStyle(),
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                            ),
+                          ),
+                          SizedBox(height: 15.h),
+
+                          //continue
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 20.w),
+                            child: MaterialButton(
+                              onPressed: () async {
+                                // await for camera and mic permissions before pu-shing video page
+                                await Permission.camera.request();
+                                await Permission.microphone.request();
+                                // push video page with given channel name
+                                await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => CallPage(
+                                      callDuration: int.parse(durationVal.split(" ").first),
+                                      channelName: 'testchannel1',
+                                      role: ClientRole.Broadcaster,
+                                      mutedAudio: false,
+                                      mutedVideo: false,
+                                    ),
+                                  ),
+                                );
+                              },
+                              minWidth: 374.w,
+                              elevation: 0.0,
+                              child: Text(
+                                'Continue',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 13.sp,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              highlightElevation: 0.0,
+                              focusElevation: 0.0,
+                              disabledElevation: 0.0,
+                              color: Color(0xff1A5864),
+                              height: 40.h,
+                              highlightColor: Colors.transparent,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4.r),
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 15.h),
+
+                          //show balance
+                          TextButton(
+                            onPressed: () async {
+                              //navigate to get credit
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => GetCreditPage(),
+                                ),
+                              );
+                            },
+                            child: Text(
+                              'Check Balance',
+                              style: TextStyle(
+                                decoration: TextDecoration.underline,
+                                color: accentColorDark,
+                                fontSize: 13.sp,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  );
+                },
               );
+              // await Permission.camera.request();
+              // await Permission.microphone.request();
+              // await Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //     builder: (context) => CallPage(
+              //       channelName: 'testchannel1',
+              //       role: ClientRole.Broadcaster,
+              //       mutedAudio: false,
+              //       mutedVideo: true,
+              //     ),
+              //   ),
+              // );
             },
             icon: Icon(Icons.call),
           ),
@@ -148,105 +339,105 @@ class _ChannelPageState extends State<ChannelPage> {
           //doctors input
           doctorsView
               ? (allMessages.where((element) => element.user.id == userID).toList().length > 0) == true
-          //invite accepted // continue chatting
-              ? MessageInput(
-            onMessageSent: (message) async {},
-            quotedMessage: _quotedMessage,
-            onQuotedMessageCleared: () {
-              setState(() => _quotedMessage = null);
-            },
-          )
-          //invite pending
-              : ColoredBox(
-            color: accentColorLight,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                //reject invite
-                RawMaterialButton(
-                  elevation: 0.0,
-                  highlightElevation: 0.0,
-                  highlightColor: Colors.transparent,
-                  textStyle: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16.sp,
-                  ),
-                  splashColor: Color(0xffeecccc),
-                  onPressed: () async {
-                    await channel.rejectInvite();
-                    await channel.delete();
-                    Navigator.pop(context);
-                  },
-                  child: Text(
-                    'Reject',
-                    style: TextStyle(color: Colors.red),
-                  ),
-                ),
+                  //invite accepted // continue chatting
+                  ? MessageInput(
+                      onMessageSent: (message) async {},
+                      quotedMessage: _quotedMessage,
+                      onQuotedMessageCleared: () {
+                        setState(() => _quotedMessage = null);
+                      },
+                    )
+                  //invite pending
+                  : ColoredBox(
+                      color: accentColorLight,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          //reject invite
+                          RawMaterialButton(
+                            elevation: 0.0,
+                            highlightElevation: 0.0,
+                            highlightColor: Colors.transparent,
+                            textStyle: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16.sp,
+                            ),
+                            splashColor: Color(0xffeecccc),
+                            onPressed: () async {
+                              await channel.rejectInvite();
+                              await channel.delete();
+                              Navigator.pop(context);
+                            },
+                            child: Text(
+                              'Reject',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ),
 
-                //accept invite
-                RawMaterialButton(
-                  elevation: 0.0,
-                  highlightElevation: 0.0,
-                  highlightColor: Colors.transparent,
-                  textStyle: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16.sp,
-                  ),
-                  splashColor: Color(0xffcae9ca),
-                  onPressed: () async {
-                    await channel.acceptInvite(
-                      Message(
-                        text: channelID + ' has accepted your invite. You can continue chatting',
+                          //accept invite
+                          RawMaterialButton(
+                            elevation: 0.0,
+                            highlightElevation: 0.0,
+                            highlightColor: Colors.transparent,
+                            textStyle: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16.sp,
+                            ),
+                            splashColor: Color(0xffcae9ca),
+                            onPressed: () async {
+                              await channel.acceptInvite(
+                                Message(
+                                  text: channelID + ' has accepted your invite. You can continue chatting',
+                                ),
+                              );
+                              setState(() {});
+                            },
+                            child: Text(
+                              'Accept',
+                              style: TextStyle(color: Colors.green),
+                            ),
+                          ),
+                        ],
                       ),
-                    );
-                    setState(() {});
-                  },
-                  child: Text(
-                    'Accept',
-                    style: TextStyle(color: Colors.green),
-                  ),
-                ),
-              ],
-            ),
-          )
+                    )
 
-          // users input
+              // users input
               : (allMessages.where((element) => element.user.id != userID).toList().length > 0)
-          //invite accepted // continue chatting
-              ? MessageInput(
-            onMessageSent: (message) async {},
-            quotedMessage: _quotedMessage,
-            onQuotedMessageCleared: () {
-              setState(() => _quotedMessage = null);
-            },
-          )
-          //invite pending
-              : ((allMessages.where((element) => element.user.id != userID).toList().length > 0) == false)
-              ? (allMessages.length >= 2)
-          //waiting for response / disable spamming invites
-              ? MessageInput(
-            onMessageSent: (message) async {},
-            quotedMessage: _quotedMessage,
-            onQuotedMessageCleared: () {
-              setState(() => _quotedMessage = null);
-            },
-          )
-          //invite doc
-              : MessageInput(
-            onMessageSent: (message) async {
-              await channel.inviteMembers(
-                [channelID],
-                Message(
-                  text: userID + ' wants to invite you to a chat. Accept or Reject',
-                ),
-              );
-            },
-            quotedMessage: _quotedMessage,
-            onQuotedMessageCleared: () {
-              setState(() => _quotedMessage = null);
-            },
-          )
-              : null,
+                  //invite accepted // continue chatting
+                  ? MessageInput(
+                      onMessageSent: (message) async {},
+                      quotedMessage: _quotedMessage,
+                      onQuotedMessageCleared: () {
+                        setState(() => _quotedMessage = null);
+                      },
+                    )
+                  //invite pending
+                  : ((allMessages.where((element) => element.user.id != userID).toList().length > 0) == false)
+                      ? (allMessages.length >= 2)
+                          //waiting for response / disable spamming invites
+                          ? MessageInput(
+                              onMessageSent: (message) async {},
+                              quotedMessage: _quotedMessage,
+                              onQuotedMessageCleared: () {
+                                setState(() => _quotedMessage = null);
+                              },
+                            )
+                          //invite doc
+                          : MessageInput(
+                              onMessageSent: (message) async {
+                                await channel.inviteMembers(
+                                  [channelID],
+                                  Message(
+                                    text: userID + ' wants to invite you to a chat. Accept or Reject',
+                                  ),
+                                );
+                              },
+                              quotedMessage: _quotedMessage,
+                              onQuotedMessageCleared: () {
+                                setState(() => _quotedMessage = null);
+                              },
+                            )
+                      : null,
         ],
       ),
     );

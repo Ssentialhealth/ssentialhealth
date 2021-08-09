@@ -5,9 +5,12 @@ import 'package:agora_rtc_engine/rtc_engine.dart';
 import 'package:agora_rtc_engine/rtc_local_view.dart' as RtcLocalView;
 import 'package:agora_rtc_engine/rtc_remote_view.dart' as RtcRemoteView;
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:pocket_health/bloc/call_history/call_history_cubit.dart';
 import 'package:pocket_health/screens/doctor_consult/call/utils.dart';
 import 'package:pocket_health/widgets/verified_tag.dart';
 
@@ -15,9 +18,10 @@ class CallPage extends StatefulWidget {
   bool mutedAudio;
   bool mutedVideo;
   final String channelName;
+  final int callDuration;
   final ClientRole role;
 
-  CallPage({Key key, this.channelName, this.role, this.mutedAudio, this.mutedVideo}) : super(key: key);
+  CallPage({Key key, this.channelName, this.role, this.mutedAudio, this.mutedVideo, this.callDuration}) : super(key: key);
 
   @override
   _CallPageState createState() => _CallPageState();
@@ -28,7 +32,10 @@ class _CallPageState extends State<CallPage> {
   final _infoStrings = <String>[];
 
   RtcEngine _engine;
+  bool showEndedScreen = false;
   String baseUrl = ''; //Add the link to your deployed server here
+
+  int duration;
 
   @override
   void dispose() {
@@ -94,46 +101,57 @@ class _CallPageState extends State<CallPage> {
       RtcEngineEventHandler(
         error: (code) {
           setState(() {
-            final info = 'onError ❌ :: errorCode: $code';
-            _infoStrings.add(info);
+            _infoStrings.add('onError ❌ :: errorCode: $code');
           });
         },
         connectionStateChanged: (connectionState, connectionReason) {
           setState(() {
-            final info = "connectionStateChange ⚡ :: state:$connectionState reason:$connectionReason";
-            _infoStrings.add(info);
+            _infoStrings.add("connectionStateChange ⚡ :: state:$connectionState reason:$connectionReason");
           });
         },
         joinChannelSuccess: (channel, uid, elapsed) {
           setState(() {
-            final info = 'onJoinChannelSuccess ✔ :: channel: $channel, uid: $uid, elapsed: $elapsed';
-            _infoStrings.add(info);
+            _infoStrings.add('onJoinChannelSuccess ✔ :: channel: $channel, uid: $uid, elapsed: $elapsed');
           });
         },
-        leaveChannel: (stats) {
+        leaveChannel: (stats) async {
           setState(() {
+            showEndedScreen = true;
+            duration = stats.totalDuration;
+
             _infoStrings.add('onLeaveChannel ✔ :: stats: ${stats.toJson()}');
             _users.clear();
           });
+
+          //send to call history
+          final preFormattedFrom = DateTime.now().subtract(duration > 60 ? Duration(minutes: duration) : Duration(seconds: duration));
+          final preFormattedTo = DateTime.now();
+          final from = DateFormat().add_Hms().format(preFormattedFrom).toString();
+          final to = DateFormat().add_Hms().format(preFormattedTo).toString();
+
+          print("----------- $from + ---------$to");
+
+          context.read<CallHistoryCubit>()..addCallHistory(1, 12, from, to);
+
+          //deduct from balance
         },
         userJoined: (uid, elapsed) {
           setState(() {
-            final info = 'userJoined ✔ :: $uid';
-            _infoStrings.add(info);
+            showEndedScreen = false;
+            _infoStrings.add('userJoined ✔ :: $uid');
             _users.add(uid);
           });
         },
         userOffline: (uid, elapsed) {
           setState(() {
-            final info = 'userOffline ❌ :: $uid';
-            _infoStrings.add(info);
+            showEndedScreen = true;
+            _infoStrings.add('userOffline ❌ :: $uid');
             _users.remove(uid);
           });
         },
         firstRemoteVideoFrame: (uid, width, height, elapsed) {
           setState(() {
-            final info = 'firstRemoteVideoFrame 📺 :: uid: $uid, dimensions: $width x $height';
-            _infoStrings.add(info);
+            _infoStrings.add('firstRemoteVideoFrame 📺 :: uid: $uid, dimensions: $width x $height');
           });
         },
         tokenPrivilegeWillExpire: (token) async {
@@ -154,122 +172,148 @@ class _CallPageState extends State<CallPage> {
     return list;
   } // Toolbar layout
 
-  Widget _actionsToolbar() {
+  Widget _actionsToolbar(bool showAllControls) {
     return Container(
       alignment: Alignment.bottomCenter,
       padding: EdgeInsets.symmetric(vertical: 20, horizontal: 40),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          //end call
-          RawMaterialButton(
-            constraints: BoxConstraints(
-              maxWidth: 64,
-              minHeight: 64,
-              minWidth: 64,
-              maxHeight: 64,
+      child: showAllControls
+          ? Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                //end call
+                RawMaterialButton(
+                  constraints: BoxConstraints(
+                    maxWidth: 64,
+                    minHeight: 64,
+                    minWidth: 64,
+                    maxHeight: 64,
+                  ),
+                  onPressed: () => _onCallEnd(context),
+                  child: Icon(
+                    Icons.call_end,
+                    color: Colors.white,
+                    size: 32.0,
+                  ),
+                  shape: CircleBorder(),
+                  elevation: 2.0,
+                  fillColor: Color(0xffEA493C),
+                  padding: EdgeInsets.zero,
+                ),
+
+                SizedBox(height: 10),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    //mute audio
+                    RawMaterialButton(
+                      constraints: BoxConstraints(
+                        maxWidth: 48,
+                        minHeight: 48,
+                        minWidth: 48,
+                        maxHeight: 48,
+                      ),
+                      onPressed: _onToggleMuteAudio,
+                      child: Icon(
+                        widget.mutedAudio ? Icons.mic_off : Icons.mic,
+                        color: Colors.white,
+                        size: 24.0,
+                      ),
+                      shape: CircleBorder(),
+                      elevation: 2.0,
+                      fillColor: widget.mutedAudio ? Color(0xffEA493C) : Color(0xff434649),
+                      padding: EdgeInsets.zero,
+                    ),
+
+                    //mute video
+                    RawMaterialButton(
+                      constraints: BoxConstraints(
+                        maxWidth: 48,
+                        minHeight: 48,
+                        minWidth: 48,
+                        maxHeight: 48,
+                      ),
+                      onPressed: _onToggleMuteVideo,
+                      child: Icon(
+                        widget.mutedVideo ? MdiIcons.videoOffOutline : MdiIcons.videoOutline,
+                        color: Colors.white,
+                        size: 24.0,
+                      ),
+                      shape: CircleBorder(),
+                      elevation: 2.0,
+                      fillColor: widget.mutedVideo ? Color(0xffEA493C) : Color(0xff434649),
+                      padding: EdgeInsets.zero,
+                    ),
+
+                    //switch camera
+                    RawMaterialButton(
+                      constraints: BoxConstraints(
+                        maxWidth: 48,
+                        minHeight: 48,
+                        minWidth: 48,
+                        maxHeight: 48,
+                      ),
+                      onPressed: _onSwitchCamera,
+                      child: Icon(
+                        Icons.switch_camera,
+                        color: Colors.white,
+                        size: 24.0,
+                      ),
+                      shape: CircleBorder(),
+                      elevation: 2.0,
+                      fillColor: Color(0xff434649),
+                      padding: EdgeInsets.zero,
+                    ),
+
+                    //more
+                    RawMaterialButton(
+                      constraints: BoxConstraints(
+                        maxWidth: 48,
+                        minHeight: 48,
+                        minWidth: 48,
+                        maxHeight: 48,
+                      ),
+                      onPressed: _onSwitchCamera,
+                      child: Icon(
+                        Icons.more_vert,
+                        color: Colors.white,
+                        size: 24.0,
+                      ),
+                      shape: CircleBorder(),
+                      elevation: 2.0,
+                      fillColor: Color(0xff434649),
+                      padding: EdgeInsets.zero,
+                    ),
+                  ],
+                ),
+              ],
+            )
+          : Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                //end call
+                RawMaterialButton(
+                  constraints: BoxConstraints(
+                    maxWidth: 64,
+                    minHeight: 64,
+                    minWidth: 64,
+                    maxHeight: 64,
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                  child: Icon(
+                    Icons.close,
+                    color: Colors.white,
+                    size: 32.0,
+                  ),
+                  shape: CircleBorder(),
+                  elevation: 2.0,
+                  fillColor: Color(0xffEA493C),
+                  padding: EdgeInsets.zero,
+                ),
+              ],
             ),
-            onPressed: () => _onCallEnd(context),
-            child: Icon(
-              Icons.call_end,
-              color: Colors.white,
-              size: 32.0,
-            ),
-            shape: CircleBorder(),
-            elevation: 2.0,
-            fillColor: Color(0xffEA493C),
-            padding: EdgeInsets.zero,
-          ),
-
-          SizedBox(height: 10),
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              //mute audio
-              RawMaterialButton(
-                constraints: BoxConstraints(
-                  maxWidth: 48,
-                  minHeight: 48,
-                  minWidth: 48,
-                  maxHeight: 48,
-                ),
-                onPressed: _onToggleMuteAudio,
-                child: Icon(
-                  widget.mutedAudio ? Icons.mic_off : Icons.mic,
-                  color: Colors.white,
-                  size: 24.0,
-                ),
-                shape: CircleBorder(),
-                elevation: 2.0,
-                fillColor: widget.mutedAudio ? Color(0xffEA493C) : Color(0xff434649),
-                padding: EdgeInsets.zero,
-              ),
-
-              //mute video
-              RawMaterialButton(
-                constraints: BoxConstraints(
-                  maxWidth: 48,
-                  minHeight: 48,
-                  minWidth: 48,
-                  maxHeight: 48,
-                ),
-                onPressed: _onToggleMuteVideo,
-                child: Icon(
-                  widget.mutedVideo ? MdiIcons.videoOffOutline : MdiIcons.videoOutline,
-                  color: Colors.white,
-                  size: 24.0,
-                ),
-                shape: CircleBorder(),
-                elevation: 2.0,
-                fillColor: widget.mutedVideo ? Color(0xffEA493C) : Color(0xff434649),
-                padding: EdgeInsets.zero,
-              ),
-
-              //switch camera
-              RawMaterialButton(
-                constraints: BoxConstraints(
-                  maxWidth: 48,
-                  minHeight: 48,
-                  minWidth: 48,
-                  maxHeight: 48,
-                ),
-                onPressed: _onSwitchCamera,
-                child: Icon(
-                  Icons.switch_camera,
-                  color: Colors.white,
-                  size: 24.0,
-                ),
-                shape: CircleBorder(),
-                elevation: 2.0,
-                fillColor: Color(0xff434649),
-                padding: EdgeInsets.zero,
-              ),
-
-              //more
-              RawMaterialButton(
-                constraints: BoxConstraints(
-                  maxWidth: 48,
-                  minHeight: 48,
-                  minWidth: 48,
-                  maxHeight: 48,
-                ),
-                onPressed: _onSwitchCamera,
-                child: Icon(
-                  Icons.more_vert,
-                  color: Colors.white,
-                  size: 24.0,
-                ),
-                shape: CircleBorder(),
-                elevation: 2.0,
-                fillColor: Color(0xff434649),
-                padding: EdgeInsets.zero,
-              ),
-            ],
-          ),
-        ],
-      ),
     );
   }
 
@@ -572,12 +616,80 @@ class _CallPageState extends State<CallPage> {
         ),
       );
 
+  Widget _callEndedView(String status) => AnimatedContainer(
+        duration: Duration(milliseconds: 1000),
+        alignment: Alignment.topCenter,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(height: 80.h),
+            CircleAvatar(
+              radius: 40.w,
+              backgroundImage: AssetImage("assets/images/progile.jpeg"),
+            ),
+            SizedBox(height: 20.h),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Dr. Darren Eder',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    VerifiedTag(),
+                  ],
+                ),
+                SizedBox(height: 4),
+                Text(
+                  'Psychologist',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white60,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 10),
+            Text(
+              "Call Ended",
+              style: TextStyle(
+                fontSize: 18,
+                color: Colors.white,
+                letterSpacing: 0.6,
+                fontWeight: FontWeight.w300,
+              ),
+            ),
+            SizedBox(height: 10),
+            Text(
+              duration > 60 ? "Call Duration : $duration mins" : "Call Duration : $duration secs",
+              style: TextStyle(
+                fontSize: 18,
+                color: Colors.white,
+                letterSpacing: 0.6,
+                fontWeight: FontWeight.w300,
+              ),
+            ),
+          ],
+        ),
+      );
+
   //connected
   Widget _callConnectedView() => widget.mutedVideo ? _audioCallView() : _videoCallView();
 
   //btn actions
   _onCallEnd(BuildContext context) async {
-    Navigator.pop(context);
     print(await _engine.getCallId());
     await _engine.leaveChannel();
   }
@@ -603,6 +715,7 @@ class _CallPageState extends State<CallPage> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.callDuration);
     return SafeArea(
       child: Scaffold(
         backgroundColor: Color(0xff202124),
@@ -610,12 +723,12 @@ class _CallPageState extends State<CallPage> {
           child: Stack(
             children: <Widget>[
               _users.isEmpty
-                  ? _infoStrings.contains('userOffline')
-                      ? _callingView("Disconnected")
+                  ? showEndedScreen
+                      ? _callEndedView("Ended")
                       : _callingView('Calling...')
                   : _callConnectedView(),
               _logs(),
-              _actionsToolbar(),
+              showEndedScreen ? _actionsToolbar(false) : _actionsToolbar(true),
             ],
           ),
         ),
