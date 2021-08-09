@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:json_patch/json_patch.dart';
 import 'package:pocket_health/models/ForgotPassword.dart';
 import 'package:pocket_health/models/all_schedules_model.dart';
+import 'package:pocket_health/models/appoinment_model.dart';
 import 'package:pocket_health/models/call_history_model.dart';
 import 'package:pocket_health/models/child_chronic_condition_model.dart';
 import 'package:pocket_health/models/child_chronic_detail_model.dart';
@@ -713,6 +714,33 @@ class ApiService {
     print(response.body);
 
     return callHistoryModelFromJson(response.body);
+  }
+
+  //appointments
+  Future<AppointmentModel> bookAppointments(appointment) async {
+    _token = await getStringValuesSF();
+    final mapData = appointmentModelToJson(appointment);
+
+    final response = await this.httpClient.post(
+          Uri.encodeFull('https://ssential.herokuapp.com/api/doctors_consult/appointment/'),
+          headers: {"Content-Type": "application/json", "Authorization": "Bearer " + _token},
+          body: mapData,
+        );
+    print("response data | " + response.body);
+    return appointmentModelFromJson(response.body);
+  }
+
+  Future<List<AppointmentModel>> fetchBookingHistory(int userID, int docID, int status) async {
+    _token = await getStringValuesSF();
+    final response = await this.httpClient.get(
+      Uri.encodeFull('https://ssential.herokuapp.com/api/doctors_consult/appointment/'),
+      headers: {"Content-Type": "application/json", "Authorization": "Bearer " + _token},
+    );
+
+    final allBookings = appointmentModelListFromJson(response.body);
+
+    final queriedBookings = allBookings.where((e) => e.user == userID && e.profile == docID).toList();
+    return queriedBookings;
   }
 
   Future<List<CallHistoryModel>> fetchAllCallHistory(userID) async {

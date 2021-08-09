@@ -29,6 +29,8 @@ import 'package:pocket_health/bloc/search_organ/search_organ_bloc.dart';
 import 'package:pocket_health/bloc/symptoms/details/symptoms_bloc.dart';
 import 'package:pocket_health/repository/adultUnwellRepo.dart';
 import 'package:pocket_health/repository/all_schedules_repo.dart';
+import 'package:pocket_health/repository/appointments_repo.dart';
+import 'package:pocket_health/repository/booking_history_repo.dart';
 import 'package:pocket_health/repository/call_history_repo.dart';
 import 'package:pocket_health/repository/child_condition_detail_repo.dart';
 import 'package:pocket_health/repository/child_conditions_repo.dart';
@@ -60,6 +62,8 @@ import 'package:pocket_health/services/api_service.dart';
 import 'package:pocket_health/simple_bloc_observer.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
+import 'bloc/appointments/appointments_cubit.dart';
+import 'bloc/booking_history/booking_history_cubit.dart';
 import 'bloc/conditionDetails/conditionDetailsBloc.dart';
 import 'bloc/filter_reviews/filter_reviews_cubit.dart';
 import 'bloc/forgotPassword/forgotPasswordBloc.dart';
@@ -112,9 +116,13 @@ void main() async {
   final ScheduleDetailRepo scheduleDetailRepo = ScheduleDetailRepo(ApiService(http.Client()));
   final ReviewsRepo reviewsRepo = ReviewsRepo(ApiService(http.Client()));
   final CallHistoryRepo callHistoryRepo = CallHistoryRepo(ApiService(http.Client()));
+  final AppointmentsRepo appointmentsRepo = AppointmentsRepo(ApiService(http.Client()));
+  final BookingHistoryRepo bookingHistoryRepo = BookingHistoryRepo(ApiService(http.Client()));
   runApp(MyApp(
     forgotPasswordRepo: forgotPasswordRepo,
     loginRepository: loginRepository,
+    bookingHistoryRepo: bookingHistoryRepo,
+    appointmentsRepo: appointmentsRepo,
     userProfileRepo: userProfileRepo,
     practitionerProfileRepo: practitionerProfileRepo,
     emergencyContactRepo: emergencyContactRepo,
@@ -173,6 +181,8 @@ class MyApp extends StatelessWidget {
   final ScheduleDetailRepo scheduleDetailRepo;
   final ReviewsRepo reviewsRepo;
   final CallHistoryRepo callHistoryRepo;
+  final AppointmentsRepo appointmentsRepo;
+  final BookingHistoryRepo bookingHistoryRepo;
 
   MyApp({
     Key key,
@@ -204,6 +214,8 @@ class MyApp extends StatelessWidget {
     @required this.scheduleDetailRepo,
     @required this.reviewsRepo,
     @required this.callHistoryRepo,
+    @required this.appointmentsRepo,
+    @required this.bookingHistoryRepo,
   }) : super(key: key);
 
   final GlobalKey<NavigatorState> _navigator = new GlobalKey<NavigatorState>();
@@ -251,6 +263,8 @@ class MyApp extends StatelessWidget {
           BlocProvider(create: (context) => PostReviewCubit(reviewsRepo)),
           BlocProvider(create: (context) => InitializeStreamChatCubit()),
           BlocProvider(create: (context) => CallHistoryCubit(callHistoryRepo)),
+          BlocProvider(create: (context) => AppointmentsCubit(appointmentsRepo)),
+          BlocProvider(create: (context) => BookingHistoryCubit(bookingHistoryRepo)),
         ],
         child: MaterialApp(
           navigatorKey: _navigator,
