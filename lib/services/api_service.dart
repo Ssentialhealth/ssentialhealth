@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:json_patch/json_patch.dart';
 import 'package:pocket_health/models/ForgotPassword.dart';
 import 'package:pocket_health/models/all_schedules_model.dart';
-import 'package:pocket_health/models/appoinment_model.dart';
+import 'package:pocket_health/models/call_history_model.dart';
 import 'package:pocket_health/models/child_chronic_condition_model.dart';
 import 'package:pocket_health/models/child_chronic_detail_model.dart';
 import 'package:pocket_health/models/child_condition_detail_model.dart';
@@ -441,7 +441,8 @@ class ApiService {
     final response = await this.httpClient.get(
       "https://ssential.herokuapp.com/api/user/practitioner_profiles/",
       headers: {
-        "Authorization": "Bearer " + _token,
+        "Authorization": "Bearer " +
+            "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjI4MjA1NjI5LCJqdGkiOiJmZjVhOTlkNmExZTY0NzA2YTU5OWM2ODc3OTVjZWJmYiIsInVzZXJfaWQiOjV9.7WBfZwnIMvy5f5Xtc_aL0OuNhcY_CPo0zyVWbKUfuSY",
       },
     );
     if (response.statusCode != 200) {
@@ -696,31 +697,37 @@ class ApiService {
     return listOfReviewModelFromJson(response.body);
   }
 
-  //appointments
-  Future<AppointmentModel> bookAppointments(appointment) async {
-    _token = await getStringValuesSF();
-    final mapData = appointmentModelToJson(appointment);
+  Future<CallHistoryModel> addCallHistoryToDB(CallHistoryModel callHistoryModel) async {
+    final mapData = callHistoryModelToJson(callHistoryModel);
 
-    final response = await this.httpClient.post(
-          Uri.encodeFull('https://ssential.herokuapp.com/api/doctors_consult/appointment/'),
-          headers: {"Content-Type": "application/json", "Authorization": "Bearer " + _token},
-          body: mapData,
-        );
-    print("response data | " + response.body);
-    return appointmentModelFromJson(response.body);
-  }
-
-  Future<List<AppointmentModel>> fetchBookingHistory(int userID, int docID, int status) async {
-    _token = await getStringValuesSF();
-    final response = await this.httpClient.get(
-      Uri.encodeFull('https://ssential.herokuapp.com/api/doctors_consult/appointment/'),
-      headers: {"Content-Type": "application/json", "Authorization": "Bearer " + _token},
+    final response = await http.post(
+      'https://ssential.herokuapp.com/api/doctors_consult/call_history/',
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " +
+            "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjI4NDc5MjM2LCJqdGkiOiIyYzBiMTMwMTY3N2U0MWY2OWMyYjgwYmY0YmFmODc0YSIsInVzZXJfaWQiOjV9.-0NNYUtgKo6GmHWcyB9dRMggHAWXsmM6QFozzg7toLk"
+      },
+      body: mapData,
     );
 
-    final allBookings = appointmentModelListFromJson(response.body);
+    print(response.body);
 
-    final queriedBookings = allBookings.where((e) => e.user == userID && e.profile == docID ).toList();
-    return queriedBookings;
+    return callHistoryModelFromJson(response.body);
+  }
+
+  Future<List<CallHistoryModel>> fetchAllCallHistory(userID) async {
+    final response = await http.get(
+      "https://ssential.herokuapp.com/api/doctors_consult/call_history/",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " +
+            "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjI4NDc5MjM2LCJqdGkiOiIyYzBiMTMwMTY3N2U0MWY2OWMyYjgwYmY0YmFmODc0YSIsInVzZXJfaWQiOjV9.-0NNYUtgKo6GmHWcyB9dRMggHAWXsmM6QFozzg7toLk",
+      },
+    );
+
+    final callList = callHistoryListModelFromJson(response.body).where((element) => element.user == userID).toList();
+    print(response.body);
+    return callList;
   }
 }
 

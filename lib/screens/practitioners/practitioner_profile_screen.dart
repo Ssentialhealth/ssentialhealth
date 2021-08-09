@@ -332,6 +332,44 @@ class _PractitionerProfileScreenState extends State<PractitionerProfileScreen> w
                                           MaterialPageRoute(
                                             builder: (context) {
                                               return StreamChat(
+                                                streamChatThemeData: StreamChatThemeData(
+                                                  //input bar
+                                                  messageInputTheme: MessageInputTheme(
+                                                    sendAnimationDuration: Duration(milliseconds: 500),
+                                                  ),
+
+                                                  //messages styling
+                                                  ownMessageTheme: MessageTheme(
+                                                    messageBorderColor: accentColorDark,
+                                                    messageBackgroundColor: accentColorLight,
+                                                    messageText: TextStyle(
+                                                      color: Color(0xff373737),
+                                                    ),
+                                                  ),
+                                                  otherMessageTheme: MessageTheme(
+                                                    messageBorderColor: Color(0x19000000),
+                                                    messageBackgroundColor: Color(0xF000000),
+                                                    messageText: TextStyle(
+                                                      color: Color(0xff373737),
+                                                    ),
+                                                  ),
+
+                                                  //list styling
+                                                  channelPreviewTheme: ChannelPreviewTheme(
+                                                    unreadCounterColor: accentColorDark,
+                                                  ),
+
+                                                  //channel styling
+                                                  channelTheme: ChannelTheme(
+                                                    channelHeaderTheme: ChannelHeaderTheme(
+                                                      color: accentColor,
+                                                      subtitle: TextStyle(
+                                                        fontSize: 11.5.sp,
+                                                        color: Colors.grey[700],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
                                                 client: context.read<InitializeStreamChatCubit>().client,
                                                 child: StreamChannel(
                                                   channel: state.channel,
