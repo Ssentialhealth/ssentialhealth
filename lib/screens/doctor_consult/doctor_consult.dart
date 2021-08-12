@@ -2,8 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:pocket_health/bloc/initialize_stream_chat/initialize_stream_chat_cubit.dart';
+import 'package:pocket_health/bloc/login/loginBloc.dart';
+import 'package:pocket_health/bloc/login/loginState.dart';
+import 'package:pocket_health/screens/doctor_consult/saved/saved_list.dart';
 import 'package:pocket_health/utils/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'call/calls_list.dart';
 import 'chat/channels_list.dart';
@@ -16,13 +19,23 @@ class DoctorConsult extends StatefulWidget {
 class _DoctorConsultState extends State<DoctorConsult> with SingleTickerProviderStateMixin {
   //tab bar
   TabController _tabController;
+  List docsList = [];
 
   @override
   void initState() {
     super.initState();
-    context.read<InitializeStreamChatCubit>()..initializeUser('', ''); // TODO: inProduction | add dynamic data
+    getDocs();
+    // context.read<InitializeStreamChatCubit>()..initializeUser('', ''); // TODO: inProduction | add dynamic data
     _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(() => setState(() {}));
+  }
+
+  getDocs() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final list = prefs.getStringList('saved');
+    // setState(() {
+    //   docsList.addAll(list);
+    // });
   }
 
   @override
@@ -74,6 +87,9 @@ class _DoctorConsultState extends State<DoctorConsult> with SingleTickerProvider
                     ),
                     child: TabBar(
                       isScrollable: false,
+                      onTap: (idx) async {
+                        if (idx == 2) {}
+                      },
                       overlayColor: MaterialStateProperty.all(Colors.white),
                       indicatorColor: accentColorDark,
                       labelPadding: EdgeInsets.zero,
@@ -127,9 +143,19 @@ class _DoctorConsultState extends State<DoctorConsult> with SingleTickerProvider
           body: TabBarView(
             controller: _tabController,
             children: [
-              CallsList(),
+              BlocBuilder<LoginBloc, LoginState>(
+                builder: (context, state) {
+                  if (state is LoginLoaded) {
+                    return CallsList(loginModel: state.loginModel);
+                  }
+                  if (state is LoginError) {
+                    return Container();
+                  }
+                  return Container();
+                },
+              ),
               ChannelsList(),
-              Container(),
+              SavedList(docsList: docsList),
             ],
           ),
         ),

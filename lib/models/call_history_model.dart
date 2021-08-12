@@ -20,21 +20,18 @@ class CallHistoryModel {
     @required this.startedAt,
     @required this.endedAt,
     @required this.user,
-    @required this.profile,
   });
 
   final int id;
   final String startedAt;
   final String endedAt;
   final int user;
-  final int profile;
 
   factory CallHistoryModel.fromJson(Map<String, dynamic> json) => CallHistoryModel(
         id: json["id"],
         startedAt: json["started_at"],
         endedAt: json["ended_at"],
         user: json["user"],
-        profile: json["profile"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -42,6 +39,5 @@ class CallHistoryModel {
         "started_at": startedAt,
         "ended_at": endedAt,
         "user": user,
-        "profile": profile,
       };
 }

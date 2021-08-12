@@ -8,6 +8,7 @@ import 'package:json_patch/json_patch.dart';
 import 'package:pocket_health/models/ForgotPassword.dart';
 import 'package:pocket_health/models/all_schedules_model.dart';
 import 'package:pocket_health/models/appoinment_model.dart';
+import 'package:pocket_health/models/call_balance_model.dart';
 import 'package:pocket_health/models/call_history_model.dart';
 import 'package:pocket_health/models/child_chronic_condition_model.dart';
 import 'package:pocket_health/models/child_chronic_detail_model.dart';
@@ -442,8 +443,7 @@ class ApiService {
     final response = await this.httpClient.get(
       "https://ssential.herokuapp.com/api/user/practitioner_profiles/",
       headers: {
-        "Authorization": "Bearer " +
-            "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjI4MjA1NjI5LCJqdGkiOiJmZjVhOTlkNmExZTY0NzA2YTU5OWM2ODc3OTVjZWJmYiIsInVzZXJfaWQiOjV9.7WBfZwnIMvy5f5Xtc_aL0OuNhcY_CPo0zyVWbKUfuSY",
+        "Authorization": "Bearer " + _token,
       },
     );
     if (response.statusCode != 200) {
@@ -452,7 +452,7 @@ class ApiService {
 
     print(response.body);
     // return practitionerProfileFromJson(response.body).where((element) => element.healthInfo != null && element.healthInfo.practitioner == practitionersCategory).toList();
-    return practitionerProfileModelFromJson(response.body).where((element) => element.healthInfo != null).toList();
+    return practitionerProfileListModelFromJson(response.body).where((element) => element.healthInfo != null).toList();
   }
 
   //fetch practitioners by filters
@@ -476,7 +476,7 @@ class ApiService {
     if (response.statusCode != 200) {
       throw Exception('Error Fetching practitioners');
     }
-    final whereNotNull = practitionerProfileModelFromJson(response.body);
+    final whereNotNull = practitionerProfileListModelFromJson(response.body);
     // .where(
     //   (element) => (element.user != null &&
     //       element.region != null &&
@@ -680,11 +680,12 @@ class ApiService {
 
   //post review
   Future<ReviewModel> postReview(ReviewModel review) async {
+    _token = await getStringValuesSF();
     final mapData = reviewModelToJson(review);
 
     final response = await this.httpClient.post(
           Uri.encodeFull('https://ssential.herokuapp.com/api/practitionerProfile/reviews/'),
-          headers: {"Content-Type": "application/json"},
+          headers: {"Content-Type": "application/json", "Authorization": "Bearer " + _token},
           body: mapData,
         );
     print("review respsonse | ${response.body}");
@@ -693,20 +694,25 @@ class ApiService {
 
   //fetch reviews
   Future<List<ReviewModel>> fetchReviews() async {
-    final response = await this.httpClient.get('https://ssential.herokuapp.com/api/practitionerProfile/reviews/');
+    _token = await getStringValuesSF();
+
+    final response = await this.httpClient.get(
+      'https://ssential.herokuapp.com/api/practitionerProfile/reviews/',
+      headers: {"Content-Type": "application/json", "Authorization": "Bearer " + _token},
+    );
     print("review respsonse | ${response.body}");
     return listOfReviewModelFromJson(response.body);
   }
 
   Future<CallHistoryModel> addCallHistoryToDB(CallHistoryModel callHistoryModel) async {
+    _token = await getStringValuesSF();
     final mapData = callHistoryModelToJson(callHistoryModel);
 
     final response = await http.post(
       'https://ssential.herokuapp.com/api/doctors_consult/call_history/',
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer " +
-            "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjI4NDc5MjM2LCJqdGkiOiIyYzBiMTMwMTY3N2U0MWY2OWMyYjgwYmY0YmFmODc0YSIsInVzZXJfaWQiOjV9.-0NNYUtgKo6GmHWcyB9dRMggHAWXsmM6QFozzg7toLk"
+        "Authorization": "Bearer " + _token,
       },
       body: mapData,
     );
@@ -743,19 +749,82 @@ class ApiService {
     return queriedBookings;
   }
 
+  //call history
   Future<List<CallHistoryModel>> fetchAllCallHistory(userID) async {
+    _token = await getStringValuesSF();
     final response = await http.get(
       "https://ssential.herokuapp.com/api/doctors_consult/call_history/",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer " +
-            "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjI4NDc5MjM2LCJqdGkiOiIyYzBiMTMwMTY3N2U0MWY2OWMyYjgwYmY0YmFmODc0YSIsInVzZXJfaWQiOjV9.-0NNYUtgKo6GmHWcyB9dRMggHAWXsmM6QFozzg7toLk",
+        "Authorization": "Bearer " + _token,
       },
     );
 
     final callList = callHistoryListModelFromJson(response.body).where((element) => element.user == userID).toList();
-    print(response.body);
+    print(response.reasonPhrase);
     return callList;
+  }
+
+  Future<PractitionerProfileModel> fetchDocDetails(docID) async {
+    _token = await getStringValuesSF();
+    final response = await this.httpClient.get(
+      "https://ssential.herokuapp.com/api/user/practitioner_profile/$docID/",
+      headers: {
+        "Authorization": "Bearer " + _token,
+      },
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Error Fetching practitioner DETAILS');
+    }
+
+    print(response.body);
+    return practitionerProfileModelFromJson(response.body);
+  }
+
+  //call balance
+  Future<CallBalanceModel> fetchCallBalance() async {
+    _token = await getStringValuesSF();
+    final fetchResponse = await http.get(
+      "https://ssential.herokuapp.com/api/doctors_consult/callBalance/",
+      headers: {
+        'Authorization': 'Bearer ' + _token,
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (fetchResponse.statusCode == 200) {
+      print(fetchResponse.body);
+      final allCalls = callBalanceListModelFromJson(fetchResponse.body);
+      final callBalance = allCalls.lastWhere((e) => e.createdAt.isBefore(DateTime.now()));
+      print(callBalance.paymentType);
+      return callBalance;
+    } else {
+      print(fetchResponse.reasonPhrase);
+      return null;
+    }
+  }
+
+  Future<CallBalanceModel> addCallPayment(paymentData) async {
+    final payload = json.encode(paymentData);
+    _token = await getStringValuesSF();
+    final fetchResponse = await http.post(
+      "https://ssential.herokuapp.com/api/doctors_consult/callBalance/",
+      headers: {
+        'Authorization': 'Bearer ' + _token,
+        'Content-Type': 'application/json',
+      },
+      body: payload,
+    );
+
+    if (fetchResponse.statusCode == 201) {
+      print(fetchResponse.body);
+      final payment = callBalanceModelFromJson(fetchResponse.body);
+      return payment;
+    } else {
+      print(fetchResponse.reasonPhrase);
+      print(fetchResponse.statusCode);
+      return null;
+    }
   }
 }
 

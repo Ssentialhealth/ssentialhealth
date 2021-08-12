@@ -10,32 +10,46 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:pocket_health/bloc/call_balance/call_balance_cubit.dart';
 import 'package:pocket_health/bloc/call_history/call_history_cubit.dart';
 import 'package:pocket_health/screens/doctor_consult/call/utils.dart';
 import 'package:pocket_health/widgets/verified_tag.dart';
 
 class CallPage extends StatefulWidget {
-  bool mutedAudio;
+	bool mutedAudio;
   bool mutedVideo;
   final String channelName;
   final int callDuration;
+  final int docID;
+  final int userID;
   final ClientRole role;
+  final double callBalanceAmount;
 
-  CallPage({Key key, this.channelName, this.role, this.mutedAudio, this.mutedVideo, this.callDuration}) : super(key: key);
+  CallPage({
+    Key key,
+    this.channelName,
+    this.role,
+    this.mutedAudio,
+    this.mutedVideo,
+    this.callDuration,
+    this.docID,
+    this.userID,
+    this.callBalanceAmount,
+  }) : super(key: key);
 
   @override
   _CallPageState createState() => _CallPageState();
 }
 
 class _CallPageState extends State<CallPage> {
-  final _users = <int>[];
+	final _users = <int>[];
   final _infoStrings = <String>[];
 
   RtcEngine _engine;
   bool showEndedScreen = false;
   String baseUrl = ''; //Add the link to your deployed server here
 
-  int duration;
+  int callTime;
 
   @override
   void dispose() {
@@ -115,25 +129,31 @@ class _CallPageState extends State<CallPage> {
           });
         },
         leaveChannel: (stats) async {
-          setState(() {
+	        setState(() {
             showEndedScreen = true;
-            duration = stats.totalDuration;
+            callTime = stats.totalDuration;
 
             _infoStrings.add('onLeaveChannel ✔ :: stats: ${stats.toJson()}');
             _users.clear();
           });
 
           //send to call history
-          final preFormattedFrom = DateTime.now().subtract(duration > 60 ? Duration(minutes: duration) : Duration(seconds: duration));
+          final preFormattedFrom = DateTime.now().subtract(callTime > 59 ? Duration(minutes: callTime ~/ 60) : Duration(seconds: callTime));
           final preFormattedTo = DateTime.now();
           final from = DateFormat().add_Hms().format(preFormattedFrom).toString();
           final to = DateFormat().add_Hms().format(preFormattedTo).toString();
 
           print("----------- $from + ---------$to");
 
-          context.read<CallHistoryCubit>()..addCallHistory(1, 12, from, to);
+          final duration = Duration(seconds: callTime).inMinutes.toInt();
 
           //deduct from balance
+          final newBalance = widget.callBalanceAmount - duration;
+          context.read<CallHistoryCubit>()..addCallHistory(5, widget.docID, from, to);
+          context.read<CallBalanceCubit>()
+            ..creditDeductAdd(paymentType: 'LIPA_MPESA', currency: "KES", amount: newBalance.toInt(), user: 5, balance: newBalance.toInt());
+
+          print("---------new Balance  $newBalance");
         },
         userJoined: (uid, elapsed) {
           setState(() {
@@ -174,8 +194,8 @@ class _CallPageState extends State<CallPage> {
 
   Widget _actionsToolbar(bool showAllControls) {
     return Container(
-      alignment: Alignment.bottomCenter,
-      padding: EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+	    alignment: Alignment.bottomCenter,
+      padding: EdgeInsets.symmetric(vertical: 20.w, horizontal: 40.w),
       child: showAllControls
           ? Column(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -184,16 +204,16 @@ class _CallPageState extends State<CallPage> {
                 //end call
                 RawMaterialButton(
                   constraints: BoxConstraints(
-                    maxWidth: 64,
-                    minHeight: 64,
-                    minWidth: 64,
-                    maxHeight: 64,
+                    maxWidth: 64.w,
+                    minHeight: 64.w,
+                    minWidth: 64.w,
+                    maxHeight: 64.w,
                   ),
                   onPressed: () => _onCallEnd(context),
                   child: Icon(
                     Icons.call_end,
                     color: Colors.white,
-                    size: 32.0,
+                    size: 32.0.w,
                   ),
                   shape: CircleBorder(),
                   elevation: 2.0,
@@ -201,7 +221,7 @@ class _CallPageState extends State<CallPage> {
                   padding: EdgeInsets.zero,
                 ),
 
-                SizedBox(height: 10),
+                SizedBox(height: 10.h),
 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -209,16 +229,16 @@ class _CallPageState extends State<CallPage> {
                     //mute audio
                     RawMaterialButton(
                       constraints: BoxConstraints(
-                        maxWidth: 48,
-                        minHeight: 48,
-                        minWidth: 48,
-                        maxHeight: 48,
+                        maxWidth: 48.w,
+                        minHeight: 48.w,
+                        minWidth: 48.w,
+                        maxHeight: 48.w,
                       ),
                       onPressed: _onToggleMuteAudio,
                       child: Icon(
-                        widget.mutedAudio ? Icons.mic_off : Icons.mic,
+	                      widget.mutedAudio ? Icons.mic_off : Icons.mic,
                         color: Colors.white,
-                        size: 24.0,
+                        size: 24.0.w,
                       ),
                       shape: CircleBorder(),
                       elevation: 2.0,
@@ -229,16 +249,16 @@ class _CallPageState extends State<CallPage> {
                     //mute video
                     RawMaterialButton(
                       constraints: BoxConstraints(
-                        maxWidth: 48,
-                        minHeight: 48,
-                        minWidth: 48,
-                        maxHeight: 48,
+                        maxWidth: 48.w,
+                        minHeight: 48.w,
+                        minWidth: 48.w,
+                        maxHeight: 48.w,
                       ),
                       onPressed: _onToggleMuteVideo,
                       child: Icon(
-                        widget.mutedVideo ? MdiIcons.videoOffOutline : MdiIcons.videoOutline,
+	                      widget.mutedVideo ? MdiIcons.videoOffOutline : MdiIcons.videoOutline,
                         color: Colors.white,
-                        size: 24.0,
+                        size: 24.0.w,
                       ),
                       shape: CircleBorder(),
                       elevation: 2.0,
@@ -249,16 +269,16 @@ class _CallPageState extends State<CallPage> {
                     //switch camera
                     RawMaterialButton(
                       constraints: BoxConstraints(
-                        maxWidth: 48,
-                        minHeight: 48,
-                        minWidth: 48,
-                        maxHeight: 48,
+                        maxWidth: 48.w,
+                        minHeight: 48.w,
+                        minWidth: 48.w,
+                        maxHeight: 48.w,
                       ),
                       onPressed: _onSwitchCamera,
                       child: Icon(
-                        Icons.switch_camera,
+	                      Icons.switch_camera,
                         color: Colors.white,
-                        size: 24.0,
+                        size: 24.0.w,
                       ),
                       shape: CircleBorder(),
                       elevation: 2.0,
@@ -269,16 +289,16 @@ class _CallPageState extends State<CallPage> {
                     //more
                     RawMaterialButton(
                       constraints: BoxConstraints(
-                        maxWidth: 48,
-                        minHeight: 48,
-                        minWidth: 48,
-                        maxHeight: 48,
+                        maxWidth: 48.w,
+                        minHeight: 48.w,
+                        minWidth: 48.w,
+                        maxHeight: 48.w,
                       ),
                       onPressed: _onSwitchCamera,
                       child: Icon(
-                        Icons.more_vert,
+	                      Icons.more_vert,
                         color: Colors.white,
-                        size: 24.0,
+                        size: 24.0.w,
                       ),
                       shape: CircleBorder(),
                       elevation: 2.0,
@@ -295,17 +315,20 @@ class _CallPageState extends State<CallPage> {
               children: [
                 //end call
                 RawMaterialButton(
-                  constraints: BoxConstraints(
-                    maxWidth: 64,
-                    minHeight: 64,
-                    minWidth: 64,
-                    maxHeight: 64,
+	                constraints: BoxConstraints(
+                    maxWidth: 64.w,
+                    minHeight: 64.w,
+                    minWidth: 64.w,
+                    maxHeight: 64.w,
                   ),
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () async {
+                    context.read<CallBalanceCubit>()..getCallBalance();
+                    Navigator.pop(context);
+                  },
                   child: Icon(
                     Icons.close,
                     color: Colors.white,
-                    size: 32.0,
+                    size: 32.0.w,
                   ),
                   shape: CircleBorder(),
                   elevation: 2.0,
@@ -320,12 +343,12 @@ class _CallPageState extends State<CallPage> {
   // Info panel to show logs
   Widget _logs() {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 48),
+	    padding: EdgeInsets.symmetric(vertical: 48.h),
       alignment: Alignment.bottomCenter,
       child: FractionallySizedBox(
         heightFactor: 0.5,
         child: Container(
-          padding: EdgeInsets.symmetric(vertical: 48),
+          padding: EdgeInsets.symmetric(vertical: 48.h),
           child: ListView.builder(
             reverse: true,
             itemCount: _infoStrings.length,
@@ -334,22 +357,16 @@ class _CallPageState extends State<CallPage> {
                 return Text("null"); // return type can't be null, a widget was required
               }
               return Padding(
-                padding: EdgeInsets.symmetric(
-                  vertical: 3,
-                  horizontal: 10,
-                ),
+                padding: EdgeInsets.symmetric(vertical: 3.w, horizontal: 10.w),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Flexible(
                       child: Container(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 2,
-                          horizontal: 5,
-                        ),
+                        padding: EdgeInsets.symmetric(vertical: 2.w, horizontal: 5.w),
                         decoration: BoxDecoration(
                           color: Colors.yellowAccent,
-                          borderRadius: BorderRadius.circular(5),
+                          borderRadius: BorderRadius.circular(5.w),
                         ),
                         child: Text(
                           _infoStrings[index],
@@ -434,7 +451,7 @@ class _CallPageState extends State<CallPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: EdgeInsets.all(20.0),
+	          padding: EdgeInsets.all(20.0.w),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.start,
@@ -444,7 +461,7 @@ class _CallPageState extends State<CallPage> {
                   backgroundImage: AssetImage("assets/images/progile.jpeg"),
                 ),
 
-                SizedBox(width: 10),
+                SizedBox(width: 10.w),
 
                 //name
                 Column(
@@ -452,7 +469,7 @@ class _CallPageState extends State<CallPage> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 4),
+                    SizedBox(height: 4.h),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -460,20 +477,20 @@ class _CallPageState extends State<CallPage> {
                         Text(
                           'Dr. Darren Eder',
                           style: TextStyle(
-                            fontSize: 18,
+                            fontSize: 18.sp,
                             fontWeight: FontWeight.w600,
                             color: Colors.white,
                           ),
                         ),
-                        SizedBox(width: 10),
+                        SizedBox(width: 10.w),
                         VerifiedTag(),
                       ],
                     ),
-                    SizedBox(height: 4),
+                    SizedBox(height: 4.h),
                     Text(
                       'Psychologist',
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 16.sp,
                         fontWeight: FontWeight.w500,
                         color: Colors.white60,
                       ),
@@ -485,10 +502,10 @@ class _CallPageState extends State<CallPage> {
           ),
           Center(
             child: Padding(
-              padding: EdgeInsets.only(top: 60.0),
+	            padding: EdgeInsets.only(top: 60.0.h),
               child: Center(
                 child: CircleAvatar(
-                  radius: 72,
+                  radius: 72.w,
                   backgroundImage: AssetImage("assets/images/progile.jpeg"),
                 ),
               ),
@@ -503,17 +520,17 @@ class _CallPageState extends State<CallPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: EdgeInsets.all(20.0),
+	          padding: EdgeInsets.all(20.0.w),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 CircleAvatar(
-                  radius: 24,
+                  radius: 24.w,
                   backgroundImage: AssetImage("assets/images/progile.jpeg"),
                 ),
 
-                SizedBox(width: 10),
+                SizedBox(width: 10.w),
 
                 //name
                 Column(
@@ -521,7 +538,7 @@ class _CallPageState extends State<CallPage> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 4),
+                    SizedBox(height: 4.h),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -529,20 +546,20 @@ class _CallPageState extends State<CallPage> {
                         Text(
                           'Dr. Darren Eder',
                           style: TextStyle(
-                            fontSize: 18,
+                            fontSize: 18.sp,
                             fontWeight: FontWeight.w600,
                             color: Colors.white,
                           ),
                         ),
-                        SizedBox(width: 10),
+                        SizedBox(width: 10.w),
                         VerifiedTag(),
                       ],
                     ),
-                    SizedBox(height: 4),
+                    SizedBox(height: 4.h),
                     Text(
                       'Psychologist',
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 16.sp,
                         fontWeight: FontWeight.w500,
                         color: Colors.white60,
                       ),
@@ -552,7 +569,7 @@ class _CallPageState extends State<CallPage> {
               ],
             ),
           ),
-          Container(width: 1.sw, height: 734, child: _viewRows()),
+          Container(width: 1.sw, height: 734.h, child: _viewRows()),
         ],
       );
 
@@ -582,31 +599,31 @@ class _CallPageState extends State<CallPage> {
                     Text(
                       'Dr. Darren Eder',
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 18.sp,
                         fontWeight: FontWeight.w600,
                         color: Colors.white,
                       ),
                     ),
-                    SizedBox(width: 10),
+                    SizedBox(width: 10.w),
                     VerifiedTag(),
                   ],
                 ),
-                SizedBox(height: 4),
+                SizedBox(height: 4.h),
                 Text(
                   'Psychologist',
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 16.sp,
                     fontWeight: FontWeight.w500,
                     color: Colors.white60,
                   ),
                 ),
               ],
             ),
-            SizedBox(height: 30),
+            SizedBox(height: 30.h),
             Text(
               status,
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 18.sp,
                 color: Colors.white,
                 letterSpacing: 0.6,
                 fontWeight: FontWeight.w300,
@@ -641,41 +658,41 @@ class _CallPageState extends State<CallPage> {
                     Text(
                       'Dr. Darren Eder',
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 18.sp,
                         fontWeight: FontWeight.w600,
                         color: Colors.white,
                       ),
                     ),
-                    SizedBox(width: 10),
+                    SizedBox(width: 10.w),
                     VerifiedTag(),
                   ],
                 ),
-                SizedBox(height: 4),
+                SizedBox(height: 4.h),
                 Text(
                   'Psychologist',
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 16.sp,
                     fontWeight: FontWeight.w500,
                     color: Colors.white60,
                   ),
                 ),
               ],
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 10.h),
             Text(
               "Call Ended",
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 18.sp,
                 color: Colors.white,
                 letterSpacing: 0.6,
                 fontWeight: FontWeight.w300,
               ),
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 10.h),
             Text(
-              duration > 60 ? "Call Duration : $duration mins" : "Call Duration : $duration secs",
+              callTime > 60 ? "Call Duration : ${Duration(seconds: callTime).inMinutes} mins" : "Call Duration : $callTime secs",
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 18.sp,
                 color: Colors.white,
                 letterSpacing: 0.6,
                 fontWeight: FontWeight.w300,
@@ -727,7 +744,7 @@ class _CallPageState extends State<CallPage> {
                       ? _callEndedView("Ended")
                       : _callingView('Calling...')
                   : _callConnectedView(),
-              _logs(),
+	            // _logs(),
               showEndedScreen ? _actionsToolbar(false) : _actionsToolbar(true),
             ],
           ),

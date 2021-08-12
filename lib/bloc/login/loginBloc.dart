@@ -7,23 +7,23 @@ import 'package:pocket_health/repository/loginRepo.dart';
 
 import 'loginState.dart';
 
-class LoginBloc extends Bloc<LoginEvent,LoginState> {
+class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final LoginRepository loginRepository;
+
   LoginBloc({@required this.loginRepository}) : super(LoginInitial());
 
   @override
-  Stream<LoginState> mapEventToState(LoginEvent event) async*{
-    if(event is SendLoginPayLoad){
+  Stream<LoginState> mapEventToState(LoginEvent event) async* {
+    if (event is SendLoginPayLoad) {
       yield LoginLoading();
-      try{
+      try {
         final LoginModel loginModel = await loginRepository.userLogin(event.email, event.password);
-        if(loginModel != null) {
+        if (loginModel != null) {
           yield LoginLoaded(loginModel);
-
-        }else{
+        } else {
           yield LoginInitial();
         }
-      }catch(e) {
+      } catch (e) {
         yield LoginError(e.toString());
       }
     }

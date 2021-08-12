@@ -21,11 +21,9 @@ class CallHistoryFailure extends CallHistoryState {
 
 class CallHistorySuccess extends CallHistoryState {
   final CallHistoryModel addedCall;
-  final int totalTalkTime;
-  final List<CallHistoryModel> allCallHistory;
 
-  CallHistorySuccess(this.addedCall, this.allCallHistory, this.totalTalkTime);
+  CallHistorySuccess(this.addedCall);
 
   @override
-  List<Object> get props => [addedCall, allCallHistory, totalTalkTime];
+  List<Object> get props => [addedCall];
 }

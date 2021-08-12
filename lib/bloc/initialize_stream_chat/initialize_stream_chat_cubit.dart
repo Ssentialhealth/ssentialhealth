@@ -10,7 +10,7 @@ class InitializeStreamChatCubit extends Cubit<InitializeStreamChatState> {
 
   StreamChatClient _client = StreamChatClient(
     '5ce52vsjkw26',
-    logLevel: Level.OFF,
+    logLevel: Level.INFO,
     tokenProvider: provider,
   );
 
@@ -22,15 +22,15 @@ class InitializeStreamChatCubit extends Cubit<InitializeStreamChatState> {
 
   void initializeUser(String streamUserID, String userCategory) async {
     //TODO: inProduction | add real data
-    emit(StreamChatLoading());
-    final userID = streamUserID.split(' ').first + streamUserID.split(' ').last;
+	  emit(StreamChatLoading());
+    final userID = streamUserID.split(' ').last;
     try {
       await _client.disconnect();
       await _client.connectUserWithProvider(
         User(
-          id: 'TestLewis',
+          id: 'TestUser1',
           extraData: {
-            "userCategory": 'individual',
+            "userCategory": userCategory,
           },
         ),
         // User(
@@ -50,12 +50,12 @@ class InitializeStreamChatCubit extends Cubit<InitializeStreamChatState> {
 
   void initializeChannel(String streamUserID, String streamDocID, String userCategory) async {
     //TODO: inProduction | add real data
-    emit(StreamChannelLoading());
+	  emit(StreamChannelLoading());
     // final docID = streamDocID.split(' ').first;
     // final userID = streamUserID.split(' ').first;
 
-    final docID = 'DrTestDoctor47';
-    final userID = 'TestLewis';
+    final docID = 'PractitionerTest2';
+    // final userID = 'TestLewis';
     try {
       await client.disconnect();
 
@@ -63,7 +63,7 @@ class InitializeStreamChatCubit extends Cubit<InitializeStreamChatState> {
         User(
           id: docID,
           extraData: {
-            "userCategory": 'doctor',
+            "userCategory": 'practitioner',
           },
         ),
       );
@@ -72,7 +72,7 @@ class InitializeStreamChatCubit extends Cubit<InitializeStreamChatState> {
 
       await client.connectUserWithProvider(
         User(
-          id: userID,
+	        id: "TestUser1",
           extraData: {
             "userCategory": 'individual',
           },
@@ -85,7 +85,7 @@ class InitializeStreamChatCubit extends Cubit<InitializeStreamChatState> {
       );
 
       await channel.create();
-      await channel.addMembers([docID, userID]);
+      await channel.addMembers([docID, 'TestUser1']);
       await channel.watch();
       emit(StreamChannelSuccess(channel, docID));
     } catch (err) {

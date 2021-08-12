@@ -1,7 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:pocket_health/bloc/call_history/call_history_cubit.dart';
+import 'package:http/http.dart' as http;
+import 'package:pocket_health/bloc/call_balance/call_balance_cubit.dart';
+import 'package:pocket_health/bloc/login/loginBloc.dart';
+import 'package:pocket_health/bloc/login/loginState.dart';
 import 'package:pocket_health/utils/constants.dart';
 import 'package:rave_flutter/rave_flutter.dart';
 
@@ -25,15 +30,39 @@ class _GetCreditPageState extends State<GetCreditPage> {
 
   String selectedVal = 'M-Pesa';
 
+  String minutesVal;
+
+  TextEditingController minutesValController;
+
+  bool showTransactionRefSnackbar = false;
+
   @override
   void initState() {
     super.initState();
-    context.read<CallHistoryCubit>()..addCallHistory(1, 12, "11:00:00", '11:01:00'); //testing
+    minutesValController = TextEditingController();
+    context.read<CallBalanceCubit>()..getCallBalance(); //testing
   }
 
   @override
   Widget build(BuildContext context) {
+    showTransactionRefSnackbar == true
+        ? ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              behavior: SnackBarBehavior.floating,
+              backgroundColor: Color(0xff163C4D),
+              duration: Duration(milliseconds: 6000),
+              content: Text(
+                'Please try again in 2 minutes time!',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          )
+        : null;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         backgroundColor: accentColor,
         elevation: 0.0,
@@ -43,13 +72,16 @@ class _GetCreditPageState extends State<GetCreditPage> {
         ),
       ),
       body: Padding(
-        padding: EdgeInsets.all(15.0),
-        child: BlocConsumer<CallHistoryCubit, CallHistoryState>(
-          listener: (context, state) {},
-          builder: (context, state) {
-            if (state is CallHistorySuccess) {
-              final remainderCredit = 1000 - state.totalTalkTime;
-              final allCallHistory = state.allCallHistory;
+        padding: EdgeInsets.all(15.0.w),
+        child: BlocConsumer<CallBalanceCubit, CallBalanceState>(
+          listener: (context, balanceState) {
+            if (balanceState is CallBalanceAddSuccess) {
+              context.read<CallBalanceCubit>()..getCallBalance();
+            }
+          },
+          builder: (context, balanceState) {
+            if (balanceState is CallBalanceFetchSuccess) {
+              final balance = int.parse(balanceState.callBalanceModel.amount.split(".").first);
               return Column(
                 children: [
                   Text(
@@ -102,7 +134,7 @@ class _GetCreditPageState extends State<GetCreditPage> {
                             ),
                           ),
                           Text(
-                            '$remainderCredit minutes',
+                            '$balance minutes',
                             style: TextStyle(
                               color: Colors.black87,
                               fontSize: 22.sp,
@@ -129,6 +161,8 @@ class _GetCreditPageState extends State<GetCreditPage> {
                   SizedBox(
                     height: 40.h,
                     child: TextField(
+                      keyboardType: TextInputType.number,
+                      controller: minutesValController,
                       decoration: InputDecoration(
                         fillColor: Colors.white,
                         filled: true,
@@ -162,7 +196,7 @@ class _GetCreditPageState extends State<GetCreditPage> {
                     ),
                   ),
 
-                  SizedBox(height: 20),
+                  SizedBox(height: 20.h),
 
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -170,7 +204,7 @@ class _GetCreditPageState extends State<GetCreditPage> {
                       ...List.generate(
                         modesOfPayment.length,
                         (index) => SizedBox(
-                          width: 120,
+                          width: 120.w,
                           child: RadioListTile(
                             contentPadding: EdgeInsets.zero,
                             activeColor: accentColorDark,
@@ -182,19 +216,19 @@ class _GetCreditPageState extends State<GetCreditPage> {
                                     style: TextStyle(
                                       fontSize: 14.sp,
                                       fontWeight: FontWeight.w600,
-                                      color: accentColorDark,
-                                    ),
-                                  )
-                                : Text(
-                                    modesOfPayment[index],
-                                    style: TextStyle(
-                                      fontSize: 13.sp,
-                                      color: Colors.black54,
-                                    ),
+                                    color: accentColorDark,
                                   ),
-                            value: modesOfPayment[index],
-                            groupValue: selectedVal,
-                            onChanged: (val) async {
+                                )
+                                    : Text(
+                                  modesOfPayment[index],
+                                  style: TextStyle(
+                                    fontSize: 13.sp,
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                                value: modesOfPayment[index],
+                                groupValue: selectedVal,
+                                onChanged: (val) async {
                               setState(() {
                                 selectedVal = val;
                               });
@@ -205,99 +239,136 @@ class _GetCreditPageState extends State<GetCreditPage> {
                     ],
                   ),
 
-                  Center(
-                    child: MaterialButton(
-                      minWidth: 374.w,
-                      elevation: 0.0,
-                      highlightElevation: 0.0,
-                      focusElevation: 0.0,
-                      disabledElevation: 0.0,
-                      color: Color(0xff1A5864),
-                      height: 40.h,
-                      highlightColor: Colors.transparent,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4.r),
-                      ),
-                      child: Text(
-                        'Continue',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      onPressed: () async {
-                        bool checkPaymentIsSuccessful(final RaveResult response) {
-                          return response.status == RaveStatus.success &&
-                              response.rawResponse['currency'] == 'KES' &&
-                              response.rawResponse['amount'] == '11' &&
-                              response.rawResponse['txRef'] == 'txRe7fsss';
-                        }
-
-                        // Get a reference to RavePayInitializer
-                        RavePayInitializer initializer = RavePayInitializer(
-                          amount: 1000.0,
-                          country: "KE",
-                          currency: "KES",
-                          txRef: 'txRe7fsss',
-                          email: "mwakicodes@gmail.com",
-                          narration: 'For Ssential Health Credit',
-                          displayEmail: false,
-                          companyName: Text(
-                            'For Ssential Health Credit',
-                            style: TextStyle(
-                              color: accentColorDark,
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w600,
+                  BlocBuilder<LoginBloc, LoginState>(
+                    builder: (context, loginState) {
+                      if (loginState is LoginLoaded) {
+                        print("-------------loginState.loginModel.user.userID");
+                        print(loginState.loginModel.user.userID);
+                        return Center(
+                          child: MaterialButton(
+                            minWidth: 374.w,
+                            elevation: 0.0,
+                            highlightElevation: 0.0,
+                            focusElevation: 0.0,
+                            disabledElevation: 0.0,
+                            color: Color(0xff1A5864),
+                            height: 40.h,
+                            highlightColor: Colors.transparent,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4.r),
                             ),
-                          ),
-                          fName: "Lewis",
-                          lName: "Mwaki",
-                          acceptMpesaPayments: selectedVal == "M-Pesa",
-                          acceptAccountPayments: false,
-                          acceptCardPayments: selectedVal == "Card",
-                          companyLogo: Image(
-                            image: AssetImage('assets/images/logonotag.png'),
-                            fit: BoxFit.fitWidth,
-                          ),
-                          acceptAchPayments: false,
-                          acceptGHMobileMoneyPayments: false,
-                          acceptUgMobileMoneyPayments: false,
-                          staging: false,
-                          isPreAuth: true,
-                          displayFee: false,
-                          publicKey: 'FLWPUBK-01d949a9c04f029cc1f1a927af871079-X',
-                          encryptionKey: '4c6325b0afa75beb8a0dc641',
-                        );
+                            child: Text(
+                              'Continue',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            onPressed: minutesValController.text == null
+                                ? () {}
+                                : () async {
+                                    // Get a reference to RavePayInitializer
+                                    RavePayInitializer initializer = RavePayInitializer(
+                                      amount: double.parse(minutesValController.text),
+                                      country: "KE",
+                                      currency: "KES",
+                                      email: "",
+                                      txRef: "txRefTesting-${loginState.loginModel.user.email}",
+                                      narration: 'For Ssential Health Credit',
+                                      displayEmail: true,
+                                      companyName: Text(
+                                        'For Ssential Health Credit',
+                                        style: TextStyle(
+                                          color: accentColorDark,
+                                          fontSize: 14.sp,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      fName: loginState.loginModel.user.fullNames.split(" ").first,
+                                      lName: loginState.loginModel.user.fullNames.split(" ").last,
+                                      acceptMpesaPayments: selectedVal == "M-Pesa",
+                                      acceptAccountPayments: false,
+                                      acceptCardPayments: selectedVal == "Card",
+                                      companyLogo: Image(
+                                        image: AssetImage('assets/images/logonotag.png'),
+                                        fit: BoxFit.fitWidth,
+                                      ),
+                                      acceptAchPayments: false,
+                                      acceptGHMobileMoneyPayments: false,
+                                      acceptUgMobileMoneyPayments: false,
+                                      staging: true,
+                                      isPreAuth: true,
+                                      displayFee: true,
+                                      publicKey: 'FLWPUBK_TEST-76c1705a4f7b2be0d3580eafaff28777-X',
+                                      encryptionKey: 'FLWSECK_TEST968077f1f1c8',
+                                    );
 
-                        // Initialize and get the transaction result
-                        try {
-                          RaveResult response = await RavePayManager().initialize(context: context, initializer: initializer);
-                          print(response.status);
-                          if (response == null) {
-                            print("// user didn't complete the transaction. Payment wasn't successful.");
-                          } else {
-                            final isSuccessful = checkPaymentIsSuccessful(response);
-                            if (isSuccessful) {
-                              print("// provide value to customer");
-                            } else {
-                              // check message
-                              print("message --------------- " + response.rawResponse['message']);
-                              print("authModel --------------- " + response.rawResponse['authModel']);
-                              //
-                              // check status
-                              print("status --------------- " + response.status.toString());
-                              //
-                              // check processor error
-                              print("processor --------------- " + response.rawResponse['processorResponse']);
-                            }
-                          }
-                        } catch (e) {
-                          print('flutterwave error --------------- $e');
-                        }
-                      },
-                    ),
+                                    // Initialize and get the transaction result
+                                    try {
+                                      RaveResult response = await RavePayManager().prompt(context: context, initializer: initializer);
+                                      print(response.status);
+                                      if (response == null) {
+                                        print("user didn't complete the transaction. Payment wasn't successful.");
+
+                                        print("-------------error section------------------");
+
+                                        print(response.status);
+                                        print(response.message);
+                                        print("user didn't complete the transaction. Payment wasn't successful.");
+                                        if (response.rawResponse["message"] ==
+                                            "Transaction Reference already exist. Try again in 2 minutes time to use the same ref for a new transaction") {
+                                          setState(() {
+                                            showTransactionRefSnackbar = true;
+                                          });
+                                        }
+                                      } else {
+                                        final txID = response.rawResponse['data']['id'];
+                                        final verifyResponse = await http.get(
+                                          'https://api.flutterwave.com/v3/transactions/$txID/verify',
+                                          headers: {"Authorization": "Bearer " + "FLWSECK_TEST-682e6172c96b33ce8d9e1eeeb8ae6a32-X"},
+                                        );
+                                        if (jsonDecode(verifyResponse.body)['message'] == "Transaction fetched successfully") {
+                                          final paymentType = jsonDecode(verifyResponse.body)['data']['auth_model'];
+                                          print("success");
+                                          context.read<CallBalanceCubit>()
+                                            ..creditDeductAdd(
+                                              paymentType: paymentType,
+                                              balance: (balance ?? 0) + int.parse(minutesValController.text),
+                                              amount: (balance ?? 0) + int.parse(minutesValController.text),
+                                              currency: "KES",
+                                              user: 5,
+                                            );
+                                        }
+                                      }
+                                    } catch (e) {
+                                      print("-------------error section------------------");
+                                      print('flutterwave error --------------- $e');
+                                    }
+                                  },
+                          ),
+                        );
+                      }
+
+                      return Container();
+                    },
                   )
                 ],
               );
             }
-            return SizedBox.shrink();
+
+            if (balanceState is CallBalanceLoading) {
+              return Column(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  SizedBox(height: 50.h, width: 1.sw),
+                  SizedBox(
+                    height: 24.w,
+                    width: 24.w,
+                    child: CircularProgressIndicator(),
+                  ),
+                  SizedBox(height: 50.h),
+                ],
+              );
+            }
+
+            return Container();
           },
         ),
       ),

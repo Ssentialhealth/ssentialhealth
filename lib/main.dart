@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:pocket_health/bloc/adult_unwell/adultUnwellBloc.dart';
+import 'package:pocket_health/bloc/call_balance/call_balance_cubit.dart';
 import 'package:pocket_health/bloc/call_history/call_history_cubit.dart';
 import 'package:pocket_health/bloc/child_health/all_schedules/all_schedules_bloc.dart';
 import 'package:pocket_health/bloc/child_health/child_conditions_bloc.dart';
@@ -31,6 +32,7 @@ import 'package:pocket_health/repository/adultUnwellRepo.dart';
 import 'package:pocket_health/repository/all_schedules_repo.dart';
 import 'package:pocket_health/repository/appointments_repo.dart';
 import 'package:pocket_health/repository/booking_history_repo.dart';
+import 'package:pocket_health/repository/call_balance_repo.dart';
 import 'package:pocket_health/repository/call_history_repo.dart';
 import 'package:pocket_health/repository/child_condition_detail_repo.dart';
 import 'package:pocket_health/repository/child_conditions_repo.dart';
@@ -41,6 +43,7 @@ import 'package:pocket_health/repository/congenital_conditions_repo.dart';
 import 'package:pocket_health/repository/congenital_details_repo.dart';
 import 'package:pocket_health/repository/delayed_milestones_repo.dart';
 import 'package:pocket_health/repository/emergencyContactRepo.dart';
+import 'package:pocket_health/repository/fetch_call_history_repo.dart';
 import 'package:pocket_health/repository/forgotPasswordRepo.dart';
 import 'package:pocket_health/repository/growth_charts_repo.dart';
 import 'package:pocket_health/repository/hotline_repo.dart';
@@ -65,6 +68,7 @@ import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 import 'bloc/appointments/appointments_cubit.dart';
 import 'bloc/booking_history/booking_history_cubit.dart';
 import 'bloc/conditionDetails/conditionDetailsBloc.dart';
+import 'bloc/fetch_call_history/fetch_call_history_cubit.dart';
 import 'bloc/filter_reviews/filter_reviews_cubit.dart';
 import 'bloc/forgotPassword/forgotPasswordBloc.dart';
 import 'bloc/initialize_stream_chat/initialize_stream_chat_cubit.dart';
@@ -116,8 +120,10 @@ void main() async {
   final ScheduleDetailRepo scheduleDetailRepo = ScheduleDetailRepo(ApiService(http.Client()));
   final ReviewsRepo reviewsRepo = ReviewsRepo(ApiService(http.Client()));
   final CallHistoryRepo callHistoryRepo = CallHistoryRepo(ApiService(http.Client()));
+  final FetchCallHistoryRepo fetchCallHistoryRepo = FetchCallHistoryRepo(ApiService(http.Client()));
   final AppointmentsRepo appointmentsRepo = AppointmentsRepo(ApiService(http.Client()));
   final BookingHistoryRepo bookingHistoryRepo = BookingHistoryRepo(ApiService(http.Client()));
+  final CallBalanceRepo callBalanceRepo = CallBalanceRepo(ApiService(http.Client()));
   runApp(MyApp(
     forgotPasswordRepo: forgotPasswordRepo,
     loginRepository: loginRepository,
@@ -149,6 +155,8 @@ void main() async {
     scheduleDetailRepo: scheduleDetailRepo,
     reviewsRepo: reviewsRepo,
     callHistoryRepo: callHistoryRepo,
+    fetchCallHistoryRepo: fetchCallHistoryRepo,
+    callBalanceRepo: callBalanceRepo,
   ));
 }
 
@@ -181,8 +189,10 @@ class MyApp extends StatelessWidget {
   final ScheduleDetailRepo scheduleDetailRepo;
   final ReviewsRepo reviewsRepo;
   final CallHistoryRepo callHistoryRepo;
+  final FetchCallHistoryRepo fetchCallHistoryRepo;
   final AppointmentsRepo appointmentsRepo;
   final BookingHistoryRepo bookingHistoryRepo;
+  final CallBalanceRepo callBalanceRepo;
 
   MyApp({
     Key key,
@@ -214,8 +224,10 @@ class MyApp extends StatelessWidget {
     @required this.scheduleDetailRepo,
     @required this.reviewsRepo,
     @required this.callHistoryRepo,
+    @required this.fetchCallHistoryRepo,
     @required this.appointmentsRepo,
     @required this.bookingHistoryRepo,
+    @required this.callBalanceRepo,
   }) : super(key: key);
 
   final GlobalKey<NavigatorState> _navigator = new GlobalKey<NavigatorState>();
@@ -265,6 +277,8 @@ class MyApp extends StatelessWidget {
           BlocProvider(create: (context) => CallHistoryCubit(callHistoryRepo)),
           BlocProvider(create: (context) => AppointmentsCubit(appointmentsRepo)),
           BlocProvider(create: (context) => BookingHistoryCubit(bookingHistoryRepo)),
+          BlocProvider(create: (context) => FetchCallHistoryCubit(fetchCallHistoryRepo)),
+          BlocProvider(create: (context) => CallBalanceCubit(callBalanceRepo)),
         ],
         child: MaterialApp(
           navigatorKey: _navigator,

@@ -1,7 +1,9 @@
 import 'dart:convert';
 
-List<PractitionerProfileModel> practitionerProfileModelFromJson(String str) =>
+List<PractitionerProfileModel> practitionerProfileListModelFromJson(String str) =>
     List<PractitionerProfileModel>.from(json.decode(str).map((x) => PractitionerProfileModel.fromJson(x)));
+
+PractitionerProfileModel practitionerProfileModelFromJson(String str) => PractitionerProfileModel.fromJson(json.decode(str));
 
 String practitionerProfileModelToJson(List<PractitionerProfileModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 

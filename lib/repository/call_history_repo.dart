@@ -9,8 +9,4 @@ class CallHistoryRepo {
   Future<CallHistoryModel> registerCallHistory(CallHistoryModel callHistoryModel) async {
     return await apiService.addCallHistoryToDB(callHistoryModel);
   }
-
-  Future<List<CallHistoryModel>> getAllCallHistory(userID) async {
-    return await apiService.fetchAllCallHistory(userID);
-  }
 }
