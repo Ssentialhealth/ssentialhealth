@@ -15,6 +15,7 @@ class AppointmentsCubit extends Cubit<AppointmentsState> {
     @required String slotFrom,
     @required String slotTo,
     @required int status,
+    @required int appointmentType,
     @required int userID,
     @required int docID,
   }) async {
@@ -22,10 +23,11 @@ class AppointmentsCubit extends Cubit<AppointmentsState> {
       emit(AppointmentsLoading());
 
       final appointmentToBook = AppointmentModel(
-        appointmentDate: appointmentDate,
+	      appointmentDate: appointmentDate,
         timeSlotFrom: slotFrom,
         timeSlotTo: slotTo,
         status: status,
+        appointmentType: appointmentType,
         user: userID,
         profile: docID,
       );

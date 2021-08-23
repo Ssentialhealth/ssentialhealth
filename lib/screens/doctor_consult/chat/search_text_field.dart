@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pocket_health/utils/constants.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
@@ -41,24 +42,21 @@ class SearchTextField extends StatelessWidget {
               controller: controller,
               onChanged: onChanged,
               decoration: InputDecoration(
-                prefixText: '    ',
-                prefixIconConstraints: BoxConstraints.tight(Size(40, 24)),
+                prefixText: ' ',
+                prefixIconConstraints: BoxConstraints.tight(Size(40.w, 24.h)),
                 prefixIcon: Padding(
-                  padding: const EdgeInsets.only(
-                    left: 8,
-                    right: 8,
-                  ),
+                  padding: EdgeInsets.only(left: 8.w, right: 8.w),
                   child: StreamSvgIcon.search(
-                    color: accentColorLight,
-                    size: 24,
+                    color: accentColorDark,
+                    size: 24.w,
                   ),
                 ),
                 hintText: hintText,
                 hintStyle: StreamChatTheme.of(context).textTheme.body,
-                contentPadding: const EdgeInsets.all(0),
+                contentPadding: EdgeInsets.all(8.w),
                 border: OutlineInputBorder(
                   borderSide: BorderSide.none,
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
             ),

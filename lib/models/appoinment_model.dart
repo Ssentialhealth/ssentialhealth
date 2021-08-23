@@ -14,12 +14,14 @@ class AppointmentModel {
     @required this.timeSlotFrom,
     @required this.timeSlotTo,
     @required this.status,
+    @required this.appointmentType,
     @required this.user,
     @required this.profile,
   });
 
   final int id;
   final DateTime appointmentDate;
+  final int appointmentType;
   final String timeSlotFrom;
   final String timeSlotTo;
   final int status;
@@ -32,17 +34,20 @@ class AppointmentModel {
         timeSlotFrom: json["time_slot_from"],
         timeSlotTo: json["time_slot_to"],
         status: json["status"],
+        appointmentType: json["appointment_type"],
         user: json["user"],
         profile: json["profile"],
       );
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+		  {
         "id": id,
         "appointment_date":
             "${appointmentDate.year.toString().padLeft(4, '0')}-${appointmentDate.month.toString().padLeft(2, '0')}-${appointmentDate.day.toString().padLeft(2, '0')}",
         "time_slot_from": timeSlotFrom,
         "time_slot_to": timeSlotTo,
         "status": status,
+        "appointment_type": appointmentType,
         "user": user,
         "profile": profile,
       };

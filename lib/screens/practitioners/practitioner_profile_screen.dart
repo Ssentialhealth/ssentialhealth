@@ -15,7 +15,7 @@ import 'package:pocket_health/bloc/reviews/reviews_cubit.dart';
 import 'package:pocket_health/models/practitioner_profile_model.dart';
 import 'package:pocket_health/models/review_model.dart';
 import 'package:pocket_health/screens/doctor_consult/call/call_page.dart';
-import 'package:pocket_health/screens/doctor_consult/call/get_credit_page.dart';
+import 'package:pocket_health/screens/doctor_consult/call/top_up_account.dart';
 import 'package:pocket_health/screens/doctor_consult/chat/channel_page.dart';
 import 'package:pocket_health/screens/practitioners/reviews_list.dart';
 import 'package:pocket_health/screens/practitioners/sort_reviews_row.dart';
@@ -55,7 +55,7 @@ class _PractitionerProfileScreenState extends State<PractitionerProfileScreen> w
   void initState() {
     super.initState();
     context.read<InitializeStreamChatCubit>()..loadInitial();
-    context.read<CallBalanceCubit>()..getCallBalance(); //testing
+    context.read<CallBalanceCubit>()..getCallBalance(5); //testing
 
     _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(() => setState(() {}));
@@ -325,11 +325,10 @@ class _PractitionerProfileScreenState extends State<PractitionerProfileScreen> w
                             BlocBuilder<LoginBloc, LoginState>(
                               builder: (context, state) {
                                 if (state is LoginLoaded) {
-	                                final userID = state.loginModel.user.fullNames.split(' ').last;
-                                  // final docID = widget.practitionerModel.surname.split(' ').first;
+                                  final userID = state.loginModel.user.fullNames.split(' ').last;
+                                  final docID = widget.practitionerModel.user;
+                                  final docName = widget.practitionerModel.surname;
                                   final userCategory = state.loginModel.user.userCategory;
-                                  // final userID = 'TestLewis';
-                                  final docID = 'DrTestDoctor15';
 
                                   return BlocConsumer<InitializeStreamChatCubit, InitializeStreamChatState>(
                                     listener: (context, state) {
@@ -477,7 +476,7 @@ class _PractitionerProfileScreenState extends State<PractitionerProfileScreen> w
                                           )),
                                         ),
                                         onPressed: () {
-                                          context.read<InitializeStreamChatCubit>().initializeChannel(userID, docID, userCategory);
+                                          context.read<InitializeStreamChatCubit>().initializeChannel(userID, docID, docName, userCategory);
                                         },
                                       );
                                     },
@@ -533,162 +532,171 @@ class _PractitionerProfileScreenState extends State<PractitionerProfileScreen> w
                                     await showDialog(
                                       context: context,
                                       builder: (dialogContext) {
-                                        return Dialog(
-                                          backgroundColor: Colors.white,
-                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0.w)),
-                                          child: Container(
-                                            width: 1.sw,
-                                            child: Column(
-                                              mainAxisAlignment: MainAxisAlignment.start,
-                                              crossAxisAlignment: CrossAxisAlignment.center,
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                SizedBox(height: 15.h),
+                                        String durationVal = "5 minutes";
 
-                                                //doc name
-                                                Text(
-                                                  "docDetail.surname",
-                                                  style: TextStyle(
-                                                    fontSize: 15.sp,
-                                                    color: Colors.black87,
-                                                    fontWeight: FontWeight.w500,
-                                                  ),
-                                                ),
-                                                SizedBox(height: 15.h),
+                                        return StatefulBuilder(builder: (context, setState) {
+                                          return Dialog(
+                                            backgroundColor: Colors.white,
+                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0.w)),
+                                            child: Container(
+                                              width: 1.sw,
+                                              child: Column(
+                                                mainAxisAlignment: MainAxisAlignment.start,
+                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  SizedBox(height: 15.h),
 
-                                                Divider(height: 1, thickness: 1.r, color: Color(0xffB3B3B3)),
-
-                                                SizedBox(height: 15.h),
-                                                Text(
-                                                  'Estimated Call Cost',
-                                                  style: TextStyle(
-                                                    fontSize: 14.sp,
-                                                    fontWeight: FontWeight.w500,
-                                                  ),
-                                                ),
-
-                                                //cost
-                                                Text(
-                                                  'KES ${durationVal.split(" ").first}',
-                                                  style: TextStyle(
-                                                    fontSize: 14.sp,
-                                                    fontWeight: FontWeight.w700,
-                                                    color: Colors.orange,
-                                                  ),
-                                                ),
-                                                SizedBox(height: 10.h),
-
-                                                //drop down
-                                                Padding(
-                                                  padding: EdgeInsets.symmetric(horizontal: 20.w),
-                                                  child: DropdownButtonFormField(
-                                                    value: durationVal,
-                                                    isExpanded: true,
-                                                    onTap: () {},
-                                                    onChanged: (val) {
-                                                      setState(() {
-                                                        durationVal = val;
-                                                      });
-                                                    },
-                                                    icon: Icon(
-                                                      Icons.keyboard_arrow_down,
-                                                      size: 24.r,
-                                                      color: accentColorDark,
+                                                  //doc name
+                                                  Text(
+                                                    widget.practitionerModel.surname,
+                                                    style: TextStyle(
+                                                      fontSize: 15.sp,
+                                                      color: Colors.black87,
+                                                      fontWeight: FontWeight.w500,
                                                     ),
-                                                    decoration: InputDecoration(
-                                                      enabledBorder: OutlineInputBorder(
-                                                        borderSide: BorderSide(
-                                                          color: accentColorDark,
-                                                          width: 1.w,
-                                                        ),
-                                                      ),
-                                                      border: OutlineInputBorder(
-                                                        borderSide: BorderSide(
-                                                          color: accentColorDark,
-                                                          width: 1.w,
-                                                        ),
-                                                      ),
-                                                      focusedBorder: OutlineInputBorder(
-                                                        borderSide: BorderSide(
-                                                          color: accentColorDark,
-                                                          width: 1.w,
-                                                        ),
-                                                      ),
-                                                      fillColor: Colors.white,
-                                                      filled: true,
-                                                      contentPadding: EdgeInsets.symmetric(horizontal: 20.r),
-                                                    ),
-                                                    elevation: 0,
+                                                  ),
+                                                  SizedBox(height: 15.h),
+
+                                                  Divider(height: 1, thickness: 1.r, color: Color(0xffB3B3B3)),
+
+                                                  SizedBox(height: 15.h),
+                                                  Text(
+                                                    'Estimated Call Cost',
                                                     style: TextStyle(
                                                       fontSize: 14.sp,
-                                                      color: Color(0xff707070),
-                                                      fontWeight: FontWeight.w600,
+                                                      fontWeight: FontWeight.w500,
                                                     ),
-                                                    dropdownColor: Colors.white,
-                                                    hint: Text(
-                                                      'Select Duration',
+                                                  ),
+
+                                                  //cost
+                                                  Text(
+                                                    durationVal == "5 minutes"
+                                                        ? 'KES 7.50'
+                                                        : durationVal == "10 minutes"
+                                                            ? "KES 15.00"
+                                                            : durationVal == "15 minutes"
+                                                                ? "KES 22.50"
+                                                                : "",
+                                                    style: TextStyle(
+                                                      fontSize: 14.sp,
+                                                      fontWeight: FontWeight.w700,
+                                                      color: Colors.orange,
+                                                    ),
+                                                  ),
+                                                  SizedBox(height: 10.h),
+
+                                                  //drop down
+                                                  Padding(
+                                                    padding: EdgeInsets.symmetric(horizontal: 20.w),
+                                                    child: DropdownButtonFormField(
+                                                      value: durationVal,
+                                                      isExpanded: true,
+                                                      onTap: () {},
+                                                      onChanged: (val) {
+                                                        setState(() {
+                                                          durationVal = val;
+                                                        });
+                                                      },
+                                                      icon: Icon(
+                                                        Icons.keyboard_arrow_down,
+                                                        size: 24.r,
+                                                        color: accentColorDark,
+                                                      ),
+                                                      decoration: InputDecoration(
+                                                        enabledBorder: OutlineInputBorder(
+                                                          borderSide: BorderSide(
+                                                            color: accentColorDark,
+                                                            width: 1.w,
+                                                          ),
+                                                        ),
+                                                        border: OutlineInputBorder(
+                                                          borderSide: BorderSide(
+                                                            color: accentColorDark,
+                                                            width: 1.w,
+                                                          ),
+                                                        ),
+                                                        focusedBorder: OutlineInputBorder(
+                                                          borderSide: BorderSide(
+                                                            color: accentColorDark,
+                                                            width: 1.w,
+                                                          ),
+                                                        ),
+                                                        fillColor: Colors.white,
+                                                        filled: true,
+                                                        contentPadding: EdgeInsets.symmetric(horizontal: 20.r),
+                                                      ),
+                                                      elevation: 0,
                                                       style: TextStyle(
                                                         fontSize: 14.sp,
                                                         color: Color(0xff707070),
                                                         fontWeight: FontWeight.w600,
                                                       ),
-                                                    ),
-                                                    items: ["5 minutes", "10 minutes", "15 minutes"]
-                                                        .map(
-                                                          (e) => DropdownMenuItem(
-                                                            value: e,
-                                                            child: Text(
-                                                              e,
-                                                              style: TextStyle(),
+                                                      dropdownColor: Colors.white,
+                                                      hint: Text(
+                                                        'Select Duration',
+                                                        style: TextStyle(
+                                                          fontSize: 14.sp,
+                                                          color: Color(0xff707070),
+                                                          fontWeight: FontWeight.w600,
+                                                        ),
+                                                      ),
+                                                      items: ["5 minutes", "10 minutes", "15 minutes"]
+                                                          .map(
+                                                            (e) => DropdownMenuItem(
+                                                              value: e,
+                                                              child: Text(
+                                                                e,
+                                                                style: TextStyle(),
+                                                              ),
                                                             ),
-                                                          ),
-                                                        )
-                                                        .toList(),
+                                                          )
+                                                          .toList(),
+                                                    ),
                                                   ),
-                                                ),
-                                                SizedBox(height: 15.h),
+                                                  SizedBox(height: 15.h),
 
-                                                //continue
-                                                BlocConsumer<CallBalanceCubit, CallBalanceState>(
-                                                  listener: (context, state) {},
-                                                  builder: (context, state) {
-                                                    if (state is CallBalanceFetchSuccess) {
-                                                      // final amount = double.parse(state.callBalanceModel.amount.split(".").first);
-                                                      final balance = double.parse(state.callBalanceModel?.amount?.split(".")?.first);
-                                                      return Padding(
-                                                        padding: EdgeInsets.symmetric(horizontal: 20.w),
-                                                        child: MaterialButton(
+                                                  //continue
+                                                  Padding(
+                                                    padding: EdgeInsets.symmetric(horizontal: 20.w),
+                                                    child: BlocConsumer<CallBalanceCubit, CallBalanceState>(
+                                                      listener: (context, state) {},
+                                                      builder: (context, state) {
+                                                        return MaterialButton(
                                                           onPressed: () async {
-                                                            if (loginState is LoginLoaded)
-                                                              print("-------------------USERID${loginState.loginModel.user.userID}");
+                                                            final double amountToUse = durationVal == "5 minutes"
+                                                                ? 7.50
+                                                                : durationVal == "10 minutes"
+                                                                    ? 15.00
+                                                                    : durationVal == "15 minutes"
+                                                                        ? 22.50
+                                                                        : null;
                                                             // await for camera and mic permissions before pu-shing video page
                                                             await Permission.camera.request();
                                                             await Permission.microphone.request();
                                                             // push video page with given channel name
-                                                            balance != null
-                                                                ? Navigator.of(context).push(
+                                                            state is CallBalanceFetchSuccess &&
+                                                                    (state.callBalanceModel.amount != null ||
+                                                                        double.parse(state.callBalanceModel.amount) <= amountToUse)
+                                                                ? Navigator.push(
+                                                                    context,
                                                                     MaterialPageRoute(
-                                                                      builder: (context) {
-                                                                        print("try navigate to call");
-                                                                        return CallPage(
-                                                                          callDuration: int.parse(durationVal.split(" ").first),
-                                                                          channelName: 'testchannel1',
-                                                                          role: ClientRole.Broadcaster,
-                                                                          mutedAudio: false,
-                                                                          mutedVideo: false,
-                                                                          userID: loginState is LoginLoaded ? loginState.loginModel.user.userID : null,
-                                                                          docID: widget.practitionerModel.user,
-                                                                          callBalanceAmount: balance,
-                                                                        );
-                                                                      },
+                                                                      builder: (context) => CallPage(
+                                                                        callDuration: int.parse(durationVal.split(" ").first),
+                                                                        channelName: 'testchannel1',
+                                                                        role: ClientRole.Broadcaster,
+                                                                        mutedAudio: false,
+                                                                        mutedVideo: true,
+                                                                        userID: 5,
+                                                                        docID: 12,
+                                                                        callBalanceAmount: double.parse(state.callBalanceModel.amount.split(".").first),
+                                                                      ),
                                                                     ),
                                                                   )
-                                                                : Navigator.of(context).push(
+                                                                : Navigator.push(
+                                                                    context,
                                                                     MaterialPageRoute(
-                                                                      builder: (context) {
-                                                                        print("try navigate to credit");
-                                                                        return GetCreditPage();
-                                                                      },
+                                                                      builder: (context) => TopUpAccount(),
                                                                     ),
                                                                   );
                                                           },
@@ -711,38 +719,37 @@ class _PractitionerProfileScreenState extends State<PractitionerProfileScreen> w
                                                           shape: RoundedRectangleBorder(
                                                             borderRadius: BorderRadius.circular(4.r),
                                                           ),
-                                                        ),
-                                                      );
-                                                    }
-                                                    return Container();
-                                                  },
-                                                ),
-                                                SizedBox(height: 15.h),
-
-                                                //show balance
-                                                TextButton(
-                                                  onPressed: () async {
-                                                    //navigate to get credit
-                                                    Navigator.of(context).push(
-                                                      MaterialPageRoute(
-                                                        builder: (context) => GetCreditPage(),
-                                                      ),
-                                                    );
-                                                  },
-                                                  child: Text(
-                                                    'Check Balance',
-                                                    style: TextStyle(
-                                                      decoration: TextDecoration.underline,
-                                                      color: accentColorDark,
-                                                      fontSize: 13.sp,
-                                                      fontWeight: FontWeight.w500,
+                                                        );
+                                                      },
                                                     ),
                                                   ),
-                                                )
-                                              ],
+                                                  SizedBox(height: 15.h),
+
+                                                  //show balance
+                                                  TextButton(
+                                                    onPressed: () async {
+                                                      //navigate to get credit
+                                                      Navigator.of(context).push(
+                                                        MaterialPageRoute(
+                                                          builder: (context) => TopUpAccount(),
+                                                        ),
+                                                      );
+                                                    },
+                                                    child: Text(
+                                                      'Check Balance',
+                                                      style: TextStyle(
+                                                        decoration: TextDecoration.underline,
+                                                        color: accentColorDark,
+                                                        fontSize: 13.sp,
+                                                        fontWeight: FontWeight.w500,
+                                                      ),
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
                                             ),
-                                          ),
-                                        );
+                                          );
+                                        });
                                       },
                                     );
                                   },
@@ -871,7 +878,7 @@ class _PractitionerProfileScreenState extends State<PractitionerProfileScreen> w
                               Icon(Icons.call, size: 20.w, color: accentColorDark),
                               SizedBox(width: 15.w),
                               Text(
-                                '+254 710 122 111 / 020 011 112',
+                                widget.practitionerModel.phoneNumber,
                                 style: TextStyle(color: textBlack),
                               ),
                             ],
@@ -904,9 +911,12 @@ class _PractitionerProfileScreenState extends State<PractitionerProfileScreen> w
                             children: [
                               Icon(Icons.explore, size: 20.w, color: accentColorDark),
                               SizedBox(width: 15.w),
-                              Text(
-                                'Nairobi, Kenya',
-                                style: TextStyle(color: textBlack),
+                              SizedBox(
+                                width: 200.w,
+                                child: Text(
+                                  widget.practitionerModel.location + ", " + widget.practitionerModel.region,
+                                  style: TextStyle(color: textBlack),
+                                ),
                               ),
                             ],
                           ),

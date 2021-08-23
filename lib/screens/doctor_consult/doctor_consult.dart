@@ -2,11 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pocket_health/bloc/list_practitioners/list_practitioners_cubit.dart';
 import 'package:pocket_health/bloc/login/loginBloc.dart';
 import 'package:pocket_health/bloc/login/loginState.dart';
+import 'package:pocket_health/bloc/saved_contacts/saved_contacts_cubit.dart';
 import 'package:pocket_health/screens/doctor_consult/saved/saved_list.dart';
+import 'package:pocket_health/screens/practitioners/practitioners_categories_screen.dart';
 import 'package:pocket_health/utils/constants.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'call/calls_list.dart';
 import 'chat/channels_list.dart';
@@ -19,23 +21,12 @@ class DoctorConsult extends StatefulWidget {
 class _DoctorConsultState extends State<DoctorConsult> with SingleTickerProviderStateMixin {
   //tab bar
   TabController _tabController;
-  List docsList = [];
 
   @override
   void initState() {
     super.initState();
-    getDocs();
-    // context.read<InitializeStreamChatCubit>()..initializeUser('', ''); // TODO: inProduction | add dynamic data
     _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(() => setState(() {}));
-  }
-
-  getDocs() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    final list = prefs.getStringList('saved');
-    // setState(() {
-    //   docsList.addAll(list);
-    // });
   }
 
   @override
@@ -60,12 +51,44 @@ class _DoctorConsultState extends State<DoctorConsult> with SingleTickerProvider
                   style: appBarStyle.copyWith(fontSize: 18.sp),
                 ),
                 actions: [
-                  IconButton(
-                    onPressed: () {},
-                    icon: Icon(
-                      Icons.search,
-                      color: accentColorDark,
-                    ),
+                  BlocBuilder<LoginBloc, LoginState>(
+                    builder: (context, state) {
+                      return IconButton(
+                        icon: Icon(
+                          Icons.add_comment,
+                          color: accentColorDark,
+                        ),
+                        onPressed: state is LoginLoaded && state.loginModel.user.userCategory == 'individual'
+                            ? () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return PractitionersCategoriesScreen();
+                                    },
+                                  ),
+                                );
+                              }
+                            : () {
+                                ScaffoldMessenger.of(context)
+                                  ..clearSnackBars()
+                                  ..showSnackBar(
+                                    SnackBar(
+                                      behavior: SnackBarBehavior.floating,
+                                      backgroundColor: Color(0xff163C4D),
+                                      duration: Duration(milliseconds: 6000),
+                                      content: Text(
+                                        'This feature is only available to users registered as individuals!',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                              },
+                      );
+                    },
                   ),
                   IconButton(
                     onPressed: () {},
@@ -88,7 +111,12 @@ class _DoctorConsultState extends State<DoctorConsult> with SingleTickerProvider
                     child: TabBar(
                       isScrollable: false,
                       onTap: (idx) async {
-                        if (idx == 2) {}
+                        if (idx == 2) {
+                          // SharedPreferences prefs = await SharedPreferences.getInstance();
+                          // prefs.remove('savedd');
+                          context.read<SavedContactsCubit>()..fetchContacts();
+                          context.read<ListPractitionersCubit>()..listPractitioners();
+                        }
                       },
                       overlayColor: MaterialStateProperty.all(Colors.white),
                       indicatorColor: accentColorDark,
@@ -126,8 +154,8 @@ class _DoctorConsultState extends State<DoctorConsult> with SingleTickerProvider
                           ),
                         ),
                         Tab(
-                          iconMargin: EdgeInsets.only(bottom: 6),
-                          text: ' Contacts ',
+	                        iconMargin: EdgeInsets.only(bottom: 6),
+                          text: ' Saved ',
                           icon: Icon(
                             Icons.contact_phone,
                             size: 20,
@@ -155,7 +183,7 @@ class _DoctorConsultState extends State<DoctorConsult> with SingleTickerProvider
                 },
               ),
               ChannelsList(),
-              SavedList(docsList: docsList),
+              SavedList(),
             ],
           ),
         ),

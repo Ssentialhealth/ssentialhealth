@@ -16,7 +16,7 @@ import 'package:pocket_health/screens/doctor_consult/call/utils.dart';
 import 'package:pocket_health/widgets/verified_tag.dart';
 
 class CallPage extends StatefulWidget {
-	bool mutedAudio;
+  bool mutedAudio;
   bool mutedVideo;
   final String channelName;
   final int callDuration;
@@ -322,7 +322,7 @@ class _CallPageState extends State<CallPage> {
                     maxHeight: 64.w,
                   ),
                   onPressed: () async {
-                    context.read<CallBalanceCubit>()..getCallBalance();
+	                  context.read<CallBalanceCubit>()..getCallBalance(5);
                     Navigator.pop(context);
                   },
                   child: Icon(

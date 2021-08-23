@@ -25,6 +25,7 @@ import 'package:pocket_health/bloc/organs/organsBloc.dart';
 import 'package:pocket_health/bloc/practitioner_profile/practitionerProfileBloc.dart';
 import 'package:pocket_health/bloc/profile/userProfileBloc.dart';
 import 'package:pocket_health/bloc/reviews/reviews_cubit.dart';
+import 'package:pocket_health/bloc/saved_contacts/saved_contacts_cubit.dart';
 import 'package:pocket_health/bloc/search_conditions/search_condition_bloc.dart';
 import 'package:pocket_health/bloc/search_organ/search_organ_bloc.dart';
 import 'package:pocket_health/bloc/symptoms/details/symptoms_bloc.dart';
@@ -279,6 +280,7 @@ class MyApp extends StatelessWidget {
           BlocProvider(create: (context) => BookingHistoryCubit(bookingHistoryRepo)),
           BlocProvider(create: (context) => FetchCallHistoryCubit(fetchCallHistoryRepo)),
           BlocProvider(create: (context) => CallBalanceCubit(callBalanceRepo)),
+          BlocProvider(create: (context) => SavedContactsCubit()..fetchContacts()),
         ],
         child: MaterialApp(
           navigatorKey: _navigator,

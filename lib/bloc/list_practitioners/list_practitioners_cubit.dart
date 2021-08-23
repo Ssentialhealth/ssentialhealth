@@ -11,10 +11,10 @@ class ListPractitionersCubit extends Cubit<ListPractitionersState> {
 
   ListPractitionersCubit({@required this.practitionerProfileRepo}) : super(ListPractitionersInitial());
 
-  Future listPractitioners(practitionersCategory) async {
+  Future listPractitioners() async {
     try {
       emit(ListPractitionersLoading());
-      final List<PractitionerProfileModel> practitionerProfiles = await practitionerProfileRepo.getPractitioners(practitionersCategory);
+      final List<PractitionerProfileModel> practitionerProfiles = await practitionerProfileRepo.getPractitioners();
       print('practitioner length -- ${practitionerProfiles.length}');
       emit(ListPractitionersLoaded(practitionerProfiles));
     } catch (_) {

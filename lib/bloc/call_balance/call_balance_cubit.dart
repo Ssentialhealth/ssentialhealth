@@ -11,10 +11,10 @@ class CallBalanceCubit extends Cubit<CallBalanceState> {
 
   CallBalanceCubit(this.callBalanceRepo) : super(CallBalanceInitial());
 
-  void getCallBalance() async {
+  void getCallBalance(userID) async {
     try {
       emit(CallBalanceLoading());
-      final callBalanceModel = await callBalanceRepo.getCallBalance();
+      final callBalanceModel = await callBalanceRepo.getCallBalance(userID);
       emit(CallBalanceFetchSuccess(callBalanceModel));
     } catch (_) {
       emit(CallBalanceFailure());

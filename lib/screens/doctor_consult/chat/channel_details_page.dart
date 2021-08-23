@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pocket_health/bloc/saved_contacts/saved_contacts_cubit.dart';
+import 'package:pocket_health/screens/doctor_consult/chat/search_messages_builder.dart';
 import 'package:pocket_health/screens/home/home.dart';
 import 'package:pocket_health/screens/practitioners/filter_title.dart';
 import 'package:pocket_health/utils/constants.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 class ChannelDetailsPage extends StatefulWidget {
@@ -18,7 +20,7 @@ class ChannelDetailsPage extends StatefulWidget {
 }
 
 class _ChannelDetailsPageState extends State<ChannelDetailsPage> {
-	bool saveContactVal = false;
+  bool saveContactVal = false;
 
   bool newMutedVal;
 
@@ -54,7 +56,15 @@ class _ChannelDetailsPageState extends State<ChannelDetailsPage> {
                   Icons.search,
                   color: Colors.black54,
                 ),
-                onTap: () {},
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return StreamChannel(channel: channel, child: SearchMessagesBuilder());
+                      },
+                    ),
+                  );
+                },
                 isThreeLine: false,
                 contentPadding: EdgeInsets.symmetric(horizontal: 20.r),
                 tileColor: Colors.white,
@@ -238,34 +248,40 @@ class _ChannelDetailsPageState extends State<ChannelDetailsPage> {
               Divider(height: 1, thickness: 1.r, color: Color(0xffB3B3B3)),
 
               //save contact
-              SwitchListTile(
-                value: saveContactVal,
-                isThreeLine: false,
-                contentPadding: EdgeInsets.symmetric(horizontal: 20.r),
-                dense: true,
-                onChanged: (val) async {
-                  setState(() {
-                    saveContactVal = val;
-                  });
-
-                  if (saveContactVal) {
-                    SharedPreferences prefs = await SharedPreferences.getInstance();
-                    var list = prefs.getStringList("saved");
-                    list.add("${channel.id}");
-                    await prefs.setStringList('saved', list);
+              BlocBuilder<SavedContactsCubit, SavedContactsState>(
+                builder: (context, state) {
+                  if (state is SavedContactsSuccess) {
+                    return SwitchListTile(
+                      value: state.savedContacts.contains('${channel.id}') ?? false,
+                      isThreeLine: false,
+                      contentPadding: EdgeInsets.symmetric(horizontal: 20.r),
+                      dense: true,
+                      onChanged: (val) async {
+                        setState(() {
+                          saveContactVal = val;
+                        });
+                        context.read<SavedContactsCubit>()..addRemoveContacts(saveContactVal, "${channel.id}");
+                      },
+                      tileColor: Colors.white,
+                      title: Text(
+                        'Save Contact',
+                        style: listTileTitleStyle,
+                      ),
+                    );
                   }
-                  if (!saveContactVal) {
-                    SharedPreferences prefs = await SharedPreferences.getInstance();
-                    var list = prefs.getStringList("saved");
-                    list.remove("${channel.id}");
-                    await prefs.setStringList('saved', list);
-                  }
+                  return SwitchListTile(
+                    value: saveContactVal,
+                    isThreeLine: false,
+                    contentPadding: EdgeInsets.symmetric(horizontal: 20.r),
+                    dense: true,
+                    onChanged: (val) async {},
+                    tileColor: Colors.white,
+                    title: Text(
+                      'Save Contact',
+                      style: listTileTitleStyle,
+                    ),
+                  );
                 },
-                tileColor: Colors.white,
-                title: Text(
-                  'Save Contact',
-                  style: listTileTitleStyle,
-                ),
               ),
               Divider(height: 1, thickness: 1.r, color: Color(0xffB3B3B3)),
 
