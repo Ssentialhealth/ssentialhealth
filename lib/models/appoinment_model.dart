@@ -39,8 +39,7 @@ class AppointmentModel {
         profile: json["profile"],
       );
 
-  Map<String, dynamic> toJson() =>
-		  {
+  Map<String, dynamic> toJson() => {
         "id": id,
         "appointment_date":
             "${appointmentDate.year.toString().padLeft(4, '0')}-${appointmentDate.month.toString().padLeft(2, '0')}-${appointmentDate.day.toString().padLeft(2, '0')}",

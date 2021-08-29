@@ -21,9 +21,10 @@ class FetchCallHistoryFailure extends FetchCallHistoryState {
 
 class FetchCallHistorySuccess extends FetchCallHistoryState {
   final List<PractitionerProfileModel> allDoctorsCalled;
+  final List<CallHistoryModel> allCallHistory;
 
-  FetchCallHistorySuccess(this.allDoctorsCalled);
+  FetchCallHistorySuccess(this.allDoctorsCalled, this.allCallHistory);
 
   @override
-  List<Object> get props => [allDoctorsCalled];
+  List<Object> get props => [allDoctorsCalled, allCallHistory];
 }

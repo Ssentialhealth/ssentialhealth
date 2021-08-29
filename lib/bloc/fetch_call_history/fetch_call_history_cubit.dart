@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:pocket_health/models/call_history_model.dart';
 import 'package:pocket_health/models/practitioner_profile_model.dart';
 import 'package:pocket_health/repository/fetch_call_history_repo.dart';
 
@@ -13,9 +14,10 @@ class FetchCallHistoryCubit extends Cubit<FetchCallHistoryState> {
   void getCallHistory(int userID) async {
     try {
       emit(FetchCallHistoryLoading());
-      final allDoctorsCalled = await fetchCallHistoryRepo.getCallHistoryByuserID(userID);
-      emit(FetchCallHistorySuccess(allDoctorsCalled));
-      // print('--------|alldocscalled|--------|value -> ${allDoctorsCalled[0].user.toString()}');
+      final allDoctorsCalled = await fetchCallHistoryRepo.getCallHistoryDocDetails(userID);
+      final allCallHistory = await fetchCallHistoryRepo.getAllCallHistory(allDoctorsCalled, userID);
+
+      emit(FetchCallHistorySuccess(allDoctorsCalled, allCallHistory));
     } catch (_) {
       emit(FetchCallHistoryFailure());
       print("get call history failed | $_");

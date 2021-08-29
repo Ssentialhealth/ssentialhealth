@@ -12,6 +12,7 @@ import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:pocket_health/bloc/call_balance/call_balance_cubit.dart';
 import 'package:pocket_health/bloc/call_history/call_history_cubit.dart';
+import 'package:pocket_health/models/practitioner_profile_model.dart';
 import 'package:pocket_health/screens/doctor_consult/call/utils.dart';
 import 'package:pocket_health/widgets/verified_tag.dart';
 
@@ -22,8 +23,11 @@ class CallPage extends StatefulWidget {
   final int callDuration;
   final int docID;
   final int userID;
+  final int ratePerMin;
   final ClientRole role;
   final double callBalanceAmount;
+  final List<PractitionerProfileModel> doctorsCalled;
+  final bool isVerified;
 
   CallPage({
     Key key,
@@ -35,6 +39,9 @@ class CallPage extends StatefulWidget {
     this.docID,
     this.userID,
     this.callBalanceAmount,
+    this.doctorsCalled,
+    this.isVerified,
+    this.ratePerMin,
   }) : super(key: key);
 
   @override
@@ -42,7 +49,7 @@ class CallPage extends StatefulWidget {
 }
 
 class _CallPageState extends State<CallPage> {
-	final _users = <int>[];
+  final _users = <int>[];
   final _infoStrings = <String>[];
 
   RtcEngine _engine;
@@ -91,15 +98,17 @@ class _CallPageState extends State<CallPage> {
     await _engine.setVideoEncoderConfiguration(configuration);
     final token = await getToken();
     await _engine.joinChannel(TEST_TOKEN, widget.channelName, null, 0);
+    // await _engine.ren
     // await _engine.joinChannel(token, widget.channelName, null, 0);
   }
 
   // get token from token server
   Future<String> getToken() async {
     try {
+      final int expiry = widget.doctorsCalled.length <= 3 ? 15 : widget.callDuration;
       final response = await http.get(
         Uri.parse(
-          baseUrl + '/rtc/' + widget.channelName + '/publisher/uid/' + 0.toString() + '?expiry=45',
+          baseUrl + '/rtc/' + widget.channelName + '/publisher/uid/' + 0.toString() + '?expiry=$expiry',
         ),
       );
       return jsonDecode(response.body)['rtcToken'].toString();
@@ -118,7 +127,11 @@ class _CallPageState extends State<CallPage> {
             _infoStrings.add('onError ❌ :: errorCode: $code');
           });
         },
+        localAudioStats: (stats) {
+          print('--------|stats.toJson()|--------|value -> ${stats.toJson().toString()}');
+        },
         connectionStateChanged: (connectionState, connectionReason) {
+          if (connectionReason == ConnectionChangedReason.TokenExpired) {}
           setState(() {
             _infoStrings.add("connectionStateChange ⚡ :: state:$connectionState reason:$connectionReason");
           });
@@ -129,7 +142,7 @@ class _CallPageState extends State<CallPage> {
           });
         },
         leaveChannel: (stats) async {
-	        setState(() {
+          setState(() {
             showEndedScreen = true;
             callTime = stats.totalDuration;
 
@@ -137,24 +150,30 @@ class _CallPageState extends State<CallPage> {
             _users.clear();
           });
 
+          // if (stats.users != 0) {
           //send to call history
           final preFormattedFrom = DateTime.now().subtract(callTime > 59 ? Duration(minutes: callTime ~/ 60) : Duration(seconds: callTime));
           final preFormattedTo = DateTime.now();
           final from = DateFormat().add_Hms().format(preFormattedFrom).toString();
           final to = DateFormat().add_Hms().format(preFormattedTo).toString();
 
+          print('--------|preformattedfrom|--------|value -> ${preFormattedFrom.toString()}');
           print("----------- $from + ---------$to");
+
+          // first 3 calls = if call history.length is <= 3 dont charge & cap at 15 mins
 
           final duration = Duration(seconds: callTime).inMinutes.toInt();
 
+          final usedAmount = duration * widget.ratePerMin;
           //deduct from balance
-          final newBalance = widget.callBalanceAmount - duration;
-          context.read<CallHistoryCubit>()..addCallHistory(5, widget.docID, from, to);
+          final newBalance = widget.callBalanceAmount - usedAmount;
+          context.read<CallHistoryCubit>()..addCallHistory(5, widget.docID, preFormattedFrom.toString(), preFormattedTo.toString());
           context.read<CallBalanceCubit>()
             ..creditDeductAdd(paymentType: 'LIPA_MPESA', currency: "KES", amount: newBalance.toInt(), user: 5, balance: newBalance.toInt());
 
           print("---------new Balance  $newBalance");
         },
+        // },
         userJoined: (uid, elapsed) {
           setState(() {
             showEndedScreen = false;
@@ -194,7 +213,7 @@ class _CallPageState extends State<CallPage> {
 
   Widget _actionsToolbar(bool showAllControls) {
     return Container(
-	    alignment: Alignment.bottomCenter,
+      alignment: Alignment.bottomCenter,
       padding: EdgeInsets.symmetric(vertical: 20.w, horizontal: 40.w),
       child: showAllControls
           ? Column(
@@ -236,7 +255,7 @@ class _CallPageState extends State<CallPage> {
                       ),
                       onPressed: _onToggleMuteAudio,
                       child: Icon(
-	                      widget.mutedAudio ? Icons.mic_off : Icons.mic,
+                        widget.mutedAudio ? Icons.mic_off : Icons.mic,
                         color: Colors.white,
                         size: 24.0.w,
                       ),
@@ -256,7 +275,7 @@ class _CallPageState extends State<CallPage> {
                       ),
                       onPressed: _onToggleMuteVideo,
                       child: Icon(
-	                      widget.mutedVideo ? MdiIcons.videoOffOutline : MdiIcons.videoOutline,
+                        widget.mutedVideo ? MdiIcons.videoOffOutline : MdiIcons.videoOutline,
                         color: Colors.white,
                         size: 24.0.w,
                       ),
@@ -276,7 +295,7 @@ class _CallPageState extends State<CallPage> {
                       ),
                       onPressed: _onSwitchCamera,
                       child: Icon(
-	                      Icons.switch_camera,
+                        Icons.switch_camera,
                         color: Colors.white,
                         size: 24.0.w,
                       ),
@@ -296,7 +315,7 @@ class _CallPageState extends State<CallPage> {
                       ),
                       onPressed: _onSwitchCamera,
                       child: Icon(
-	                      Icons.more_vert,
+                        Icons.more_vert,
                         color: Colors.white,
                         size: 24.0.w,
                       ),
@@ -315,14 +334,14 @@ class _CallPageState extends State<CallPage> {
               children: [
                 //end call
                 RawMaterialButton(
-	                constraints: BoxConstraints(
+                  constraints: BoxConstraints(
                     maxWidth: 64.w,
                     minHeight: 64.w,
                     minWidth: 64.w,
                     maxHeight: 64.w,
                   ),
                   onPressed: () async {
-	                  context.read<CallBalanceCubit>()..getCallBalance(5);
+                    context.read<CallBalanceCubit>()..getCallBalance(5);
                     Navigator.pop(context);
                   },
                   child: Icon(
@@ -343,7 +362,7 @@ class _CallPageState extends State<CallPage> {
   // Info panel to show logs
   Widget _logs() {
     return Container(
-	    padding: EdgeInsets.symmetric(vertical: 48.h),
+      padding: EdgeInsets.symmetric(vertical: 48.h),
       alignment: Alignment.bottomCenter,
       child: FractionallySizedBox(
         heightFactor: 0.5,
@@ -451,7 +470,7 @@ class _CallPageState extends State<CallPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-	          padding: EdgeInsets.all(20.0.w),
+            padding: EdgeInsets.all(20.0.w),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.start,
@@ -482,8 +501,8 @@ class _CallPageState extends State<CallPage> {
                             color: Colors.white,
                           ),
                         ),
-                        SizedBox(width: 10.w),
-                        VerifiedTag(),
+                        widget.isVerified ? SizedBox(width: 10.w) : SizedBox.shrink(),
+                        widget.isVerified ? VerifiedTag() : SizedBox.shrink(),
                       ],
                     ),
                     SizedBox(height: 4.h),
@@ -502,7 +521,7 @@ class _CallPageState extends State<CallPage> {
           ),
           Center(
             child: Padding(
-	            padding: EdgeInsets.only(top: 60.0.h),
+              padding: EdgeInsets.only(top: 60.0.h),
               child: Center(
                 child: CircleAvatar(
                   radius: 72.w,
@@ -520,7 +539,7 @@ class _CallPageState extends State<CallPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-	          padding: EdgeInsets.all(20.0.w),
+            padding: EdgeInsets.all(20.0.w),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.start,
@@ -551,8 +570,8 @@ class _CallPageState extends State<CallPage> {
                             color: Colors.white,
                           ),
                         ),
-                        SizedBox(width: 10.w),
-                        VerifiedTag(),
+                        widget.isVerified ? SizedBox(width: 10.w) : SizedBox.shrink(),
+                        widget.isVerified ? VerifiedTag() : SizedBox.shrink(),
                       ],
                     ),
                     SizedBox(height: 4.h),
@@ -604,8 +623,8 @@ class _CallPageState extends State<CallPage> {
                         color: Colors.white,
                       ),
                     ),
-                    SizedBox(width: 10.w),
-                    VerifiedTag(),
+                    widget.isVerified ? SizedBox(width: 10.w) : SizedBox.shrink(),
+                    widget.isVerified ? VerifiedTag() : SizedBox.shrink(),
                   ],
                 ),
                 SizedBox(height: 4.h),
@@ -663,8 +682,8 @@ class _CallPageState extends State<CallPage> {
                         color: Colors.white,
                       ),
                     ),
-                    SizedBox(width: 10.w),
-                    VerifiedTag(),
+                    widget.isVerified ? SizedBox(width: 10.w) : SizedBox.shrink(),
+                    widget.isVerified ? VerifiedTag() : SizedBox.shrink(),
                   ],
                 ),
                 SizedBox(height: 4.h),
@@ -744,7 +763,7 @@ class _CallPageState extends State<CallPage> {
                       ? _callEndedView("Ended")
                       : _callingView('Calling...')
                   : _callConnectedView(),
-	            // _logs(),
+              // _logs(),
               showEndedScreen ? _actionsToolbar(false) : _actionsToolbar(true),
             ],
           ),

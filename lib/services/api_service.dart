@@ -704,9 +704,8 @@ class ApiService {
     return listOfReviewModelFromJson(response.body);
   }
 
-  Future<CallHistoryModel> addCallHistoryToDB(CallHistoryModel callHistoryModel) async {
+  Future<CallHistoryModel> addCallHistoryToDB(Map<String, dynamic> mapData) async {
     _token = await getStringValuesSF();
-    final mapData = callHistoryModelToJson(callHistoryModel);
 
     final response = await http.post(
       'https://ssential.herokuapp.com/api/doctors_consult/call_history/',
@@ -714,9 +713,10 @@ class ApiService {
         "Content-Type": "application/json",
         "Authorization": "Bearer " + _token,
       },
-      body: mapData,
+      body: json.encode(mapData),
     );
 
+    print('--------|mapData|--------|value -> ${mapData.toString()}');
     print(response.body);
 
     return callHistoryModelFromJson(response.body);
@@ -750,7 +750,7 @@ class ApiService {
   }
 
   //call history
-  Future<List<PractitionerProfileModel>> fetchAllCallHistory(userID) async {
+  Future<List<PractitionerProfileModel>> fetchAllDoctorsCalled(userID) async {
     _token = await getStringValuesSF();
     final response = await http.get(
       "https://ssential.herokuapp.com/api/doctors_consult/call_history/",
@@ -762,15 +762,11 @@ class ApiService {
 
     final callList = callHistoryListModelFromJson(response.body).where((element) => element.user == userID).toList();
 
-    print('--------|Callername|--------|value -> ${callList[0].user.toString()}');
-
     if (callList.length == 0) {
       return [];
-      // emit(FetchCallHistorySuccess(allCallHistory, 0, allDocDetails));
     } else {
-      Future<List<PractitionerProfileModel>> getDocs() async {
+	    Future<List<PractitionerProfileModel>> getDocs() async {
         List<PractitionerProfileModel> allDocDetails = [];
-
         for (final doc in callList) {
           final docdetail = await this.fetchDocDetails(doc.profile);
           allDocDetails.add(docdetail);
@@ -779,8 +775,24 @@ class ApiService {
         return allDocDetails;
       }
 
-      return await getDocs();
+      final allDocs = await getDocs();
+      return practitionerProfileListModelFromJson(allDocs.map((e) => jsonEncode(e)).toList().toSet().toList().toString());
     }
+  }
+
+  Future<List<CallHistoryModel>> fetchAllCallHistory(userID) async {
+    _token = await getStringValuesSF();
+    final response = await http.get(
+      "https://ssential.herokuapp.com/api/doctors_consult/call_history/",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + _token,
+      },
+    );
+
+    print('--------|response call|--------|value -> ${response.body.toString()}');
+
+    return callHistoryListModelFromJson(response.body).where((element) => element.user == userID).toList();
   }
 
   Future<PractitionerProfileModel> fetchDocDetails(docID) async {

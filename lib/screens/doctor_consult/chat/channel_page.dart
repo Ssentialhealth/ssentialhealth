@@ -1,12 +1,7 @@
-import 'package:agora_rtc_engine/rtc_engine.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:pocket_health/bloc/call_balance/call_balance_cubit.dart';
-import 'package:pocket_health/screens/doctor_consult/call/call_page.dart';
-import 'package:pocket_health/screens/doctor_consult/call/top_up_account.dart';
+import 'package:pocket_health/screens/doctor_consult/call/init_call_dialog.dart';
 import 'package:pocket_health/screens/doctor_consult/chat/thread_page.dart';
 import 'package:pocket_health/utils/constants.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
@@ -87,227 +82,19 @@ class _ChannelPageState extends State<ChannelPage> {
                 // video call
                 IconButton(
                   onPressed: () async {
+                    final streamDocDetail = await channel
+                        .queryMembers(filter: {}).then((value) => value.members.firstWhere((e) => e.userId != StreamChat.of(context).user.id).user);
                     await showDialog(
                       context: context,
                       builder: (dialogContext) {
-                        String durationVal = "5 minutes";
-
-                        return StatefulBuilder(builder: (context, setState) {
-                          return Dialog(
-                            backgroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0.w)),
-                            child: Container(
-                              width: 1.sw,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  SizedBox(height: 15.h),
-
-                                  //doc name
-                                  Text(
-                                    channel.id,
-                                    style: TextStyle(
-                                      fontSize: 15.sp,
-                                      color: Colors.black87,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  SizedBox(height: 15.h),
-
-                                  Divider(height: 1, thickness: 1.r, color: Color(0xffB3B3B3)),
-
-                                  SizedBox(height: 15.h),
-                                  Text(
-                                    'Estimated Call Cost',
-                                    style: TextStyle(
-                                      fontSize: 14.sp,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-
-                                  //cost
-                                  Text(
-                                    durationVal == "5 minutes"
-                                        ? 'KES 7.50'
-                                        : durationVal == "10 minutes"
-                                            ? "KES 15.00"
-                                            : durationVal == "15 minutes"
-                                                ? "KES 22.50"
-                                                : "",
-                                    style: TextStyle(
-                                      fontSize: 14.sp,
-                                      fontWeight: FontWeight.w700,
-                                      color: Colors.orange,
-                                    ),
-                                  ),
-                                  SizedBox(height: 10.h),
-
-                                  //drop down
-                                  Padding(
-                                    padding: EdgeInsets.symmetric(horizontal: 20.w),
-                                    child: DropdownButtonFormField(
-                                      value: durationVal,
-                                      isExpanded: true,
-                                      onTap: () {},
-                                      onChanged: (val) {
-                                        setState(() {
-                                          durationVal = val;
-                                        });
-                                      },
-                                      icon: Icon(
-                                        Icons.keyboard_arrow_down,
-                                        size: 24.r,
-                                        color: accentColorDark,
-                                      ),
-                                      decoration: InputDecoration(
-                                        enabledBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                            color: accentColorDark,
-                                            width: 1.w,
-                                          ),
-                                        ),
-                                        border: OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                            color: accentColorDark,
-                                            width: 1.w,
-                                          ),
-                                        ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                            color: accentColorDark,
-                                            width: 1.w,
-                                          ),
-                                        ),
-                                        fillColor: Colors.white,
-                                        filled: true,
-                                        contentPadding: EdgeInsets.symmetric(horizontal: 20.r),
-                                      ),
-                                      elevation: 0,
-                                      style: TextStyle(
-                                        fontSize: 14.sp,
-                                        color: Color(0xff707070),
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                      dropdownColor: Colors.white,
-                                      hint: Text(
-                                        'Select Duration',
-                                        style: TextStyle(
-                                          fontSize: 14.sp,
-                                          color: Color(0xff707070),
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                      items: ["5 minutes", "10 minutes", "15 minutes"]
-                                          .map(
-                                            (e) => DropdownMenuItem(
-                                              value: e,
-                                              child: Text(
-                                                e,
-                                                style: TextStyle(),
-                                              ),
-                                            ),
-                                          )
-                                          .toList(),
-                                    ),
-                                  ),
-                                  SizedBox(height: 15.h),
-
-                                  //continue
-                                  Padding(
-                                    padding: EdgeInsets.symmetric(horizontal: 20.w),
-                                    child: BlocConsumer<CallBalanceCubit, CallBalanceState>(
-                                      listener: (context, state) {},
-                                      builder: (context, state) {
-                                        return MaterialButton(
-                                          onPressed: () async {
-                                            final double amountToUse = durationVal == "5 minutes"
-                                                ? 7.50
-                                                : durationVal == "10 minutes"
-                                                    ? 15.00
-                                                    : durationVal == "15 minutes"
-                                                        ? 22.50
-                                                        : null;
-                                            // await for camera and mic permissions before pu-shing video page
-                                            await Permission.camera.request();
-                                            await Permission.microphone.request();
-                                            // push video page with given channel name
-                                            state is CallBalanceFetchSuccess &&
-                                                    (state.callBalanceModel.amount != null || double.parse(state.callBalanceModel.amount) <= amountToUse)
-                                                ? Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) => CallPage(
-                                                        callDuration: int.parse(durationVal.split(" ").first),
-                                                        channelName: 'testchannel1',
-                                                        role: ClientRole.Broadcaster,
-                                                        mutedAudio: false,
-                                                        mutedVideo: false,
-                                                        userID: 5,
-                                                        docID: 12,
-                                                        callBalanceAmount: double.parse(state.callBalanceModel.amount.split(".").first),
-                                                      ),
-                                                    ),
-                                                  )
-                                                : Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) => TopUpAccount(),
-                                                    ),
-                                                  );
-                                          },
-                                          minWidth: 374.w,
-                                          elevation: 0.0,
-                                          child: Text(
-                                            'Continue',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 13.sp,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                          highlightElevation: 0.0,
-                                          focusElevation: 0.0,
-                                          disabledElevation: 0.0,
-                                          color: Color(0xff1A5864),
-                                          height: 40.h,
-                                          highlightColor: Colors.transparent,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(4.r),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ),
-
-                                  SizedBox(height: 15.h),
-
-                                  //show balance
-                                  TextButton(
-                                    onPressed: () async {
-                                      //navigate to get credit
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (context) => TopUpAccount(),
-                                        ),
-                                      );
-                                    },
-                                    child: Text(
-                                      'Check Balance',
-                                      style: TextStyle(
-                                        decoration: TextDecoration.underline,
-                                        color: accentColorDark,
-                                        fontSize: 13.sp,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          );
-                        });
+                        return StreamChannel(
+                          channel: channel,
+                          child: InitCallDialog(
+                            from: "chat",
+                            videoMuted: false,
+                            streamDocDetail: streamDocDetail,
+                          ),
+                        );
                       },
                     );
                   },
@@ -317,227 +104,19 @@ class _ChannelPageState extends State<ChannelPage> {
                 //audio call
                 IconButton(
                   onPressed: () async {
+                    final streamDocDetail = await channel
+                        .queryMembers(filter: {}).then((value) => value.members.firstWhere((e) => e.userId != StreamChat.of(context).user.id).user);
                     await showDialog(
                       context: context,
                       builder: (dialogContext) {
-                        String durationVal = "5 minutes";
-
-                        return StatefulBuilder(builder: (context, setState) {
-                          return Dialog(
-                            backgroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0.w)),
-                            child: Container(
-                              width: 1.sw,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  SizedBox(height: 15.h),
-
-                                  //doc name
-                                  Text(
-                                    channel.id,
-                                    style: TextStyle(
-                                      fontSize: 15.sp,
-                                      color: Colors.black87,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  SizedBox(height: 15.h),
-
-                                  Divider(height: 1, thickness: 1.r, color: Color(0xffB3B3B3)),
-
-                                  SizedBox(height: 15.h),
-                                  Text(
-                                    'Estimated Call Cost',
-                                    style: TextStyle(
-                                      fontSize: 14.sp,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-
-                                  //cost
-                                  Text(
-                                    durationVal == "5 minutes"
-                                        ? 'KES 7.50'
-                                        : durationVal == "10 minutes"
-                                            ? "KES 15.00"
-                                            : durationVal == "15 minutes"
-                                                ? "KES 22.50"
-                                                : "",
-                                    style: TextStyle(
-                                      fontSize: 14.sp,
-                                      fontWeight: FontWeight.w700,
-                                      color: Colors.orange,
-                                    ),
-                                  ),
-                                  SizedBox(height: 10.h),
-
-                                  //drop down
-                                  Padding(
-                                    padding: EdgeInsets.symmetric(horizontal: 20.w),
-                                    child: DropdownButtonFormField(
-                                      value: durationVal,
-                                      isExpanded: true,
-                                      onTap: () {},
-                                      onChanged: (val) {
-                                        setState(() {
-                                          durationVal = val;
-                                        });
-                                      },
-                                      icon: Icon(
-                                        Icons.keyboard_arrow_down,
-                                        size: 24.r,
-                                        color: accentColorDark,
-                                      ),
-                                      decoration: InputDecoration(
-                                        enabledBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                            color: accentColorDark,
-                                            width: 1.w,
-                                          ),
-                                        ),
-                                        border: OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                            color: accentColorDark,
-                                            width: 1.w,
-                                          ),
-                                        ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                            color: accentColorDark,
-                                            width: 1.w,
-                                          ),
-                                        ),
-                                        fillColor: Colors.white,
-                                        filled: true,
-                                        contentPadding: EdgeInsets.symmetric(horizontal: 20.r),
-                                      ),
-                                      elevation: 0,
-                                      style: TextStyle(
-                                        fontSize: 14.sp,
-                                        color: Color(0xff707070),
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                      dropdownColor: Colors.white,
-                                      hint: Text(
-                                        'Select Duration',
-                                        style: TextStyle(
-                                          fontSize: 14.sp,
-                                          color: Color(0xff707070),
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                      items: ["5 minutes", "10 minutes", "15 minutes"]
-                                          .map(
-                                            (e) => DropdownMenuItem(
-                                              value: e,
-                                              child: Text(
-                                                e,
-                                                style: TextStyle(),
-                                              ),
-                                            ),
-                                          )
-                                          .toList(),
-                                    ),
-                                  ),
-                                  SizedBox(height: 15.h),
-
-                                  //continue
-                                  Padding(
-                                    padding: EdgeInsets.symmetric(horizontal: 20.w),
-                                    child: BlocConsumer<CallBalanceCubit, CallBalanceState>(
-                                      listener: (context, state) {},
-                                      builder: (context, state) {
-                                        return MaterialButton(
-                                          onPressed: () async {
-                                            final double amountToUse = durationVal == "5 minutes"
-                                                ? 7.50
-                                                : durationVal == "10 minutes"
-                                                    ? 15.00
-                                                    : durationVal == "15 minutes"
-                                                        ? 22.50
-                                                        : null;
-                                            // await for camera and mic permissions before pu-shing video page
-                                            await Permission.camera.request();
-                                            await Permission.microphone.request();
-                                            // push video page with given channel name
-                                            state is CallBalanceFetchSuccess &&
-                                                    (state.callBalanceModel.amount != null || double.parse(state.callBalanceModel.amount) <= amountToUse)
-                                                ? Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) => CallPage(
-                                                        callDuration: int.parse(durationVal.split(" ").first),
-                                                        channelName: 'testchannel1',
-                                                        role: ClientRole.Broadcaster,
-                                                        mutedAudio: false,
-                                                        mutedVideo: true,
-                                                        userID: 5,
-                                                        docID: 12,
-                                                        callBalanceAmount: double.parse(state.callBalanceModel.amount.split(".").first),
-                                                      ),
-                                                    ),
-                                                  )
-                                                : Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) => TopUpAccount(),
-                                                    ),
-                                                  );
-                                          },
-                                          minWidth: 374.w,
-                                          elevation: 0.0,
-                                          child: Text(
-                                            'Continue',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 13.sp,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                          highlightElevation: 0.0,
-                                          focusElevation: 0.0,
-                                          disabledElevation: 0.0,
-                                          color: Color(0xff1A5864),
-                                          height: 40.h,
-                                          highlightColor: Colors.transparent,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(4.r),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ),
-
-                                  SizedBox(height: 15.h),
-
-                                  //show balance
-                                  TextButton(
-                                    onPressed: () async {
-                                      //navigate to get credit
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (context) => TopUpAccount(),
-                                        ),
-                                      );
-                                    },
-                                    child: Text(
-                                      'Check Balance',
-                                      style: TextStyle(
-                                        decoration: TextDecoration.underline,
-                                        color: accentColorDark,
-                                        fontSize: 13.sp,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          );
-                        });
+                        return StreamChannel(
+                          channel: channel,
+                          child: InitCallDialog(
+                            from: "chat",
+                            videoMuted: true,
+                            streamDocDetail: streamDocDetail,
+                          ),
+                        );
                       },
                     );
                   },
@@ -547,44 +126,11 @@ class _ChannelPageState extends State<ChannelPage> {
                 // more details page
                 IconButton(
                   onPressed: () async {
-                    final channelState = await channel.query(
-                      options: {
-                        "filter": {
-                          "message_filter_conditions": {
-                            "attachments": {
-                              "\$in": [userID]
-                            }
-                          },
-                        },
-                      },
-                      messagesPagination: PaginationParams(limit: 10),
-                    ).onError((error, stackTrace) {
-                      print(error.toString());
-                      return null;
-                    });
-
-                    final messagesWithAttachments = channelState?.messages;
-                    List<String> attachments = [];
-                    messagesWithAttachments?.forEach((element) {
-                      print(" -------------------------id");
-                      print(element.id);
-
-                      element.attachments.where((e) => e.imageUrl != null).forEach((element) {
-                        final imageUrl = element.imageUrl;
-                        attachments.add(imageUrl);
-                      });
-
-                      return attachments;
-                    });
-
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (ctx) => StreamChannel(
                           channel: channel,
-                          child: ChannelDetailsPage(
-                            attachments: attachments,
-                            isMuted: channel.isMuted,
-                          ),
+                          child: ChannelDetailsPage(),
                         ),
                       ),
                     );

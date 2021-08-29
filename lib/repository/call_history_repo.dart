@@ -6,7 +6,7 @@ class CallHistoryRepo {
 
   CallHistoryRepo(this.apiService);
 
-  Future<CallHistoryModel> registerCallHistory(CallHistoryModel callHistoryModel) async {
-    return await apiService.addCallHistoryToDB(callHistoryModel);
+  Future<CallHistoryModel> registerCallHistory(Map<String, dynamic> mapData) async {
+    return await apiService.addCallHistoryToDB(mapData);
   }
 }

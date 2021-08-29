@@ -496,10 +496,10 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
                                               final time = DateTime.now().minute >= 45
                                                   ? thisHour + 0.75
                                                   : DateTime.now().minute >= 30
-                                                  ? thisHour + 0.5
-                                                  : DateTime.now().minute >= 15
-                                                  ? thisHour + 0.25
-                                                  : thisHour + 0.01;
+                                                      ? thisHour + 0.5
+                                                      : DateTime.now().minute >= 15
+                                                          ? thisHour + 0.25
+                                                          : thisHour + 0.01;
                                               final bool isBooked =
                                                   bookedOnThisDate.where((e) => ("${e.timeSlotFrom} - ${e.timeSlotTo}") == label).toList().isNotEmpty;
 
@@ -516,71 +516,71 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
                                           ),
                                           choiceBuilder: (item) {
                                             return InkWell(
-                                              onTap: item.disabled
+	                                            onTap: item.disabled
                                                   ? () {}
                                                   : tags.contains(item.value)
-                                                  ? () {
-                                                setState(() {
-                                                  tags.remove(item.value);
-                                                });
-                                              }
-                                                  : () {
-                                                setState(() {
-                                                  tags.add(item.value);
-                                                });
-                                              },
+                                                      ? () {
+                                                          setState(() {
+                                                            tags.remove(item.value);
+                                                          });
+                                                        }
+                                                      : () {
+                                                          setState(() {
+                                                            tags.add(item.value);
+                                                          });
+                                                        },
                                               child: Visibility(
                                                 visible: item.selected,
                                                 //when not selected
                                                 replacement: item.disabled
 
-                                                //when disabled
+                                                    //when disabled
                                                     ? AnimatedContainer(
-                                                  duration: Duration(milliseconds: 150),
-                                                  width: 153.w,
-                                                  alignment: Alignment.center,
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.black12,
-                                                    border: Border.all(
-                                                      width: 1.w,
-                                                      color: Colors.black26,
-                                                    ),
-                                                    borderRadius: BorderRadius.circular(10.w),
-                                                  ),
-                                                  padding: EdgeInsets.symmetric(horizontal: 36.w, vertical: 18.w),
-                                                  child: Text(
-                                                    item.label,
-                                                    style: TextStyle(
-                                                      fontSize: 13.sp,
-                                                      color: Color(0xff707070),
-                                                      fontWeight: FontWeight.w600,
-                                                    ),
-                                                  ),
-                                                )
+                                                        duration: Duration(milliseconds: 150),
+                                                        width: 153.w,
+                                                        alignment: Alignment.center,
+                                                        decoration: BoxDecoration(
+                                                          color: Colors.black12,
+                                                          border: Border.all(
+                                                            width: 1.w,
+                                                            color: Colors.black26,
+                                                          ),
+                                                          borderRadius: BorderRadius.circular(10.w),
+                                                        ),
+                                                        padding: EdgeInsets.symmetric(horizontal: 36.w, vertical: 18.w),
+                                                        child: Text(
+                                                          item.label,
+                                                          style: TextStyle(
+                                                            fontSize: 13.sp,
+                                                            color: Color(0xff707070),
+                                                            fontWeight: FontWeight.w600,
+                                                          ),
+                                                        ),
+                                                      )
 
-                                                //when not disabled
+                                                    //when not disabled
                                                     : AnimatedContainer(
-                                                  duration: Duration(milliseconds: 150),
-                                                  width: 153.w,
-                                                  alignment: Alignment.center,
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.white,
-                                                    border: Border.all(
-                                                      width: 1.w,
-                                                      color: accentColorDark,
-                                                    ),
-                                                    borderRadius: BorderRadius.circular(10.w),
-                                                  ),
-                                                  padding: EdgeInsets.symmetric(horizontal: 36.w, vertical: 18.w),
-                                                  child: Text(
-                                                    item.label,
-                                                    style: TextStyle(
-                                                      color: accentColorDark,
-                                                      fontSize: 13.sp,
-                                                      fontWeight: FontWeight.w600,
-                                                    ),
-                                                  ),
-                                                ),
+                                                        duration: Duration(milliseconds: 150),
+                                                        width: 153.w,
+                                                        alignment: Alignment.center,
+                                                        decoration: BoxDecoration(
+                                                          color: Colors.white,
+                                                          border: Border.all(
+                                                            width: 1.w,
+                                                            color: accentColorDark,
+                                                          ),
+                                                          borderRadius: BorderRadius.circular(10.w),
+                                                        ),
+                                                        padding: EdgeInsets.symmetric(horizontal: 36.w, vertical: 18.w),
+                                                        child: Text(
+                                                          item.label,
+                                                          style: TextStyle(
+                                                            color: accentColorDark,
+                                                            fontSize: 13.sp,
+                                                            fontWeight: FontWeight.w600,
+                                                          ),
+                                                        ),
+                                                      ),
 
                                                 //selected
                                                 child: AnimatedContainer(
@@ -627,15 +627,15 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
                                             value: (index, label) => label,
                                             label: (index, label) => label.replaceRange(5, 8, '').replaceRange(13, 16, ''),
                                             disabled: (index, label) {
-                                              final bookedOnThisDate = state.bookings.where((e) => e.appointmentDate == selectedDate).toList();
+	                                            final bookedOnThisDate = state.bookings.where((e) => e.appointmentDate == selectedDate).toList();
                                               final thisHour = DateTime.now().hour;
                                               final time = DateTime.now().minute >= 45
                                                   ? thisHour + 0.75
                                                   : DateTime.now().minute >= 30
-                                                  ? thisHour + 0.5
-                                                  : DateTime.now().minute >= 15
-                                                  ? thisHour + 0.25
-                                                  : thisHour + 0.01;
+                                                      ? thisHour + 0.5
+                                                      : DateTime.now().minute >= 15
+                                                          ? thisHour + 0.25
+                                                          : thisHour + 0.01;
                                               final bool isBooked =
                                                   bookedOnThisDate.where((e) => ("${e.timeSlotFrom} - ${e.timeSlotTo}") == label).toList().isNotEmpty;
 
@@ -648,71 +648,71 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
                                           ),
                                           choiceBuilder: (item) {
                                             return InkWell(
-                                              onTap: item.disabled
+	                                            onTap: item.disabled
                                                   ? () {}
                                                   : tags.contains(item.value)
-                                                  ? () {
-                                                setState(() {
-                                                  tags.remove(item.value);
-                                                });
-                                              }
-                                                  : () {
-                                                setState(() {
-                                                  tags.add(item.value);
-                                                });
-                                              },
+                                                      ? () {
+                                                          setState(() {
+                                                            tags.remove(item.value);
+                                                          });
+                                                        }
+                                                      : () {
+                                                          setState(() {
+                                                            tags.add(item.value);
+                                                          });
+                                                        },
                                               child: Visibility(
                                                 visible: item.selected,
                                                 //when not selected
                                                 replacement: item.disabled
 
-                                                //when disabled
+                                                    //when disabled
                                                     ? AnimatedContainer(
-                                                  duration: Duration(milliseconds: 150),
-                                                  width: 153.w,
-                                                  alignment: Alignment.center,
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.black12,
-                                                    border: Border.all(
-                                                      width: 1.w,
-                                                      color: Colors.black26,
-                                                    ),
-                                                    borderRadius: BorderRadius.circular(10.w),
-                                                  ),
-                                                  padding: EdgeInsets.symmetric(horizontal: 36.w, vertical: 18.w),
-                                                  child: Text(
-                                                    item.label,
-                                                    style: TextStyle(
-                                                      fontSize: 13.sp,
-                                                      color: Color(0xff707070),
-                                                      fontWeight: FontWeight.w600,
-                                                    ),
-                                                  ),
-                                                )
+                                                        duration: Duration(milliseconds: 150),
+                                                        width: 153.w,
+                                                        alignment: Alignment.center,
+                                                        decoration: BoxDecoration(
+                                                          color: Colors.black12,
+                                                          border: Border.all(
+                                                            width: 1.w,
+                                                            color: Colors.black26,
+                                                          ),
+                                                          borderRadius: BorderRadius.circular(10.w),
+                                                        ),
+                                                        padding: EdgeInsets.symmetric(horizontal: 36.w, vertical: 18.w),
+                                                        child: Text(
+                                                          item.label,
+                                                          style: TextStyle(
+                                                            fontSize: 13.sp,
+                                                            color: Color(0xff707070),
+                                                            fontWeight: FontWeight.w600,
+                                                          ),
+                                                        ),
+                                                      )
 
-                                                //when not disabled
+                                                    //when not disabled
                                                     : AnimatedContainer(
-                                                  duration: Duration(milliseconds: 150),
-                                                  width: 153.w,
-                                                  alignment: Alignment.center,
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.white,
-                                                    border: Border.all(
-                                                      width: 1.w,
-                                                      color: accentColorDark,
-                                                    ),
-                                                    borderRadius: BorderRadius.circular(10.w),
-                                                  ),
-                                                  padding: EdgeInsets.symmetric(horizontal: 36.w, vertical: 18.w),
-                                                  child: Text(
-                                                    item.label,
-                                                    style: TextStyle(
-                                                      color: accentColorDark,
-                                                      fontSize: 13.sp,
-                                                      fontWeight: FontWeight.w600,
-                                                    ),
-                                                  ),
-                                                ),
+                                                        duration: Duration(milliseconds: 150),
+                                                        width: 153.w,
+                                                        alignment: Alignment.center,
+                                                        decoration: BoxDecoration(
+                                                          color: Colors.white,
+                                                          border: Border.all(
+                                                            width: 1.w,
+                                                            color: accentColorDark,
+                                                          ),
+                                                          borderRadius: BorderRadius.circular(10.w),
+                                                        ),
+                                                        padding: EdgeInsets.symmetric(horizontal: 36.w, vertical: 18.w),
+                                                        child: Text(
+                                                          item.label,
+                                                          style: TextStyle(
+                                                            color: accentColorDark,
+                                                            fontSize: 13.sp,
+                                                            fontWeight: FontWeight.w600,
+                                                          ),
+                                                        ),
+                                                      ),
 
                                                 //selected
                                                 child: AnimatedContainer(
@@ -759,15 +759,15 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
                                             value: (index, label) => label,
                                             label: (index, label) => label.replaceRange(5, 8, '').replaceRange(13, 16, ''),
                                             disabled: (index, label) {
-                                              final bookedOnThisDate = state.bookings.where((e) => e.appointmentDate == selectedDate).toList();
+	                                            final bookedOnThisDate = state.bookings.where((e) => e.appointmentDate == selectedDate).toList();
                                               final thisHour = DateTime.now().hour;
                                               final time = DateTime.now().minute >= 45
                                                   ? thisHour + 0.75
                                                   : DateTime.now().minute >= 30
-                                                  ? thisHour + 0.5
-                                                  : DateTime.now().minute >= 15
-                                                  ? thisHour + 0.25
-                                                  : thisHour + 0.01;
+                                                      ? thisHour + 0.5
+                                                      : DateTime.now().minute >= 15
+                                                          ? thisHour + 0.25
+                                                          : thisHour + 0.01;
                                               final bool isBooked =
                                                   bookedOnThisDate.where((e) => ("${e.timeSlotFrom} - ${e.timeSlotTo}") == label).toList().isNotEmpty;
 
@@ -780,71 +780,71 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
                                           ),
                                           choiceBuilder: (item) {
                                             return InkWell(
-                                              onTap: item.disabled
+	                                            onTap: item.disabled
                                                   ? () {}
                                                   : tags.contains(item.value)
-                                                  ? () {
-                                                setState(() {
-                                                  tags.remove(item.value);
-                                                });
-                                              }
-                                                  : () {
-                                                setState(() {
-                                                  tags.add(item.value);
-                                                });
-                                              },
+                                                      ? () {
+                                                          setState(() {
+                                                            tags.remove(item.value);
+                                                          });
+                                                        }
+                                                      : () {
+                                                          setState(() {
+                                                            tags.add(item.value);
+                                                          });
+                                                        },
                                               child: Visibility(
                                                 visible: item.selected,
                                                 //when not selected
                                                 replacement: item.disabled
 
-                                                //when disabled
+                                                    //when disabled
                                                     ? AnimatedContainer(
-                                                  duration: Duration(milliseconds: 150),
-                                                  width: 153.w,
-                                                  alignment: Alignment.center,
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.black12,
-                                                    border: Border.all(
-                                                      width: 1.w,
-                                                      color: Colors.black26,
-                                                    ),
-                                                    borderRadius: BorderRadius.circular(10.w),
-                                                  ),
-                                                  padding: EdgeInsets.symmetric(horizontal: 36.w, vertical: 18.w),
-                                                  child: Text(
-                                                    item.label,
-                                                    style: TextStyle(
-                                                      fontSize: 13.sp,
-                                                      color: Color(0xff707070),
-                                                      fontWeight: FontWeight.w600,
-                                                    ),
-                                                  ),
-                                                )
+                                                        duration: Duration(milliseconds: 150),
+                                                        width: 153.w,
+                                                        alignment: Alignment.center,
+                                                        decoration: BoxDecoration(
+                                                          color: Colors.black12,
+                                                          border: Border.all(
+                                                            width: 1.w,
+                                                            color: Colors.black26,
+                                                          ),
+                                                          borderRadius: BorderRadius.circular(10.w),
+                                                        ),
+                                                        padding: EdgeInsets.symmetric(horizontal: 36.w, vertical: 18.w),
+                                                        child: Text(
+                                                          item.label,
+                                                          style: TextStyle(
+                                                            fontSize: 13.sp,
+                                                            color: Color(0xff707070),
+                                                            fontWeight: FontWeight.w600,
+                                                          ),
+                                                        ),
+                                                      )
 
-                                                //when not disabled
+                                                    //when not disabled
                                                     : AnimatedContainer(
-                                                  duration: Duration(milliseconds: 150),
-                                                  width: 153.w,
-                                                  alignment: Alignment.center,
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.white,
-                                                    border: Border.all(
-                                                      width: 1.w,
-                                                      color: accentColorDark,
-                                                    ),
-                                                    borderRadius: BorderRadius.circular(10.w),
-                                                  ),
-                                                  padding: EdgeInsets.symmetric(horizontal: 36.w, vertical: 18.w),
-                                                  child: Text(
-                                                    item.label,
-                                                    style: TextStyle(
-                                                      color: accentColorDark,
-                                                      fontSize: 13.sp,
-                                                      fontWeight: FontWeight.w600,
-                                                    ),
-                                                  ),
-                                                ),
+                                                        duration: Duration(milliseconds: 150),
+                                                        width: 153.w,
+                                                        alignment: Alignment.center,
+                                                        decoration: BoxDecoration(
+                                                          color: Colors.white,
+                                                          border: Border.all(
+                                                            width: 1.w,
+                                                            color: accentColorDark,
+                                                          ),
+                                                          borderRadius: BorderRadius.circular(10.w),
+                                                        ),
+                                                        padding: EdgeInsets.symmetric(horizontal: 36.w, vertical: 18.w),
+                                                        child: Text(
+                                                          item.label,
+                                                          style: TextStyle(
+                                                            color: accentColorDark,
+                                                            fontSize: 13.sp,
+                                                            fontWeight: FontWeight.w600,
+                                                          ),
+                                                        ),
+                                                      ),
 
                                                 //selected
                                                 child: AnimatedContainer(
@@ -921,7 +921,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
                 },
                 builder: (context, state) {
                   return MaterialButton(
-                    color: accentColorDark,
+	                  color: accentColorDark,
                     elevation: 0.0,
                     height: 40.0.h,
                     minWidth: 376.w,
@@ -929,13 +929,13 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
                     child: state is AppointmentsLoading
                         ? SizedBox(height: 20.h, width: 20.h, child: CircularProgressIndicator())
                         : Text(
-                      'BOOK APPOINTMENT',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 15.sp,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
+                            'BOOK APPOINTMENT',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 15.sp,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                     onPressed: state is AppointmentsLoading
                         ? () {}
                         : () async {
