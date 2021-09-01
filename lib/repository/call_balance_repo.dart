@@ -6,8 +6,8 @@ class CallBalanceRepo {
 
   CallBalanceRepo(this.apiService);
 
-  Future<CallBalanceModel> getCallBalance() async {
-    return await apiService.fetchCallBalance();
+  Future<CallBalanceModel> getCallBalance(userID) async {
+    return await apiService.fetchCallBalance(userID);
   }
 
   Future<CallBalanceModel> initPaymentForCall(paymentData) async {

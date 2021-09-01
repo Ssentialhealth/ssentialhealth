@@ -1,4 +1,4 @@
-package com.pocket.pocket_health
+package com.pocket.pockethealth
 
 import io.flutter.embedding.android.FlutterActivity
 

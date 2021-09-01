@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 class ChannelInfo extends StatelessWidget {
   final Channel channel;
 
-  /// The style of the text displayed
+  // The style of the text displayed
   final TextStyle textStyle;
 
-  /// If true the typing indicator will be rendered if a user is typing
+  // If true the typing indicator will be rendered if a user is typing
   final bool showTypingIndicator;
 
   const ChannelInfo({
@@ -53,11 +54,14 @@ class ChannelInfo extends StatelessWidget {
       alternativeWidget = Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Text(
-            text,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: StreamChatTheme.of(context).channelTheme.channelHeaderTheme.subtitle,
+          SizedBox(
+            width: 138.w,
+            child: Text(
+              text,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: StreamChatTheme.of(context).channelTheme.channelHeaderTheme.subtitle,
+            ),
           ),
         ],
       );
@@ -82,11 +86,14 @@ class ChannelInfo extends StatelessWidget {
           alternativeWidget = Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Text(
-                'Last seen ${Jiffy(otherMember.user.lastActive).fromNow()}',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: textStyle,
+              SizedBox(
+                width: 138.w,
+                child: Text(
+                  'Last seen ${Jiffy(otherMember.user.lastActive).fromNow()}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: textStyle,
+                ),
               ),
             ],
           );
@@ -109,11 +116,14 @@ class ChannelInfo extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Text(
-          'Searching for network...',
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: textStyle,
+        SizedBox(
+          width: 138.w,
+          child: Text(
+            'Searching for network...',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: textStyle,
+          ),
         ),
       ],
     );

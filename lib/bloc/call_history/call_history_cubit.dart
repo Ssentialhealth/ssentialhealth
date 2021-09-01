@@ -13,13 +13,15 @@ class CallHistoryCubit extends Cubit<CallHistoryState> {
   void addCallHistory(int userID, int docID, String startedAt, String endedAt) async {
     try {
       emit(CallHistoryLoading());
-      final callHistoryModel = CallHistoryModel(
-        user: userID,
-        endedAt: endedAt,
-        startedAt: startedAt,
-      );
+      final Map<String, dynamic> mapData = {
+        "startTime": startedAt,
+        "endTime": endedAt,
+        "duration": null,
+        "user": userID,
+        "profile": docID,
+      };
 
-      final addedCall = await callHistoryRepo.registerCallHistory(callHistoryModel);
+      final addedCall = await callHistoryRepo.registerCallHistory(mapData);
 
       emit(CallHistorySuccess(addedCall));
     } catch (_) {

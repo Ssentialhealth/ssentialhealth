@@ -38,11 +38,9 @@ class _SignInScreenState extends State<SignInScreen> {
         child: BlocListener<LoginBloc, LoginState>(
           listener: (context, state) {
             if (state is LoginLoaded) {
-              //TODO: inProduction | sign in with real data
               final userID = state.loginModel.user.fullNames;
               final client = context.read<InitializeStreamChatCubit>().client;
               final userCategory = state.loginModel.user.userCategory;
-              // final userID = 'TestLewis';
 
               context.read<InitializeStreamChatCubit>()..initializeUser(userID, userCategory);
 

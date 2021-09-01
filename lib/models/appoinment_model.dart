@@ -14,12 +14,14 @@ class AppointmentModel {
     @required this.timeSlotFrom,
     @required this.timeSlotTo,
     @required this.status,
+    @required this.appointmentType,
     @required this.user,
     @required this.profile,
   });
 
   final int id;
   final DateTime appointmentDate;
+  final int appointmentType;
   final String timeSlotFrom;
   final String timeSlotTo;
   final int status;
@@ -32,6 +34,7 @@ class AppointmentModel {
         timeSlotFrom: json["time_slot_from"],
         timeSlotTo: json["time_slot_to"],
         status: json["status"],
+        appointmentType: json["appointment_type"],
         user: json["user"],
         profile: json["profile"],
       );
@@ -43,6 +46,7 @@ class AppointmentModel {
         "time_slot_from": timeSlotFrom,
         "time_slot_to": timeSlotTo,
         "status": status,
+        "appointment_type": appointmentType,
         "user": user,
         "profile": profile,
       };

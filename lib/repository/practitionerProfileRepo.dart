@@ -35,8 +35,8 @@ class PractitionerProfileRepo {
         operationTime, onlinePrice, personalPrice, followPrice, onlinePriceB, onlinePriceC, personalBPrice, followBPrice);
   }
 
-  Future<List<PractitionerProfileModel>> getPractitioners(practitionersCategory) async {
-    return await apiService.fetchPractitioners(practitionersCategory);
+  Future<List<PractitionerProfileModel>> getPractitioners() async {
+    return await apiService.fetchPractitioners();
   }
 
   Future<List<PractitionerProfileModel>> filterPractitioners({

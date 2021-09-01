@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:pocket_health/models/practitioner_profile_model.dart';
 import 'package:start_jwt/json_web_token.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
@@ -10,7 +11,7 @@ class InitializeStreamChatCubit extends Cubit<InitializeStreamChatState> {
 
   StreamChatClient _client = StreamChatClient(
     '5ce52vsjkw26',
-    logLevel: Level.INFO,
+    logLevel: Level.OFF,
     tokenProvider: provider,
   );
 
@@ -22,15 +23,16 @@ class InitializeStreamChatCubit extends Cubit<InitializeStreamChatState> {
 
   void initializeUser(String streamUserID, String userCategory) async {
     //TODO: inProduction | add real data
-	  emit(StreamChatLoading());
+    emit(StreamChatLoading());
     final userID = streamUserID.split(' ').last;
     try {
       await _client.disconnect();
       await _client.connectUserWithProvider(
         User(
-          id: 'TestUser1',
+          id: 'TestUser3',
           extraData: {
             "userCategory": userCategory,
+            "name": "David Mochoge",
           },
         ),
         // User(
@@ -48,13 +50,13 @@ class InitializeStreamChatCubit extends Cubit<InitializeStreamChatState> {
     }
   }
 
-  void initializeChannel(String streamUserID, String streamDocID, String userCategory) async {
+  void initializeChannel(String streamUserID, PractitionerProfileModel doc, String userCategory, bool isVerified) async {
     //TODO: inProduction | add real data
-	  emit(StreamChannelLoading());
+    emit(StreamChannelLoading());
     // final docID = streamDocID.split(' ').first;
     // final userID = streamUserID.split(' ').first;
 
-    final docID = 'PractitionerTest2';
+    final docID = 'docIDTestThree${doc.user}';
     // final userID = 'TestLewis';
     try {
       await client.disconnect();
@@ -62,9 +64,7 @@ class InitializeStreamChatCubit extends Cubit<InitializeStreamChatState> {
       await client.connectUserWithProvider(
         User(
           id: docID,
-          extraData: {
-            "userCategory": 'practitioner',
-          },
+          extraData: {"userCategory": 'practitioner', "name": "Dr. ${doc.surname}", "isVerified": "$isVerified"},
         ),
       );
 
@@ -72,9 +72,10 @@ class InitializeStreamChatCubit extends Cubit<InitializeStreamChatState> {
 
       await client.connectUserWithProvider(
         User(
-	        id: "TestUser1",
+          id: "TestUser3",
           extraData: {
             "userCategory": 'individual',
+            "name": "David Mochoge",
           },
         ),
       );
@@ -85,7 +86,7 @@ class InitializeStreamChatCubit extends Cubit<InitializeStreamChatState> {
       );
 
       await channel.create();
-      await channel.addMembers([docID, 'TestUser1']);
+      await channel.addMembers([docID, 'TestUser3']);
       await channel.watch();
       emit(StreamChannelSuccess(channel, docID));
     } catch (err) {

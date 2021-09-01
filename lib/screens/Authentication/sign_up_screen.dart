@@ -64,19 +64,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     mainAxisSize: MainAxisSize.max,
                     children: [
                       Container(
-                          child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Image.asset(
-                            'assets/images/logonotag.png',
-                            height: 120,
-                            width: 120,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 39.0),
-                          ),
-                        ],
-                      )),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Image.asset(
+                              'assets/images/logonotag.png',
+                              height: 120,
+                              width: 120,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 39.0),
+                            ),
+                          ],
+                        ),
+                      ),
                       Text(
                         "Please Register to Access more features",
                         style: TextStyle(color: Colors.black),
@@ -85,12 +86,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         height: 10,
                       ),
                       TextFormField(
-                          validator: (val) {
-                            return val.isEmpty || val.length < 6 ? "Name should have minimum of 6 characters" : null;
-                          },
-                          controller: fullNameTextEditingController,
-                          style: simpleTextStyle(),
-                          decoration: textFieldInputDecoration("Full Names")),
+                        validator: (val) {
+                          return val.isEmpty || val.length < 6 ? "Name should have minimum of 6 characters" : null;
+                        },
+                        controller: fullNameTextEditingController,
+                        style: simpleTextStyle(),
+                        decoration: textFieldInputDecoration("Full Names"),
+                      ),
                       SizedBox(
                         height: 10,
                       ),
@@ -153,34 +155,36 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         height: 10,
                       ),
                       TextFormField(
-                          keyboardType: TextInputType.number,
-                          maxLength: 4,
-                          inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
-                          obscureText: true,
-                          validator: (val) {
-                            return val.length < 5 ? null : "Please provide a Pin with four digits";
-                          },
-                          controller: passWordTextEditingController,
-                          style: simpleTextStyle(),
-                          decoration: textFieldInputDecoration("Pin")),
+                        keyboardType: TextInputType.number,
+                        maxLength: 4,
+                        inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
+                        obscureText: true,
+                        validator: (val) {
+                          return val.length < 5 ? null : "Please provide a Pin with four digits";
+                        },
+                        controller: passWordTextEditingController,
+                        style: simpleTextStyle(),
+                        decoration: textFieldInputDecoration("Pin"),
+                      ),
                       SizedBox(
                         height: 10,
                       ),
                       TextFormField(
-                          keyboardType: TextInputType.number,
-                          maxLength: 4,
-                          inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
-                          obscureText: true,
-                          validator: (val) {
-                            if (val != passWordTextEditingController.text) {
-                              return "Pin not the same";
-                            } else {
-                              return null;
-                            }
-                          },
-                          controller: confirmPassWordTextEditingController,
-                          style: simpleTextStyle(),
-                          decoration: textFieldInputDecoration("Confirm Pin")),
+                        keyboardType: TextInputType.number,
+                        maxLength: 4,
+                        inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
+                        obscureText: true,
+                        validator: (val) {
+                          if (val != passWordTextEditingController.text) {
+                            return "Pin not the same";
+                          } else {
+                            return null;
+                          }
+                        },
+                        controller: confirmPassWordTextEditingController,
+                        style: simpleTextStyle(),
+                        decoration: textFieldInputDecoration("Confirm Pin"),
+                      ),
                       SizedBox(
                         height: 10,
                       ),
@@ -204,9 +208,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
                         ),
                       ),
-                      SizedBox(
-                        height: 10,
-                      ),
+                      SizedBox(height: 10),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -222,7 +224,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               padding: EdgeInsets.symmetric(vertical: 8),
                               child: Text(
                                 "Sign In",
-                                style: TextStyle(color: Color(0xFF163C4D), fontSize: 17, decoration: TextDecoration.underline),
+                                style: TextStyle(
+                                  color: Color(0xFF163C4D),
+                                  fontSize: 17,
+                                  decoration: TextDecoration.underline,
+                                ),
                               ),
                             ),
                           )
@@ -262,12 +268,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
       )
           .then((response) {
         print(response.body);
-        print("status code:" + response.statusCode.toString());
+        print("status code:" + response.reasonPhrase.toString());
 
         SignUpResponse signUpResponse = SignUpResponse.fromJson(json.decode(response.body));
 
         if (response.statusCode == 201) {
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Authenticate()));
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => Authenticate(),
+            ),
+          );
           setState(() async {
             await _showSnackBar("Successfully Created");
           });

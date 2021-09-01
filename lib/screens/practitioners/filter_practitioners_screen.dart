@@ -84,7 +84,7 @@ class _FilterPractitionersScreenState extends State<FilterPractitionersScreen> {
               prefs.containsKey('sortByNearest') ? prefs.remove('sortByNearest') : null;
               prefs.containsKey('sortByHighestRated') ? prefs.remove('sortByHighestRated') : null;
               prefs.containsKey('filterBySpeciality') ? prefs.remove('filterBySpeciality') : null;
-              context.read<ListPractitionersCubit>()..listPractitioners(widget.practitionerCategory);
+              context.read<ListPractitionersCubit>()..listPractitioners();
               Navigator.pop(context);
             },
             child: Text(

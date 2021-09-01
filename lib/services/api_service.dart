@@ -438,7 +438,7 @@ class ApiService {
   }
 
   //fetch practitioners by category
-  Future<List<PractitionerProfileModel>> fetchPractitioners(practitionersCategory) async {
+  Future<List<PractitionerProfileModel>> fetchPractitioners() async {
     _token = await getStringValuesSF();
     final response = await this.httpClient.get(
       "https://ssential.herokuapp.com/api/user/practitioner_profiles/",
@@ -704,9 +704,8 @@ class ApiService {
     return listOfReviewModelFromJson(response.body);
   }
 
-  Future<CallHistoryModel> addCallHistoryToDB(CallHistoryModel callHistoryModel) async {
+  Future<CallHistoryModel> addCallHistoryToDB(Map<String, dynamic> mapData) async {
     _token = await getStringValuesSF();
-    final mapData = callHistoryModelToJson(callHistoryModel);
 
     final response = await http.post(
       'https://ssential.herokuapp.com/api/doctors_consult/call_history/',
@@ -714,9 +713,10 @@ class ApiService {
         "Content-Type": "application/json",
         "Authorization": "Bearer " + _token,
       },
-      body: mapData,
+      body: json.encode(mapData),
     );
 
+    print('--------|mapData|--------|value -> ${mapData.toString()}');
     print(response.body);
 
     return callHistoryModelFromJson(response.body);
@@ -750,7 +750,7 @@ class ApiService {
   }
 
   //call history
-  Future<List<CallHistoryModel>> fetchAllCallHistory(userID) async {
+  Future<List<PractitionerProfileModel>> fetchAllDoctorsCalled(userID) async {
     _token = await getStringValuesSF();
     final response = await http.get(
       "https://ssential.herokuapp.com/api/doctors_consult/call_history/",
@@ -761,8 +761,38 @@ class ApiService {
     );
 
     final callList = callHistoryListModelFromJson(response.body).where((element) => element.user == userID).toList();
-    print(response.reasonPhrase);
-    return callList;
+
+    if (callList.length == 0) {
+      return [];
+    } else {
+	    Future<List<PractitionerProfileModel>> getDocs() async {
+        List<PractitionerProfileModel> allDocDetails = [];
+        for (final doc in callList) {
+          final docdetail = await this.fetchDocDetails(doc.profile);
+          allDocDetails.add(docdetail);
+        }
+
+        return allDocDetails;
+      }
+
+      final allDocs = await getDocs();
+      return practitionerProfileListModelFromJson(allDocs.map((e) => jsonEncode(e)).toList().toSet().toList().toString());
+    }
+  }
+
+  Future<List<CallHistoryModel>> fetchAllCallHistory(userID) async {
+    _token = await getStringValuesSF();
+    final response = await http.get(
+      "https://ssential.herokuapp.com/api/doctors_consult/call_history/",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + _token,
+      },
+    );
+
+    print('--------|response call|--------|value -> ${response.body.toString()}');
+
+    return callHistoryListModelFromJson(response.body).where((element) => element.user == userID).toList();
   }
 
   Future<PractitionerProfileModel> fetchDocDetails(docID) async {
@@ -782,7 +812,7 @@ class ApiService {
   }
 
   //call balance
-  Future<CallBalanceModel> fetchCallBalance() async {
+  Future<CallBalanceModel> fetchCallBalance(userID) async {
     _token = await getStringValuesSF();
     final fetchResponse = await http.get(
       "https://ssential.herokuapp.com/api/doctors_consult/callBalance/",
@@ -795,9 +825,10 @@ class ApiService {
     if (fetchResponse.statusCode == 200) {
       print(fetchResponse.body);
       final allCalls = callBalanceListModelFromJson(fetchResponse.body);
-      final callBalance = allCalls.lastWhere((e) => e.createdAt.isBefore(DateTime.now()));
-      print(callBalance.paymentType);
-      return callBalance;
+      print('--------|user id|--------|value -> ${allCalls.where((e) => e.user == userID).toList()[0].user.toString()}');
+      final callBalanceModel = allCalls.where((e) => e.user == userID).lastWhere((e) => e.createdAt.isBefore(DateTime.now()));
+      print('--------|balance from fetch|--------|value -> ${callBalanceModel.amount.toString()}');
+      return callBalanceModel;
     } else {
       print(fetchResponse.reasonPhrase);
       return null;

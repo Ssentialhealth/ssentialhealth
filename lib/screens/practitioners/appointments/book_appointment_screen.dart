@@ -25,6 +25,8 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
   DateTime selectedDate = DateTime.parse(DateTime.now()?.toString()?.split(" ")?.first);
 
   TabController _tabController;
+  int appointmentTypeVal;
+
   @override
   void dispose() {
     _tabController.dispose();
@@ -39,15 +41,23 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
     context.read<BookingHistoryCubit>().fetchAppointments(docID: widget.practitionerModel.user, userID: widget.userID);
   }
 
-  final List appointments = [
-    '1 min - 15 mins      -    KSH 2,500',
-    '15 mins - 30 mins    -    KSH 2,500',
-    '1 min - 15 mins      -    KSH 2,500',
-  ];
+  // final List appointments =;
 
   List<String> tags = [];
 
   List<String> morningOptions = [
+    '06:00:00 - 06:15:00',
+    '06:15:00 - 06:30:00',
+    '06:30:00 - 06:45:00',
+    '06:45:00 - 07:00:00',
+    '07:00:00 - 07:15:00',
+    '07:15:00 - 07:30:00',
+    '07:30:00 - 07:45:00',
+    '07:45:00 - 08:00:00',
+    '08:00:00 - 08:15:00',
+    '08:15:00 - 08:30:00',
+    '08:30:00 - 08:45:00',
+    '08:45:00 - 09:00:00',
     '09:00:00 - 09:15:00',
     '09:15:00 - 09:30:00',
     '09:30:00 - 09:45:00',
@@ -94,9 +104,33 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
     '18:15:00 - 18:30:00',
     '18:30:00 - 18:45:00',
     '18:45:00 - 19:00:00',
+    '19:00:00 - 19:15:00',
+    '19:15:00 - 19:30:00',
+    '19:30:00 - 19:45:00',
+    '19:45:00 - 20:00:00',
+    '20:00:00 - 20:15:00',
+    '20:15:00 - 20:30:00',
+    '20:30:00 - 20:45:00',
+    '20:45:00 - 21:00:00',
+    '21:00:00 - 21:15:00',
+    '21:15:00 - 21:30:00',
+    '21:30:00 - 21:45:00',
+    '21:45:00 - 22:00:00',
   ];
 
   List<double> compareMorningTime = [
+    6,
+    6.25,
+    6.5,
+    6.75,
+    7,
+    7.25,
+    7.5,
+    7.75,
+    8,
+    8.25,
+    8.5,
+    8.75,
     9,
     9.25,
     9.5,
@@ -111,6 +145,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
     11.75,
     12,
   ];
+
   List<double> compareAfternoonTime = [
     12,
     12.25,
@@ -134,6 +169,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
     16.75,
     17,
   ];
+
   List<double> compareEveningTime = [
     17,
     17.25,
@@ -144,9 +180,26 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
     18.5,
     18.75,
     19,
+    19.25,
+    19.5,
+    19.75,
+    20,
+    20.25,
+    20.5,
+    20.75,
+    21,
+    21.25,
+    21.5,
+    21.75,
+    22,
   ];
+
   @override
   Widget build(BuildContext context) {
+    RegExp reg = new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))');
+    Function mathFunc = (Match match) => '${match[1]},';
+    // print('${}');
+
     return SafeArea(
       child: Scaffold(
         backgroundColor: accentColorLight,
@@ -165,9 +218,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
             children: [
               //details
               BlocConsumer<BookingHistoryCubit, BookingHistoryState>(
-                listener: (context, state) {
-                  // TODO: implement listener
-                },
+                listener: (context, state) {},
                 builder: (context, state) {
                   if (state is BookingHistoryLoading) {
                     return Container(height: 200.h, child: Center(child: CircularProgressIndicator()));
@@ -332,10 +383,14 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
                                   border: InputBorder.none,
                                   fillColor: Colors.white,
                                   filled: true,
-                                  // isDense: true,
                                   contentPadding: EdgeInsets.symmetric(horizontal: 15.w),
                                 ),
-                                items: appointments
+                                items: [
+                                  'None',
+                                  'Online Appointment',
+                                  'Regular Appointment In Person',
+                                  'Follow-up Appointment In Person',
+                                ]
                                     .asMap()
                                     .entries
                                     .map(
@@ -349,7 +404,12 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
                                       ),
                                     )
                                     .toList(),
-                                onChanged: (val) {},
+                                onChanged: (val) {
+                                  print('--------|appointmentVal|--------|value -> ${val.toString()}');
+                                  setState(() {
+                                    appointmentTypeVal = val;
+                                  });
+                                },
                               ),
                               SizedBox(height: 8.h),
                               Divider(height: 1, thickness: 1.r, color: Color(0xffB3B3B3)),
@@ -406,10 +466,10 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
                                   ),
                                   Container(
                                     height: _tabController.index == 0
-                                        ? 370.h
+                                        ? 730.h
                                         : _tabController.index == 1
                                             ? 610.h
-                                            : 260.h,
+                                            : 610.h,
                                     child: TabBarView(
                                       controller: _tabController,
                                       physics: NeverScrollableScrollPhysics(),
@@ -456,7 +516,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
                                           ),
                                           choiceBuilder: (item) {
                                             return InkWell(
-                                              onTap: item.disabled
+	                                            onTap: item.disabled
                                                   ? () {}
                                                   : tags.contains(item.value)
                                                       ? () {
@@ -567,7 +627,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
                                             value: (index, label) => label,
                                             label: (index, label) => label.replaceRange(5, 8, '').replaceRange(13, 16, ''),
                                             disabled: (index, label) {
-                                              final bookedOnThisDate = state.bookings.where((e) => e.appointmentDate == selectedDate).toList();
+	                                            final bookedOnThisDate = state.bookings.where((e) => e.appointmentDate == selectedDate).toList();
                                               final thisHour = DateTime.now().hour;
                                               final time = DateTime.now().minute >= 45
                                                   ? thisHour + 0.75
@@ -588,7 +648,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
                                           ),
                                           choiceBuilder: (item) {
                                             return InkWell(
-                                              onTap: item.disabled
+	                                            onTap: item.disabled
                                                   ? () {}
                                                   : tags.contains(item.value)
                                                       ? () {
@@ -699,7 +759,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
                                             value: (index, label) => label,
                                             label: (index, label) => label.replaceRange(5, 8, '').replaceRange(13, 16, ''),
                                             disabled: (index, label) {
-                                              final bookedOnThisDate = state.bookings.where((e) => e.appointmentDate == selectedDate).toList();
+	                                            final bookedOnThisDate = state.bookings.where((e) => e.appointmentDate == selectedDate).toList();
                                               final thisHour = DateTime.now().hour;
                                               final time = DateTime.now().minute >= 45
                                                   ? thisHour + 0.75
@@ -720,7 +780,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
                                           ),
                                           choiceBuilder: (item) {
                                             return InkWell(
-                                              onTap: item.disabled
+	                                            onTap: item.disabled
                                                   ? () {}
                                                   : tags.contains(item.value)
                                                       ? () {
@@ -831,6 +891,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
 
               //book btn
               BlocConsumer<AppointmentsCubit, AppointmentsState>(
+                listenWhen: (prev, curr) => prev == curr ? false : true,
                 listener: (context, state) {
                   if (state is AppointmentsFailure) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -851,7 +912,6 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
                   if (state is AppointmentsSuccess) {
                     showDialog<void>(
                       context: context,
-                      barrierColor: Colors.transparent,
                       barrierDismissible: false,
                       builder: (BuildContext dialogContext) {
                         return AppointmentBookedDialog();
@@ -861,7 +921,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
                 },
                 builder: (context, state) {
                   return MaterialButton(
-                    color: accentColorDark,
+	                  color: accentColorDark,
                     elevation: 0.0,
                     height: 40.0.h,
                     minWidth: 376.w,
@@ -879,20 +939,37 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
                     onPressed: state is AppointmentsLoading
                         ? () {}
                         : () async {
-                            tags.forEach((tag) {
-                              print(tag);
-                              final slotFrom = tag.split(' - ').first;
-                              final slotTo = tag.split(' - ').last;
-                              context.read<AppointmentsCubit>()
-                                ..bookAppointment(
-                                  appointmentDate: selectedDate,
-                                  slotFrom: slotFrom,
-                                  slotTo: slotTo,
-                                  status: 3,
-                                  userID: 1,
-                                  docID: 12,
-                                );
-                            });
+                            appointmentTypeVal == null
+                                ? ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      behavior: SnackBarBehavior.floating,
+                                      backgroundColor: Color(0xff163C4D),
+                                      duration: Duration(milliseconds: 6000),
+                                      content: Text(
+                                        'Please pick the type of appointment you prefer',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                : tags.forEach((tag) {
+                                    print(tag);
+                                    final slotFrom = tag.split(' - ').first;
+                                    final slotTo = tag.split(' - ').last;
+                                    context.read<AppointmentsCubit>()
+                                      ..bookAppointment(
+                                        appointmentDate: selectedDate,
+                                        slotFrom: slotFrom,
+                                        slotTo: slotTo,
+                                        status: 3,
+                                        appointmentType: appointmentTypeVal,
+                                        userID: 1,
+                                        //TODO : Production | change to dynamic val
+                                        docID: widget.practitionerModel.user,
+                                      );
+                                  });
                           },
                   );
                 },

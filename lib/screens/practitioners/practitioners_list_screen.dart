@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:pocket_health/bloc/list_practitioners/list_practitioners_cubit.dart';
+import 'package:pocket_health/bloc/saved_contacts/saved_contacts_cubit.dart';
 import 'package:pocket_health/models/practitioner_profile_model.dart';
 import 'package:pocket_health/screens/practitioners/practitioner_profile_screen.dart';
 import 'package:pocket_health/utils/constants.dart';
@@ -27,6 +28,7 @@ class PractitionersListScreen extends StatefulWidget {
 class _PractitionersListScreenState extends State<PractitionersListScreen> {
   String filterByName;
   bool isSortedByCheapest = false;
+  bool saveContactVal = false;
 
   checkIfSorted(ListPractitionersLoaded state) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -212,25 +214,8 @@ class _PractitionersListScreenState extends State<PractitionersListScreen> {
                         final upto15Mins = practitionerModel.ratesInfo.onlineBooking.upto15Mins;
                         final upto30Mins = practitionerModel.ratesInfo.onlineBooking.upto30Mins;
 
-                        final bool isVerified = phoneNumber != 'null' &&
-                            surname != '' &&
-                            user != null &&
-                            followUpPerHour != null &&
-                            followUpPerVisit != null &&
-                            inPersonPerVisit != null &&
-                            inPersonPerHour != null &&
-                            upto1Hour != null &&
-                            upto30Mins != null &&
-                            upto15Mins != null &&
-                            speciality != null &&
-                            practitioner != null &&
-                            healthInstitution != null &&
-                            careType != null &&
-                            affiliatedInstitution != null &&
-                            region != 'null' &&
-                            location != 'null' &&
-                            profileImgUrl != 'null'; //
-                        // test
+                        bool isVerified = checkVerification(practitionerModel);
+
                         return GestureDetector(
                           onTap: () {
                             Navigator.of(context).push(
@@ -319,10 +304,41 @@ class _PractitionersListScreenState extends State<PractitionersListScreen> {
                                               Spacer(),
 
                                               //bookmark
-                                              Icon(
-                                                Icons.bookmark_outline,
-                                                size: 20.sp,
-                                                color: Color(0xff242424),
+                                              BlocBuilder<SavedContactsCubit, SavedContactsState>(
+                                                builder: (context, state) {
+                                                  if (state is SavedContactsSuccess) {
+                                                    final isSaved = state.savedContacts.contains("docIDTestThree" + '${practitionerModel.user.toString()}');
+                                                    return SizedBox(
+                                                      height: 20.w,
+                                                      width: 20.w,
+                                                      child: IconButton(
+                                                        padding: EdgeInsets.zero,
+                                                        visualDensity: VisualDensity.compact,
+                                                        icon: Icon(
+                                                          isSaved ? Icons.bookmark : Icons.bookmark_outline,
+                                                          size: 20.w,
+                                                          color: isSaved ? Color(0xff0e0e0e) : Color(0xff242424),
+                                                        ),
+                                                        onPressed: () async {
+                                                          setState(() {
+                                                            saveContactVal = !isSaved;
+                                                          });
+                                                          context.read<SavedContactsCubit>()
+                                                            ..addRemoveContacts(saveContactVal, "docIDTestThree" + "${practitionerModel.user.toString()}");
+                                                        },
+                                                      ),
+                                                    );
+                                                  }
+                                                  return IconButton(
+                                                    padding: EdgeInsets.zero,
+                                                    icon: Icon(
+                                                      Icons.bookmark_outline,
+                                                      size: 20.w,
+                                                      color: Color(0xff242424),
+                                                    ),
+                                                    onPressed: () async {},
+                                                  );
+                                                },
                                               ),
                                             ],
                                           ),
@@ -478,4 +494,26 @@ class _PractitionersListScreenState extends State<PractitionersListScreen> {
       ),
     );
   }
+}
+
+bool checkVerification(PractitionerProfileModel docDetails) {
+  final bool isVerified = docDetails.phoneNumber != 'null' &&
+      docDetails.surname != '' &&
+      docDetails.user != null &&
+      docDetails.ratesInfo.followUpVisit.perVisit != null &&
+      docDetails.ratesInfo.followUpVisit.perHour != null &&
+      docDetails.ratesInfo.inPersonBooking.perVisit != null &&
+      docDetails.ratesInfo.inPersonBooking.perHour != null &&
+      docDetails.ratesInfo.onlineBooking.upto1Hour != null &&
+      docDetails.ratesInfo.onlineBooking.upto30Mins != null &&
+      docDetails.ratesInfo.onlineBooking.upto15Mins != null &&
+      docDetails.healthInfo.speciality != null &&
+      docDetails.healthInfo.practitioner != null &&
+      docDetails.healthInfo.healthInstitution != null &&
+      docDetails.healthInfo.careType != null &&
+      docDetails.healthInfo.affiliatedInstitution != null &&
+      docDetails.region != 'null' &&
+      docDetails.location != 'null' &&
+      docDetails.profileImgUrl != 'null';
+  return isVerified;
 }
