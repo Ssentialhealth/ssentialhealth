@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:pocket_health/bloc/adult_unwell/adultUnwellBloc.dart';
+import 'package:pocket_health/bloc/call_balance/call_balance_cubit.dart';
+import 'package:pocket_health/bloc/call_history/call_history_cubit.dart';
 import 'package:pocket_health/bloc/child_health/all_schedules/all_schedules_bloc.dart';
 import 'package:pocket_health/bloc/child_health/child_conditions_bloc.dart';
 import 'package:pocket_health/bloc/child_health/child_resource/child_resource_bloc.dart';
@@ -23,11 +25,16 @@ import 'package:pocket_health/bloc/organs/organsBloc.dart';
 import 'package:pocket_health/bloc/practitioner_profile/practitionerProfileBloc.dart';
 import 'package:pocket_health/bloc/profile/userProfileBloc.dart';
 import 'package:pocket_health/bloc/reviews/reviews_cubit.dart';
+import 'package:pocket_health/bloc/saved_contacts/saved_contacts_cubit.dart';
 import 'package:pocket_health/bloc/search_conditions/search_condition_bloc.dart';
 import 'package:pocket_health/bloc/search_organ/search_organ_bloc.dart';
 import 'package:pocket_health/bloc/symptoms/details/symptoms_bloc.dart';
 import 'package:pocket_health/repository/adultUnwellRepo.dart';
 import 'package:pocket_health/repository/all_schedules_repo.dart';
+import 'package:pocket_health/repository/appointments_repo.dart';
+import 'package:pocket_health/repository/booking_history_repo.dart';
+import 'package:pocket_health/repository/call_balance_repo.dart';
+import 'package:pocket_health/repository/call_history_repo.dart';
 import 'package:pocket_health/repository/child_condition_detail_repo.dart';
 import 'package:pocket_health/repository/child_conditions_repo.dart';
 import 'package:pocket_health/repository/child_resource_repo.dart';
@@ -37,6 +44,7 @@ import 'package:pocket_health/repository/congenital_conditions_repo.dart';
 import 'package:pocket_health/repository/congenital_details_repo.dart';
 import 'package:pocket_health/repository/delayed_milestones_repo.dart';
 import 'package:pocket_health/repository/emergencyContactRepo.dart';
+import 'package:pocket_health/repository/fetch_call_history_repo.dart';
 import 'package:pocket_health/repository/forgotPasswordRepo.dart';
 import 'package:pocket_health/repository/growth_charts_repo.dart';
 import 'package:pocket_health/repository/hotline_repo.dart';
@@ -56,17 +64,33 @@ import 'package:pocket_health/repository/userProfile_repo.dart';
 import 'package:pocket_health/screens/boarding/splash_screen.dart';
 import 'package:pocket_health/services/api_service.dart';
 import 'package:pocket_health/simple_bloc_observer.dart';
+import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
+import 'bloc/appointments/appointments_cubit.dart';
+import 'bloc/booking_history/booking_history_cubit.dart';
 import 'bloc/conditionDetails/conditionDetailsBloc.dart';
+import 'bloc/fetch_call_history/fetch_call_history_cubit.dart';
 import 'bloc/filter_reviews/filter_reviews_cubit.dart';
 import 'bloc/forgotPassword/forgotPasswordBloc.dart';
+import 'bloc/initialize_stream_chat/initialize_stream_chat_cubit.dart';
 import 'bloc/list_practitioners/list_practitioners_cubit.dart';
 import 'bloc/organDetails/organDetailsBloc.dart';
 import 'bloc/post_review/post_review_cubit.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Bloc.observer = SimpleBlocObserver();
+  Bloc.observer = SimpleBlocObserver();
+  //
+  // final client = StreamChatClient(
+  //   '5ce52vsjkw26',
+  //   logLevel: Level.OFF,
+  // );
+
+  // await client.connectUser(
+  //   User(id: 'MochogeDavid'),
+  //   client.devToken('MochogeDavid'),
+  // );
 
   //repos
   final LoginRepository loginRepository = LoginRepository(ApiService(http.Client()));
@@ -96,11 +120,16 @@ void main() {
   final AllScheduleRepo allScheduleRepo = AllScheduleRepo(ApiService(http.Client()));
   final ScheduleDetailRepo scheduleDetailRepo = ScheduleDetailRepo(ApiService(http.Client()));
   final ReviewsRepo reviewsRepo = ReviewsRepo(ApiService(http.Client()));
-
-  Bloc.observer = SimpleBlocObserver();
+  final CallHistoryRepo callHistoryRepo = CallHistoryRepo(ApiService(http.Client()));
+  final FetchCallHistoryRepo fetchCallHistoryRepo = FetchCallHistoryRepo(ApiService(http.Client()));
+  final AppointmentsRepo appointmentsRepo = AppointmentsRepo(ApiService(http.Client()));
+  final BookingHistoryRepo bookingHistoryRepo = BookingHistoryRepo(ApiService(http.Client()));
+  final CallBalanceRepo callBalanceRepo = CallBalanceRepo(ApiService(http.Client()));
   runApp(MyApp(
     forgotPasswordRepo: forgotPasswordRepo,
     loginRepository: loginRepository,
+    bookingHistoryRepo: bookingHistoryRepo,
+    appointmentsRepo: appointmentsRepo,
     userProfileRepo: userProfileRepo,
     practitionerProfileRepo: practitionerProfileRepo,
     emergencyContactRepo: emergencyContactRepo,
@@ -126,6 +155,9 @@ void main() {
     allScheduleRepo: allScheduleRepo,
     scheduleDetailRepo: scheduleDetailRepo,
     reviewsRepo: reviewsRepo,
+    callHistoryRepo: callHistoryRepo,
+    fetchCallHistoryRepo: fetchCallHistoryRepo,
+    callBalanceRepo: callBalanceRepo,
   ));
 }
 
@@ -157,8 +189,13 @@ class MyApp extends StatelessWidget {
   final AllScheduleRepo allScheduleRepo;
   final ScheduleDetailRepo scheduleDetailRepo;
   final ReviewsRepo reviewsRepo;
+  final CallHistoryRepo callHistoryRepo;
+  final FetchCallHistoryRepo fetchCallHistoryRepo;
+  final AppointmentsRepo appointmentsRepo;
+  final BookingHistoryRepo bookingHistoryRepo;
+  final CallBalanceRepo callBalanceRepo;
 
-  const MyApp({
+  MyApp({
     Key key,
     @required this.forgotPasswordRepo,
     @required this.normalDevelopmentRepo,
@@ -187,13 +224,20 @@ class MyApp extends StatelessWidget {
     @required this.allScheduleRepo,
     @required this.scheduleDetailRepo,
     @required this.reviewsRepo,
+    @required this.callHistoryRepo,
+    @required this.fetchCallHistoryRepo,
+    @required this.appointmentsRepo,
+    @required this.bookingHistoryRepo,
+    @required this.callBalanceRepo,
   }) : super(key: key);
 
+  final GlobalKey<NavigatorState> _navigator = new GlobalKey<NavigatorState>();
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext mainContext) {
     return ScreenUtilInit(
       designSize: Size(414, 736),
-      allowFontScaling: false,
+      // allowFontScaling: false,
       builder: () => MultiBlocProvider(
         providers: [
           BlocProvider(create: (context) => ForgotPasswordBloc(forgotPasswordRepo: forgotPasswordRepo)),
@@ -210,75 +254,49 @@ class MyApp extends StatelessWidget {
           BlocProvider(create: (context) => SearchOrganBloc(searchOrganRepo: searchOrganRepo)),
           BlocProvider(create: (context) => ListPractitionersCubit(practitionerProfileRepo: practitionerProfileRepo)),
           BlocProvider(create: (context) => FilterReviewsCubit()..loadRecentlyRated()),
-          BlocProvider(
-            create: (context) => AdultUnwellBloc(adultUnwellRepo: adultUnwellRepo),
-          ),
-          BlocProvider(
-            create: (context) => ChildConditionBloc(childConditionsRepo: childConditionRepo),
-          ),
-          BlocProvider(
-            create: (context) => OrgansBloc(organsRepo: organsRepo),
-          ),
-          BlocProvider(
-            create: (context) => OrgansDetailsBloc(organDetailsRepo: organDetailRepo),
-          ),
-          BlocProvider(
-            create: (context) => SearchOrganBloc(searchOrganRepo: searchOrganRepo),
-          ),
-          BlocProvider(
-            create: (context) => SymptomDetailsBloc(symptomDetailsRepo: symptomDetailsRepo),
-          ),
-          BlocProvider(
-            create: (context) => ChildConditionDetailsBloc(childConditionDetailRepo: childConditionDetailRepo),
-          ),
-          BlocProvider(
-            create: (context) => NutritionBloc(nutritionRepo: nutritionRepo),
-          ),
-          BlocProvider(
-            create: (context) => NormalDevelopmentBloc(normalDevelopmentRepo: normalDevelopmentRepo),
-          ),
-          BlocProvider(
-            create: (context) => ChildResourceBloc(childResourceRepo: childResourceRepo),
-          ),
-          BlocProvider(
-            create: (context) => ChildResourceDetailsBloc(childResourceDetailRepo: childResourceDetailRepo),
-          ),
-          BlocProvider(
-            create: (context) => CongenitalConditionBloc(congenitalConditionsRepo: congenitalConditionsRepo),
-          ),
-          BlocProvider(
-            create: (context) => CongenitalConditionDetailsBloc(congenitalDetailDetailRepo: congenitalConditionDetailRepo),
-          ),
-          BlocProvider(
-            create: (context) => GrowthChartBloc(growthChartsRepo: growthChartsRepo),
-          ),
-          BlocProvider(
-            create: (context) => DelayedMilestoneBloc(delayedMilestonesRepo: delayedMilestonesRepo),
-          ),
-          BlocProvider(
-            create: (context) => ImmunizationScheduleBloc(immunizationScheduleRepo: immunizationScheduleRepo),
-          ),
-          BlocProvider(
-            create: (context) => AllSchedulesBloc(allSchedulesRepo: allScheduleRepo),
-          ),
-          BlocProvider(
-            create: (context) => ScheduleDetailsBloc(scheduleDetailRepo: scheduleDetailRepo),
-          ),
-          BlocProvider(
-            create: (context) => ReviewsCubit(reviewsRepo: reviewsRepo),
-          ),
-          BlocProvider(
-            create: (context) => PostReviewCubit(reviewsRepo),
-          ),
+          BlocProvider(create: (context) => AdultUnwellBloc(adultUnwellRepo: adultUnwellRepo)),
+          BlocProvider(create: (context) => ChildConditionBloc(childConditionsRepo: childConditionRepo)),
+          BlocProvider(create: (context) => OrgansBloc(organsRepo: organsRepo)),
+          BlocProvider(create: (context) => OrgansDetailsBloc(organDetailsRepo: organDetailRepo)),
+          BlocProvider(create: (context) => SearchOrganBloc(searchOrganRepo: searchOrganRepo)),
+          BlocProvider(create: (context) => SymptomDetailsBloc(symptomDetailsRepo: symptomDetailsRepo)),
+          BlocProvider(create: (context) => ChildConditionDetailsBloc(childConditionDetailRepo: childConditionDetailRepo)),
+          BlocProvider(create: (context) => NutritionBloc(nutritionRepo: nutritionRepo)),
+          BlocProvider(create: (context) => NormalDevelopmentBloc(normalDevelopmentRepo: normalDevelopmentRepo)),
+          BlocProvider(create: (context) => ChildResourceBloc(childResourceRepo: childResourceRepo)),
+          BlocProvider(create: (context) => ChildResourceDetailsBloc(childResourceDetailRepo: childResourceDetailRepo)),
+          BlocProvider(create: (context) => CongenitalConditionBloc(congenitalConditionsRepo: congenitalConditionsRepo)),
+          BlocProvider(create: (context) => CongenitalConditionDetailsBloc(congenitalDetailDetailRepo: congenitalConditionDetailRepo)),
+          BlocProvider(create: (context) => GrowthChartBloc(growthChartsRepo: growthChartsRepo)),
+          BlocProvider(create: (context) => DelayedMilestoneBloc(delayedMilestonesRepo: delayedMilestonesRepo)),
+          BlocProvider(create: (context) => ImmunizationScheduleBloc(immunizationScheduleRepo: immunizationScheduleRepo)),
+          BlocProvider(create: (context) => AllSchedulesBloc(allSchedulesRepo: allScheduleRepo)),
+          BlocProvider(create: (context) => ScheduleDetailsBloc(scheduleDetailRepo: scheduleDetailRepo)),
+          BlocProvider(create: (context) => ReviewsCubit(reviewsRepo: reviewsRepo)),
+          BlocProvider(create: (context) => PostReviewCubit(reviewsRepo)),
+          BlocProvider(create: (context) => InitializeStreamChatCubit()),
+          BlocProvider(create: (context) => CallHistoryCubit(callHistoryRepo)),
+          BlocProvider(create: (context) => AppointmentsCubit(appointmentsRepo)),
+          BlocProvider(create: (context) => BookingHistoryCubit(bookingHistoryRepo)),
+          BlocProvider(create: (context) => FetchCallHistoryCubit(fetchCallHistoryRepo)),
+          BlocProvider(create: (context) => CallBalanceCubit(callBalanceRepo)),
+          BlocProvider(create: (context) => SavedContactsCubit()..fetchContacts()),
         ],
         child: MaterialApp(
+          navigatorKey: _navigator,
           debugShowCheckedModeBanner: false,
           title: 'Ssential App',
           theme: ThemeData(
-	          primaryColor: Colors.white,
+            primaryColor: Colors.white,
             scaffoldBackgroundColor: Colors.white,
             accentColor: Color(0xff00FFFF),
           ),
+          builder: (context, child) {
+            return StreamChat(
+              child: child,
+              client: context.read<InitializeStreamChatCubit>().client,
+            );
+          },
           home: SplashScreen(),
         ),
       ),

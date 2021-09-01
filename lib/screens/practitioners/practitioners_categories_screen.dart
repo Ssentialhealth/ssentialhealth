@@ -8,11 +8,18 @@ import 'package:pocket_health/utils/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PractitionersCategoriesScreen extends StatefulWidget {
+  final bool fromFAB;
+
+  const PractitionersCategoriesScreen({Key key, this.fromFAB}) : super(key: key);
+
   @override
   _PractitionersCategoriesScreenState createState() => _PractitionersCategoriesScreenState();
 }
 
 class _PractitionersCategoriesScreenState extends State<PractitionersCategoriesScreen> {
+  String _token;
+  bool isAgreed = false;
+
   final List<String> practitionersCategories = [
     "Doctors",
     "Dentists",
@@ -26,8 +33,6 @@ class _PractitionersCategoriesScreenState extends State<PractitionersCategoriesS
     "Chiropractors",
     "Others",
   ];
-  String _token;
-  bool isAgreed = false;
 
   Future<String> getStringValuesSF() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -40,8 +45,8 @@ class _PractitionersCategoriesScreenState extends State<PractitionersCategoriesS
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      bool testBool = prefs.getBool('isAgreed');
-      testBool == null ? isAgreed = false : isAgreed = true;
+      bool agreeViewPractitioners = prefs.getBool('isAgreed');
+      agreeViewPractitioners == null ? isAgreed = false : isAgreed = true;
 
       if (!isAgreed || isAgreed == null) {
         _token = await getStringValuesSF();
@@ -78,7 +83,7 @@ class _PractitionersCategoriesScreenState extends State<PractitionersCategoriesS
         centerTitle: true,
         elevation: 0.0,
         title: Text(
-          'Doctors & Practitioners',
+          widget.fromFAB == true ? "Select Category To Consult With..." : 'Doctors & Practitioners',
           style: appBarStyle,
         ),
         backgroundColor: Color(0xFF00FFFF),
@@ -129,7 +134,7 @@ class _PractitionersCategoriesScreenState extends State<PractitionersCategoriesS
                     ),
                     onTap: () {
                       final practitionersCategory = practitionersCategories[index];
-                      context.read<ListPractitionersCubit>()..listPractitioners(practitionersCategory);
+                      context.read<ListPractitionersCubit>()..listPractitioners();
                       //push practitioner listing for each category
                       Navigator.of(context).push(
                         MaterialPageRoute(

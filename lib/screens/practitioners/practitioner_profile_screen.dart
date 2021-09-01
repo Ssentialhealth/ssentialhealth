@@ -1,20 +1,32 @@
+import 'package:agora_rtc_engine/rtc_engine.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:pocket_health/bloc/call_balance/call_balance_cubit.dart';
 import 'package:pocket_health/bloc/filter_reviews/filter_reviews_cubit.dart';
+import 'package:pocket_health/bloc/initialize_stream_chat/initialize_stream_chat_cubit.dart';
+import 'package:pocket_health/bloc/login/loginBloc.dart';
+import 'package:pocket_health/bloc/login/loginState.dart';
 import 'package:pocket_health/bloc/post_review/post_review_cubit.dart';
 import 'package:pocket_health/bloc/reviews/reviews_cubit.dart';
+import 'package:pocket_health/bloc/saved_contacts/saved_contacts_cubit.dart';
 import 'package:pocket_health/models/practitioner_profile_model.dart';
 import 'package:pocket_health/models/review_model.dart';
+import 'package:pocket_health/screens/doctor_consult/call/call_page.dart';
+import 'package:pocket_health/screens/doctor_consult/call/init_call_dialog.dart';
+import 'package:pocket_health/screens/doctor_consult/call/top_up_account.dart';
+import 'package:pocket_health/screens/doctor_consult/chat/channel_page.dart';
 import 'package:pocket_health/screens/practitioners/reviews_list.dart';
 import 'package:pocket_health/screens/practitioners/sort_reviews_row.dart';
 import 'package:pocket_health/screens/practitioners/write_review_dialog.dart';
 import 'package:pocket_health/utils/constants.dart';
 import 'package:pocket_health/widgets/verified_tag.dart';
+import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
-import 'book_appointment_screen.dart';
+import 'appointments/book_appointment_screen.dart';
 
 class PractitionerProfileScreen extends StatefulWidget {
   final PractitionerProfileModel practitionerModel;
@@ -27,7 +39,6 @@ class PractitionerProfileScreen extends StatefulWidget {
 }
 
 class _PractitionerProfileScreenState extends State<PractitionerProfileScreen> with SingleTickerProviderStateMixin {
-  TabController _tabController;
   bool filterIsSelected = false;
   List reportCategories = [
     'Spam and Misleading',
@@ -37,9 +48,19 @@ class _PractitionerProfileScreenState extends State<PractitionerProfileScreen> w
     'Others',
   ];
 
+  //tab bar
+  TabController _tabController;
+
+  bool saveContactVal = false;
+  String durationVal = "5 minutes";
+
   @override
   void initState() {
     super.initState();
+    context.read<InitializeStreamChatCubit>()..loadInitial();
+    context.read<CallBalanceCubit>()..getCallBalance(5); //testing
+    context.read<SavedContactsCubit>().fetchContacts();
+
     _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(() => setState(() {}));
   }
@@ -254,81 +275,277 @@ class _PractitionerProfileScreenState extends State<PractitionerProfileScreen> w
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             //book appointment btn
-                            TextButton(
-                              child: Text(
-                                'Book Appointment',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16.sp,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              style: ButtonStyle(
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                backgroundColor: MaterialStateProperty.all(Color(0xff1A5864)),
-                                minimumSize: MaterialStateProperty.all(Size(0, 0)),
-                                padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 60.w, vertical: 10.h)),
-                                shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5.w),
-                                  side: BorderSide(
-                                    color: Color(0xff1A5864),
-                                    width: 1.w,
+                            BlocBuilder<LoginBloc, LoginState>(
+                              builder: (context, state) {
+                                return TextButton(
+                                  child: Text(
+                                    'Book Appointment',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
-                                )),
-                              ),
-                              onPressed: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(builder: (BuildContext context) {
-                                    return BookAppointmentScreen(
-                                      practitionerModel: widget.practitionerModel,
-                                    );
-                                  }),
+                                  style: ButtonStyle(
+                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                    backgroundColor: MaterialStateProperty.all(Color(0xff1A5864)),
+                                    minimumSize: MaterialStateProperty.all(Size(0, 0)),
+                                    padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 60.w, vertical: 10.h)),
+                                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5.w),
+                                      side: BorderSide(
+                                        color: Color(0xff1A5864),
+                                        width: 1.w,
+                                      ),
+                                    )),
+                                  ),
+                                  onPressed: () {
+                                    state is LoginLoaded && state.loginModel.user.userCategory == 'individual'
+                                        ? Navigator.of(context).push(
+                                            MaterialPageRoute(builder: (BuildContext context) {
+                                              return BookAppointmentScreen(
+                                                userID: state.loginModel.user.userID,
+                                                practitionerModel: widget.practitionerModel,
+                                              );
+                                            }),
+                                          )
+                                        : SnackBar(
+                                            behavior: SnackBarBehavior.floating,
+                                            backgroundColor: Color(0xff163C4D),
+                                            duration: Duration(milliseconds: 6000),
+                                            content: Text(
+                                              'This feature is only available to users registered as individuals!',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          );
+                                  },
                                 );
                               },
                             ),
                             //chat
-                            TextButton(
-                              child: Icon(
-                                Icons.chat_bubble_outline,
-                                color: accentColorDark,
-                                size: 21.w,
-                              ),
-                              style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all(Colors.white),
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                minimumSize: MaterialStateProperty.all(Size(0, 0)),
-                                padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h)),
-                                shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5.w),
-                                  side: BorderSide(
+                            BlocBuilder<LoginBloc, LoginState>(
+                              builder: (context, state) {
+                                if (state is LoginLoaded) {
+                                  final userID = state.loginModel.user.fullNames.split(' ').last;
+                                  final doc = widget.practitionerModel;
+                                  final userCategory = state.loginModel.user.userCategory;
+
+                                  return BlocConsumer<InitializeStreamChatCubit, InitializeStreamChatState>(
+                                    listener: (context, state) {
+                                      if (state is StreamChannelSuccess) {
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (context) {
+                                              return StreamChat(
+                                                streamChatThemeData: StreamChatThemeData(
+                                                  //input bar
+                                                  messageInputTheme: MessageInputTheme(
+                                                    sendAnimationDuration: Duration(milliseconds: 500),
+                                                  ),
+
+                                                  //messages styling
+                                                  ownMessageTheme: MessageTheme(
+                                                    messageBorderColor: accentColorDark,
+                                                    messageBackgroundColor: accentColorLight,
+                                                    messageText: TextStyle(
+                                                      color: Color(0xff373737),
+                                                    ),
+                                                  ),
+                                                  otherMessageTheme: MessageTheme(
+                                                    messageBorderColor: Color(0x19000000),
+                                                    messageBackgroundColor: Color(0xF000000),
+                                                    messageText: TextStyle(
+                                                      color: Color(0xff373737),
+                                                    ),
+                                                  ),
+
+                                                  //list styling
+                                                  channelPreviewTheme: ChannelPreviewTheme(
+                                                    unreadCounterColor: accentColorDark,
+                                                  ),
+
+                                                  //channel styling
+                                                  channelTheme: ChannelTheme(
+                                                    channelHeaderTheme: ChannelHeaderTheme(
+                                                      color: accentColor,
+                                                      subtitle: TextStyle(
+                                                        fontSize: 11.5.sp,
+                                                        color: Colors.grey[700],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                client: context.read<InitializeStreamChatCubit>().client,
+                                                child: StreamChannel(
+                                                  channel: state.channel,
+                                                  child: ChannelPage(),
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        );
+                                      }
+
+                                      if (state is StreamChannelError) {
+                                        ScaffoldMessenger.of(context)
+                                          ..clearSnackBars()
+                                          ..showSnackBar(
+                                            SnackBar(
+                                              behavior: SnackBarBehavior.floating,
+                                              backgroundColor: Color(0xff163C4D),
+                                              duration: Duration(milliseconds: 6000),
+                                              content: Text(
+                                                state.err,
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                      }
+                                    },
+                                    builder: (context, state) {
+                                      if (state is StreamChannelLoading) {
+                                        return TextButton(
+                                          child: SizedBox(
+                                            height: 20,
+                                            width: 20,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 1,
+                                              color: accentColorDark,
+                                              backgroundColor: Colors.white,
+                                            ),
+                                          ),
+                                          style: ButtonStyle(
+                                            backgroundColor: MaterialStateProperty.all(Colors.white),
+                                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                            minimumSize: MaterialStateProperty.all(Size(0, 0)),
+                                            padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h)),
+                                            shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(5.w),
+                                              side: BorderSide(
+                                                color: accentColorDark,
+                                                width: 1.w,
+                                              ),
+                                            )),
+                                          ),
+                                          onPressed: () {},
+                                        );
+                                      }
+                                      if (state is StreamChannelSuccess) {
+                                        return TextButton(
+                                          child: Icon(
+                                            Icons.chat_bubble_outline,
+                                            color: accentColorDark,
+                                            size: 21.w,
+                                          ),
+                                          style: ButtonStyle(
+                                            backgroundColor: MaterialStateProperty.all(Colors.white),
+                                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                            minimumSize: MaterialStateProperty.all(Size(0, 0)),
+                                            padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h)),
+                                            shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(5.w),
+                                              side: BorderSide(
+                                                color: accentColorDark,
+                                                width: 1.w,
+                                              ),
+                                            )),
+                                          ),
+                                          onPressed: () {},
+                                        );
+                                      }
+                                      return TextButton(
+                                        child: Icon(
+                                          Icons.chat_bubble_outline,
+                                          color: accentColorDark,
+                                          size: 21.w,
+                                        ),
+                                        style: ButtonStyle(
+                                          backgroundColor: MaterialStateProperty.all(Colors.white),
+                                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                          minimumSize: MaterialStateProperty.all(Size(0, 0)),
+                                          padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h)),
+                                          shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(5.w),
+                                            side: BorderSide(
+                                              color: accentColorDark,
+                                              width: 1.w,
+                                            ),
+                                          )),
+                                        ),
+                                        onPressed: () {
+                                          context.read<InitializeStreamChatCubit>().initializeChannel(userID, doc, userCategory, widget.isVerified);
+                                        },
+                                      );
+                                    },
+                                  );
+                                }
+                                return TextButton(
+                                  child: Icon(
+                                    Icons.chat_bubble_outline,
                                     color: accentColorDark,
-                                    width: 1.w,
+                                    size: 21.w,
                                   ),
-                                )),
-                              ),
-                              onPressed: () {},
+                                  style: ButtonStyle(
+                                    backgroundColor: MaterialStateProperty.all(Colors.white),
+                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                    minimumSize: MaterialStateProperty.all(Size(0, 0)),
+                                    padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h)),
+                                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5.w),
+                                      side: BorderSide(
+                                        color: accentColorDark,
+                                        width: 1.w,
+                                      ),
+                                    )),
+                                  ),
+                                  onPressed: () {},
+                                );
+                              },
                             ),
+
                             //call
-                            TextButton(
-                              child: Icon(
-                                Icons.call,
-                                color: accentColorDark,
-                                size: 21.w,
-                              ),
-                              style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all(Colors.white),
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                minimumSize: MaterialStateProperty.all(Size(0, 0)),
-                                padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h)),
-                                shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5.w),
-                                  side: BorderSide(
+                            BlocBuilder<LoginBloc, LoginState>(
+                              builder: (context, loginState) {
+                                return TextButton(
+                                  child: Icon(
+                                    Icons.call,
                                     color: accentColorDark,
-                                    width: 1.w,
+                                    size: 21.w,
                                   ),
-                                )),
-                              ),
-                              onPressed: () {},
+                                  style: ButtonStyle(
+                                    backgroundColor: MaterialStateProperty.all(Colors.white),
+                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                    minimumSize: MaterialStateProperty.all(Size(0, 0)),
+                                    padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h)),
+                                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5.w),
+                                      side: BorderSide(
+                                        color: accentColorDark,
+                                        width: 1.w,
+                                      ),
+                                    )),
+                                  ),
+                                  onPressed: () async {
+                                    await showDialog(
+                                      context: context,
+                                      builder: (dialogContext) {
+                                        return InitCallDialog(
+                                          from: "profile",
+                                          videoMuted: false,
+                                          docDetail: widget.practitionerModel,
+                                          isVerified: widget.isVerified,
+                                        );
+                                      },
+                                    );
+                                  },
+                                );
+                              },
                             ),
                           ],
                         ),
@@ -386,13 +603,34 @@ class _PractitionerProfileScreenState extends State<PractitionerProfileScreen> w
                 actionsIconTheme: IconThemeData(),
                 actions: [
                   //bookmark
-                  IconButton(
-                    icon: Icon(
-                      Icons.bookmark_outline,
-                      size: 22.sp,
-                      color: Color(0xff242424),
-                    ),
-                    onPressed: () {},
+                  BlocBuilder<SavedContactsCubit, SavedContactsState>(
+                    builder: (context, state) {
+                      if (state is SavedContactsSuccess) {
+                        final isSaved = state.savedContacts.contains("docIDTestThree" + '${widget.practitionerModel.user.toString()}');
+                        return IconButton(
+                          icon: Icon(
+                            isSaved ? Icons.bookmark : Icons.bookmark_outline,
+                            size: 22.sp,
+                            color: isSaved ? Color(0xff0e0e0e) : Color(0xff242424),
+                          ),
+                          onPressed: () async {
+                            setState(() {
+                              saveContactVal = !isSaved;
+                            });
+                            context.read<SavedContactsCubit>()
+                              ..addRemoveContacts(saveContactVal, "docIDTestThree" + "${widget.practitionerModel.user.toString()}");
+                          },
+                        );
+                      }
+                      return IconButton(
+                        icon: Icon(
+                          Icons.bookmark_outline,
+                          size: 22.sp,
+                          color: Color(0xff242424),
+                        ),
+                        onPressed: () async {},
+                      );
+                    },
                   ),
 
                   //share
@@ -452,7 +690,7 @@ class _PractitionerProfileScreenState extends State<PractitionerProfileScreen> w
                               Icon(Icons.call, size: 20.w, color: accentColorDark),
                               SizedBox(width: 15.w),
                               Text(
-                                '+254 710 122 111 / 020 011 112',
+                                widget.practitionerModel.phoneNumber,
                                 style: TextStyle(color: textBlack),
                               ),
                             ],
@@ -485,9 +723,12 @@ class _PractitionerProfileScreenState extends State<PractitionerProfileScreen> w
                             children: [
                               Icon(Icons.explore, size: 20.w, color: accentColorDark),
                               SizedBox(width: 15.w),
-                              Text(
-                                'Nairobi, Kenya',
-                                style: TextStyle(color: textBlack),
+                              SizedBox(
+                                width: 200.w,
+                                child: Text(
+                                  widget.practitionerModel.location + ", " + widget.practitionerModel.region,
+                                  style: TextStyle(color: textBlack),
+                                ),
                               ),
                             ],
                           ),
