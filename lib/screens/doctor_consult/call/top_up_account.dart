@@ -123,7 +123,7 @@ class _TopUpAccountState extends State<TopUpAccount> {
                   SizedBox(height: 20.h),
 
                   Text(
-                    'Choose amount you wish to pay (2 - 750 KES)',
+                    'Choose amount you wish to pay (10 - 750 KES)',
                     style: TextStyle(
                       fontSize: 14.sp,
                       color: textBlack,
@@ -157,7 +157,7 @@ class _TopUpAccountState extends State<TopUpAccount> {
                         filled: true,
                         focusColor: Colors.white,
                         contentPadding: EdgeInsets.all(10.0.w),
-                        hintText: 'Enter amount you wish to pay (2 - 750 KES)',
+                        hintText: 'Enter amount you wish to pay (10 - 750 KES)',
                         hintStyle: TextStyle(
                           color: Colors.grey,
                           fontSize: 15.sp,
@@ -249,7 +249,7 @@ class _TopUpAccountState extends State<TopUpAccount> {
                               'Continue',
                               style: TextStyle(color: Colors.white),
                             ),
-                            onPressed: amountToPay != null && (amountToPay >= 2 && amountToPay <= 750)
+                            onPressed: amountToPay != null && (amountToPay >= 10 && amountToPay <= 750)
                                 ? selectedVal == 'M-Pesa' || selectedVal == 'Card'
                                     ? () async {
                                         // Get a reference to RavePayInitializer
@@ -281,12 +281,12 @@ class _TopUpAccountState extends State<TopUpAccount> {
                                           acceptAchPayments: false,
                                           acceptGHMobileMoneyPayments: false,
                                           acceptUgMobileMoneyPayments: false,
-                                          staging: true,
+                                          staging: false,
                                           isPreAuth: true,
                                           displayAmount: true,
                                           displayFee: true,
-                                          publicKey: 'FLWPUBK_TEST-76c1705a4f7b2be0d3580eafaff28777-X',
-                                          encryptionKey: 'FLWSECK_TEST968077f1f1c8',
+                                          publicKey: 'FLWPUBK-01d949a9c04f029cc1f1a927af871079-X',
+                                          encryptionKey: '4c6325b0afa75beb8a0dc641',
                                         );
 
                                         // Initialize and get the transaction result
@@ -317,7 +317,7 @@ class _TopUpAccountState extends State<TopUpAccount> {
                                             final txID = response.rawResponse['data']['id'];
                                             final verifyResponse = await http.get(
                                               'https://api.flutterwave.com/v3/transactions/$txID/verify',
-                                              headers: {"Authorization": "Bearer " + "FLWSECK_TEST-682e6172c96b33ce8d9e1eeeb8ae6a32-X"},
+                                              headers: {"Authorization": "Bearer " + "FLWSECK-4c6325b0afa7d07c4f285745e2884847-X"},
                                             );
                                             if (jsonDecode(verifyResponse.body)['message'] == "Transaction fetched successfully") {
                                               print("success");
