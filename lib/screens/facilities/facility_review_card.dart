@@ -2,13 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:pocket_health/models/review_model.dart';
+import 'package:pocket_health/models/facility_review_model.dart';
 import 'package:pocket_health/utils/constants.dart';
 
-class ReviewCard extends StatelessWidget {
-  final ReviewModel review;
+class FacilityReviewCard extends StatelessWidget {
+  final FacilityReviewModel review;
 
-  const ReviewCard({Key key, this.review}) : super(key: key);
+  const FacilityReviewCard({Key key, this.review}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +90,7 @@ class ReviewCard extends StatelessWidget {
               SizedBox(
                 width: 280.w,
                 child: Text(
-                  review.comment,
+                  review.comments,
                   maxLines: 4,
                   softWrap: true,
                   overflow: TextOverflow.ellipsis,
