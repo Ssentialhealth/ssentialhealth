@@ -19,6 +19,7 @@ import 'package:pocket_health/models/children_resources_model.dart';
 import 'package:pocket_health/models/conditionDetailsModel.dart';
 import 'package:pocket_health/models/delayed_milestone_model.dart';
 import 'package:pocket_health/models/emergency_contact.dart';
+import 'package:pocket_health/models/facility_appointment_model.dart';
 import 'package:pocket_health/models/facility_call_history_model.dart';
 import 'package:pocket_health/models/facility_open_hours_model.dart';
 import 'package:pocket_health/models/facility_profile_model.dart';
@@ -840,6 +841,19 @@ class ApiService {
     return appointmentModelFromJson(response.body);
   }
 
+  Future<FacilityAppointmentModel> bookFacilityAppointment(appointment) async {
+    _token = await getStringValuesSF();
+    final mapData = facilityAppointmentModelToJson(appointment);
+
+    final response = await this.httpClient.post(
+          Uri.encodeFull('https://ssential.herokuapp.com/api/HealthFacility/Appointments/'),
+          headers: {"Content-Type": "application/json", "Authorization": "Bearer " + _token},
+          body: mapData,
+        );
+    print("response data | " + response.body);
+    return facilityAppointmentModelFromJson(response.body);
+  }
+
   Future<List<AppointmentModel>> fetchBookingHistory(int userID, int docID, int status) async {
     _token = await getStringValuesSF();
     final response = await this.httpClient.get(
@@ -849,7 +863,19 @@ class ApiService {
 
     final allBookings = appointmentModelListFromJson(response.body);
 
-    final queriedBookings = allBookings.where((e) => e.user == userID && e.profile == docID).toList();
+    final queriedBookings = allBookings.where((e) => e.profile == docID).toList();
+    return queriedBookings;
+  }
+
+  Future<List<FacilityAppointmentModel>> fetchFacilityBookingHistory(int userID, int facilityID, int status) async {
+    _token = await getStringValuesSF();
+    final response = await this.httpClient.get(
+      Uri.encodeFull('https://ssential.herokuapp.com/api/HealthFacility/Appointments/'),
+      headers: {"Content-Type": "application/json", "Authorization": "Bearer " + _token},
+    );
+
+    final allBookings = facilityAppointmentModelListFromJson(response.body);
+    final queriedBookings = allBookings.where((e) => e.facility == facilityID).toList();
     return queriedBookings;
   }
 

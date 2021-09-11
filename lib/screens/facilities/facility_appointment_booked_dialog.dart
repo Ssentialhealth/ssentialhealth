@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pocket_health/screens/home/home.dart';
 
-class AppointmentBookedDialog extends StatelessWidget {
+class FacilityAppointmentBookedDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -24,7 +24,7 @@ class AppointmentBookedDialog extends StatelessWidget {
             Padding(
               padding: EdgeInsets.symmetric(vertical: 25.w, horizontal: 15.w),
               child: Text(
-                "Appointment booked, facility will confirm appointment. Contact facility if no confirmation received",
+                "Appointment booked, provider will confirm appointment. Contact provider if no confirmation received",
                 maxLines: 3,
                 textAlign: TextAlign.center,
                 softWrap: true,

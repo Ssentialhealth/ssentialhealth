@@ -5,23 +5,24 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:pocket_health/bloc/appointments/appointments_cubit.dart';
-import 'package:pocket_health/bloc/booking_history/booking_history_cubit.dart';
-import 'package:pocket_health/models/practitioner_profile_model.dart';
+import 'package:pocket_health/bloc/facility_appointments/facility_appointments_cubit.dart';
+import 'package:pocket_health/bloc/facility_booking_history/facility_booking_history_cubit.dart';
+import 'package:pocket_health/models/facility_profile_model.dart';
 import 'package:pocket_health/utils/constants.dart';
 
-import 'appointment_booked_dialog.dart';
+import 'facility_appointment_booked_dialog.dart';
 
-class BookAppointmentScreen extends StatefulWidget {
-  final PractitionerProfileModel practitionerModel;
+class BookFacilityAppointmentScreen extends StatefulWidget {
+  final FacilityProfileModel facilityModel;
   final int userID;
-  BookAppointmentScreen({Key key, @required this.practitionerModel, this.userID}) : super(key: key);
+
+  BookFacilityAppointmentScreen({Key key, @required this.facilityModel, this.userID}) : super(key: key);
 
   @override
-  _BookAppointmentScreenState createState() => _BookAppointmentScreenState();
+  _BookFacilityAppointmentScreenState createState() => _BookFacilityAppointmentScreenState();
 }
 
-class _BookAppointmentScreenState extends State<BookAppointmentScreen> with SingleTickerProviderStateMixin {
+class _BookFacilityAppointmentScreenState extends State<BookFacilityAppointmentScreen> with SingleTickerProviderStateMixin {
   DateTime selectedDate = DateTime.parse(DateTime.now()?.toString()?.split(" ")?.first);
 
   TabController _tabController;
@@ -38,7 +39,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(() => setState(() {}));
-    context.read<BookingHistoryCubit>().fetchAppointments(docID: widget.practitionerModel.user, userID: widget.userID);
+    context.read<FacilityBookingHistoryCubit>().fetchFacilityAppointments(facilityID: widget.facilityModel.id, userID: widget.userID);
   }
 
   // final List appointments =;
@@ -217,16 +218,17 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
           child: Column(
             children: [
               //details
-              BlocConsumer<BookingHistoryCubit, BookingHistoryState>(
+
+              BlocConsumer<FacilityBookingHistoryCubit, FacilityBookingHistoryState>(
                 listener: (context, state) {},
                 builder: (context, state) {
-                  if (state is BookingHistoryLoading) {
+                  if (state is FacilityBookingHistoryLoading) {
                     return Container(height: 200.h, child: Center(child: CircularProgressIndicator()));
                   }
-                  if (state is BookingHistoryFailure) {
+                  if (state is FacilityBookingHistoryFailure) {
                     return Container(height: 100, width: 100, color: Colors.red);
                   }
-                  if (state is BookingHistorySuccess) {
+                  if (state is FacilityBookingHistorySuccess) {
                     return Padding(
                       padding: EdgeInsets.all(15.w),
                       child: Container(
@@ -252,7 +254,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                     widget.practitionerModel.surname ?? "null",
+                                      widget.facilityModel.facilityName,
                                       style: TextStyle(
                                         color: Colors.white,
                                         fontSize: 15.sp,
@@ -643,6 +645,8 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
                                                   time >= compareAfternoonTime[index] && DateTime.parse(selectedDate.toString()).day == DateTime.now().day;
 
                                               final bool isDisabled = (timePassed || isBooked) == true;
+
+                                              print("$label is booked ----------" + (isBooked).toString());
                                               return isDisabled;
                                             },
                                           ),
@@ -890,10 +894,10 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
               ),
 
               //book btn
-              BlocConsumer<AppointmentsCubit, AppointmentsState>(
+              BlocConsumer<FacilityAppointmentsCubit, FacilityAppointmentsState>(
                 listenWhen: (prev, curr) => prev == curr ? false : true,
                 listener: (context, state) {
-                  if (state is AppointmentsFailure) {
+                  if (state is FacilityAppointmentsFailure) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         behavior: SnackBarBehavior.floating,
@@ -909,12 +913,12 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
                       ),
                     );
                   }
-                  if (state is AppointmentsSuccess) {
+                  if (state is FacilityAppointmentsSuccess) {
                     showDialog<void>(
                       context: context,
                       barrierDismissible: false,
                       builder: (BuildContext dialogContext) {
-                        return AppointmentBookedDialog();
+                        return FacilityAppointmentBookedDialog();
                       },
                     );
                   }
@@ -926,7 +930,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
                     height: 40.0.h,
                     minWidth: 376.w,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.w)),
-                    child: state is AppointmentsLoading
+                    child: state is FacilityAppointmentsLoading
                         ? SizedBox(height: 20.h, width: 20.h, child: CircularProgressIndicator())
                         : Text(
                             'BOOK APPOINTMENT',
@@ -936,7 +940,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
                               fontWeight: FontWeight.w500,
                             ),
                           ),
-                    onPressed: state is AppointmentsLoading
+                    onPressed: state is FacilityAppointmentsLoading
                         ? () {}
                         : () async {
                             appointmentTypeVal == null
@@ -958,8 +962,8 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
                                     print(tag);
                                     final slotFrom = tag.split(' - ').first;
                                     final slotTo = tag.split(' - ').last;
-                                    context.read<AppointmentsCubit>()
-                                      ..bookAppointment(
+                                    context.read<FacilityAppointmentsCubit>()
+                                      ..bookFacilityAppointment(
                                         appointmentDate: selectedDate,
                                         slotFrom: slotFrom,
                                         slotTo: slotTo,
@@ -967,7 +971,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
                                         appointmentType: appointmentTypeVal,
                                         userID: 5,
                                         //TODO : Production | change to dynamic val
-                                        docID: widget.practitionerModel.user,
+                                        facilityID: widget.facilityModel.id,
                                       );
                                   });
                           },

@@ -47,6 +47,8 @@ import 'package:pocket_health/repository/congenital_conditions_repo.dart';
 import 'package:pocket_health/repository/congenital_details_repo.dart';
 import 'package:pocket_health/repository/delayed_milestones_repo.dart';
 import 'package:pocket_health/repository/emergencyContactRepo.dart';
+import 'package:pocket_health/repository/facility_appointments_repo.dart';
+import 'package:pocket_health/repository/facility_booking_history_repo.dart';
 import 'package:pocket_health/repository/facility_call_history_repo.dart';
 import 'package:pocket_health/repository/facility_profile_repo.dart';
 import 'package:pocket_health/repository/facility_reviews_repo.dart';
@@ -77,6 +79,8 @@ import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 import 'bloc/appointments/appointments_cubit.dart';
 import 'bloc/booking_history/booking_history_cubit.dart';
 import 'bloc/conditionDetails/conditionDetailsBloc.dart';
+import 'bloc/facility_appointments/facility_appointments_cubit.dart';
+import 'bloc/facility_booking_history/facility_booking_history_cubit.dart';
 import 'bloc/fetch_call_history/fetch_call_history_cubit.dart';
 import 'bloc/fetch_facility_call_history/fetch_facility_call_history_cubit.dart';
 import 'bloc/filter_facility_reviews/filter_facility_reviews_cubit.dart';
@@ -124,7 +128,9 @@ void main() async {
   final CallHistoryRepo callHistoryRepo = CallHistoryRepo(ApiService(http.Client()));
   final FetchCallHistoryRepo fetchCallHistoryRepo = FetchCallHistoryRepo(ApiService(http.Client()));
   final AppointmentsRepo appointmentsRepo = AppointmentsRepo(ApiService(http.Client()));
+  final FacilityAppointmentsRepo facilityAppointmentsRepo = FacilityAppointmentsRepo(ApiService(http.Client()));
   final BookingHistoryRepo bookingHistoryRepo = BookingHistoryRepo(ApiService(http.Client()));
+  final FacilityBookingHistoryRepo facilityBookingHistoryRepo = FacilityBookingHistoryRepo(ApiService(http.Client()));
   final CallBalanceRepo callBalanceRepo = CallBalanceRepo(ApiService(http.Client()));
   final FacilityProfileRepo facilityProfileRepo = FacilityProfileRepo(ApiService(http.Client()));
   final FacilityReviewsRepo facilityReviewsRepo = FacilityReviewsRepo(ApiService(http.Client()));
@@ -136,7 +142,9 @@ void main() async {
     forgotPasswordRepo: forgotPasswordRepo,
     loginRepository: loginRepository,
     bookingHistoryRepo: bookingHistoryRepo,
+    facilityAppointmentsRepo: facilityAppointmentsRepo,
     appointmentsRepo: appointmentsRepo,
+    facilityBookingHistoryRepo: facilityBookingHistoryRepo,
     userProfileRepo: userProfileRepo,
     practitionerProfileRepo: practitionerProfileRepo,
     emergencyContactRepo: emergencyContactRepo,
@@ -205,7 +213,9 @@ class MyApp extends StatelessWidget {
   final CallHistoryRepo callHistoryRepo;
   final FetchCallHistoryRepo fetchCallHistoryRepo;
   final AppointmentsRepo appointmentsRepo;
+  final FacilityAppointmentsRepo facilityAppointmentsRepo;
   final BookingHistoryRepo bookingHistoryRepo;
+  final FacilityBookingHistoryRepo facilityBookingHistoryRepo;
   final CallBalanceRepo callBalanceRepo;
   final FacilityProfileRepo facilityProfileRepo;
   final FacilityReviewsRepo facilityReviewsRepo;
@@ -246,7 +256,9 @@ class MyApp extends StatelessWidget {
     @required this.callHistoryRepo,
     @required this.fetchCallHistoryRepo,
     @required this.appointmentsRepo,
+    @required this.facilityAppointmentsRepo,
     @required this.bookingHistoryRepo,
+    @required this.facilityBookingHistoryRepo,
     @required this.callBalanceRepo,
     @required this.facilityProfileRepo,
     @required this.postFacilityReviewsRepo,
@@ -255,8 +267,6 @@ class MyApp extends StatelessWidget {
     @required this.facilityCallHistoryRepo,
     @required this.fetchFacilityCallHistoryRepo,
   }) : super(key: key);
-
-  final GlobalKey<NavigatorState> _navigator = new GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext mainContext) {
@@ -303,7 +313,9 @@ class MyApp extends StatelessWidget {
           BlocProvider(create: (context) => InitializeStreamChatCubit()),
           BlocProvider(create: (context) => CallHistoryCubit(callHistoryRepo)),
           BlocProvider(create: (context) => AppointmentsCubit(appointmentsRepo)),
+          BlocProvider(create: (context) => FacilityAppointmentsCubit(facilityAppointmentsRepo)),
           BlocProvider(create: (context) => BookingHistoryCubit(bookingHistoryRepo)),
+          BlocProvider(create: (context) => FacilityBookingHistoryCubit(facilityBookingHistoryRepo)),
           BlocProvider(create: (context) => FetchCallHistoryCubit(fetchCallHistoryRepo)),
           BlocProvider(create: (context) => CallBalanceCubit(callBalanceRepo)),
           BlocProvider(create: (context) => SavedContactsCubit()..fetchContacts()),
@@ -316,7 +328,6 @@ class MyApp extends StatelessWidget {
           BlocProvider(create: (context) => FetchFacilityCallHistoryCubit(fetchFacilityCallHistoryRepo)),
         ],
         child: MaterialApp(
-          navigatorKey: _navigator,
           debugShowCheckedModeBanner: false,
           title: 'Ssential App',
           theme: ThemeData(

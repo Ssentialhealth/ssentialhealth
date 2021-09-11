@@ -29,6 +29,7 @@ import 'package:pocket_health/utils/constants.dart';
 import 'package:pocket_health/widgets/verified_tag.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
+import 'book_facility_appointment.dart';
 import 'facility_reviews_list.dart';
 
 class FacilityProfileScreen extends StatefulWidget {
@@ -333,7 +334,29 @@ class _FacilityProfileScreenState extends State<FacilityProfileScreen> with Sing
                                       ),
                                     )),
                                   ),
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    state is LoginLoaded && state.loginModel.user.userCategory == 'individual'
+                                        ? Navigator.of(context).push(
+                                            MaterialPageRoute(builder: (BuildContext context) {
+                                              return BookFacilityAppointmentScreen(
+                                                userID: state.loginModel.user.userID,
+                                                facilityModel: widget.facilityProfileModel,
+                                              );
+                                            }),
+                                          )
+                                        : SnackBar(
+                                            behavior: SnackBarBehavior.floating,
+                                            backgroundColor: Color(0xff163C4D),
+                                            duration: Duration(milliseconds: 6000),
+                                            content: Text(
+                                              'This feature is only available to users registered as individuals!',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          );
+                                  },
                                 );
                               },
                             ),
@@ -849,18 +872,18 @@ class _FacilityProfileScreenState extends State<FacilityProfileScreen> with Sing
                                   final weekday = day == 1
                                       ? "Monday"
                                       : day == 2
-                                      ? "Tuesday"
-                                      : day == 3
-                                      ? 'Wednesday'
-                                      : day == 4
-                                      ? "Thursday"
-                                      : day == 5
-                                      ? "Friday"
-                                      : day == 6
-                                      ? 'Saturday'
-                                      : day == 7
-                                      ? 'Sunday'
-                                      : "";
+                                          ? "Tuesday"
+                                          : day == 3
+                                              ? 'Wednesday'
+                                              : day == 4
+                                                  ? "Thursday"
+                                                  : day == 5
+                                                      ? "Friday"
+                                                      : day == 6
+                                                          ? 'Saturday'
+                                                          : day == 7
+                                                              ? 'Sunday'
+                                                              : "";
                                   final dayInt = index + 1;
                                   final today = DateTime.now().weekday;
                                   return Padding(
@@ -885,45 +908,45 @@ class _FacilityProfileScreenState extends State<FacilityProfileScreen> with Sing
                                         SizedBox(width: 16.w),
                                         today == dayInt
                                             ? Container(
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(100),
-                                            border: Border.all(
-                                              color: Colors.orange,
-                                              width: 1,
-                                            ),
-                                          ),
-                                          child: Padding(
-                                            padding: EdgeInsets.symmetric(vertical: 4.0.w, horizontal: 6.w),
-                                            child: Text(
-                                              'TODAY',
-                                              style: TextStyle(
-                                                color: Colors.orange,
-                                                fontSize: 13.sp,
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                          ),
-                                        )
+                                                decoration: BoxDecoration(
+                                                  borderRadius: BorderRadius.circular(100),
+                                                  border: Border.all(
+                                                    color: Colors.orange,
+                                                    width: 1,
+                                                  ),
+                                                ),
+                                                child: Padding(
+                                                  padding: EdgeInsets.symmetric(vertical: 4.0.w, horizontal: 6.w),
+                                                  child: Text(
+                                                    'TODAY',
+                                                    style: TextStyle(
+                                                      color: Colors.orange,
+                                                      fontSize: 13.sp,
+                                                      fontWeight: FontWeight.w500,
+                                                    ),
+                                                  ),
+                                                ),
+                                              )
                                             : Container(
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(100),
-                                            border: Border.all(
-                                              color: Colors.white,
-                                              width: 1,
-                                            ),
-                                          ),
-                                          child: Padding(
-                                            padding: EdgeInsets.symmetric(vertical: 4.0.w, horizontal: 6.w),
-                                            child: Text(
-                                              'TODAY',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 13.sp,
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                          ),
-                                        )
+                                                decoration: BoxDecoration(
+                                                  borderRadius: BorderRadius.circular(100),
+                                                  border: Border.all(
+                                                    color: Colors.white,
+                                                    width: 1,
+                                                  ),
+                                                ),
+                                                child: Padding(
+                                                  padding: EdgeInsets.symmetric(vertical: 4.0.w, horizontal: 6.w),
+                                                  child: Text(
+                                                    'TODAY',
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 13.sp,
+                                                      fontWeight: FontWeight.w500,
+                                                    ),
+                                                  ),
+                                                ),
+                                              )
                                       ],
                                     ),
                                   );
