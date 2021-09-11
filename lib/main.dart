@@ -19,6 +19,7 @@ import 'package:pocket_health/bloc/child_health/normal_development/normal_develo
 import 'package:pocket_health/bloc/child_health/nutrition_bloc/nutrition_bloc.dart';
 import 'package:pocket_health/bloc/child_health/schedule_detail/schedule_detail_bloc.dart';
 import 'package:pocket_health/bloc/emergency_contact/emergencyContactBloc.dart';
+import 'package:pocket_health/bloc/facility_call_history/facility_call_history_cubit.dart';
 import 'package:pocket_health/bloc/facility_reviews/facility_reviews_cubit.dart';
 import 'package:pocket_health/bloc/hotlines/hotlinesBloc.dart';
 import 'package:pocket_health/bloc/list_facilities/list_facilities_cubit.dart';
@@ -46,9 +47,11 @@ import 'package:pocket_health/repository/congenital_conditions_repo.dart';
 import 'package:pocket_health/repository/congenital_details_repo.dart';
 import 'package:pocket_health/repository/delayed_milestones_repo.dart';
 import 'package:pocket_health/repository/emergencyContactRepo.dart';
+import 'package:pocket_health/repository/facility_call_history_repo.dart';
 import 'package:pocket_health/repository/facility_profile_repo.dart';
 import 'package:pocket_health/repository/facility_reviews_repo.dart';
 import 'package:pocket_health/repository/fetch_call_history_repo.dart';
+import 'package:pocket_health/repository/fetch_facility_call_history_repo.dart';
 import 'package:pocket_health/repository/forgotPasswordRepo.dart';
 import 'package:pocket_health/repository/growth_charts_repo.dart';
 import 'package:pocket_health/repository/hotline_repo.dart';
@@ -75,6 +78,7 @@ import 'bloc/appointments/appointments_cubit.dart';
 import 'bloc/booking_history/booking_history_cubit.dart';
 import 'bloc/conditionDetails/conditionDetailsBloc.dart';
 import 'bloc/fetch_call_history/fetch_call_history_cubit.dart';
+import 'bloc/fetch_facility_call_history/fetch_facility_call_history_cubit.dart';
 import 'bloc/filter_facility_reviews/filter_facility_reviews_cubit.dart';
 import 'bloc/filter_reviews/filter_reviews_cubit.dart';
 import 'bloc/forgotPassword/forgotPasswordBloc.dart';
@@ -84,6 +88,7 @@ import 'bloc/list_practitioners/list_practitioners_cubit.dart';
 import 'bloc/organDetails/organDetailsBloc.dart';
 import 'bloc/post_facility_review/post_facility_review_cubit.dart';
 import 'bloc/post_review/post_review_cubit.dart';
+import 'bloc/saved_facility_contacts/saved_facility_contacts_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -125,6 +130,8 @@ void main() async {
   final FacilityReviewsRepo facilityReviewsRepo = FacilityReviewsRepo(ApiService(http.Client()));
   final FacilityReviewsRepo postFacilityReviewsRepo = FacilityReviewsRepo(ApiService(http.Client()));
   final OpenHoursRepo openHoursRepo = OpenHoursRepo(ApiService(http.Client()));
+  final FacilityCallHistoryRepo facilityCallHistoryRepo = FacilityCallHistoryRepo(ApiService(http.Client()));
+  final FetchFacilityCallHistoryRepo fetchFacilityCallHistoryRepo = FetchFacilityCallHistoryRepo(ApiService(http.Client()));
   runApp(MyApp(
     forgotPasswordRepo: forgotPasswordRepo,
     loginRepository: loginRepository,
@@ -162,6 +169,8 @@ void main() async {
     facilityReviewsRepo: facilityReviewsRepo,
     postFacilityReviewsRepo: postFacilityReviewsRepo,
     openHoursRepo: openHoursRepo,
+    fetchFacilityCallHistoryRepo: fetchFacilityCallHistoryRepo,
+    facilityCallHistoryRepo: facilityCallHistoryRepo,
   ));
 }
 
@@ -202,6 +211,8 @@ class MyApp extends StatelessWidget {
   final FacilityReviewsRepo facilityReviewsRepo;
   final FacilityReviewsRepo postFacilityReviewsRepo;
   final OpenHoursRepo openHoursRepo;
+  final FetchFacilityCallHistoryRepo fetchFacilityCallHistoryRepo;
+  final FacilityCallHistoryRepo facilityCallHistoryRepo;
 
   MyApp({
     Key key,
@@ -241,6 +252,8 @@ class MyApp extends StatelessWidget {
     @required this.postFacilityReviewsRepo,
     @required this.facilityReviewsRepo,
     @required this.openHoursRepo,
+    @required this.facilityCallHistoryRepo,
+    @required this.fetchFacilityCallHistoryRepo,
   }) : super(key: key);
 
   final GlobalKey<NavigatorState> _navigator = new GlobalKey<NavigatorState>();
@@ -294,10 +307,13 @@ class MyApp extends StatelessWidget {
           BlocProvider(create: (context) => FetchCallHistoryCubit(fetchCallHistoryRepo)),
           BlocProvider(create: (context) => CallBalanceCubit(callBalanceRepo)),
           BlocProvider(create: (context) => SavedContactsCubit()..fetchContacts()),
+          BlocProvider(create: (context) => SavedFacilityContactsCubit()..fetchContacts()),
           BlocProvider(create: (context) => ListFacilitiesCubit(facilityProfileRepo: facilityProfileRepo)),
           BlocProvider(create: (context) => FacilityReviewsCubit(facilityReviewsRepo: facilityReviewsRepo)),
           BlocProvider(create: (context) => PostFacilityReviewCubit(facilityReviewsRepo: postFacilityReviewsRepo)),
           BlocProvider(create: (context) => ListFacilityOpenHoursCubit(openHoursRepo)),
+          BlocProvider(create: (context) => FacilityCallHistoryCubit(facilityCallHistoryRepo)),
+          BlocProvider(create: (context) => FetchFacilityCallHistoryCubit(fetchFacilityCallHistoryRepo)),
         ],
         child: MaterialApp(
           navigatorKey: _navigator,

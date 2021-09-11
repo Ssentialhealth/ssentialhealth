@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:pocket_health/models/facility_profile_model.dart';
 import 'package:pocket_health/models/practitioner_profile_model.dart';
 import 'package:start_jwt/json_web_token.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
@@ -29,7 +30,7 @@ class InitializeStreamChatCubit extends Cubit<InitializeStreamChatState> {
       await _client.disconnect();
       await _client.connectUserWithProvider(
         User(
-          id: 'TestUser3',
+          id: 'TestUser4',
           extraData: {
             "userCategory": userCategory,
             "name": "David Mochoge",
@@ -89,6 +90,43 @@ class InitializeStreamChatCubit extends Cubit<InitializeStreamChatState> {
       await channel.addMembers([docID, 'TestUser3']);
       await channel.watch();
       emit(StreamChannelSuccess(channel, docID));
+    } catch (err) {
+      emit(StreamChannelError(err.toString()));
+      print("create channel failed | $err");
+    }
+  }
+
+  void initializeFacilityChannel(String streamUserID, FacilityProfileModel facility, String userCategory, bool isVerified) async {
+    //TODO: inProduction | add real data
+    emit(StreamChannelLoading());
+
+    final facilityID = 'facilityIDTestThree${facility.id}';
+    try {
+      await client.disconnect();
+      await client.connectUserWithProvider(
+        User(
+          id: facilityID,
+          extraData: {"userCategory": "facility", "name": "${facility.facilityName}", "isVerified": "$isVerified"},
+        ),
+      );
+      await client.disconnect();
+      await client.connectUserWithProvider(
+        User(
+          id: "TestUser4",
+          extraData: {
+            "userCategory": 'individual',
+            "name": "David Mochoge",
+          },
+        ),
+      );
+      final channel = client.channel(
+        'messaging',
+        id: facilityID,
+      );
+      await channel.create();
+      await channel.addMembers([facilityID, 'TestUser4']);
+      await channel.watch();
+      emit(StreamChannelSuccess(channel, facilityID));
     } catch (err) {
       emit(StreamChannelError(err.toString()));
       print("create channel failed | $err");

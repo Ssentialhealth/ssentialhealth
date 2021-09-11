@@ -14,12 +14,16 @@ import 'package:pocket_health/bloc/login/loginBloc.dart';
 import 'package:pocket_health/bloc/login/loginState.dart';
 import 'package:pocket_health/bloc/post_facility_review/post_facility_review_cubit.dart';
 import 'package:pocket_health/bloc/saved_contacts/saved_contacts_cubit.dart';
+import 'package:pocket_health/bloc/saved_facility_contacts/saved_facility_contacts_cubit.dart';
 import 'package:pocket_health/models/facility_profile_model.dart';
 import 'package:pocket_health/models/facility_review_model.dart';
+import 'package:pocket_health/models/practitioner_profile_model.dart';
 import 'package:pocket_health/screens/doctor_consult/call/init_call_dialog.dart';
 import 'package:pocket_health/screens/doctor_consult/chat/channel_page.dart';
 import 'package:pocket_health/screens/facilities/sort_facility_reviews_row.dart';
 import 'package:pocket_health/screens/facilities/write_facility_review_dialog.dart';
+import 'package:pocket_health/screens/practitioners/practitioner_profile_screen.dart';
+import 'package:pocket_health/screens/practitioners/practitioners_list_screen.dart';
 import 'package:pocket_health/services/api_service.dart';
 import 'package:pocket_health/utils/constants.dart';
 import 'package:pocket_health/widgets/verified_tag.dart';
@@ -38,6 +42,14 @@ class FacilityProfileScreen extends StatefulWidget {
 }
 
 class _FacilityProfileScreenState extends State<FacilityProfileScreen> with SingleTickerProviderStateMixin {
+  bool filterIsSelected = false;
+  TabController _tabController;
+  bool saveContactVal = false;
+  String durationVal = "5 minutes";
+  bool isLoading = false;
+  PractitionerProfileModel practitionerModel = PractitionerProfileModel();
+  bool isVerified = false;
+
   List reportCategories = [
     'Spam and Misleading',
     'Violent and Harrasment',
@@ -56,11 +68,22 @@ class _FacilityProfileScreenState extends State<FacilityProfileScreen> with Sing
     "Sunday",
   ];
 
-  //tab bar
-  bool filterIsSelected = false;
-  TabController _tabController;
-  bool saveContactVal = false;
-  String durationVal = "5 minutes";
+  void fetchFacilityDoctors() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    final ApiService apiService = ApiService(http.Client());
+    final PractitionerProfileModel doc = await apiService.fetchDocDetails(widget.facilityProfileModel.profile);
+
+    final newVerified = checkVerification(doc);
+
+    setState(() {
+      practitionerModel = doc;
+      isLoading = false;
+      isVerified = newVerified;
+    });
+  }
 
   @override
   void initState() {
@@ -68,7 +91,7 @@ class _FacilityProfileScreenState extends State<FacilityProfileScreen> with Sing
     context.read<InitializeStreamChatCubit>()..loadInitial();
     context.read<CallBalanceCubit>()..getCallBalance(5); //testing
     context.read<SavedContactsCubit>().fetchContacts();
-    // context.read<>
+    fetchFacilityDoctors();
 
     _tabController = TabController(length: 4, vsync: this);
     _tabController.addListener(() => setState(() {}));
@@ -529,9 +552,9 @@ class _FacilityProfileScreenState extends State<FacilityProfileScreen> with Sing
                                       context: context,
                                       builder: (dialogContext) {
                                         return InitCallDialog(
-                                          from: "facility",
+                                          from: "facility-profile",
                                           videoMuted: false,
-                                          hourlyRate: hourlyRate,
+                                          facilityHourlyRate: int.parse(hourlyRate.split(".").first),
                                           facilityDetail: widget.facilityProfileModel,
                                           isVerified: widget.isVerified,
                                         );
@@ -604,10 +627,10 @@ class _FacilityProfileScreenState extends State<FacilityProfileScreen> with Sing
                 actionsIconTheme: IconThemeData(),
                 actions: [
                   //bookmark
-                  BlocBuilder<SavedContactsCubit, SavedContactsState>(
+                  BlocBuilder<SavedFacilityContactsCubit, SavedFacilityContactsState>(
                     builder: (context, state) {
-                      if (state is SavedContactsSuccess) {
-                        final isSaved = state.savedContacts.contains("docIDTestThree" + '${widget.facilityProfileModel.id.toString()}');
+                      if (state is SavedFacilityContactsSuccess) {
+                        final isSaved = state.savedFacilityContacts.contains("facilityIDTestThree" + '${widget.facilityProfileModel.id.toString()}');
                         return IconButton(
                           icon: Icon(
                             isSaved ? Icons.bookmark : Icons.bookmark_outline,
@@ -618,8 +641,8 @@ class _FacilityProfileScreenState extends State<FacilityProfileScreen> with Sing
                             setState(() {
                               saveContactVal = !isSaved;
                             });
-                            // context.read<SavedContactsCubit>()
-                            //   ..addRemoveContacts(saveContactVal, "docIDTestThree" + "${widget.facilityProfileModel.user.toString()}");
+                            context.read<SavedFacilityContactsCubit>()
+                              ..addRemoveContacts(saveContactVal, "facilityIDTestThree" + "${widget.facilityProfileModel.id.toString()}");
                           },
                         );
                       }
@@ -807,10 +830,12 @@ class _FacilityProfileScreenState extends State<FacilityProfileScreen> with Sing
                         BlocBuilder<ListFacilityOpenHoursCubit, ListFacilityOpenHoursState>(
                           builder: (context, state) {
                             if (state is ListFacilityOpenHoursLoading) {
-                              return Container(
-                                height: 20.h,
-                                width: 20.h,
-                                child: CircularProgressIndicator(),
+                              return Center(
+                                child: Container(
+                                  height: 20.h,
+                                  width: 20.h,
+                                  child: CircularProgressIndicator(),
+                                ),
                               );
                             }
                             if (state is ListFacilityOpenHoursSuccess) {
@@ -824,18 +849,18 @@ class _FacilityProfileScreenState extends State<FacilityProfileScreen> with Sing
                                   final weekday = day == 1
                                       ? "Monday"
                                       : day == 2
-                                          ? "Tuesday"
-                                          : day == 3
-                                              ? 'Wednesday'
-                                              : day == 4
-                                                  ? "Thursday"
-                                                  : day == 5
-                                                      ? "Friday"
-                                                      : day == 6
-                                                          ? 'Saturday'
-                                                          : day == 7
-                                                              ? 'Sunday'
-                                                              : "";
+                                      ? "Tuesday"
+                                      : day == 3
+                                      ? 'Wednesday'
+                                      : day == 4
+                                      ? "Thursday"
+                                      : day == 5
+                                      ? "Friday"
+                                      : day == 6
+                                      ? 'Saturday'
+                                      : day == 7
+                                      ? 'Sunday'
+                                      : "";
                                   final dayInt = index + 1;
                                   final today = DateTime.now().weekday;
                                   return Padding(
@@ -860,45 +885,45 @@ class _FacilityProfileScreenState extends State<FacilityProfileScreen> with Sing
                                         SizedBox(width: 16.w),
                                         today == dayInt
                                             ? Container(
-                                                decoration: BoxDecoration(
-                                                  borderRadius: BorderRadius.circular(100),
-                                                  border: Border.all(
-                                                    color: Colors.orange,
-                                                    width: 1,
-                                                  ),
-                                                ),
-                                                child: Padding(
-                                                  padding: EdgeInsets.symmetric(vertical: 4.0.w, horizontal: 6.w),
-                                                  child: Text(
-                                                    'TODAY',
-                                                    style: TextStyle(
-                                                      color: Colors.orange,
-                                                      fontSize: 13.sp,
-                                                      fontWeight: FontWeight.w500,
-                                                    ),
-                                                  ),
-                                                ),
-                                              )
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(100),
+                                            border: Border.all(
+                                              color: Colors.orange,
+                                              width: 1,
+                                            ),
+                                          ),
+                                          child: Padding(
+                                            padding: EdgeInsets.symmetric(vertical: 4.0.w, horizontal: 6.w),
+                                            child: Text(
+                                              'TODAY',
+                                              style: TextStyle(
+                                                color: Colors.orange,
+                                                fontSize: 13.sp,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ),
+                                        )
                                             : Container(
-                                                decoration: BoxDecoration(
-                                                  borderRadius: BorderRadius.circular(100),
-                                                  border: Border.all(
-                                                    color: Colors.white,
-                                                    width: 1,
-                                                  ),
-                                                ),
-                                                child: Padding(
-                                                  padding: EdgeInsets.symmetric(vertical: 4.0.w, horizontal: 6.w),
-                                                  child: Text(
-                                                    'TODAY',
-                                                    style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 13.sp,
-                                                      fontWeight: FontWeight.w500,
-                                                    ),
-                                                  ),
-                                                ),
-                                              )
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(100),
+                                            border: Border.all(
+                                              color: Colors.white,
+                                              width: 1,
+                                            ),
+                                          ),
+                                          child: Padding(
+                                            padding: EdgeInsets.symmetric(vertical: 4.0.w, horizontal: 6.w),
+                                            child: Text(
+                                              'TODAY',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 13.sp,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ),
+                                        )
                                       ],
                                     ),
                                   );
@@ -1347,120 +1372,122 @@ class _FacilityProfileScreenState extends State<FacilityProfileScreen> with Sing
               SingleChildScrollView(
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.w),
-                  child: Column(
-                    children: [
-                      Container(
-                        clipBehavior: Clip.hardEdge,
-                        padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 15.w),
-                        margin: EdgeInsets.only(bottom: 10.w),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(5.w),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Color(0xC000000),
-                              blurRadius: 4.w,
-                              spreadRadius: 2.w,
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                  child: isLoading
+                      ? Container(height: 20.w, width: 20.w, child: CircularProgressIndicator())
+                      : Column(
                           children: [
-                            Text(
-                              'Cardiology',
-                              style: TextStyle(
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.w600,
+                            Container(
+                              clipBehavior: Clip.hardEdge,
+                              padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 15.w),
+                              margin: EdgeInsets.only(bottom: 10.w),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(5.w),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Color(0xC000000),
+                                    blurRadius: 4.w,
+                                    spreadRadius: 2.w,
+                                  ),
+                                ],
                               ),
-                            ),
-                            SizedBox(height: 6.h),
-                            Text(
-                              'Head: Dr. Eder',
-                              style: TextStyle(
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w400,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Cardiology',
+                                    style: TextStyle(
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  SizedBox(height: 6.h),
+                                  Text(
+                                    "Head: " + practitionerModel.surname,
+                                    style: TextStyle(
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                  SizedBox(height: 8.h),
+                                  Row(
+                                    children: [
+                                      Column(
+                                        children: [
+                                          CircleAvatar(
+                                            backgroundImage: AssetImage("assets/images/progile.jpeg"),
+                                          ),
+                                          SizedBox(height: 6.h),
+                                          SizedBox(
+                                            width: 50.w,
+                                            child: Text(
+                                              practitionerModel.surname,
+                                              textAlign: TextAlign.center,
+                                              softWrap: true,
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 2,
+                                              style: TextStyle(
+                                                fontSize: 12.sp,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      // SizedBox(width: 8),
+                                      // Column(
+                                      //   children: [
+                                      //     CircleAvatar(
+                                      //       backgroundImage: AssetImage("assets/images/progile.jpeg"),
+                                      //     ),
+                                      //     SizedBox(height: 6.h),
+                                      //     SizedBox(
+                                      //       width: 50.w,
+                                      //       child: Text(
+                                      //         'Dr. Darren Edder',
+                                      //         textAlign: TextAlign.center,
+                                      //         softWrap: true,
+                                      //         overflow: TextOverflow.ellipsis,
+                                      //         maxLines: 2,
+                                      //         style: TextStyle(
+                                      //           fontSize: 12.sp,
+                                      //           fontWeight: FontWeight.w500,
+                                      //         ),
+                                      //       ),
+                                      //     ),
+                                      //   ],
+                                      // ),
+                                      // SizedBox(width: 8),
+                                      // Column(
+                                      //   children: [
+                                      //     CircleAvatar(
+                                      //       backgroundImage: AssetImage("assets/images/progile.jpeg"),
+                                      //     ),
+                                      //     SizedBox(height: 6.h),
+                                      //     SizedBox(
+                                      //       width: 50.w,
+                                      //       child: Text(
+                                      //         'Dr. Darren Edder',
+                                      //         textAlign: TextAlign.center,
+                                      //         softWrap: true,
+                                      //         overflow: TextOverflow.ellipsis,
+                                      //         maxLines: 2,
+                                      //         style: TextStyle(
+                                      //           fontSize: 12.sp,
+                                      //           fontWeight: FontWeight.w500,
+                                      //         ),
+                                      //       ),
+                                      //     ),
+                                      //   ],
+                                      // ),
+                                    ],
+                                  ),
+                                ],
                               ),
-                            ),
-                            SizedBox(height: 8.h),
-                            Row(
-                              children: [
-                                Column(
-                                  children: [
-                                    CircleAvatar(
-                                      backgroundImage: AssetImage("assets/images/progile.jpeg"),
-                                    ),
-                                    SizedBox(height: 6.h),
-                                    SizedBox(
-                                      width: 50.w,
-                                      child: Text(
-                                        'Dr. Darren Edder',
-                                        textAlign: TextAlign.center,
-                                        softWrap: true,
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 2,
-                                        style: TextStyle(
-                                          fontSize: 12.sp,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(width: 8),
-                                Column(
-                                  children: [
-                                    CircleAvatar(
-                                      backgroundImage: AssetImage("assets/images/progile.jpeg"),
-                                    ),
-                                    SizedBox(height: 6.h),
-                                    SizedBox(
-                                      width: 50.w,
-                                      child: Text(
-                                        'Dr. Darren Edder',
-                                        textAlign: TextAlign.center,
-                                        softWrap: true,
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 2,
-                                        style: TextStyle(
-                                          fontSize: 12.sp,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(width: 8),
-                                Column(
-                                  children: [
-                                    CircleAvatar(
-                                      backgroundImage: AssetImage("assets/images/progile.jpeg"),
-                                    ),
-                                    SizedBox(height: 6.h),
-                                    SizedBox(
-                                      width: 50.w,
-                                      child: Text(
-                                        'Dr. Darren Edder',
-                                        textAlign: TextAlign.center,
-                                        softWrap: true,
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 2,
-                                        style: TextStyle(
-                                          fontSize: 12.sp,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
                             ),
                           ],
                         ),
-                      ),
-                    ],
-                  ),
                 ),
               ),
 
@@ -1468,247 +1495,245 @@ class _FacilityProfileScreenState extends State<FacilityProfileScreen> with Sing
               SingleChildScrollView(
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.w),
-                  child: Column(
-                    children: [
-                      Container(
-                        height: 144.w,
-                        clipBehavior: Clip.hardEdge,
-                        padding: EdgeInsets.symmetric(vertical: 15.w, horizontal: 15.w),
-                        margin: EdgeInsets.only(bottom: 10.w),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(5.w),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Color(0xC000000),
-                              blurRadius: 4.w,
-                              spreadRadius: 2.w,
-                            ),
-                          ],
-                        ),
-                        child: Hero(
-                          tag: "profile-1",
-                          child: Material(
-                            type: MaterialType.transparency,
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                //avi / rating
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    //avi
-                                    CircleAvatar(
-                                      radius: 32.w,
-                                      backgroundImage: AssetImage("assets/images/progile.jpeg"),
-                                    ),
-
-                                    SizedBox(height: 8.h),
-
-                                    //rating
-                                    Text(
-                                      '4.6/5',
-                                      style: TextStyle(
-                                        fontSize: 12.sp,
-                                        fontWeight: FontWeight.w600,
-                                        color: Color(0xffF06E20),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-
-                                SizedBox(width: 20.w),
-
-                                //details
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisSize: MainAxisSize.max,
+                  child: isLoading
+                      ? Container(height: 20.w, width: 20.w, child: CircularProgressIndicator())
+                      : Column(
+                          children: [
+                            Container(
+                              height: 144.w,
+                              clipBehavior: Clip.hardEdge,
+                              padding: EdgeInsets.symmetric(vertical: 15.w, horizontal: 15.w),
+                              margin: EdgeInsets.only(bottom: 10.w),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(5.w),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Color(0xC000000),
+                                    blurRadius: 4.w,
+                                    spreadRadius: 2.w,
+                                  ),
+                                ],
+                              ),
+                              child: Hero(
+                                tag: "profile-${practitionerModel.user.toString()}",
+                                child: Material(
+                                  type: MaterialType.transparency,
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      //name / verified / bookmark
-                                      Row(
-                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                      //avi / rating
+                                      Column(
+                                        mainAxisAlignment: MainAxisAlignment.start,
                                         children: [
-                                          //name
-                                          Text(
-                                            "surname",
-                                            style: TextStyle(
-                                              fontSize: 17.sp,
-                                              color: Color(0xff242424),
-                                            ),
+                                          //avi
+                                          CircleAvatar(
+                                            radius: 32.w,
+                                            backgroundImage: AssetImage("assets/images/progile.jpeg"),
                                           ),
-                                          SizedBox(width: 10.w),
 
-                                          //verified
-                                          // isVerified ?
-                                          VerifiedTag(),
-                                          // : Container(),
+                                          SizedBox(height: 8.h),
 
-                                          Spacer(),
-
-                                          //bookmark
-                                          BlocBuilder<SavedContactsCubit, SavedContactsState>(
-                                            builder: (context, state) {
-                                              if (state is SavedContactsSuccess) {
-                                                // final isSaved = state.savedContacts.contains("docIDTestThree" + '${practitionerModel.user.toString()}');
-                                                final isSaved = true;
-                                                return SizedBox(
-                                                  height: 20.w,
-                                                  width: 20.w,
-                                                  child: IconButton(
-                                                    padding: EdgeInsets.zero,
-                                                    visualDensity: VisualDensity.compact,
-                                                    icon: Icon(
-                                                      isSaved ? Icons.bookmark : Icons.bookmark_outline,
-                                                      size: 20.w,
-                                                      color: isSaved ? Color(0xff0e0e0e) : Color(0xff242424),
-                                                    ),
-                                                    onPressed: () async {
-                                                      setState(() {
-                                                        saveContactVal = !isSaved;
-                                                      });
-                                                      // context.read<SavedContactsCubit>()
-                                                      //   ..addRemoveContacts(saveContactVal, "docIDTestThree" + "${practitionerModel.user.toString()}");
-                                                    },
-                                                  ),
-                                                );
-                                              }
-                                              return IconButton(
-                                                padding: EdgeInsets.zero,
-                                                icon: Icon(
-                                                  Icons.bookmark_outline,
-                                                  size: 20.w,
-                                                  color: Color(0xff242424),
-                                                ),
-                                                onPressed: () async {},
-                                              );
-                                            },
+                                          //rating
+                                          Text(
+                                            '4.6/5',
+                                            style: TextStyle(
+                                              fontSize: 12.sp,
+                                              fontWeight: FontWeight.w600,
+                                              color: Color(0xffF06E20),
+                                            ),
                                           ),
                                         ],
                                       ),
 
-                                      //speciality
-                                      Text(
-                                        'null',
-                                        style: TextStyle(
-                                          fontSize: 14.sp,
-                                          color: Color(0xff242424),
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                      ),
+                                      SizedBox(width: 20.w),
 
-                                      //location / get directions
-                                      Row(
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
-                                          //location
-                                          Row(
-                                            children: [
-                                              Icon(
-                                                Icons.location_on,
-                                                size: 15.w,
-                                                color: Color(0xff1A5864),
+                                      //details
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.max,
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            //name / verified / bookmark
+                                            Row(
+                                              crossAxisAlignment: CrossAxisAlignment.center,
+                                              children: [
+                                                //name
+                                                Text(
+                                                  practitionerModel.surname,
+                                                  style: TextStyle(
+                                                    fontSize: 17.sp,
+                                                    color: Color(0xff242424),
+                                                  ),
+                                                ),
+                                                SizedBox(width: 10.w),
+
+                                                //verified
+                                                isVerified ? VerifiedTag() : Container(),
+
+                                                Spacer(),
+
+                                                //bookmark
+                                                BlocBuilder<SavedContactsCubit, SavedContactsState>(
+                                                  builder: (context, state) {
+                                                    if (state is SavedContactsSuccess) {
+                                                      final isSaved = state.savedContacts.contains("docIDTestThree" + '${practitionerModel.user.toString()}');
+                                                      return GestureDetector(
+                                                        child: Icon(
+                                                          isSaved ? Icons.bookmark : Icons.bookmark_outline,
+                                                          size: 20.w,
+                                                          color: isSaved ? Color(0xff0e0e0e) : Color(0xff242424),
+                                                        ),
+                                                        onTap: () async {
+                                                          setState(() {
+                                                            saveContactVal = !isSaved;
+                                                          });
+                                                          context.read<SavedContactsCubit>()
+                                                            ..addRemoveContacts(saveContactVal, "docIDTestThree" + "${practitionerModel.user.toString()}");
+                                                        },
+                                                      );
+                                                    }
+                                                    return Icon(
+                                                      Icons.bookmark_outline,
+                                                      size: 20.w,
+                                                      color: Color(0xff242424),
+                                                    );
+                                                  },
+                                                ),
+                                              ],
+                                            ),
+
+                                            //speciality
+                                            Text(
+                                              practitionerModel.healthInfo.speciality ?? "",
+                                              style: TextStyle(
+                                                fontSize: 14.sp,
+                                                color: Color(0xff242424),
+                                                fontWeight: FontWeight.w400,
                                               ),
-                                              SizedBox(
-                                                width: 150.w,
-                                                child: Text(
-                                                  " location + ', ' + region",
-                                                  overflow: TextOverflow.ellipsis,
+                                            ),
+
+                                            //location / get directions
+                                            Row(
+                                              crossAxisAlignment: CrossAxisAlignment.center,
+                                              children: [
+                                                //location
+                                                Row(
+                                                  children: [
+                                                    Icon(
+                                                      Icons.location_on,
+                                                      size: 15.w,
+                                                      color: Color(0xff1A5864),
+                                                    ),
+                                                    SizedBox(
+                                                      width: 150.w,
+                                                      child: Text(
+                                                        practitionerModel.location + ', ' + practitionerModel.region,
+                                                        overflow: TextOverflow.ellipsis,
+                                                        style: TextStyle(
+                                                          fontSize: 14.sp,
+                                                          color: Color(0xff242424),
+                                                          fontWeight: FontWeight.w400,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+
+                                                Spacer(),
+                                                //get directions
+                                                Text(
+                                                  'Get Directions',
                                                   style: TextStyle(
                                                     fontSize: 14.sp,
-                                                    color: Color(0xff242424),
-                                                    fontWeight: FontWeight.w400,
+                                                    color: Color(0xff1A5864),
+                                                    fontWeight: FontWeight.w500,
                                                   ),
                                                 ),
-                                              ),
-                                            ],
-                                          ),
-
-                                          Spacer(),
-                                          //get directions
-                                          Text(
-                                            'Get Directions',
-                                            style: TextStyle(
-                                              fontSize: 14.sp,
-                                              color: Color(0xff1A5864),
-                                              fontWeight: FontWeight.w500,
+                                              ],
                                             ),
-                                          ),
-                                        ],
-                                      ),
 
-                                      SizedBox(height: 4.h),
+                                            SizedBox(height: 4.h),
 
-                                      //view profile btn / book appointment btn
-                                      Row(
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
-                                          //view profile btn
-                                          TextButton(
-                                            child: Text(
-                                              'View Profile',
-                                              style: TextStyle(
-                                                color: Color(0xff1A5864),
-                                                fontSize: 15.sp,
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                            style: ButtonStyle(
-                                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                              minimumSize: MaterialStateProperty.all(Size(0, 0)),
-                                              padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 15.w, vertical: 6.h)),
-                                              shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(4.w),
-                                                side: BorderSide(
-                                                  color: Color(0xff1A5864),
-                                                  width: 1.w,
+                                            //view profile btn / book appointment btn
+                                            Row(
+                                              crossAxisAlignment: CrossAxisAlignment.center,
+                                              children: [
+                                                //view profile btn
+                                                TextButton(
+                                                  child: Text(
+                                                    'View Profile',
+                                                    style: TextStyle(
+                                                      color: Color(0xff1A5864),
+                                                      fontSize: 15.sp,
+                                                      fontWeight: FontWeight.w500,
+                                                    ),
+                                                  ),
+                                                  style: ButtonStyle(
+                                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                    minimumSize: MaterialStateProperty.all(Size(0, 0)),
+                                                    padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 15.w, vertical: 6.h)),
+                                                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                                                      borderRadius: BorderRadius.circular(4.w),
+                                                      side: BorderSide(
+                                                        color: Color(0xff1A5864),
+                                                        width: 1.w,
+                                                      ),
+                                                    )),
+                                                  ),
+                                                  onPressed: () {},
                                                 ),
-                                              )),
-                                            ),
-                                            onPressed: () {},
-                                          ),
 
-                                          Spacer(),
+                                                Spacer(),
 
-                                          //book appointment btn
-                                          TextButton(
-                                            child: Text(
-                                              'Book Appointment',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 15.sp,
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                            style: ButtonStyle(
-                                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                              backgroundColor: MaterialStateProperty.all(Color(0xff1A5864)),
-                                              minimumSize: MaterialStateProperty.all(Size(0, 0)),
-                                              padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 15.w, vertical: 6.h)),
-                                              shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(4.w),
-                                                side: BorderSide(
-                                                  color: Color(0xff1A5864),
-                                                  width: 1.w,
+                                                //book appointment btn
+                                                TextButton(
+                                                  child: Text(
+                                                    'Book Appointment',
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 15.sp,
+                                                      fontWeight: FontWeight.w500,
+                                                    ),
+                                                  ),
+                                                  style: ButtonStyle(
+                                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                    backgroundColor: MaterialStateProperty.all(Color(0xff1A5864)),
+                                                    minimumSize: MaterialStateProperty.all(Size(0, 0)),
+                                                    padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 15.w, vertical: 6.h)),
+                                                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                                                      borderRadius: BorderRadius.circular(4.w),
+                                                      side: BorderSide(
+                                                        color: Color(0xff1A5864),
+                                                        width: 1.w,
+                                                      ),
+                                                    )),
+                                                  ),
+                                                  onPressed: () {
+                                                    Navigator.of(context).push(
+                                                      MaterialPageRoute(builder: (BuildContext context) {
+                                                        return PractitionerProfileScreen(
+                                                          isVerified: isVerified,
+                                                          practitionerModel: practitionerModel,
+                                                        );
+                                                      }),
+                                                    );
+                                                  },
                                                 ),
-                                              )),
+                                              ],
                                             ),
-                                            onPressed: () {},
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
                                     ],
                                   ),
                                 ),
-                              ],
+                              ),
                             ),
-                          ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
                 ),
               ),
 

@@ -82,7 +82,7 @@ class _ChannelPageState extends State<ChannelPage> {
                 // video call
                 IconButton(
                   onPressed: () async {
-                    final streamDocDetail = await channel
+                    final streamProfile = await channel
                         .queryMembers(filter: {}).then((value) => value.members.firstWhere((e) => e.userId != StreamChat.of(context).user.id).user);
                     await showDialog(
                       context: context,
@@ -90,9 +90,9 @@ class _ChannelPageState extends State<ChannelPage> {
                         return StreamChannel(
                           channel: channel,
                           child: InitCallDialog(
-                            from: "chat",
+                            from: streamProfile.extraData["userCategory"] == "practitioner" ? "doc-chat" : 'facility-chat',
                             videoMuted: false,
-                            streamDocDetail: streamDocDetail,
+                            streamProfile: streamProfile,
                           ),
                         );
                       },
@@ -104,7 +104,7 @@ class _ChannelPageState extends State<ChannelPage> {
                 //audio call
                 IconButton(
                   onPressed: () async {
-                    final streamDocDetail = await channel
+                    final streamProfile = await channel
                         .queryMembers(filter: {}).then((value) => value.members.firstWhere((e) => e.userId != StreamChat.of(context).user.id).user);
                     await showDialog(
                       context: context,
@@ -112,9 +112,9 @@ class _ChannelPageState extends State<ChannelPage> {
                         return StreamChannel(
                           channel: channel,
                           child: InitCallDialog(
-                            from: "chat",
+                            from: streamProfile.extraData["userCategory"] == "practitioner" ? "doc-chat" : 'facility-chat',
                             videoMuted: true,
-                            streamDocDetail: streamDocDetail,
+                            streamProfile: streamProfile,
                           ),
                         );
                       },
@@ -126,11 +126,17 @@ class _ChannelPageState extends State<ChannelPage> {
                 // more details page
                 IconButton(
                   onPressed: () async {
+                    final streamProfile = await channel
+                        .queryMembers(filter: {}).then((value) => value.members.firstWhere((e) => e.userId != StreamChat.of(context).user.id).user);
+
+                    final userCategory = streamProfile.extraData['userCategory'];
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (ctx) => StreamChannel(
                           channel: channel,
-                          child: ChannelDetailsPage(),
+                          child: ChannelDetailsPage(
+                            userCategory: userCategory,
+                          ),
                         ),
                       ),
                     );

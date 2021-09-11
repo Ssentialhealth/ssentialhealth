@@ -4,9 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:pocket_health/bloc/list_facilities/list_facilities_cubit.dart';
 import 'package:pocket_health/bloc/list_facility_open_hours/list_facility_open_hours_cubit.dart';
-import 'package:pocket_health/bloc/saved_contacts/saved_contacts_cubit.dart';
+import 'package:pocket_health/bloc/saved_facility_contacts/saved_facility_contacts_cubit.dart';
 import 'package:pocket_health/models/facility_profile_model.dart';
-import 'package:pocket_health/models/practitioner_profile_model.dart';
 import 'package:pocket_health/utils/constants.dart';
 import 'package:pocket_health/widgets/verified_tag.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -264,10 +263,12 @@ class _FacilitiesListScreenState extends State<FacilitiesListScreen> {
                                             Spacer(),
 
                                             //bookmark
-                                            BlocBuilder<SavedContactsCubit, SavedContactsState>(
+                                            BlocBuilder<SavedFacilityContactsCubit, SavedFacilityContactsState>(
                                               builder: (context, state) {
-                                                if (state is SavedContactsSuccess) {
-                                                  final isSaved = state.savedContacts.contains("facilitySaveTest" + '${facilityProfileModel.id.toString()}');
+                                                if (state is SavedFacilityContactsSuccess) {
+                                                  final isSaved =
+                                                      state.savedFacilityContacts.contains("facilityIDTestThree" + '${facilityProfileModel.id.toString()}');
+
                                                   return GestureDetector(
                                                     child: Icon(
                                                       isSaved ? Icons.bookmark : Icons.bookmark_outline,
@@ -278,19 +279,15 @@ class _FacilitiesListScreenState extends State<FacilitiesListScreen> {
                                                       setState(() {
                                                         saveContactVal = !isSaved;
                                                       });
-                                                      // context.read<SavedContactsCubit>()
-                                                      //   ..addRemoveContacts(saveContactVal, "docIDTestThree" + "${practitionerModel.user.toString()}");
+                                                      context.read<SavedFacilityContactsCubit>()
+                                                        ..addRemoveContacts(saveContactVal, "facilityIDTestThree" + "${facilityProfileModel.id.toString()}");
                                                     },
                                                   );
                                                 }
-                                                return IconButton(
-                                                  padding: EdgeInsets.zero,
-                                                  icon: Icon(
-                                                    Icons.bookmark_outline,
-                                                    size: 20.w,
-                                                    color: Color(0xff242424),
-                                                  ),
-                                                  onPressed: () async {},
+                                                return Icon(
+                                                  Icons.bookmark_outline,
+                                                  size: 20.w,
+                                                  color: Color(0xff242424),
                                                 );
                                               },
                                             ),
@@ -412,28 +409,6 @@ class _FacilitiesListScreenState extends State<FacilitiesListScreen> {
       ),
     );
   }
-}
-
-bool checkVerification(PractitionerProfileModel docDetails) {
-  final bool isVerified = docDetails.phoneNumber != 'null' &&
-      docDetails.surname != '' &&
-      docDetails.user != null &&
-      docDetails.ratesInfo.followUpVisit.perVisit != null &&
-      docDetails.ratesInfo.followUpVisit.perHour != null &&
-      docDetails.ratesInfo.inPersonBooking.perVisit != null &&
-      docDetails.ratesInfo.inPersonBooking.perHour != null &&
-      docDetails.ratesInfo.onlineBooking.upto1Hour != null &&
-      docDetails.ratesInfo.onlineBooking.upto30Mins != null &&
-      docDetails.ratesInfo.onlineBooking.upto15Mins != null &&
-      docDetails.healthInfo.speciality != null &&
-      docDetails.healthInfo.practitioner != null &&
-      docDetails.healthInfo.healthInstitution != null &&
-      docDetails.healthInfo.careType != null &&
-      docDetails.healthInfo.affiliatedInstitution != null &&
-      docDetails.region != 'null' &&
-      docDetails.location != 'null' &&
-      docDetails.profileImgUrl != 'null';
-  return isVerified;
 }
 
 bool checkFacilityVerification(FacilityProfileModel facilityDetails) {

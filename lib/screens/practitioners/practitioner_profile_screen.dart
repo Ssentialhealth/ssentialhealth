@@ -536,7 +536,7 @@ class _PractitionerProfileScreenState extends State<PractitionerProfileScreen> w
                                       context: context,
                                       builder: (dialogContext) {
                                         return InitCallDialog(
-                                          from: "profile",
+                                          from: "doc-profile",
                                           videoMuted: false,
                                           docDetail: widget.practitionerModel,
                                           isVerified: widget.isVerified,

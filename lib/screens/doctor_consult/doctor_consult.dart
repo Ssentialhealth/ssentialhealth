@@ -2,10 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pocket_health/bloc/list_facilities/list_facilities_cubit.dart';
 import 'package:pocket_health/bloc/list_practitioners/list_practitioners_cubit.dart';
 import 'package:pocket_health/bloc/login/loginBloc.dart';
 import 'package:pocket_health/bloc/login/loginState.dart';
 import 'package:pocket_health/bloc/saved_contacts/saved_contacts_cubit.dart';
+import 'package:pocket_health/bloc/saved_facility_contacts/saved_facility_contacts_cubit.dart';
 import 'package:pocket_health/screens/doctor_consult/saved/saved_list.dart';
 import 'package:pocket_health/utils/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -233,8 +235,10 @@ class _DoctorConsultState extends State<DoctorConsult> with SingleTickerProvider
                                 isScrollable: false,
                                 onTap: (idx) async {
                                   if (idx == 2) {
-                                    context.read<SavedContactsCubit>()..fetchContacts();
+	                                  context.read<SavedContactsCubit>()..fetchContacts();
+                                    context.read<SavedFacilityContactsCubit>()..fetchContacts();
                                     context.read<ListPractitionersCubit>()..listPractitioners();
+                                    context.read<ListFacilitiesCubit>()..listFacilities();
                                   }
                                 },
                                 overlayColor: MaterialStateProperty.all(Colors.white),

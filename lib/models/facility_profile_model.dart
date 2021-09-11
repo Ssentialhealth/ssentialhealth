@@ -1,12 +1,15 @@
 import 'dart:convert';
 
-List<FacilityProfileModel> facilityProfileModelFromJson(String str) =>
+List<FacilityProfileModel> facilityProfileModelListFromJson(String str) =>
     List<FacilityProfileModel>.from(json.decode(str).map((x) => FacilityProfileModel.fromJson(x)));
+
+FacilityProfileModel facilityProfileModelFromJson(String str) => FacilityProfileModel.fromJson(json.decode(str));
 
 String facilityProfileModelToJson(List<FacilityProfileModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class FacilityProfileModel {
   int id;
+  int profile;
   String facilityName;
   String facilityType;
   String overview;
@@ -17,20 +20,23 @@ class FacilityProfileModel {
   String profileImgUrl;
   String coverImgUrl;
 
-  FacilityProfileModel(
-      {this.id,
-      this.facilityName,
-      this.facilityType,
-      this.overview,
-      this.country,
-      this.available,
-      this.location,
-      this.phoneNumber,
-      this.profileImgUrl,
-      this.coverImgUrl});
+  FacilityProfileModel({
+    this.id,
+    this.profile,
+    this.facilityName,
+    this.facilityType,
+    this.overview,
+    this.country,
+    this.available,
+    this.location,
+    this.phoneNumber,
+    this.profileImgUrl,
+    this.coverImgUrl,
+  });
 
   FacilityProfileModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
+    profile = json['profile'];
     facilityName = json['facility_name'];
     facilityType = json['facility_type'];
     overview = json['overview'];
@@ -45,6 +51,7 @@ class FacilityProfileModel {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
+    data['profile'] = this.profile;
     data['facility_name'] = this.facilityName;
     data['facility_type'] = this.facilityType;
     data['overview'] = this.overview;

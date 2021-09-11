@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pocket_health/bloc/saved_contacts/saved_contacts_cubit.dart';
+import 'package:pocket_health/bloc/saved_facility_contacts/saved_facility_contacts_cubit.dart';
 import 'package:pocket_health/screens/doctor_consult/chat/search_messages_builder.dart';
 import 'package:pocket_health/screens/home/home.dart';
 import 'package:pocket_health/screens/practitioners/filter_title.dart';
@@ -10,14 +11,18 @@ import 'package:pocket_health/utils/constants.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 class ChannelDetailsPage extends StatefulWidget {
+  final String userCategory;
+
+  const ChannelDetailsPage({Key key, this.userCategory}) : super(key: key);
+
   @override
   _ChannelDetailsPageState createState() => _ChannelDetailsPageState();
 }
 
 class _ChannelDetailsPageState extends State<ChannelDetailsPage> {
   bool saveContactVal = false;
+  bool saveFacilityContactVal = false;
   bool newMutedVal;
-
   bool isFetching = false;
   List<String> attachments = [];
   String otherUserID;
@@ -304,60 +309,98 @@ class _ChannelDetailsPageState extends State<ChannelDetailsPage> {
 
                     Divider(height: 1, thickness: 1.r, color: Color(0xffB3B3B3)),
 
-                    //save contact
-                    BlocBuilder<SavedContactsCubit, SavedContactsState>(
-                      builder: (context, state) {
-                        if (state is SavedContactsSuccess) {
-                          return SwitchListTile(
-                            value: state.savedContacts.contains('${channel.id}') ?? false,
-                            isThreeLine: false,
-                            contentPadding: EdgeInsets.symmetric(horizontal: 20.r),
-                            dense: true,
-                            onChanged: (val) async {
-                              setState(() {
-                                saveContactVal = val;
-                              });
-                              context.read<SavedContactsCubit>()..addRemoveContacts(saveContactVal, "$otherUserID");
+                    widget.userCategory == "practitioner"
+                        ? BlocBuilder<SavedContactsCubit, SavedContactsState>(
+                            builder: (context, state) {
+                              if (state is SavedContactsSuccess) {
+                                return SwitchListTile(
+                                  value: state.savedContacts.contains('${channel.id}') ?? false,
+                                  isThreeLine: false,
+                                  contentPadding: EdgeInsets.symmetric(horizontal: 20.r),
+                                  dense: true,
+                                  onChanged: (val) async {
+                                    setState(() {
+                                      saveContactVal = val;
+                                    });
+                                    context.read<SavedContactsCubit>()..addRemoveContacts(saveContactVal, "$otherUserID");
+                                  },
+                                  tileColor: Colors.white,
+                                  title: Text(
+                                    'Save Contact',
+                                    style: listTileTitleStyle,
+                                  ),
+                                );
+                              }
+                              return SwitchListTile(
+                                value: saveContactVal,
+                                isThreeLine: false,
+                                contentPadding: EdgeInsets.symmetric(horizontal: 20.r),
+                                dense: true,
+                                onChanged: (val) async {},
+                                tileColor: Colors.white,
+                                title: Text(
+                                  'Save Contact',
+                                  style: listTileTitleStyle,
+                                ),
+                              );
                             },
-                            tileColor: Colors.white,
-                            title: Text(
-                              'Save Contact',
-                              style: listTileTitleStyle,
-                            ),
-                          );
-                        }
-                        return SwitchListTile(
-                          value: saveContactVal,
-                          isThreeLine: false,
-                          contentPadding: EdgeInsets.symmetric(horizontal: 20.r),
-                          dense: true,
-                          onChanged: (val) async {},
-                          tileColor: Colors.white,
-                          title: Text(
-                            'Save Contact',
-                            style: listTileTitleStyle,
+                          )
+                        : BlocBuilder<SavedFacilityContactsCubit, SavedFacilityContactsState>(
+                            builder: (context, state) {
+                              if (state is SavedFacilityContactsSuccess) {
+                                return SwitchListTile(
+                                  value: state.savedFacilityContacts.contains('${channel.id}') ?? false,
+                                  isThreeLine: false,
+                                  contentPadding: EdgeInsets.symmetric(horizontal: 20.r),
+                                  dense: true,
+                                  onChanged: (val) async {
+                                    setState(() {
+                                      saveFacilityContactVal = val;
+                                    });
+                                    context.read<SavedFacilityContactsCubit>()..addRemoveContacts(saveFacilityContactVal, "$otherUserID");
+                                  },
+                                  tileColor: Colors.white,
+                                  title: Text(
+                                    'Save Contact',
+                                    style: listTileTitleStyle,
+                                  ),
+                                );
+                              }
+                              return SwitchListTile(
+                                value: saveFacilityContactVal,
+                                isThreeLine: false,
+                                contentPadding: EdgeInsets.symmetric(horizontal: 20.r),
+                                dense: true,
+                                onChanged: (val) async {},
+                                tileColor: Colors.white,
+                                title: Text(
+                                  'Save Contact',
+                                  style: listTileTitleStyle,
+                                ),
+                              );
+                            },
                           ),
-                        );
-                      },
-                    ),
-                    Divider(height: 1, thickness: 1.r, color: Color(0xffB3B3B3)),
+
+                    SizedBox(height: 10.h),
+
+                    // Divider(height: 1, thickness: 1.r, color: Color(0xffB3B3B3)),
 
                     //block contact
-                    Padding(
-                      padding: EdgeInsets.only(left: 20.w),
-                      child: RawMaterialButton(
-                        onPressed: () {},
-                        elevation: 0.0,
-                        fillColor: accentColorLight,
-                        child: Text(
-                          'Block Contact',
-                          style: TextStyle(
-                            color: Colors.red,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
+                    // Padding(
+                    //   padding: EdgeInsets.only(left: 20.w),
+                    //   child: RawMaterialButton(
+                    //     onPressed: () {},
+                    //     elevation: 0.0,
+                    //     fillColor: accentColorLight,
+                    //     child: Text(
+                    //       'Block Contact',
+                    //       style: TextStyle(
+                    //         color: Colors.red,
+                    //         fontWeight: FontWeight.w600,
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
         ),
