@@ -18,6 +18,7 @@ class _FacilitiesCategoriesScreenState extends State<FacilitiesCategoriesScreen>
   bool isAgreed = false;
 
   final List<String> facilitiesCategories = [
+    "All",
     "Hospitals",
     "Clinics",
     "Pharmacies",
@@ -25,7 +26,6 @@ class _FacilitiesCategoriesScreenState extends State<FacilitiesCategoriesScreen>
     "Imaging Centres",
     "Rehabilitation & Physiotherapy",
     "Hospice",
-    "Others",
   ];
 
   Future<String> getStringValuesSF() async {
@@ -92,16 +92,11 @@ class _FacilitiesCategoriesScreenState extends State<FacilitiesCategoriesScreen>
                   height: 110.h,
                   width: 1.sw,
                 ),
-                Positioned(
-                  left: -45.w,
-                  top: -47.h,
-                  child: Container(
-                    width: 460.w,
-                    height: 167.h,
-                    child: Image(
-                      fit: BoxFit.fitWidth,
-                      image: AssetImage('assets/images/practitioners_banner.png'),
-                    ),
+                Container(
+                  width: 1.sw,
+                  child: Image(
+                    fit: BoxFit.fitWidth,
+                    image: AssetImage('assets/images/facilities_banner.png'),
                   ),
                 ),
               ],
@@ -127,7 +122,7 @@ class _FacilitiesCategoriesScreenState extends State<FacilitiesCategoriesScreen>
                     ),
                     onTap: () {
                       final facilitiesCategory = facilitiesCategories[index];
-                      context.read<ListFacilitiesCubit>()..listFacilities();
+                      context.read<ListFacilitiesCubit>()..listFacilities(facilitiesCategory);
                       //push practitioner listing for each category
                       Navigator.of(context).push(
                         MaterialPageRoute(

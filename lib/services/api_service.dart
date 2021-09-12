@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:math' as math;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -598,11 +599,59 @@ class ApiService {
     return filtered;
   }
 
+  Future<List<FacilityProfileModel>> fetchFilteredFacilities({
+    @required String filterByDistance,
+    @required String filterByPrice,
+    @required String sortByNearest,
+    @required String filterByAvailability,
+    @required String sortByHighestRated,
+    @required String sortByCheapest,
+    @required String filterBySpeciality,
+    @required String filterByFacilityType,
+    @required String filterByCountry,
+  }) async {
+    _token = await getStringValuesSF();
+    final country = filterByCountry == "null" || filterByCountry == null ? "country=" : "country=" + filterByCountry + "&";
+    final availability = filterByAvailability == "null" || filterByAvailability == null ? "available=" : "available=" + filterByAvailability;
+    final base = "https://ssential.herokuapp.com/api/HealthFacility/?";
+    print('--------|url|--------|value -> ${(base + country + availability).toString()}');
+    final response = await this.httpClient.get(
+      base + country + availability,
+      headers: {
+        "Authorization": "Bearer " + _token,
+      },
+    );
+
+    if (response.statusCode != 200) {
+      print('--------|reasonPhrase|--------|value -> ${response.reasonPhrase.toString()}');
+      throw Exception("error fetching facility");
+    }
+
+    final allFacilities = facilityProfileModelListFromJson(response.body);
+    if (sortByCheapest == "true") {
+      final fetched = await this.fetchFacilityHourlyRate();
+      final fetchedSecond = await this.fetchFacilityHourlyRate();
+      var rate = int.parse(fetched.split(".").first);
+      var rateSecond = int.parse(fetchedSecond.split(".").first);
+      allFacilities.sort((a, b) {
+        rate = a.id;
+        rateSecond = b.id;
+        return rate.compareTo(rateSecond);
+      });
+      print("sorted");
+      return allFacilities;
+    }
+    return allFacilities;
+  }
+
   //facilities
-  Future<List<FacilityProfileModel>> fetchFacilities() async {
+  Future<List<FacilityProfileModel>> fetchFacilities(filterByFacilityType) async {
+    final facilityType = filterByFacilityType == "null" || filterByFacilityType == null || filterByFacilityType == "All"
+        ? "facility_type="
+        : "facility_type=" + filterByFacilityType;
     _token = await getStringValuesSF();
     final response = await this.httpClient.get(
-      "https://ssential.herokuapp.com/api/HealthFacility/",
+      "https://ssential.herokuapp.com/api/HealthFacility/?$facilityType",
       headers: {
         "Authorization": "Bearer " + _token,
       },
@@ -617,8 +666,11 @@ class ApiService {
   Future<String> fetchFacilityHourlyRate() async {
     final _token = await getStringValuesSF();
     print('--------|token|--------|value -> ${_token.toString()}');
+    final random = math.Random().nextInt(4);
+    final rateIndex = random == 0 ? 1 : random;
+    print(random);
     final response = await this.httpClient.get(
-      "https://ssential.herokuapp.com/api/HealthFacility/OnlineBookingrates/1/",
+      "https://ssential.herokuapp.com/api/HealthFacility/OnlineBookingrates/$rateIndex/",
       headers: {"Authorization": "Bearer " + _token, "Content-Type": "application/json"},
     );
     if (response.statusCode != 200) {

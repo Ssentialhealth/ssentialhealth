@@ -32,6 +32,8 @@ class _FacilitiesListScreenState extends State<FacilitiesListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print('--------|category|--------|value -> ${widget.facilitiesCategory.toString()}');
+
     return Scaffold(
       backgroundColor: Color(0xffE7FFFF),
       appBar: AppBar(
@@ -63,14 +65,14 @@ class _FacilitiesListScreenState extends State<FacilitiesListScreen> {
                             filterByName = val.toLowerCase();
                           });
                           SharedPreferences prefs = await SharedPreferences.getInstance();
-                          await prefs.setString('filterByName', val);
+                          await prefs.setString('filterFacilitiesByName', val);
                         },
                         decoration: InputDecoration(
                           fillColor: Colors.white,
                           filled: true,
                           focusColor: Colors.white,
                           contentPadding: EdgeInsets.all(10.0.w),
-                          hintText: "Search for doctor",
+                          hintText: "Search for ${widget.facilitiesCategory}",
                           prefixIcon: Icon(
                             Icons.search,
                             color: Colors.grey,
@@ -125,15 +127,14 @@ class _FacilitiesListScreenState extends State<FacilitiesListScreen> {
                     ],
                   ),
                   onPressed: () async {
-                    // SharedPreferences prefs = await SharedPreferences.getInstance();
-                    // prefs.containsKey('filterByPrice') ? prefs.remove('filterByPrice') : null;
-                    // prefs.containsKey('filterByDistance') ? prefs.remove('filterByDistance') : null;
-                    // prefs.containsKey('filterByCountry') ? prefs.remove('filterByCountry') : null;
-                    // prefs.containsKey('sortByCheapest') ? prefs.remove('sortByCheapest') : null;
-                    // prefs.containsKey('filterByAvailability') ? prefs.remove('filterByAvailability') : null;
-                    // prefs.containsKey('sortByNearest') ? prefs.remove('sortByNearest') : null;
-                    // prefs.containsKey('filterBySpeciality') ? prefs.remove('filterBySpeciality') : null;
-                    // test();
+                    SharedPreferences prefs = await SharedPreferences.getInstance();
+                    prefs.containsKey('filterFacilityByPrice') ? prefs.remove('filterFacilityByPrice') : null;
+                    prefs.containsKey('filterFacilityByDistance') ? prefs.remove('filterFacilityByDistance') : null;
+                    prefs.containsKey('filterFacilityByCountry') ? prefs.remove('filterFacilityByCountry') : null;
+                    prefs.containsKey('sortFacilityByCheapest') ? prefs.remove('sortFacilityByCheapest') : null;
+                    prefs.containsKey('filterFacilityByAvailability') ? prefs.remove('filterFacilityByAvailability') : null;
+                    prefs.containsKey('sortFacilityByNearest') ? prefs.remove('sortFacilityByNearest') : null;
+                    prefs.containsKey('filterFacilityBySpeciality') ? prefs.remove('filterFacilityBySpeciality') : null;
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (BuildContext context) {
@@ -164,11 +165,15 @@ class _FacilitiesListScreenState extends State<FacilitiesListScreen> {
                 if (state is ListFacilitiesSuccess) {
                   return ListView.builder(
                     physics: NeverScrollableScrollPhysics(),
-                    itemCount: state.facilityProfiles.length,
+                    itemCount: filterByName != null
+                        ? state.facilityProfiles.where((element) => (element.facilityName.toLowerCase().contains(filterByName.toLowerCase()))).length
+                        : state.facilityProfiles.length,
                     shrinkWrap: true,
                     padding: EdgeInsets.zero,
                     itemBuilder: (context, index) {
-                      final FacilityProfileModel facilityProfileModel = state.facilityProfiles[index];
+                      final FacilityProfileModel facilityProfileModel = filterByName != null
+                          ? state.facilityProfiles.where((element) => (element.facilityName.toLowerCase().contains(filterByName.toLowerCase()))).toList()[index]
+                          : state.facilityProfiles[index];
                       final facilityName = facilityProfileModel.facilityName;
                       final facilityLocation = facilityProfileModel.location;
                       final facilityProfileUrl = facilityProfileModel.profileImgUrl;
@@ -267,7 +272,7 @@ class _FacilitiesListScreenState extends State<FacilitiesListScreen> {
                                               builder: (context, state) {
                                                 if (state is SavedFacilityContactsSuccess) {
                                                   final isSaved =
-                                                      state.savedFacilityContacts.contains("facilityIDTestThree" + '${facilityProfileModel.id.toString()}');
+                                                  state.savedFacilityContacts.contains("facilityIDTestThree" + '${facilityProfileModel.id.toString()}');
 
                                                   return GestureDetector(
                                                     child: Icon(

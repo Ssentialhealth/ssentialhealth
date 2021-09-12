@@ -238,7 +238,7 @@ class _DoctorConsultState extends State<DoctorConsult> with SingleTickerProvider
 	                                  context.read<SavedContactsCubit>()..fetchContacts();
                                     context.read<SavedFacilityContactsCubit>()..fetchContacts();
                                     context.read<ListPractitionersCubit>()..listPractitioners();
-                                    context.read<ListFacilitiesCubit>()..listFacilities();
+                                    context.read<ListFacilitiesCubit>()..listFacilities("");
                                   }
                                 },
                                 overlayColor: MaterialStateProperty.all(Colors.white),
