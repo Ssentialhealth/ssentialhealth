@@ -31,7 +31,8 @@ class SavedList extends StatefulWidget {
 }
 
 class _SavedListState extends State<SavedList> {
-	String searchText = '';
+  String searchText = '';
+  String searchFacilityText = '';
 
   bool showFacilities = false;
 
@@ -63,7 +64,7 @@ class _SavedListState extends State<SavedList> {
                         });
 
                         final queriedDocsFacilities =
-                            facilityDetailsSaved?.where((element) => element.facilityName?.toLowerCase()?.contains(searchText))?.toList();
+                            facilityDetailsSaved?.where((element) => element.facilityName?.toLowerCase()?.contains(searchFacilityText))?.toList();
                         return BlocConsumer<InitializeStreamChatCubit, InitializeStreamChatState>(
                           listener: (context, streamState) {
                             if (streamState is StreamChannelSuccess) {
@@ -141,10 +142,12 @@ class _SavedListState extends State<SavedList> {
                           },
                           builder: (context, streamState) {
                             if (streamState is StreamChannelLoading) {
-                              return Container(
-                                color: Colors.purple,
-                                height: 100,
-                                width: 1.sw,
+                              return Center(
+                                child: Container(
+                                  height: 20.w,
+                                  width: 20.w,
+                                  child: CircularProgressIndicator(),
+                                ),
                               );
                             }
 
@@ -184,6 +187,8 @@ class _SavedListState extends State<SavedList> {
                                           onPressed: () {
                                             setState(() {
                                               showFacilities = false;
+                                              searchFacilityText = "";
+                                              searchText = "";
                                             });
                                           },
                                         ),
@@ -204,6 +209,8 @@ class _SavedListState extends State<SavedList> {
                                           onPressed: () {
                                             setState(() {
                                               showFacilities = true;
+                                              searchFacilityText = "";
+                                              searchText = "";
                                             });
                                           },
                                         ),
@@ -223,10 +230,7 @@ class _SavedListState extends State<SavedList> {
                                       cursorColor: Colors.grey,
                                       onChanged: (val) async {
                                         setState(() {
-                                          searchText = val.toLowerCase();
-                                        });
-                                        setState(() {
-                                          searchText = val.toLowerCase();
+                                          searchFacilityText = val.toLowerCase();
                                         });
                                       },
                                       decoration: InputDecoration(
@@ -263,11 +267,11 @@ class _SavedListState extends State<SavedList> {
                                 //listview
                                 ListView.builder(
                                   physics: NeverScrollableScrollPhysics(),
-                                  itemCount: searchText.isEmpty ? facilityDetailsSaved.length : queriedDocsFacilities.length,
+                                  itemCount: searchFacilityText.isEmpty ? facilityDetailsSaved.length : queriedDocsFacilities.length,
                                   shrinkWrap: true,
                                   itemBuilder: (context, index) {
                                     print('--------|docsnewlength|--------|value -> ${facilityDetailsSaved.length.toString()}');
-                                    final facilityDetail = searchText.isEmpty
+                                    final facilityDetail = searchFacilityText.isEmpty
                                         ? facilityDetailsSaved[index] ?? FacilityProfileModel()
                                         : queriedDocsFacilities[index] ?? FacilityProfileModel();
                                     final isVerified = checkFacilityVerification(facilityDetail);
@@ -339,10 +343,14 @@ class _SavedListState extends State<SavedList> {
                                                           size: 22.sp,
                                                           color: accentColorDark,
                                                         ),
-                                                        onPressed: () {
+                                                        onPressed: () async {
+                                                          final apiService = ApiService(http.Client());
+                                                          final hourlyRate = await apiService.fetchFacilityHourlyRate();
+                                                          final facilityHourlyRate = int.parse(hourlyRate.split(".").first);
+
                                                           context
                                                               .read<InitializeStreamChatCubit>()
-                                                              .initializeFacilityChannel(userID, facilityDetail, userCategory, isVerified);
+                                                              .initializeFacilityChannel(userID, facilityDetail, userCategory, isVerified, facilityHourlyRate);
                                                         },
                                                       );
                                                     },
@@ -605,6 +613,8 @@ class _SavedListState extends State<SavedList> {
                                           onPressed: () {
                                             setState(() {
                                               showFacilities = false;
+                                              searchFacilityText = "";
+                                              searchText = "";
                                             });
                                           },
                                         ),
@@ -625,6 +635,8 @@ class _SavedListState extends State<SavedList> {
                                           onPressed: () {
                                             setState(() {
                                               showFacilities = true;
+                                              searchFacilityText = "";
+                                              searchText = "";
                                             });
                                           },
                                         ),
@@ -646,16 +658,13 @@ class _SavedListState extends State<SavedList> {
                                         setState(() {
                                           searchText = val.toLowerCase();
                                         });
-                                        setState(() {
-                                          searchText = val.toLowerCase();
-                                        });
                                       },
                                       decoration: InputDecoration(
                                         fillColor: accentColorLight,
                                         filled: true,
                                         focusColor: accentColorLight,
                                         contentPadding: EdgeInsets.all(10.0.w),
-                                        hintText: "Search for facilities",
+                                        hintText: "Search for doctors",
                                         prefixIcon: Icon(
                                           Icons.search,
                                           color: Colors.black,

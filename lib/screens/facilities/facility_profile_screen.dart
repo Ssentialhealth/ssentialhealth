@@ -22,6 +22,7 @@ import 'package:pocket_health/screens/doctor_consult/call/init_call_dialog.dart'
 import 'package:pocket_health/screens/doctor_consult/chat/channel_page.dart';
 import 'package:pocket_health/screens/facilities/sort_facility_reviews_row.dart';
 import 'package:pocket_health/screens/facilities/write_facility_review_dialog.dart';
+import 'package:pocket_health/screens/practitioners/appointments/book_appointment_screen.dart';
 import 'package:pocket_health/screens/practitioners/practitioner_profile_screen.dart';
 import 'package:pocket_health/screens/practitioners/practitioners_list_screen.dart';
 import 'package:pocket_health/services/api_service.dart';
@@ -513,10 +514,14 @@ class _FacilityProfileScreenState extends State<FacilityProfileScreen> with Sing
                                             ),
                                           )),
                                         ),
-                                        onPressed: () {
+                                        onPressed: () async {
+                                          final apiService = ApiService(http.Client());
+                                          final hourlyRate = await apiService.fetchFacilityHourlyRate();
+                                          final facilityHourlyRate = int.parse(hourlyRate.split(".").first);
+
                                           context
                                               .read<InitializeStreamChatCubit>()
-                                              .initializeFacilityChannel(userID, facility, userCategory, widget.isVerified);
+                                              .initializeFacilityChannel(userID, facility, userCategory, widget.isVerified, facilityHourlyRate);
                                         },
                                       );
                                     },
@@ -1434,77 +1439,89 @@ class _FacilityProfileScreenState extends State<FacilityProfileScreen> with Sing
                                     ),
                                   ),
                                   SizedBox(height: 8.h),
-                                  Row(
-                                    children: [
-                                      Column(
-                                        children: [
-                                          CircleAvatar(
-                                            backgroundImage: AssetImage("assets/images/progile.jpeg"),
-                                          ),
-                                          SizedBox(height: 6.h),
-                                          SizedBox(
-                                            width: 50.w,
-                                            child: Text(
-                                              practitionerModel.surname,
-                                              textAlign: TextAlign.center,
-                                              softWrap: true,
-                                              overflow: TextOverflow.ellipsis,
-                                              maxLines: 2,
-                                              style: TextStyle(
-                                                fontSize: 12.sp,
-                                                fontWeight: FontWeight.w500,
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(builder: (BuildContext context) {
+                                          return PractitionerProfileScreen(
+                                            isVerified: isVerified,
+                                            practitionerModel: practitionerModel,
+                                          );
+                                        }),
+                                      );
+                                    },
+                                    child: Row(
+                                      children: [
+                                        Column(
+                                          children: [
+                                            CircleAvatar(
+                                              backgroundImage: AssetImage("assets/images/progile.jpeg"),
+                                            ),
+                                            SizedBox(height: 6.h),
+                                            SizedBox(
+                                              width: 50.w,
+                                              child: Text(
+                                                practitionerModel.surname,
+                                                textAlign: TextAlign.center,
+                                                softWrap: true,
+                                                overflow: TextOverflow.ellipsis,
+                                                maxLines: 2,
+                                                style: TextStyle(
+                                                  fontSize: 12.sp,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                      // SizedBox(width: 8),
-                                      // Column(
-                                      //   children: [
-                                      //     CircleAvatar(
-                                      //       backgroundImage: AssetImage("assets/images/progile.jpeg"),
-                                      //     ),
-                                      //     SizedBox(height: 6.h),
-                                      //     SizedBox(
-                                      //       width: 50.w,
-                                      //       child: Text(
-                                      //         'Dr. Darren Edder',
-                                      //         textAlign: TextAlign.center,
-                                      //         softWrap: true,
-                                      //         overflow: TextOverflow.ellipsis,
-                                      //         maxLines: 2,
-                                      //         style: TextStyle(
-                                      //           fontSize: 12.sp,
-                                      //           fontWeight: FontWeight.w500,
-                                      //         ),
-                                      //       ),
-                                      //     ),
-                                      //   ],
-                                      // ),
-                                      // SizedBox(width: 8),
-                                      // Column(
-                                      //   children: [
-                                      //     CircleAvatar(
-                                      //       backgroundImage: AssetImage("assets/images/progile.jpeg"),
-                                      //     ),
-                                      //     SizedBox(height: 6.h),
-                                      //     SizedBox(
-                                      //       width: 50.w,
-                                      //       child: Text(
-                                      //         'Dr. Darren Edder',
-                                      //         textAlign: TextAlign.center,
-                                      //         softWrap: true,
-                                      //         overflow: TextOverflow.ellipsis,
-                                      //         maxLines: 2,
-                                      //         style: TextStyle(
-                                      //           fontSize: 12.sp,
-                                      //           fontWeight: FontWeight.w500,
-                                      //         ),
-                                      //       ),
-                                      //     ),
-                                      //   ],
-                                      // ),
-                                    ],
+                                          ],
+                                        ),
+                                        // SizedBox(width: 8),
+                                        // Column(
+                                        //   children: [
+                                        //     CircleAvatar(
+                                        //       backgroundImage: AssetImage("assets/images/progile.jpeg"),
+                                        //     ),
+                                        //     SizedBox(height: 6.h),
+                                        //     SizedBox(
+                                        //       width: 50.w,
+                                        //       child: Text(
+                                        //         'Dr. Darren Edder',
+                                        //         textAlign: TextAlign.center,
+                                        //         softWrap: true,
+                                        //         overflow: TextOverflow.ellipsis,
+                                        //         maxLines: 2,
+                                        //         style: TextStyle(
+                                        //           fontSize: 12.sp,
+                                        //           fontWeight: FontWeight.w500,
+                                        //         ),
+                                        //       ),
+                                        //     ),
+                                        //   ],
+                                        // ),
+                                        // SizedBox(width: 8),
+                                        // Column(
+                                        //   children: [
+                                        //     CircleAvatar(
+                                        //       backgroundImage: AssetImage("assets/images/progile.jpeg"),
+                                        //     ),
+                                        //     SizedBox(height: 6.h),
+                                        //     SizedBox(
+                                        //       width: 50.w,
+                                        //       child: Text(
+                                        //         'Dr. Darren Edder',
+                                        //         textAlign: TextAlign.center,
+                                        //         softWrap: true,
+                                        //         overflow: TextOverflow.ellipsis,
+                                        //         maxLines: 2,
+                                        //         style: TextStyle(
+                                        //           fontSize: 12.sp,
+                                        //           fontWeight: FontWeight.w500,
+                                        //         ),
+                                        //       ),
+                                        //     ),
+                                        //   ],
+                                        // ),
+                                      ],
+                                    ),
                                   ),
                                 ],
                               ),
@@ -1514,7 +1531,7 @@ class _FacilityProfileScreenState extends State<FacilityProfileScreen> with Sing
                 ),
               ),
 
-              //departments
+	            //doctors
               SingleChildScrollView(
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.w),
@@ -1706,7 +1723,16 @@ class _FacilityProfileScreenState extends State<FacilityProfileScreen> with Sing
                                                       ),
                                                     )),
                                                   ),
-                                                  onPressed: () {},
+                                                  onPressed: () {
+                                                    Navigator.of(context).push(
+                                                      MaterialPageRoute(builder: (BuildContext context) {
+                                                        return PractitionerProfileScreen(
+                                                          isVerified: isVerified,
+                                                          practitionerModel: practitionerModel,
+                                                        );
+                                                      }),
+                                                    );
+                                                  },
                                                 ),
 
                                                 Spacer(),
@@ -1737,8 +1763,8 @@ class _FacilityProfileScreenState extends State<FacilityProfileScreen> with Sing
                                                   onPressed: () {
                                                     Navigator.of(context).push(
                                                       MaterialPageRoute(builder: (BuildContext context) {
-                                                        return PractitionerProfileScreen(
-                                                          isVerified: isVerified,
+                                                        return BookAppointmentScreen(
+                                                          userID: 5,
                                                           practitionerModel: practitionerModel,
                                                         );
                                                       }),

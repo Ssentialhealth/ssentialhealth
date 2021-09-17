@@ -42,6 +42,7 @@ class CallsList extends StatefulWidget {
 
 class _CallsListState extends State<CallsList> with SingleTickerProviderStateMixin {
   String searchText = "";
+  String searchFacilityText = "";
 
   bool showFacilities = false;
   TabController _tabController;
@@ -87,7 +88,8 @@ class _CallsListState extends State<CallsList> with SingleTickerProviderStateMix
                       if (historyState is FetchFacilityCallHistorySuccess) {
                         final allFacilitiesCalled = historyState.allFacilitiesCalled;
                         final allCallHistory = historyState.allCallHistory;
-                        final queriedFacilities = allFacilitiesCalled?.where((element) => element?.facilityName?.toLowerCase()?.contains(searchText))?.toList();
+                        final queriedFacilities =
+                            allFacilitiesCalled?.where((element) => element?.facilityName?.toLowerCase()?.contains(searchFacilityText))?.toList();
                         List<FacilityCallHistoryModel> queriedHistory = [];
                         return BlocConsumer<InitializeStreamChatCubit, InitializeStreamChatState>(
                           listener: (context, streamState) {
@@ -249,6 +251,8 @@ class _CallsListState extends State<CallsList> with SingleTickerProviderStateMix
                                           onPressed: () {
                                             setState(() {
                                               showFacilities = false;
+                                              searchFacilityText = "";
+                                              searchText = "";
                                             });
                                           },
                                         ),
@@ -269,6 +273,8 @@ class _CallsListState extends State<CallsList> with SingleTickerProviderStateMix
                                           onPressed: () {
                                             setState(() {
                                               showFacilities = true;
+                                              searchFacilityText = "";
+                                              searchText = "";
                                             });
                                           },
                                         ),
@@ -288,11 +294,10 @@ class _CallsListState extends State<CallsList> with SingleTickerProviderStateMix
                                       cursorColor: Colors.grey,
                                       onChanged: (val) async {
                                         setState(() {
-                                          searchText = val.toLowerCase();
+                                          searchFacilityText = val.toLowerCase();
                                         });
                                         final list = await getFacilityCallHistoryByFacilityID(queriedFacilities, allCallHistory);
                                         setState(() {
-                                          searchText = val.toLowerCase();
                                           queriedHistory = list;
                                         });
                                       },
@@ -332,7 +337,7 @@ class _CallsListState extends State<CallsList> with SingleTickerProviderStateMix
                                     return Divider(height: 0.5, color: Colors.white70);
                                   },
                                   physics: NeverScrollableScrollPhysics(),
-                                  itemCount: searchText.isEmpty ? allFacilitiesCalled.length : queriedFacilities.length,
+                                  itemCount: searchFacilityText.isEmpty ? allFacilitiesCalled.length : queriedFacilities.length,
                                   shrinkWrap: true,
                                   itemBuilder: (context, index) {
                                     var callHistoryA = FacilityCallHistoryModel();
@@ -344,7 +349,7 @@ class _CallsListState extends State<CallsList> with SingleTickerProviderStateMix
                                         return DateTime.parse(b.endTime).compareTo(DateTime.parse(a.endTime));
                                       });
                                     allFacilitiesCalled..sort((a, b) => DateTime.parse(callHistoryB.endTime).compareTo(DateTime.parse(callHistoryA.endTime)));
-                                    final facilityDetail = searchText.isEmpty
+                                    final facilityDetail = searchFacilityText.isEmpty
                                         ? allFacilitiesCalled.toList()[index] ?? FacilityProfileModel()
                                         : queriedFacilities.toList()[index] ?? FacilityProfileModel();
                                     final callDetail = queriedHistory.isEmpty
@@ -420,10 +425,14 @@ class _CallsListState extends State<CallsList> with SingleTickerProviderStateMix
                                                           size: 22.sp,
                                                           color: accentColorDark,
                                                         ),
-                                                        onPressed: () {
+                                                        onPressed: () async {
+                                                          final apiService = ApiService(http.Client());
+                                                          final hourlyRate = await apiService.fetchFacilityHourlyRate();
+                                                          final facilityHourlyRate = int.parse(hourlyRate.split(".").first);
+
                                                           context
                                                               .read<InitializeStreamChatCubit>()
-                                                              .initializeFacilityChannel(userID, facilityDetail, userCategory, isVerified);
+                                                              .initializeFacilityChannel(userID, facilityDetail, userCategory, isVerified, facilityHourlyRate);
                                                         },
                                                       );
                                                     },
@@ -690,6 +699,8 @@ class _CallsListState extends State<CallsList> with SingleTickerProviderStateMix
                                           onPressed: () {
                                             setState(() {
                                               showFacilities = false;
+                                              searchFacilityText = "";
+                                              searchText = "";
                                             });
                                           },
                                         ),
@@ -710,6 +721,8 @@ class _CallsListState extends State<CallsList> with SingleTickerProviderStateMix
                                           onPressed: () {
                                             setState(() {
                                               showFacilities = true;
+                                              searchFacilityText = "";
+                                              searchText = "";
                                             });
                                           },
                                         ),
@@ -733,7 +746,6 @@ class _CallsListState extends State<CallsList> with SingleTickerProviderStateMix
                                         });
                                         final list = await getCallHistoryByDocID(queriedDocs, allCallHistory);
                                         setState(() {
-                                          searchText = val.toLowerCase();
                                           queriedHistory = list;
                                         });
                                       },

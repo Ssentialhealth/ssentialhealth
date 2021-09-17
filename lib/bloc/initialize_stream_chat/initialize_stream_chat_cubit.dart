@@ -65,7 +65,12 @@ class InitializeStreamChatCubit extends Cubit<InitializeStreamChatState> {
       await client.connectUserWithProvider(
         User(
           id: docID,
-          extraData: {"userCategory": 'practitioner', "name": "Dr. ${doc.surname}", "isVerified": "$isVerified"},
+          extraData: {
+            "userCategory": 'health practitioner',
+            "docDetail": doc.toJson(),
+            "name": "Dr. ${doc.surname}",
+            "isVerified": "$isVerified",
+          },
         ),
       );
 
@@ -96,7 +101,7 @@ class InitializeStreamChatCubit extends Cubit<InitializeStreamChatState> {
     }
   }
 
-  void initializeFacilityChannel(String streamUserID, FacilityProfileModel facility, String userCategory, bool isVerified) async {
+  void initializeFacilityChannel(String streamUserID, FacilityProfileModel facility, String userCategory, bool isVerified, int facilityHourlyRate) async {
     //TODO: inProduction | add real data
     emit(StreamChannelLoading());
 
@@ -106,7 +111,13 @@ class InitializeStreamChatCubit extends Cubit<InitializeStreamChatState> {
       await client.connectUserWithProvider(
         User(
           id: facilityID,
-          extraData: {"userCategory": "facility", "name": "${facility.facilityName}", "isVerified": "$isVerified"},
+          extraData: {
+            "userCategory": "health facility",
+            "name": "${facility.facilityName}",
+            "facilityDetail": facility.toJson(),
+            "isVerified": "$isVerified",
+            "hourlyRate": "$facilityHourlyRate",
+          },
         ),
       );
       await client.disconnect();

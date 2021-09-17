@@ -47,7 +47,7 @@ class _InitCallDialogState extends State<InitCallDialog> {
 
   @override
   void initState() {
-	  super.initState();
+    super.initState();
     context.read<FetchCallHistoryCubit>()..getCallHistory(5); //testing
     context.read<FetchFacilityCallHistoryCubit>()..getCallHistory(5); //testing
     context.read<CallBalanceCubit>()..getCallBalance(5);
@@ -61,8 +61,9 @@ class _InitCallDialogState extends State<InitCallDialog> {
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0.w)),
       child: Container(
-	      width: 1.sw,
+        width: 1.sw,
         child: widget.from.contains("doc")
+            // call doctors
             ? BlocConsumer<CallBalanceCubit, CallBalanceState>(
                 listener: (context, state) {},
                 builder: (context, balanceState) {
@@ -70,12 +71,14 @@ class _InitCallDialogState extends State<InitCallDialog> {
                     builder: (context, historyState) {
                       if (balanceState is CallBalanceFetchSuccess && historyState is FetchCallHistorySuccess) {
                         //user
-                        final int balanceInKES = int.parse(balanceState.callBalanceModel.amount.split('.').first);
+                        final int balanceInUSD = int.parse(balanceState.callBalanceModel.amount.split('.').first);
 
                         //doc
                         final streamDocID = widget.from == "doc-chat" ? widget.streamProfile.id.replaceAll("docIDTestThree", "") : "";
                         final docID = widget.from == "doc-chat" ? int.parse(streamDocID) : widget.docDetail.user;
-                        final int docHourlyRate = int.parse(widget.docDetail.ratesInfo.onlineBooking.upto1Hour.split('.').first);
+                        final int docHourlyRate = widget.from == "doc-chat"
+                            ? int.parse((widget.streamProfile.extraData['docDetail']['rates_info']['online_booking']['upto_1_hour']).split(".").first) ?? 0
+                            : int.parse(widget.docDetail.ratesInfo.onlineBooking.upto1Hour.split('.').first);
                         final int docRatePerMin = docHourlyRate ~/ 60;
 
                         final double amountToUse = durationVal == "5 minutes"
@@ -124,7 +127,7 @@ class _InitCallDialogState extends State<InitCallDialog> {
 
                             //cost
                             Text(
-                              "KES " + "$amountToUse",
+                              "USD " + "$amountToUse",
                               style: TextStyle(
                                 fontSize: 14.sp,
                                 fontWeight: FontWeight.w700,
@@ -294,7 +297,7 @@ class _InitCallDialogState extends State<InitCallDialog> {
 
                             showBalance
                                 ? Text(
-                                    "KES " + "$balanceInKES",
+                              "USD " + "$balanceInUSD",
                                     style: TextStyle(
                                       fontSize: 14.sp,
                                       fontWeight: FontWeight.w700,
@@ -353,6 +356,7 @@ class _InitCallDialogState extends State<InitCallDialog> {
                   );
                 },
               )
+        // call facilities
             : BlocConsumer<CallBalanceCubit, CallBalanceState>(
                 listener: (context, state) {},
                 builder: (context, balanceState) {
@@ -360,7 +364,7 @@ class _InitCallDialogState extends State<InitCallDialog> {
                     builder: (context, historyState) {
                       if (balanceState is CallBalanceFetchSuccess && historyState is FetchFacilityCallHistorySuccess) {
                         //user
-                        final int balanceInKES = int.parse(balanceState.callBalanceModel.amount.split('.').first);
+                        final int balanceInUSD = int.parse(balanceState.callBalanceModel.amount.split('.').first);
 
                         //doc
                         final streamFacilityID = widget.from == "facility-chat" ? widget.streamProfile.id.replaceAll("facilityIDTestThree", "") : "";
@@ -413,7 +417,7 @@ class _InitCallDialogState extends State<InitCallDialog> {
 
                             //cost
                             Text(
-                              "KES " + "$amountToUse",
+                              "USD " + "$amountToUse",
                               style: TextStyle(
                                 fontSize: 14.sp,
                                 fontWeight: FontWeight.w700,
@@ -578,7 +582,7 @@ class _InitCallDialogState extends State<InitCallDialog> {
 
                             showBalance
                                 ? Text(
-                                    "KES " + "$balanceInKES",
+                              "USD " + "$balanceInUSD",
                                     style: TextStyle(
                                       fontSize: 14.sp,
                                       fontWeight: FontWeight.w700,
@@ -603,7 +607,7 @@ class _InitCallDialogState extends State<InitCallDialog> {
 
                           //doc name
                           Text(
-                            widget.from == "doc-chat" ? widget.streamProfile.extraData["name"] : widget.facilityDetail.facilityName,
+                            widget.from == "facility-chat" ? widget.streamProfile.extraData["name"] : widget.facilityDetail.facilityName,
                             style: TextStyle(
                               fontSize: 15.sp,
                               color: Colors.black87,
