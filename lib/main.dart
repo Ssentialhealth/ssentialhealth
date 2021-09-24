@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
+import 'package:pocket_health/bloc/accept_decline/accept_decline_cubit.dart';
 import 'package:pocket_health/bloc/adult_unwell/adultUnwellBloc.dart';
 import 'package:pocket_health/bloc/call_balance/call_balance_cubit.dart';
 import 'package:pocket_health/bloc/call_history/call_history_cubit.dart';
@@ -24,6 +25,7 @@ import 'package:pocket_health/bloc/facility_reviews/facility_reviews_cubit.dart'
 import 'package:pocket_health/bloc/hotlines/hotlinesBloc.dart';
 import 'package:pocket_health/bloc/list_facilities/list_facilities_cubit.dart';
 import 'package:pocket_health/bloc/login/loginBloc.dart';
+import 'package:pocket_health/bloc/manage_bookings/manage_bookings_cubit.dart';
 import 'package:pocket_health/bloc/organs/organsBloc.dart';
 import 'package:pocket_health/bloc/practitioner_profile/practitionerProfileBloc.dart';
 import 'package:pocket_health/bloc/profile/userProfileBloc.dart';
@@ -59,6 +61,7 @@ import 'package:pocket_health/repository/growth_charts_repo.dart';
 import 'package:pocket_health/repository/hotline_repo.dart';
 import 'package:pocket_health/repository/immunization_schedule_repo.dart';
 import 'package:pocket_health/repository/loginRepo.dart';
+import 'package:pocket_health/repository/manage_bookings_repo.dart';
 import 'package:pocket_health/repository/normal_development_repo.dart';
 import 'package:pocket_health/repository/nutrition_repo.dart';
 import 'package:pocket_health/repository/open_hours_repo.dart';
@@ -76,6 +79,7 @@ import 'package:pocket_health/services/api_service.dart';
 import 'package:pocket_health/simple_bloc_observer.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
+import 'bloc/accept_decline/acccept_decline_repo.dart';
 import 'bloc/appointments/appointments_cubit.dart';
 import 'bloc/booking_history/booking_history_cubit.dart';
 import 'bloc/conditionDetails/conditionDetailsBloc.dart';
@@ -93,6 +97,7 @@ import 'bloc/organDetails/organDetailsBloc.dart';
 import 'bloc/post_facility_review/post_facility_review_cubit.dart';
 import 'bloc/post_review/post_review_cubit.dart';
 import 'bloc/saved_facility_contacts/saved_facility_contacts_cubit.dart';
+import 'bloc/tab_switcher/tab_switcher_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -138,6 +143,8 @@ void main() async {
   final OpenHoursRepo openHoursRepo = OpenHoursRepo(ApiService(http.Client()));
   final FacilityCallHistoryRepo facilityCallHistoryRepo = FacilityCallHistoryRepo(ApiService(http.Client()));
   final FetchFacilityCallHistoryRepo fetchFacilityCallHistoryRepo = FetchFacilityCallHistoryRepo(ApiService(http.Client()));
+  final ManageBookingsRepo manageBookingsRepo = ManageBookingsRepo(ApiService(http.Client()));
+  final AcceptDeclineRepo acceptDeclineRepo = AcceptDeclineRepo(ApiService(http.Client()));
   runApp(MyApp(
     forgotPasswordRepo: forgotPasswordRepo,
     loginRepository: loginRepository,
@@ -179,6 +186,8 @@ void main() async {
     openHoursRepo: openHoursRepo,
     fetchFacilityCallHistoryRepo: fetchFacilityCallHistoryRepo,
     facilityCallHistoryRepo: facilityCallHistoryRepo,
+    manageBookingsRepo: manageBookingsRepo,
+    acceptDeclineRepo: acceptDeclineRepo,
   ));
 }
 
@@ -223,6 +232,8 @@ class MyApp extends StatelessWidget {
   final OpenHoursRepo openHoursRepo;
   final FetchFacilityCallHistoryRepo fetchFacilityCallHistoryRepo;
   final FacilityCallHistoryRepo facilityCallHistoryRepo;
+  final ManageBookingsRepo manageBookingsRepo;
+  final AcceptDeclineRepo acceptDeclineRepo;
 
   MyApp({
     Key key,
@@ -266,6 +277,8 @@ class MyApp extends StatelessWidget {
     @required this.openHoursRepo,
     @required this.facilityCallHistoryRepo,
     @required this.fetchFacilityCallHistoryRepo,
+    @required this.manageBookingsRepo,
+    @required this.acceptDeclineRepo,
   }) : super(key: key);
 
   @override
@@ -320,12 +333,15 @@ class MyApp extends StatelessWidget {
           BlocProvider(create: (context) => CallBalanceCubit(callBalanceRepo)),
           BlocProvider(create: (context) => SavedContactsCubit()..fetchContacts()),
           BlocProvider(create: (context) => SavedFacilityContactsCubit()..fetchContacts()),
+          BlocProvider(create: (context) => TabSwitcherCubit()..loadPending()),
           BlocProvider(create: (context) => ListFacilitiesCubit(facilityProfileRepo: facilityProfileRepo)),
           BlocProvider(create: (context) => FacilityReviewsCubit(facilityReviewsRepo: facilityReviewsRepo)),
           BlocProvider(create: (context) => PostFacilityReviewCubit(facilityReviewsRepo: postFacilityReviewsRepo)),
           BlocProvider(create: (context) => ListFacilityOpenHoursCubit(openHoursRepo)),
           BlocProvider(create: (context) => FacilityCallHistoryCubit(facilityCallHistoryRepo)),
           BlocProvider(create: (context) => FetchFacilityCallHistoryCubit(fetchFacilityCallHistoryRepo)),
+          BlocProvider(create: (context) => ManageBookingsCubit(manageBookingsRepo)),
+          BlocProvider(create: (context) => AcceptDeclineCubit(acceptDeclineRepo)),
         ],
         child: MaterialApp(
           debugShowCheckedModeBanner: false,

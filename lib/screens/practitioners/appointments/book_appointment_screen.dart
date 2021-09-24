@@ -41,8 +41,6 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
     context.read<BookingHistoryCubit>().fetchAppointments(docID: widget.practitionerModel.user, userID: widget.userID);
   }
 
-  // final List appointments =;
-
   List<String> tags = [];
 
   List<String> morningOptions = [

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:json_patch/json_patch.dart';
 import 'package:pocket_health/models/ForgotPassword.dart';
+import 'package:pocket_health/models/accept_decline_model.dart';
 import 'package:pocket_health/models/all_schedules_model.dart';
 import 'package:pocket_health/models/appoinment_model.dart';
 import 'package:pocket_health/models/call_balance_model.dart';
@@ -19,6 +20,7 @@ import 'package:pocket_health/models/child_resource_detail_model.dart';
 import 'package:pocket_health/models/children_resources_model.dart';
 import 'package:pocket_health/models/conditionDetailsModel.dart';
 import 'package:pocket_health/models/delayed_milestone_model.dart';
+import 'package:pocket_health/models/doc_bookings.dart';
 import 'package:pocket_health/models/emergency_contact.dart';
 import 'package:pocket_health/models/facility_appointment_model.dart';
 import 'package:pocket_health/models/facility_call_history_model.dart';
@@ -610,13 +612,14 @@ class ApiService {
     @required String filterByFacilityType,
     @required String filterByCountry,
   }) async {
-    _token = await getStringValuesSF();
+	  _token = await getStringValuesSF();
     final country = filterByCountry == "null" || filterByCountry == null ? "country=" : "country=" + filterByCountry + "&";
+    final price = filterByPrice == "null" || filterByPrice == null ? "price<" : "price<" + filterByPrice + "&";
     final availability = filterByAvailability == "null" || filterByAvailability == null ? "available=" : "available=" + filterByAvailability;
     final base = "https://ssential.herokuapp.com/api/HealthFacility/?";
-    print('--------|url|--------|value -> ${(base + country + availability).toString()}');
+    print('--------|url|--------|value -> ${(base + country + price + availability).toString()}');
     final response = await this.httpClient.get(
-      base + country + availability,
+      base + country + price + availability,
       headers: {
         "Authorization": "Bearer " + _token,
       },
@@ -1099,6 +1102,71 @@ class ApiService {
       print(fetchResponse.statusCode);
       return null;
     }
+  }
+
+  //manage bookings
+  Future<List<DocBookings>> fetchBookingsByID(id) async {
+    final _token = await getStringValuesSF();
+    final response = await http.get(
+      "https://ssential.herokuapp.com/api/doctors_consult/appointment/",
+      headers: {
+        'Authorization': 'Bearer ' + _token,
+        'Content-Type': 'application/json',
+      },
+    );
+
+    final allDocBookings = docBookingsListFromJson(response.body);
+
+    for (var doc in allDocBookings) {
+      print('--------|doc|--------|value -> ${doc.profile.toString()}');
+    }
+    final docBookings = allDocBookings.where((element) => element.profile == id).toList();
+
+    return docBookings;
+  }
+
+  Future<List<AcceptDeclineModel>> fetchAllPatientBookings() async {
+    final _token = await getStringValuesSF();
+    final response = await http.get(
+      "https://ssential.herokuapp.com/api/doctors_consult/patient/",
+      headers: {
+        'Authorization': 'Bearer ' + _token,
+        'Content-Type': 'application/json',
+      },
+    );
+
+    final allPatientBookings = acceptDeclineModelListFromJson(response.body);
+    return allPatientBookings;
+  }
+
+  Future<AcceptDeclineModel> declinePatientToDB(mapData) async {
+    final _token = await getStringValuesSF();
+    final response = await http.post(
+      "https://ssential.herokuapp.com/api/doctors_consult/patient/",
+      body: json.encode(mapData),
+      headers: {
+        'Authorization': 'Bearer ' + _token,
+        'Content-Type': 'application/json',
+      },
+    );
+
+    final booking = acceptDeclineModelFromJson(response.body);
+    return booking;
+  }
+
+  Future<AcceptDeclineModel> declinedPatientToDB(mapData) async {
+    final _token = await getStringValuesSF();
+    final response = await http.post(
+      "https://ssential.herokuapp.com/api/doctors_consult/patient/",
+      body: json.encode(mapData),
+      headers: {
+        'Authorization': 'Bearer ' + _token,
+        'Content-Type': 'application/json',
+      },
+    );
+
+    final booking = acceptDeclineModelFromJson(response.body);
+    return booking;
   }
 }
 

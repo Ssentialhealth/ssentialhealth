@@ -297,7 +297,7 @@ class _InitCallDialogState extends State<InitCallDialog> {
 
                             showBalance
                                 ? Text(
-                              "USD " + "$balanceInUSD",
+                                    "USD " + "$balanceInUSD",
                                     style: TextStyle(
                                       fontSize: 14.sp,
                                       fontWeight: FontWeight.w700,
@@ -582,7 +582,7 @@ class _InitCallDialogState extends State<InitCallDialog> {
 
                             showBalance
                                 ? Text(
-                              "USD " + "$balanceInUSD",
+	                            "USD " + "$balanceInUSD",
                                     style: TextStyle(
                                       fontSize: 14.sp,
                                       fontWeight: FontWeight.w700,

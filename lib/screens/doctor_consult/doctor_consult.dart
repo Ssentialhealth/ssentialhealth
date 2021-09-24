@@ -310,7 +310,6 @@ class _DoctorConsultState extends State<DoctorConsult> with SingleTickerProvider
                       ],
                     ),
                   ),
-                  // bottomNavigationBar: BottomNavigationBar(),
                 ),
     );
   }

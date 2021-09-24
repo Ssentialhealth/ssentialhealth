@@ -22,10 +22,14 @@ class _FacilitiesCategoriesScreenState extends State<FacilitiesCategoriesScreen>
     "Hospitals",
     "Clinics",
     "Pharmacies",
+    "Occupational Therapy",
+    "Mental Health",
     "Labs & Diagnostics",
     "Imaging Centres",
-    "Rehabilitation & Physiotherapy",
+    "Rehabilitation",
+    "Physiotherapy",
     "Hospice",
+    "Others",
   ];
 
   Future<String> getStringValuesSF() async {
