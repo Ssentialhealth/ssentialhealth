@@ -42,7 +42,9 @@ class _SignInScreenState extends State<SignInScreen> {
               final client = context.read<InitializeStreamChatCubit>().client;
               final userCategory = state.loginModel.user.userCategory;
 
-              context.read<InitializeStreamChatCubit>()..initializeUser(userID, userCategory);
+              if (state.loginModel.user.userCategory == "individual") context.read<InitializeStreamChatCubit>()..initializeUser(userID, userCategory);
+              if (state.loginModel.user.userCategory == "health practitioner")
+                context.read<InitializeStreamChatCubit>()..initializeServiceProvider(userID, userCategory);
 
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(

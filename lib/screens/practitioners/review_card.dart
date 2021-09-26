@@ -6,8 +6,6 @@ import 'package:pocket_health/models/review_model.dart';
 import 'package:pocket_health/utils/constants.dart';
 
 class ReviewCard extends StatelessWidget {
-  // final PractitionerProfileModel practitionerProfileModel;
-
   final ReviewModel review;
 
   const ReviewCard({Key key, this.review}) : super(key: key);

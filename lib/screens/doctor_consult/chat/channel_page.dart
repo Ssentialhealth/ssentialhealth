@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import "package:http/http.dart" as http;
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:pocket_health/screens/doctor_consult/call/init_call_dialog.dart';
 import 'package:pocket_health/screens/doctor_consult/chat/thread_page.dart';
+import 'package:pocket_health/services/api_service.dart';
 import 'package:pocket_health/utils/constants.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
@@ -77,22 +79,50 @@ class _ChannelPageState extends State<ChannelPage> {
           ),
         ),
         actions: doctorsView
-            ? []
+            ? [
+                // more details page
+                IconButton(
+                  onPressed: () async {
+                    final streamProfile = await channel
+                        .queryMembers(filter: {}).then((value) => value.members.firstWhere((e) => e.userId != StreamChat.of(context).user.id).user);
+
+                    final userCategory = streamProfile.extraData['userCategory'];
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (ctx) => StreamChannel(
+                          channel: channel,
+                          child: ChannelDetailsPage(
+                            userCategory: userCategory,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                  icon: Icon(Icons.info_outline),
+                ),
+              ]
             : [
                 // video call
                 IconButton(
                   onPressed: () async {
-                    final streamDocDetail = await channel
+                    final streamProfile = await channel
                         .queryMembers(filter: {}).then((value) => value.members.firstWhere((e) => e.userId != StreamChat.of(context).user.id).user);
+                    final apiService = ApiService(http.Client());
+                    final hourlyRate = await apiService.fetchFacilityHourlyRate();
+                    final facilityHourlyRate = int.parse(hourlyRate.split(".").first);
+
                     await showDialog(
                       context: context,
                       builder: (dialogContext) {
+                        final isDoc = streamProfile.extraData["userCategory"] == "health practitioner";
                         return StreamChannel(
                           channel: channel,
                           child: InitCallDialog(
-                            from: "chat",
+                            from: isDoc ? "doc-chat" : 'facility-chat',
                             videoMuted: false,
-                            streamDocDetail: streamDocDetail,
+                            facilityHourlyRate: isDoc ? 0 : facilityHourlyRate,
+                            isVerified: streamProfile.extraData["isVerified"] == "true" ? true : false,
+                            streamProfile: streamProfile,
                           ),
                         );
                       },
@@ -104,17 +134,24 @@ class _ChannelPageState extends State<ChannelPage> {
                 //audio call
                 IconButton(
                   onPressed: () async {
-                    final streamDocDetail = await channel
+                    final streamProfile = await channel
                         .queryMembers(filter: {}).then((value) => value.members.firstWhere((e) => e.userId != StreamChat.of(context).user.id).user);
+                    final apiService = ApiService(http.Client());
+                    final hourlyRate = await apiService.fetchFacilityHourlyRate();
+                    final facilityHourlyRate = int.parse(hourlyRate.split(".").first);
+
                     await showDialog(
                       context: context,
                       builder: (dialogContext) {
+                        final isDoc = streamProfile.extraData["userCategory"] == "health practitioner";
                         return StreamChannel(
                           channel: channel,
                           child: InitCallDialog(
-                            from: "chat",
+                            from: isDoc ? "doc-chat" : 'facility-chat',
                             videoMuted: true,
-                            streamDocDetail: streamDocDetail,
+                            facilityHourlyRate: isDoc ? 0 : facilityHourlyRate,
+                            isVerified: streamProfile.extraData["isVerified"] == "true" ? true : false,
+                            streamProfile: streamProfile,
                           ),
                         );
                       },
@@ -126,11 +163,17 @@ class _ChannelPageState extends State<ChannelPage> {
                 // more details page
                 IconButton(
                   onPressed: () async {
+                    final streamProfile = await channel
+                        .queryMembers(filter: {}).then((value) => value.members.firstWhere((e) => e.userId != StreamChat.of(context).user.id).user);
+
+                    final userCategory = streamProfile.extraData['userCategory'];
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (ctx) => StreamChannel(
                           channel: channel,
-                          child: ChannelDetailsPage(),
+                          child: ChannelDetailsPage(
+                            userCategory: userCategory,
+                          ),
                         ),
                       ),
                     );

@@ -41,8 +41,6 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
     context.read<BookingHistoryCubit>().fetchAppointments(docID: widget.practitionerModel.user, userID: widget.userID);
   }
 
-  // final List appointments =;
-
   List<String> tags = [];
 
   List<String> morningOptions = [
@@ -252,7 +250,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Dr. Darren Elder',
+                                     widget.practitionerModel.surname ?? "null",
                                       style: TextStyle(
                                         color: Colors.white,
                                         fontSize: 15.sp,
@@ -516,7 +514,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
                                           ),
                                           choiceBuilder: (item) {
                                             return InkWell(
-	                                            onTap: item.disabled
+                                              onTap: item.disabled
                                                   ? () {}
                                                   : tags.contains(item.value)
                                                       ? () {
@@ -627,7 +625,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
                                             value: (index, label) => label,
                                             label: (index, label) => label.replaceRange(5, 8, '').replaceRange(13, 16, ''),
                                             disabled: (index, label) {
-	                                            final bookedOnThisDate = state.bookings.where((e) => e.appointmentDate == selectedDate).toList();
+                                              final bookedOnThisDate = state.bookings.where((e) => e.appointmentDate == selectedDate).toList();
                                               final thisHour = DateTime.now().hour;
                                               final time = DateTime.now().minute >= 45
                                                   ? thisHour + 0.75
@@ -648,7 +646,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
                                           ),
                                           choiceBuilder: (item) {
                                             return InkWell(
-	                                            onTap: item.disabled
+                                              onTap: item.disabled
                                                   ? () {}
                                                   : tags.contains(item.value)
                                                       ? () {
@@ -759,7 +757,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
                                             value: (index, label) => label,
                                             label: (index, label) => label.replaceRange(5, 8, '').replaceRange(13, 16, ''),
                                             disabled: (index, label) {
-	                                            final bookedOnThisDate = state.bookings.where((e) => e.appointmentDate == selectedDate).toList();
+                                              final bookedOnThisDate = state.bookings.where((e) => e.appointmentDate == selectedDate).toList();
                                               final thisHour = DateTime.now().hour;
                                               final time = DateTime.now().minute >= 45
                                                   ? thisHour + 0.75
@@ -780,7 +778,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
                                           ),
                                           choiceBuilder: (item) {
                                             return InkWell(
-	                                            onTap: item.disabled
+                                              onTap: item.disabled
                                                   ? () {}
                                                   : tags.contains(item.value)
                                                       ? () {
@@ -921,7 +919,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
                 },
                 builder: (context, state) {
                   return MaterialButton(
-	                  color: accentColorDark,
+                    color: accentColorDark,
                     elevation: 0.0,
                     height: 40.0.h,
                     minWidth: 376.w,
@@ -965,7 +963,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> with Sing
                                         slotTo: slotTo,
                                         status: 3,
                                         appointmentType: appointmentTypeVal,
-                                        userID: 1,
+                                        userID: 5,
                                         //TODO : Production | change to dynamic val
                                         docID: widget.practitionerModel.user,
                                       );

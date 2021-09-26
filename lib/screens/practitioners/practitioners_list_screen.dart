@@ -307,36 +307,26 @@ class _PractitionersListScreenState extends State<PractitionersListScreen> {
                                               BlocBuilder<SavedContactsCubit, SavedContactsState>(
                                                 builder: (context, state) {
                                                   if (state is SavedContactsSuccess) {
-                                                    final isSaved = state.savedContacts.contains("docIDTestThree" + '${practitionerModel.user.toString()}');
-                                                    return SizedBox(
-                                                      height: 20.w,
-                                                      width: 20.w,
-                                                      child: IconButton(
-                                                        padding: EdgeInsets.zero,
-                                                        visualDensity: VisualDensity.compact,
-                                                        icon: Icon(
-                                                          isSaved ? Icons.bookmark : Icons.bookmark_outline,
-                                                          size: 20.w,
-                                                          color: isSaved ? Color(0xff0e0e0e) : Color(0xff242424),
-                                                        ),
-                                                        onPressed: () async {
-                                                          setState(() {
-                                                            saveContactVal = !isSaved;
-                                                          });
-                                                          context.read<SavedContactsCubit>()
-                                                            ..addRemoveContacts(saveContactVal, "docIDTestThree" + "${practitionerModel.user.toString()}");
-                                                        },
+                                                    final isSaved = state.savedContacts.contains("docIDTestFive" + '${practitionerModel.user.toString()}');
+                                                    return GestureDetector(
+                                                      child: Icon(
+                                                        isSaved ? Icons.bookmark : Icons.bookmark_outline,
+                                                        size: 20.w,
+                                                        color: isSaved ? Color(0xff0e0e0e) : Color(0xff242424),
                                                       ),
+                                                      onTap: () async {
+                                                        setState(() {
+                                                          saveContactVal = !isSaved;
+                                                        });
+                                                        context.read<SavedContactsCubit>()
+                                                          ..addRemoveContacts(saveContactVal, "docIDTestFive" + "${practitionerModel.user.toString()}");
+                                                      },
                                                     );
                                                   }
-                                                  return IconButton(
-                                                    padding: EdgeInsets.zero,
-                                                    icon: Icon(
-                                                      Icons.bookmark_outline,
-                                                      size: 20.w,
-                                                      color: Color(0xff242424),
-                                                    ),
-                                                    onPressed: () async {},
+                                                  return Icon(
+                                                    Icons.bookmark_outline,
+                                                    size: 20.w,
+                                                    color: Color(0xff242424),
                                                   );
                                                 },
                                               ),

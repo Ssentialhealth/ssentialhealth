@@ -12,22 +12,35 @@ import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:pocket_health/bloc/call_balance/call_balance_cubit.dart';
 import 'package:pocket_health/bloc/call_history/call_history_cubit.dart';
+import 'package:pocket_health/bloc/facility_call_history/facility_call_history_cubit.dart';
+import 'package:pocket_health/models/facility_profile_model.dart';
 import 'package:pocket_health/models/practitioner_profile_model.dart';
 import 'package:pocket_health/screens/doctor_consult/call/utils.dart';
 import 'package:pocket_health/widgets/verified_tag.dart';
 
 class CallPage extends StatefulWidget {
+  //settings
   bool mutedAudio;
   bool mutedVideo;
   final String channelName;
   final int callDuration;
-  final int docID;
-  final int userID;
-  final int ratePerMin;
   final ClientRole role;
-  final double callBalanceAmount;
-  final List<PractitionerProfileModel> doctorsCalled;
   final bool isVerified;
+  final String from;
+
+  //user
+  final int userID;
+  final double callBalanceAmount;
+
+  //doc
+  final int docID;
+  final int docRatePerMin;
+  final List<PractitionerProfileModel> doctorsCalled;
+
+  //facility
+  final int facilityID;
+  final int facilityRatePerMin;
+  final List<FacilityProfileModel> facilitiesCalled;
 
   CallPage({
     Key key,
@@ -41,7 +54,11 @@ class CallPage extends StatefulWidget {
     this.callBalanceAmount,
     this.doctorsCalled,
     this.isVerified,
-    this.ratePerMin,
+    this.docRatePerMin,
+    this.facilityID,
+    this.facilityRatePerMin,
+    this.facilitiesCalled,
+    this.from,
   }) : super(key: key);
 
   @override
@@ -105,7 +122,17 @@ class _CallPageState extends State<CallPage> {
   // get token from token server
   Future<String> getToken() async {
     try {
-      final int expiry = widget.doctorsCalled.length <= 3 ? 15 : widget.callDuration;
+      final int expiry = widget.doctorsCalled == null
+          ? 0 + widget.facilitiesCalled.length <= 3
+              ? 15
+              : widget.callDuration
+          : widget.facilitiesCalled == null
+              ? widget.doctorsCalled.length + 0 <= 3
+                  ? 15
+                  : widget.callDuration
+              : widget.doctorsCalled.length + widget.facilitiesCalled.length <= 3
+                  ? 15
+                  : widget.callDuration;
       final response = await http.get(
         Uri.parse(
           baseUrl + '/rtc/' + widget.channelName + '/publisher/uid/' + 0.toString() + '?expiry=$expiry',
@@ -164,10 +191,13 @@ class _CallPageState extends State<CallPage> {
 
           final duration = Duration(seconds: callTime).inMinutes.toInt();
 
-          final usedAmount = duration * widget.ratePerMin;
+          final usedAmount = widget.from == "doc-dialog" ? duration * widget.docRatePerMin : duration * widget.facilityRatePerMin;
           //deduct from balance
           final newBalance = widget.callBalanceAmount - usedAmount;
-          context.read<CallHistoryCubit>()..addCallHistory(5, widget.docID, preFormattedFrom.toString(), preFormattedTo.toString());
+          if (widget.from == "doc-dialog")
+            context.read<CallHistoryCubit>()..addCallHistory(5, widget.docID, preFormattedFrom.toString(), preFormattedTo.toString());
+          if (widget.from == "facility-dialog")
+            context.read<FacilityCallHistoryCubit>()..addCallHistory(5, widget.facilityID, preFormattedFrom.toString(), preFormattedTo.toString());
           context.read<CallBalanceCubit>()
             ..creditDeductAdd(paymentType: 'LIPA_MPESA', currency: "KES", amount: newBalance.toInt(), user: 5, balance: newBalance.toInt());
 

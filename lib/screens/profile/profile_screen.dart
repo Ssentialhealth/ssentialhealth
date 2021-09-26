@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:platform_alert_dialog/platform_alert_dialog.dart';
+import 'package:pocket_health/bloc/manage_bookings/manage_bookings_cubit.dart';
+import 'package:pocket_health/screens/Appointments/manage_appointments.dart';
 import 'package:pocket_health/screens/menu_screens/contact_us.dart';
 import 'package:pocket_health/screens/menu_screens/feedback_screen.dart';
 import 'package:pocket_health/screens/profile/practitioner_info_screen.dart';
@@ -15,7 +18,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+	final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   String _type = "...";
   String nullCall = "Hello";
 
@@ -23,19 +26,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     getName();
-
   }
-  void getName()async{
+
+  void getName() async {
     _name = await getStringValuesSF();
     setState(() {
       _fullName = _name;
     });
     print(_fullName);
-
   }
-  String _fullName ;
-  String _name;
 
+  String _fullName;
+  String _name;
 
   @override
   Widget build(BuildContext context) {
@@ -59,9 +61,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       height: 100,
                       width: MediaQuery.of(context).size.width,
                       child: GestureDetector(
-                        onTap: (){
+	                      onTap: () {
                           Navigator.push(context, MaterialPageRoute(builder: (context) => UserInfoScreen()));
-
                         },
                         child: Column(
                           children: [
@@ -70,17 +71,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 Padding(
                                   padding: EdgeInsets.all(12.0),
                                   child: Container(
-                                    child: ClipRRect(
+	                                  child: ClipRRect(
                                         borderRadius: BorderRadius.circular(40),
-                                        child: Image.asset("assets/images/profile.png", height: 70,)),
+                                        child: Image.asset(
+                                          "assets/images/profile.png",
+                                          height: 70,
+                                        )),
                                   ),
                                 ),
                                 Padding(
-                                  padding:  EdgeInsets.symmetric(vertical:20),
+	                                padding: EdgeInsets.symmetric(vertical: 20),
                                   child: Column(
                                     children: [
-                                      Text("$_fullName" ,style: mediumTextStyle()),
-                                      SizedBox(height: 10,),
+                                      Text("$_fullName", style: mediumTextStyle()),
+                                      SizedBox(
+                                        height: 10,
+                                      ),
                                       LinearPercentIndicator(
                                         width: 200.0,
                                         lineHeight: 10.0,
@@ -91,13 +97,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ],
                                   ),
                                 ),
-                                Spacer(flex: 2,),
+                                Spacer(
+                                  flex: 2,
+                                ),
                                 GestureDetector(
-                                  onTap: ()async{
+                                  onTap: () async {
                                     _type = await getTypeValuesSF();
 
                                     print(_type);
-                                    if(_type == 'individual'){
+                                    if (_type == 'individual') {
                                       Navigator.push(context, MaterialPageRoute(builder: (context) => UserInfoScreen()));
                                       showDialog<void>(
                                         context: context,
@@ -107,9 +115,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                             content: SingleChildScrollView(
                                               child: ListBody(
                                                 children: <Widget>[
-                                                  Text('That your general and health information are confidentially managed and are used to enhance the function of features of the app including emergency use. It is important to input the right information as your health may depend on it.'),
-                                                  Text('The app uses other identifiers other than name to keep your information private when you share it with health providers. A PIN will be requested with every health information sharing request. To see other privacy measures.'),
-                                                  Text('Click here..',style: TextStyle(color: Colors.lightBlueAccent),),
+                                                  Text(
+                                                      'That your general and health information are confidentially managed and are used to enhance the function of features of the app including emergency use. It is important to input the right information as your health may depend on it.'),
+                                                  Text(
+                                                      'The app uses other identifiers other than name to keep your information private when you share it with health providers. A PIN will be requested with every health information sharing request. To see other privacy measures.'),
+                                                  Text(
+                                                    'Click here..',
+                                                    style: TextStyle(color: Colors.lightBlueAccent),
+                                                  ),
                                                 ],
                                               ),
                                             ),
@@ -128,16 +141,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                   //     builder: (context) => ProfileScreen()
                                                   // ));
                                                   Navigator.of(context).pop();
-
                                                 },
                                               ),
                                             ],
                                           );
                                         },
                                       );
-                                    }else if(_type == 'health practitioner'){
+                                    } else if (_type == 'health practitioner') {
                                       Navigator.push(context, MaterialPageRoute(builder: (context) => PractitionerInfo()));
-                                    }else{
+                                    } else {
                                       _showSnackBar("Login To Access This Feature");
                                     }
                                   },
@@ -160,16 +172,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Column(
                     children: [
                       Padding(
-                        padding:  EdgeInsets.all(8.0),
+	                      padding: EdgeInsets.all(8.0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
                             Padding(
-                              padding:  EdgeInsets.only(left:25),
-                              child: Text("Chat and Calls",style: TextStyle(fontWeight: FontWeight.w500),),
+                              padding: EdgeInsets.only(left: 25),
+                              child: Text(
+                                "Chat and Calls",
+                                style: TextStyle(fontWeight: FontWeight.w500),
+                              ),
                             ),
                             Padding(
-                              padding:  EdgeInsets.all(8.0),
+	                            padding: EdgeInsets.all(8.0),
                               child: Icon(Icons.arrow_forward_ios),
                             ),
                           ],
@@ -183,31 +198,60 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Center(
                     child: Column(
                       children: <Widget>[
-                        Divider(height: 1,color: Color(0xFFC6C6C6),),
+                        Divider(
+                          height: 1,
+                          color: Color(0xFFC6C6C6),
+                        ),
                         MenuItems(
                           image: "assets/images/icons/Saved.png",
                           text: "Balance,Payments & Subscriptions",
-                          press: (){},
+                          press: () {},
                         ),
-                        Divider(color: Color(0xFFC6C6C6),indent: 10,endIndent: 10,),
+                        Divider(
+                          color: Color(0xFFC6C6C6),
+                          indent: 10,
+                          endIndent: 10,
+                        ),
                         MenuItems(
                           image: "assets/images/icons/Saved.png",
                           text: "Appointments",
-                          press: (){},
+                          press: () async {
+                            final userCategory = await getTypeValuesSF();
+                            if (userCategory != "individual") {
+                              context.read<ManageBookingsCubit>()..loadBookingsById(4);
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => ManageAppointments(),
+                                ),
+                              );
+                            }
+                          },
                         ),
-                        Divider(color: Color(0xFFC6C6C6),indent: 10,endIndent: 10,),
+                        Divider(
+                          color: Color(0xFFC6C6C6),
+                          indent: 10,
+                          endIndent: 10,
+                        ),
                         MenuItems(
                           image: "assets/images/icons/Saved.png",
                           text: "Saved",
-                          press: (){},
+                          press: () {},
                         ),
-                        Divider(color: Color(0xFFC6C6C6),indent: 10,endIndent: 10,),
+                        Divider(
+                          color: Color(0xFFC6C6C6),
+                          indent: 10,
+                          endIndent: 10,
+                        ),
                         MenuItems(
                           image: "assets/images/icons/document.png",
                           text: "Documents",
                           press: () {},
                         ),
-                        Divider(color: Color(0xFFC6C6C6),indent: 10,endIndent: 10,),
+                        Divider(
+                          color: Color(0xFFC6C6C6),
+                          indent: 10,
+                          endIndent: 10,
+                        ),
                         MenuItems(
                           image: "assets/images/icons/insurance agency.png",
                           text: "Health Insurer Details",
@@ -219,66 +263,87 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           endIndent: 10,
                         ),
                         MenuItems(
-                          image: "assets/images/icons/shared medical.png",
-                          text: "Shared Medical Info",
-                          press: () {},
-                        ),
-                        Divider(height: 1, color: Color(0xFFC6C6C6)),
+		                      image: "assets/images/icons/shared medical.png",
+		                      text: "Shared Medical Info",
+		                      press: () {},
+	                      ),
+	                      Divider(height: 1, color: Color(0xFFC6C6C6)),
                       ],
                     ),
                   ),
                 ),
-                SizedBox(height: 9,),
-                Container(
-                  color: Colors.white,
-                  child: Column(
-                    children: <Widget>[
-                      Divider(height: 1,color: Color(0xFFC6C6C6),),
-                      MenuItems(
-                        image: "assets/images/icons/help.png",
-                        text: "Help",
-                        press: (){},
-                      ),
-                      Divider(color: Color(0xFFC6C6C6),indent: 10,endIndent: 10,),
-                      MenuItems(
-                        image: "assets/images/icons/feedback.png",
-                        text: "Feedback",
-                        press: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => FeedbackPage()));
-                        },
-                      ),
-                      Divider(color: Color(0xFFC6C6C6),indent: 10,endIndent: 10,),
-                      MenuItems(
-                        image: "assets/images/icons/contact us.png",
-                        text: "Contact Us",
-                        press: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => ContactUs()));
-
-                        },
-                      ),
-                      Divider(height: 1,color: Color(0xFFC6C6C6)),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 9,),
-                Container(
-                  color: Colors.white,
-                  child: Column(
-                    children: <Widget>[
-                      Divider(height: 1,color: Color(0xFFC6C6C6),),
-                      MenuItems(
-                        image: "assets/images/icons/terms and conditions.png",
-                        text: "Terms & Conditions",
-                        press: (){},
-                      ),
-                      Divider(color: Color(0xFFC6C6C6),indent: 10,endIndent: 10,),
-                      MenuItems(
-                        image: "assets/images/icons/terms and conditions.png",
-                        text: "Privacy Policy",
-                        press: () {},
-                      ),
-                      Divider(height: 1, color: Color(0xFFC6C6C6)),
-                    ],
+	              SizedBox(
+		              height: 9,
+	              ),
+	              Container(
+		              color: Colors.white,
+		              child: Column(
+			              children: <Widget>[
+				              Divider(
+					              height: 1,
+					              color: Color(0xFFC6C6C6),
+				              ),
+				              MenuItems(
+					              image: "assets/images/icons/help.png",
+					              text: "Help",
+					              press: () {},
+				              ),
+				              Divider(
+					              color: Color(0xFFC6C6C6),
+					              indent: 10,
+					              endIndent: 10,
+				              ),
+				              MenuItems(
+					              image: "assets/images/icons/feedback.png",
+					              text: "Feedback",
+					              press: () {
+						              Navigator.push(context, MaterialPageRoute(builder: (context) => FeedbackPage()));
+					              },
+				              ),
+				              Divider(
+					              color: Color(0xFFC6C6C6),
+					              indent: 10,
+					              endIndent: 10,
+				              ),
+				              MenuItems(
+					              image: "assets/images/icons/contact us.png",
+					              text: "Contact Us",
+					              press: () {
+						              Navigator.push(context, MaterialPageRoute(builder: (context) => ContactUs()));
+					              },
+				              ),
+				              Divider(height: 1, color: Color(0xFFC6C6C6)),
+			              ],
+		              ),
+	              ),
+	              SizedBox(
+		              height: 9,
+	              ),
+	              Container(
+		              color: Colors.white,
+		              child: Column(
+			              children: <Widget>[
+				              Divider(
+					              height: 1,
+					              color: Color(0xFFC6C6C6),
+				              ),
+				              MenuItems(
+					              image: "assets/images/icons/terms and conditions.png",
+					              text: "Terms & Conditions",
+					              press: () {},
+				              ),
+				              Divider(
+					              color: Color(0xFFC6C6C6),
+					              indent: 10,
+					              endIndent: 10,
+				              ),
+				              MenuItems(
+					              image: "assets/images/icons/terms and conditions.png",
+					              text: "Privacy Policy",
+					              press: () {},
+				              ),
+				              Divider(height: 1, color: Color(0xFFC6C6C6)),
+			              ],
                   ),
                 ),
               ],
@@ -288,16 +353,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
+
   void _showSnackBar(message) {
-    _scaffoldKey.currentState.showSnackBar(
-        SnackBar(
-          content: Text(message),
-        )
-    );
+    _scaffoldKey.currentState.showSnackBar(SnackBar(
+      content: Text(message),
+    ));
   }
 }
-
-
 
 getStringValuesSF() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -305,6 +367,7 @@ getStringValuesSF() async {
   String stringValue = prefs.getString('fullName');
   return stringValue;
 }
+
 getTypeValuesSF() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   //Return String

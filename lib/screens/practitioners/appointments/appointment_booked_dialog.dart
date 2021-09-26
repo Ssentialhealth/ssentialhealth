@@ -24,7 +24,7 @@ class AppointmentBookedDialog extends StatelessWidget {
             Padding(
               padding: EdgeInsets.symmetric(vertical: 25.w, horizontal: 15.w),
               child: Text(
-                "Appointment booked, provider will confirm appointment. Contact provider if no confirmation received",
+                "Appointment booked, facility will confirm appointment. Contact facility if no confirmation received",
                 maxLines: 3,
                 textAlign: TextAlign.center,
                 softWrap: true,

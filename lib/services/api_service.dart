@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:math' as math;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:json_patch/json_patch.dart';
 import 'package:pocket_health/models/ForgotPassword.dart';
+import 'package:pocket_health/models/accept_decline_model.dart';
 import 'package:pocket_health/models/all_schedules_model.dart';
 import 'package:pocket_health/models/appoinment_model.dart';
 import 'package:pocket_health/models/call_balance_model.dart';
@@ -18,7 +20,13 @@ import 'package:pocket_health/models/child_resource_detail_model.dart';
 import 'package:pocket_health/models/children_resources_model.dart';
 import 'package:pocket_health/models/conditionDetailsModel.dart';
 import 'package:pocket_health/models/delayed_milestone_model.dart';
+import 'package:pocket_health/models/doc_bookings.dart';
 import 'package:pocket_health/models/emergency_contact.dart';
+import 'package:pocket_health/models/facility_appointment_model.dart';
+import 'package:pocket_health/models/facility_call_history_model.dart';
+import 'package:pocket_health/models/facility_open_hours_model.dart';
+import 'package:pocket_health/models/facility_profile_model.dart';
+import 'package:pocket_health/models/facility_review_model.dart';
 import 'package:pocket_health/models/growth_chart_model.dart';
 import 'package:pocket_health/models/hotlines.dart';
 import 'package:pocket_health/models/immunization_schedule_model.dart' hide Vaccine;
@@ -593,6 +601,114 @@ class ApiService {
     return filtered;
   }
 
+  Future<List<FacilityProfileModel>> fetchFilteredFacilities({
+    @required String filterByDistance,
+    @required String filterByPrice,
+    @required String sortByNearest,
+    @required String filterByAvailability,
+    @required String sortByHighestRated,
+    @required String sortByCheapest,
+    @required String filterBySpeciality,
+    @required String filterByFacilityType,
+    @required String filterByCountry,
+  }) async {
+	  _token = await getStringValuesSF();
+    final country = filterByCountry == "null" || filterByCountry == null ? "country=" : "country=" + filterByCountry + "&";
+    final price = filterByPrice == "null" || filterByPrice == null ? "price<" : "price<" + filterByPrice + "&";
+    final availability = filterByAvailability == "null" || filterByAvailability == null ? "available=" : "available=" + filterByAvailability;
+    final base = "https://ssential.herokuapp.com/api/HealthFacility/?";
+    print('--------|url|--------|value -> ${(base + country + price + availability).toString()}');
+    final response = await this.httpClient.get(
+      base + country + price + availability,
+      headers: {
+        "Authorization": "Bearer " + _token,
+      },
+    );
+
+    if (response.statusCode != 200) {
+      print('--------|reasonPhrase|--------|value -> ${response.reasonPhrase.toString()}');
+      throw Exception("error fetching facility");
+    }
+
+    final allFacilities = facilityProfileModelListFromJson(response.body);
+    if (sortByCheapest == "true") {
+      final fetched = await this.fetchFacilityHourlyRate();
+      final fetchedSecond = await this.fetchFacilityHourlyRate();
+      var rate = int.parse(fetched.split(".").first);
+      var rateSecond = int.parse(fetchedSecond.split(".").first);
+      allFacilities.sort((a, b) {
+        rate = a.id;
+        rateSecond = b.id;
+        return rate.compareTo(rateSecond);
+      });
+      print("sorted");
+      return allFacilities;
+    }
+    return allFacilities;
+  }
+
+  //facilities
+  Future<List<FacilityProfileModel>> fetchFacilities(filterByFacilityType) async {
+    final facilityType = filterByFacilityType == "null" || filterByFacilityType == null || filterByFacilityType == "All"
+        ? "facility_type="
+        : "facility_type=" + filterByFacilityType;
+    _token = await getStringValuesSF();
+    final response = await this.httpClient.get(
+      "https://ssential.herokuapp.com/api/HealthFacility/?$facilityType",
+      headers: {
+        "Authorization": "Bearer " + _token,
+      },
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Error Fetching facilitites');
+    }
+    print(response.body);
+    return facilityProfileModelListFromJson(response.body).toList();
+  }
+
+  Future<String> fetchFacilityHourlyRate() async {
+    final _token = await getStringValuesSF();
+    print('--------|token|--------|value -> ${_token.toString()}');
+    final random = math.Random().nextInt(4);
+    final rateIndex = random == 0 ? 1 : random;
+    print(random);
+    final response = await this.httpClient.get(
+      "https://ssential.herokuapp.com/api/HealthFacility/OnlineBookingrates/$rateIndex/",
+      headers: {"Authorization": "Bearer " + _token, "Content-Type": "application/json"},
+    );
+    if (response.statusCode != 200) {
+      print('--------|response.reasonPhrase|--------|value -> ${response.reasonPhrase.toString()}');
+    }
+    final hourlyRate = json.decode(response.body)['upto_1_hour'];
+    return hourlyRate;
+  }
+
+  Future<List<FacilityOpenHoursModel>> fetchOpenHours(facilityID) async {
+    final _token = await getStringValuesSF();
+    print('--------|token|--------|value -> ${_token.toString()}');
+    final response = await this.httpClient.get(
+      "https://ssential.herokuapp.com/api/HealthFacility/openHrs/",
+      headers: {"Authorization": "Bearer " + _token, "Content-Type": "application/json"},
+    );
+    if (response.statusCode != 200) {
+      print('--------|response.reasonPhrase|--------|value -> ${response.reasonPhrase.toString()}');
+    }
+
+    return facilityOpenHoursFromJson(response.body).where((element) => element.facility == facilityID).toList();
+  }
+
+  Future fetchDepartmentsByFacilityID(facilityID) async {
+    final _token = await getStringValuesSF();
+    print('--------|token|--------|value -> ${_token.toString()}');
+    final response = await this.httpClient.get(
+      "https://ssential.herokuapp.com/api/HealthFacility/openHrs/",
+      headers: {"Authorization": "Bearer " + _token, "Content-Type": "application/json"},
+    );
+    if (response.statusCode != 200) {
+      print('--------|response.reasonPhrase|--------|value -> ${response.reasonPhrase.toString()}');
+    }
+  }
+
   //Individual User Profile Creation Endpoint
   Future<Profile> createProfile(String surname, phone, photo, dob, gender, residence, country, blood, chronic, longTerm, date, condition, code, disabilities,
       recreational, drugAllergies, foodAllergies) async {
@@ -704,6 +820,32 @@ class ApiService {
     return listOfReviewModelFromJson(response.body);
   }
 
+  //post review
+  Future<FacilityReviewModel> postFacilityReview(FacilityReviewModel review) async {
+    _token = await getStringValuesSF();
+    final mapData = facilityReviewModelToJson(review);
+
+    final response = await this.httpClient.post(
+          Uri.encodeFull('https://ssential.herokuapp.com/api/HealthFacility/reviews/'),
+          headers: {"Content-Type": "application/json", "Authorization": "Bearer " + _token},
+          body: mapData,
+        );
+    print("review respsonse | ${response.body}");
+    return facilityReviewModelFromJson(response.body);
+  }
+
+  //fetch reviews
+  Future<List<FacilityReviewModel>> fetchFacilityReviews() async {
+    _token = await getStringValuesSF();
+
+    final response = await this.httpClient.get(
+      'https://ssential.herokuapp.com/api/HealthFacility/reviews/',
+      headers: {"Content-Type": "application/json", "Authorization": "Bearer " + _token},
+    );
+    print("review respsonse | ${response.body}");
+    return facilityReviewModelListFromJson(response.body);
+  }
+
   Future<CallHistoryModel> addCallHistoryToDB(Map<String, dynamic> mapData) async {
     _token = await getStringValuesSF();
 
@@ -722,6 +864,24 @@ class ApiService {
     return callHistoryModelFromJson(response.body);
   }
 
+  Future<FacilityCallHistoryModel> addFacilityCallHistoryToDB(Map<String, dynamic> mapData) async {
+    _token = await getStringValuesSF();
+
+    final response = await http.post(
+      'https://ssential.herokuapp.com/api/HealthFacility/CallsHistory/',
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + _token,
+      },
+      body: json.encode(mapData),
+    );
+
+    print('--------|mapData|--------|value -> ${mapData.toString()}');
+    print(response.body);
+
+    return facilityCallHistoryModelFromJson(response.body);
+  }
+
   //appointments
   Future<AppointmentModel> bookAppointments(appointment) async {
     _token = await getStringValuesSF();
@@ -736,6 +896,19 @@ class ApiService {
     return appointmentModelFromJson(response.body);
   }
 
+  Future<FacilityAppointmentModel> bookFacilityAppointment(appointment) async {
+    _token = await getStringValuesSF();
+    final mapData = facilityAppointmentModelToJson(appointment);
+
+    final response = await this.httpClient.post(
+          Uri.encodeFull('https://ssential.herokuapp.com/api/HealthFacility/Appointments/'),
+          headers: {"Content-Type": "application/json", "Authorization": "Bearer " + _token},
+          body: mapData,
+        );
+    print("response data | " + response.body);
+    return facilityAppointmentModelFromJson(response.body);
+  }
+
   Future<List<AppointmentModel>> fetchBookingHistory(int userID, int docID, int status) async {
     _token = await getStringValuesSF();
     final response = await this.httpClient.get(
@@ -745,7 +918,19 @@ class ApiService {
 
     final allBookings = appointmentModelListFromJson(response.body);
 
-    final queriedBookings = allBookings.where((e) => e.user == userID && e.profile == docID).toList();
+    final queriedBookings = allBookings.where((e) => e.profile == docID).toList();
+    return queriedBookings;
+  }
+
+  Future<List<FacilityAppointmentModel>> fetchFacilityBookingHistory(int userID, int facilityID, int status) async {
+    _token = await getStringValuesSF();
+    final response = await this.httpClient.get(
+      Uri.encodeFull('https://ssential.herokuapp.com/api/HealthFacility/Appointments/'),
+      headers: {"Content-Type": "application/json", "Authorization": "Bearer " + _token},
+    );
+
+    final allBookings = facilityAppointmentModelListFromJson(response.body);
+    final queriedBookings = allBookings.where((e) => e.facility == facilityID).toList();
     return queriedBookings;
   }
 
@@ -765,7 +950,7 @@ class ApiService {
     if (callList.length == 0) {
       return [];
     } else {
-	    Future<List<PractitionerProfileModel>> getDocs() async {
+      Future<List<PractitionerProfileModel>> getDocs() async {
         List<PractitionerProfileModel> allDocDetails = [];
         for (final doc in callList) {
           final docdetail = await this.fetchDocDetails(doc.profile);
@@ -777,6 +962,36 @@ class ApiService {
 
       final allDocs = await getDocs();
       return practitionerProfileListModelFromJson(allDocs.map((e) => jsonEncode(e)).toList().toSet().toList().toString());
+    }
+  }
+
+  Future<List<FacilityProfileModel>> fetchAllFacilitiesCalled(userID) async {
+    _token = await getStringValuesSF();
+    final response = await http.get(
+      "https://ssential.herokuapp.com/api/HealthFacility/CallsHistory",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + _token,
+      },
+    );
+
+    final callList = facilityCallHistoryListModelFromJson(response.body).where((element) => element.user == userID).toList();
+
+    if (callList.length == 0) {
+      return [];
+    } else {
+      Future<List<FacilityProfileModel>> getFacilities() async {
+        List<FacilityProfileModel> allFacilityDetails = [];
+        for (final facility in callList) {
+          final facilityDetail = await this.fetchFacilityDetails(facility.facility);
+          allFacilityDetails.add(facilityDetail);
+        }
+
+        return allFacilityDetails;
+      }
+
+      final allFacilities = await getFacilities();
+      return facilityProfileModelListFromJson(allFacilities.map((e) => jsonEncode(e)).toList().toSet().toList().toString());
     }
   }
 
@@ -795,6 +1010,21 @@ class ApiService {
     return callHistoryListModelFromJson(response.body).where((element) => element.user == userID).toList();
   }
 
+  Future<List<FacilityCallHistoryModel>> fetchAllFacilityCallHistory(userID) async {
+    _token = await getStringValuesSF();
+    final response = await http.get(
+      "https://ssential.herokuapp.com/api/HealthFacility/CallsHistory",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + _token,
+      },
+    );
+
+    print('--------|response call|--------|value -> ${response.body.toString()}');
+
+    return facilityCallHistoryListModelFromJson(response.body).where((element) => element.user == userID).toList();
+  }
+
   Future<PractitionerProfileModel> fetchDocDetails(docID) async {
     _token = await getStringValuesSF();
     final response = await this.httpClient.get(
@@ -809,6 +1039,22 @@ class ApiService {
 
     print(response.body);
     return practitionerProfileModelFromJson(response.body);
+  }
+
+  Future<FacilityProfileModel> fetchFacilityDetails(facilityID) async {
+    _token = await getStringValuesSF();
+    final response = await this.httpClient.get(
+      "https://ssential.herokuapp.com/api/HealthFacility/$facilityID/",
+      headers: {
+        "Authorization": "Bearer " + _token,
+      },
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Error Fetching practitioner DETAILS');
+    }
+
+    print(response.body);
+    return facilityProfileModelFromJson(response.body);
   }
 
   //call balance
@@ -856,6 +1102,71 @@ class ApiService {
       print(fetchResponse.statusCode);
       return null;
     }
+  }
+
+  //manage bookings
+  Future<List<DocBookings>> fetchBookingsByID(id) async {
+    final _token = await getStringValuesSF();
+    final response = await http.get(
+      "https://ssential.herokuapp.com/api/doctors_consult/appointment/",
+      headers: {
+        'Authorization': 'Bearer ' + _token,
+        'Content-Type': 'application/json',
+      },
+    );
+
+    final allDocBookings = docBookingsListFromJson(response.body);
+
+    for (var doc in allDocBookings) {
+      print('--------|doc|--------|value -> ${doc.profile.toString()}');
+    }
+    final docBookings = allDocBookings.where((element) => element.profile == id).toList();
+
+    return docBookings;
+  }
+
+  Future<List<AcceptDeclineModel>> fetchAllPatientBookings() async {
+    final _token = await getStringValuesSF();
+    final response = await http.get(
+      "https://ssential.herokuapp.com/api/doctors_consult/patient/",
+      headers: {
+        'Authorization': 'Bearer ' + _token,
+        'Content-Type': 'application/json',
+      },
+    );
+
+    final allPatientBookings = acceptDeclineModelListFromJson(response.body);
+    return allPatientBookings;
+  }
+
+  Future<AcceptDeclineModel> declinePatientToDB(mapData) async {
+    final _token = await getStringValuesSF();
+    final response = await http.post(
+      "https://ssential.herokuapp.com/api/doctors_consult/patient/",
+      body: json.encode(mapData),
+      headers: {
+        'Authorization': 'Bearer ' + _token,
+        'Content-Type': 'application/json',
+      },
+    );
+
+    final booking = acceptDeclineModelFromJson(response.body);
+    return booking;
+  }
+
+  Future<AcceptDeclineModel> declinedPatientToDB(mapData) async {
+    final _token = await getStringValuesSF();
+    final response = await http.post(
+      "https://ssential.herokuapp.com/api/doctors_consult/patient/",
+      body: json.encode(mapData),
+      headers: {
+        'Authorization': 'Bearer ' + _token,
+        'Content-Type': 'application/json',
+      },
+    );
+
+    final booking = acceptDeclineModelFromJson(response.body);
+    return booking;
   }
 }
 

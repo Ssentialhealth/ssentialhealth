@@ -5,6 +5,7 @@ import 'package:pocket_health/bloc/login/loginBloc.dart';
 import 'package:pocket_health/bloc/login/loginState.dart';
 import 'package:pocket_health/screens/AdultUnwell/adult_unwell_screens/adult_unwell.dart';
 import 'package:pocket_health/screens/child_health/condition/child_health_immunization_screen.dart';
+import 'package:pocket_health/screens/facilities/facilities_categories_screen.dart';
 import 'package:pocket_health/screens/practitioners/practitioners_categories_screen.dart';
 import 'package:pocket_health/widgets/card_item.dart';
 import 'package:pocket_health/widgets/category_card.dart';
@@ -178,7 +179,35 @@ class _HomeScreenState extends State<HomeScreen> {
 
                     //health facilities
                     CardItem(
-                      press: () {},
+                      press: state is LoginLoaded && state.loginModel.user.userCategory == 'individual'
+                          ? () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return FacilitiesCategoriesScreen();
+                                  },
+                                ),
+                              );
+                            }
+                          : () {
+                              ScaffoldMessenger.of(context)
+                                ..clearSnackBars()
+                                ..showSnackBar(
+                                  SnackBar(
+                                    behavior: SnackBarBehavior.floating,
+                                    backgroundColor: Color(0xff163C4D),
+                                    duration: Duration(milliseconds: 6000),
+                                    content: Text(
+                                      'This feature is only available to users registered as individuals!',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                            },
                       image: "assets/images/hospital_facilities.png",
                       text: "Health Facilities",
                     ),

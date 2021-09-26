@@ -54,8 +54,8 @@ class _TopUpAccountState extends State<TopUpAccount> {
           buildWhen: (prev, curr) => prev == curr ? false : true,
           builder: (context, balanceState) {
             if (balanceState is CallBalanceFetchSuccess) {
-              final int balanceInKES = int.parse(balanceState.callBalanceModel.amount.split('.').first);
-              print('--------|balance-in-usd|--------|value -> ${balanceInKES.toString()}');
+              final int balanceInUSD = int.parse(balanceState.callBalanceModel.amount.split('.').first);
+              print('--------|balance-in-USD|--------|value -> ${balanceInUSD.toString()}');
               return Column(
                 children: [
                   Text(
@@ -108,7 +108,7 @@ class _TopUpAccountState extends State<TopUpAccount> {
                             ),
                           ),
                           Text(
-                            '$balanceInKES KES',
+                            '$balanceInUSD USD',
                             style: TextStyle(
                               color: Colors.black87,
                               fontSize: 22.sp,
@@ -117,16 +117,6 @@ class _TopUpAccountState extends State<TopUpAccount> {
                           ),
                         ],
                       ),
-                    ),
-                  ),
-
-                  SizedBox(height: 20.h),
-
-                  Text(
-                    'Choose amount you wish to pay (10 - 750 KES)',
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      color: textBlack,
                     ),
                   ),
 
@@ -157,7 +147,7 @@ class _TopUpAccountState extends State<TopUpAccount> {
                         filled: true,
                         focusColor: Colors.white,
                         contentPadding: EdgeInsets.all(10.0.w),
-                        hintText: 'Enter amount you wish to pay (10 - 750 KES)',
+                        hintText: 'Enter amount you wish to pay in USD',
                         hintStyle: TextStyle(
                           color: Colors.grey,
                           fontSize: 15.sp,
@@ -249,14 +239,14 @@ class _TopUpAccountState extends State<TopUpAccount> {
                               'Continue',
                               style: TextStyle(color: Colors.white),
                             ),
-                            onPressed: amountToPay != null && (amountToPay >= 10 && amountToPay <= 750)
+                            onPressed: amountToPay != null
                                 ? selectedVal == 'M-Pesa' || selectedVal == 'Card'
                                     ? () async {
                                         // Get a reference to RavePayInitializer
                                         RavePayInitializer initializer = RavePayInitializer(
-                                          amount: amountToPay.toDouble(),
+                                          amount: selectedVal == 'M-Pesa' ? amountToPay.toDouble() * 110.00 : amountToPay.toDouble(),
                                           country: "KE",
-                                          currency: "KES",
+                                          currency: selectedVal == 'M-Pesa' ? "KES" : "USD",
                                           email: "",
                                           txRef: "txRefTesting-${loginState.loginModel.user.email}",
                                           narration: 'For Ssential Health Credit',
@@ -326,9 +316,9 @@ class _TopUpAccountState extends State<TopUpAccount> {
                                               context.read<CallBalanceCubit>()
                                                 ..creditDeductAdd(
                                                   paymentType: paymentType,
-                                                  balance: (balanceInKES ?? 0) + amountToPay,
-                                                  amount: (balanceInKES ?? 0) + amountToPay,
-                                                  currency: "KES",
+                                                  balance: (balanceInUSD ?? 0) + amountToPay,
+                                                  amount: (balanceInUSD ?? 0) + amountToPay,
+                                                  currency: "USD",
                                                   user: 5,
                                                 );
                                             }
@@ -344,7 +334,7 @@ class _TopUpAccountState extends State<TopUpAccount> {
                                               cardEnabled: false,
                                               paypalRequest: BraintreePayPalRequest(
                                                 amount: amountToPay.toString(),
-                                                currencyCode: 'KES',
+                                                currencyCode: 'USD',
                                                 billingAgreementDescription: 'NULL',
                                                 displayName: 'Ssential Health',
                                               ),
@@ -356,9 +346,9 @@ class _TopUpAccountState extends State<TopUpAccount> {
                                                 context.read<CallBalanceCubit>()
                                                   ..creditDeductAdd(
                                                     paymentType: 'PayPal',
-                                                    balance: (balanceInKES ?? 0) + amountToPay,
-                                                    amount: (balanceInKES ?? 0) + amountToPay,
-                                                    currency: "KES",
+                                                    balance: (balanceInUSD ?? 0) + amountToPay,
+                                                    amount: (balanceInUSD ?? 0) + amountToPay,
+                                                    currency: "USD",
                                                     user: 5,
                                                   );
                                                 print('--------|devicedata|--------|value -> ${result.deviceData.toString()}');

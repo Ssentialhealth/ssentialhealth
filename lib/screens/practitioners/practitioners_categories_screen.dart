@@ -99,16 +99,11 @@ class _PractitionersCategoriesScreenState extends State<PractitionersCategoriesS
                   height: 110.h,
                   width: 1.sw,
                 ),
-                Positioned(
-                  left: -45.w,
-                  top: -47.h,
-                  child: Container(
-                    width: 460.w,
-                    height: 167.h,
-                    child: Image(
-                      fit: BoxFit.fitWidth,
-                      image: AssetImage('assets/images/practitioners_banner.png'),
-                    ),
+                Container(
+                  width: 1.sw,
+                  child: Image(
+                    fit: BoxFit.fitWidth,
+                    image: AssetImage('assets/images/practitioners_banner.png'),
                   ),
                 ),
               ],
