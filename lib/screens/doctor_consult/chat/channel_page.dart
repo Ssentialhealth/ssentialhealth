@@ -79,7 +79,28 @@ class _ChannelPageState extends State<ChannelPage> {
           ),
         ),
         actions: doctorsView
-            ? []
+            ? [
+                // more details page
+                IconButton(
+                  onPressed: () async {
+                    final streamProfile = await channel
+                        .queryMembers(filter: {}).then((value) => value.members.firstWhere((e) => e.userId != StreamChat.of(context).user.id).user);
+
+                    final userCategory = streamProfile.extraData['userCategory'];
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (ctx) => StreamChannel(
+                          channel: channel,
+                          child: ChannelDetailsPage(
+                            userCategory: userCategory,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                  icon: Icon(Icons.info_outline),
+                ),
+              ]
             : [
                 // video call
                 IconButton(

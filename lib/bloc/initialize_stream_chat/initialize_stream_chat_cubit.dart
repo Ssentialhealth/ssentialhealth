@@ -30,18 +30,35 @@ class InitializeStreamChatCubit extends Cubit<InitializeStreamChatState> {
       await _client.disconnect();
       await _client.connectUserWithProvider(
         User(
-          id: 'TestUser4',
+          id: 'TestUser5',
           extraData: {
             "userCategory": userCategory,
             "name": "David Mochoge",
           },
         ),
-        // User(
-        //   id: 'DrTestDoctor47',
-        //   extraData: {
-        //     "userCategory": 'doctor',
-        //   },
-        // ),
+      );
+
+      emit(StreamChatSuccess(_client));
+    } catch (e) {
+      emit(StreamChatFailure());
+      print("initalize stream error" + e.toString());
+    }
+  }
+
+  void initializeServiceProvider(String streamUserID, String userCategory) async {
+    //TODO: inProduction | add real data
+    emit(StreamChatLoading());
+
+    try {
+      await _client.disconnect();
+      await _client.connectUserWithProvider(
+        User(
+          id: 'docIDTestFive16',
+          extraData: {
+            "userCategory": userCategory,
+            "name": "David Mochoge",
+          },
+        ),
       );
 
       emit(StreamChatSuccess(_client));
@@ -53,11 +70,11 @@ class InitializeStreamChatCubit extends Cubit<InitializeStreamChatState> {
 
   void initializeChannel(String streamUserID, PractitionerProfileModel doc, String userCategory, bool isVerified) async {
     //TODO: inProduction | add real data
-    emit(StreamChannelLoading());
+	  emit(StreamChannelLoading());
     // final docID = streamDocID.split(' ').first;
     // final userID = streamUserID.split(' ').first;
 
-    final docID = 'docIDTestThree${doc.user}';
+    final docID = 'docIDTestFive${doc.user}';
     // final userID = 'TestLewis';
     try {
       await client.disconnect();
@@ -78,7 +95,7 @@ class InitializeStreamChatCubit extends Cubit<InitializeStreamChatState> {
 
       await client.connectUserWithProvider(
         User(
-          id: "TestUser3",
+	        id: "TestUser5",
           extraData: {
             "userCategory": 'individual',
             "name": "David Mochoge",
@@ -92,7 +109,7 @@ class InitializeStreamChatCubit extends Cubit<InitializeStreamChatState> {
       );
 
       await channel.create();
-      await channel.addMembers([docID, 'TestUser3']);
+      await channel.addMembers([docID, 'TestUser5']);
       await channel.watch();
       emit(StreamChannelSuccess(channel, docID));
     } catch (err) {
@@ -103,9 +120,9 @@ class InitializeStreamChatCubit extends Cubit<InitializeStreamChatState> {
 
   void initializeFacilityChannel(String streamUserID, FacilityProfileModel facility, String userCategory, bool isVerified, int facilityHourlyRate) async {
     //TODO: inProduction | add real data
-    emit(StreamChannelLoading());
+	  emit(StreamChannelLoading());
 
-    final facilityID = 'facilityIDTestThree${facility.id}';
+    final facilityID = 'facilityIDTestFive${facility.id}';
     try {
       await client.disconnect();
       await client.connectUserWithProvider(
@@ -123,7 +140,7 @@ class InitializeStreamChatCubit extends Cubit<InitializeStreamChatState> {
       await client.disconnect();
       await client.connectUserWithProvider(
         User(
-          id: "TestUser4",
+	        id: "TestUser5",
           extraData: {
             "userCategory": 'individual',
             "name": "David Mochoge",
@@ -135,7 +152,7 @@ class InitializeStreamChatCubit extends Cubit<InitializeStreamChatState> {
         id: facilityID,
       );
       await channel.create();
-      await channel.addMembers([facilityID, 'TestUser4']);
+      await channel.addMembers([facilityID, 'TestUser5']);
       await channel.watch();
       emit(StreamChannelSuccess(channel, facilityID));
     } catch (err) {

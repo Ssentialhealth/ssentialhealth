@@ -309,7 +309,7 @@ class _ChannelDetailsPageState extends State<ChannelDetailsPage> {
 
                     Divider(height: 1, thickness: 1.r, color: Color(0xffB3B3B3)),
 
-                    widget.userCategory == "practitioner"
+                    widget.userCategory != "individual"
                         ? BlocBuilder<SavedContactsCubit, SavedContactsState>(
                             builder: (context, state) {
                               if (state is SavedContactsSuccess) {

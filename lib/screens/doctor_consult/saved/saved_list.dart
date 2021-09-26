@@ -57,7 +57,7 @@ class _SavedListState extends State<SavedList> {
                         List<FacilityProfileModel> facilityDetailsSaved = [];
                         state.facilityProfiles.forEach((e) {
                           savedState.savedFacilityContacts.forEach((element) {
-                            if (e.id.toString() == element.replaceAll("facilityIDTestThree", '')) {
+                            if (e.id.toString() == element.replaceAll("facilityIDTestFive", '')) {
                               return facilityDetailsSaved.add(e);
                             }
                           });
@@ -484,7 +484,7 @@ class _SavedListState extends State<SavedList> {
                         List<PractitionerProfileModel> docsDetailsSaved = [];
                         state.practitionerProfiles.forEach((e) {
                           savedState.savedContacts.forEach((element) {
-                            if (e.user.toString() == element.replaceAll("docIDTestThree", '')) {
+	                          if (e.user.toString() == element.replaceAll("docIDTestFive", '')) {
                               return docsDetailsSaved.add(e);
                             }
                           });
