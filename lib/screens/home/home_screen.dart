@@ -7,6 +7,7 @@ import 'package:pocket_health/screens/AdultUnwell/adult_unwell_screens/adult_unw
 import 'package:pocket_health/screens/child_health/condition/child_health_immunization_screen.dart';
 import 'package:pocket_health/screens/facilities/facilities_categories_screen.dart';
 import 'package:pocket_health/screens/practitioners/practitioners_categories_screen.dart';
+import 'package:pocket_health/screens/pregnancy_lactation/pregnancy_lactation.dart';
 import 'package:pocket_health/widgets/card_item.dart';
 import 'package:pocket_health/widgets/category_card.dart';
 import 'package:pocket_health/widgets/welcome_dart.dart';
@@ -104,7 +105,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     //immunization
                     CardItem(
                       press: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => CHIScreen()));
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CHIScreen(),
+                          ),
+                        );
                       },
                       image: "assets/images/child_health_ immunisation.png",
                       text: "Child Health & Immunisation",
@@ -112,7 +118,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
                     //pregnancy
                     CardItem(
-                      press: () {},
+                      press: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PregnancyLactation(),
+                          ),
+                        );
+                      },
                       image: "assets/images/pregnancy_lactation.png",
                       text: "Pregnancy & Lactation",
                     ),
