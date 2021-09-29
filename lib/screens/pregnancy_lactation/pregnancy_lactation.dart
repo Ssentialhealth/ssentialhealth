@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import "package:flutter_screenutil/flutter_screenutil.dart";
+import 'package:pocket_health/screens/pregnancy_lactation/widgets/pregnancy_lactation_resources.dart';
+import 'package:pocket_health/screens/pregnancy_lactation/widgets/unwell_pregnancy_lactation.dart';
 import 'package:pocket_health/utils/constants.dart';
 
-import 'info_diagram.dart';
+import 'widgets/info_diagram.dart';
+import 'widgets/nutrition_physical_wellness.dart';
 
 class PregnancyLactation extends StatefulWidget {
   @override
@@ -18,7 +21,7 @@ class _PregnancyLactationState extends State<PregnancyLactation> {
     "Unwell in Pregnancy or Lactation",
     'Mental Wellness',
     "Nutrition and physical wellness",
-    "Pregnancy/Lactation resources",
+    "Pregnancy or Lactation resources",
   ];
 
   @override
@@ -118,7 +121,31 @@ class _PregnancyLactationState extends State<PregnancyLactation> {
                               },
                             ),
                           )
-                        : Container();
+                        : category == "Nutrition and physical wellness"
+                            ? Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return NutritionPhysicalWellness();
+                                  },
+                                ),
+                              )
+                            : category == "Unwell in Pregnancy or Lactation"
+                                ? Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return UnwellPregnancyLactation();
+                                      },
+                                    ),
+                                  )
+                                : category == "Pregnancy or Lactation resources"
+                                    ? Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) {
+                                            return PregnancyLactationResources();
+                                          },
+                                        ),
+                                      )
+                                    : Container();
                   },
                 );
               },
