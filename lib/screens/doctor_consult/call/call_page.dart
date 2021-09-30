@@ -171,7 +171,7 @@ class _CallPageState extends State<CallPage> {
         leaveChannel: (stats) async {
           setState(() {
             showEndedScreen = true;
-            callTime = stats.totalDuration;
+            callTime = stats.duration;
 
             _infoStrings.add('onLeaveChannel ✔ :: stats: ${stats.toJson()}');
             _users.clear();

@@ -12,6 +12,7 @@ import 'package:pocket_health/bloc/search_organ/search_organ_state.dart';
 import 'package:pocket_health/screens/AdultUnwell/condition_details/conditionDetailsScreen.dart';
 import 'package:pocket_health/screens/doctor_consult/doctor_consult.dart';
 import 'package:pocket_health/screens/facilities/facilities_categories_screen.dart';
+import 'package:pocket_health/utils/constants.dart';
 import 'package:pocket_health/widgets/adult_unwell_menu_items.dart';
 import 'package:pocket_health/widgets/widget.dart';
 
@@ -32,10 +33,11 @@ class _OrgansState extends State<Organs> {
       appBar: AppBar(
         title: Text(
           "Main Affected System/Organ",
-          style: TextStyle(fontSize: 18),
+          style: appBarStyle,
         ),
-        backgroundColor: Color(0xFF00FFFF),
         centerTitle: true,
+        elevation: 0.0,
+        backgroundColor: Color(0xFF00FFFF),
       ),
       body: Container(
         child: BlocBuilder<OrgansBloc, OrgansState>(
