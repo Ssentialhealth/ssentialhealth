@@ -10,7 +10,7 @@ final mentalHealthResourcesServiceProvider = Provider<MentalHealthResourcesServi
 class MentalHealthResourcesService {
   Future<List<MentalHealthResourcesModel>> fetchMentalResources() async {
     try {
-      final _token = getStringValuesSF();
+      final _token = await getStringValuesSF();
       final response = await http.get(
         "https://ssential.herokuapp.com/api/MentalHealthResources/",
         headers: {

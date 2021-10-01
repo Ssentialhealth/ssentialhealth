@@ -2,14 +2,22 @@ import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pocket_health/screens/mental_health/mental_health_resources_model.dart';
+import 'package:pocket_health/screens/pregnancy_lactation/widgets/pregnancy_lactation_resources.dart';
 import 'package:pocket_health/utils/constants.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'copy_to_clipboard.dart';
 
 class LinkCard extends StatelessWidget {
-  final MentalHealthResourcesModel linkResource;
-  const LinkCard({Key key, this.linkResource}) : super(key: key);
+  final MentalHealthResourcesModel mentalLinkResource;
+  final PregnancyLactationResources pregLinkResource;
+  final String from;
+  const LinkCard({
+    Key key,
+    this.mentalLinkResource,
+    this.pregLinkResource,
+    this.from,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +42,7 @@ class LinkCard extends StatelessWidget {
                   Container(
                     width: 306,
                     child: Text(
-                      linkResource.resourceInfo,
+                      from == "preg" ? pregLinkResource : mentalLinkResource.resourceInfo,
                       softWrap: true,
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
@@ -66,7 +74,7 @@ class LinkCard extends StatelessWidget {
                   Container(
                     width: 306.w,
                     child: Text(
-                      linkResource.resourceInfo,
+                      mentalLinkResource.resourceInfo,
                       softWrap: true,
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
@@ -101,7 +109,7 @@ class LinkCard extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Text(
-                            linkResource.information,
+                            mentalLinkResource.information.split("http").first,
                             style: TextStyle(
                               fontSize: 13.sp,
                               color: Colors.black87,
@@ -110,10 +118,10 @@ class LinkCard extends StatelessWidget {
                           SizedBox(height: 8.h),
                           GestureDetector(
                             onTap: () {
-                              _launchURL("http" + linkResource.resourceInfo.split('http').last);
+                              _launchURL("http" + mentalLinkResource.information.split('http').last);
                             },
                             child: Text(
-                              "http" + linkResource.resourceInfo.split('http').last,
+                              "http" + mentalLinkResource.information.split('http').last,
                               style: TextStyle(
                                 fontSize: 13.sp,
                                 color: Colors.lightBlue,
@@ -125,7 +133,7 @@ class LinkCard extends StatelessWidget {
                     ),
                     SizedBox(width: 8.w),
                     CopyToClipboard(
-                      toCopy: "http" + linkResource.resourceInfo.split('http').last,
+                      toCopy: "http" + mentalLinkResource.information.split('http').last,
                     ),
                   ],
                 ),

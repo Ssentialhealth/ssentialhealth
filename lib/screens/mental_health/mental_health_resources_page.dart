@@ -38,8 +38,8 @@ class MentalHealthResourcesPage extends StatelessWidget {
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
                       itemBuilder: (BuildContext context, int index) {
-                        final linkResource = linkResources[index] ?? [MentalHealthResourcesService()];
-                        return LinkCard(linkResource: linkResource);
+                        final linkResource = linkResources.isNotEmpty ? linkResources[index] : [MentalHealthResourcesService()];
+                        return LinkCard(mentalLinkResource: linkResource);
                       },
                     ),
                     ListView.builder(
@@ -47,7 +47,7 @@ class MentalHealthResourcesPage extends StatelessWidget {
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
                       itemBuilder: (BuildContext context, int index) {
-                        final contactResource = contactResources[index] ?? [MentalHealthResourcesService()];
+                        final contactResource = contactResources.isNotEmpty ? contactResources[index] : [MentalHealthResourcesService()];
                         return ContactCard(contactResource: contactResource);
                       },
                     ),
