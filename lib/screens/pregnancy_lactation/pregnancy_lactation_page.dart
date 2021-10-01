@@ -7,12 +7,12 @@ import 'package:pocket_health/utils/constants.dart';
 import 'widgets/info_diagram.dart';
 import 'widgets/nutrition_physical_wellness.dart';
 
-class PregnancyLactation extends StatefulWidget {
+class PregnancyLactationPage extends StatefulWidget {
   @override
-  _PregnancyLactationState createState() => _PregnancyLactationState();
+  _PregnancyLactationPageState createState() => _PregnancyLactationPageState();
 }
 
-class _PregnancyLactationState extends State<PregnancyLactation> {
+class _PregnancyLactationPageState extends State<PregnancyLactationPage> {
   String searchQuery = '';
   List<String> filteredCategories = [];
   final List<String> categories = [
