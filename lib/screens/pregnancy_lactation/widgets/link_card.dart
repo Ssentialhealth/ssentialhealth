@@ -1,13 +1,15 @@
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pocket_health/screens/mental_health/mental_health_resources_model.dart';
 import 'package:pocket_health/utils/constants.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'copy_to_clipboard.dart';
 
 class LinkCard extends StatelessWidget {
-  const LinkCard({Key key}) : super(key: key);
+  final MentalHealthResourcesModel linkResource;
+  const LinkCard({Key key, this.linkResource}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +34,7 @@ class LinkCard extends StatelessWidget {
                   Container(
                     width: 306,
                     child: Text(
-                      "Central information about Pregnancy & Lactation conditions, health, quizzes etc",
+                      linkResource.resourceInfo,
                       softWrap: true,
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
@@ -64,7 +66,7 @@ class LinkCard extends StatelessWidget {
                   Container(
                     width: 306.w,
                     child: Text(
-                      "Central information about Pregnancy & Lactation conditions, health, quizzes etc",
+                      linkResource.resourceInfo,
                       softWrap: true,
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
@@ -86,7 +88,10 @@ class LinkCard extends StatelessWidget {
               padding: EdgeInsets.only(left: 16.w, right: 16.w, bottom: 16.0.w),
               child: Container(
                 padding: EdgeInsets.all(16.w),
-                color: accentColorLight,
+                decoration: BoxDecoration(
+                  color: accentColorLight,
+                  borderRadius: BorderRadius.circular(8.w),
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
@@ -96,7 +101,7 @@ class LinkCard extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Text(
-                            "rule.descriptisssssssssssssssssssssssssssssssssssssssssssssssssssssssssssson",
+                            linkResource.information,
                             style: TextStyle(
                               fontSize: 13.sp,
                               color: Colors.black87,
@@ -105,10 +110,10 @@ class LinkCard extends StatelessWidget {
                           SizedBox(height: 8.h),
                           GestureDetector(
                             onTap: () {
-                              _launchURL("https://example.com");
+                              _launchURL("http" + linkResource.resourceInfo.split('http').last);
                             },
                             child: Text(
-                              "https://example.com/",
+                              "http" + linkResource.resourceInfo.split('http').last,
                               style: TextStyle(
                                 fontSize: 13.sp,
                                 color: Colors.lightBlue,
@@ -119,7 +124,9 @@ class LinkCard extends StatelessWidget {
                       ),
                     ),
                     SizedBox(width: 8.w),
-                    CopyToClipboard(toCopy: "https://example.com"),
+                    CopyToClipboard(
+                      toCopy: "http" + linkResource.resourceInfo.split('http').last,
+                    ),
                   ],
                 ),
               ),

@@ -1,13 +1,16 @@
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pocket_health/screens/mental_health/mental_health_resources_model.dart';
 import 'package:pocket_health/utils/constants.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'copy_to_clipboard.dart';
 
 class ContactCard extends StatelessWidget {
-  const ContactCard({Key key}) : super(key: key);
+  final MentalHealthResourcesModel contactResource;
+
+  const ContactCard({Key key, this.contactResource}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +35,7 @@ class ContactCard extends StatelessWidget {
                   Container(
                     width: 306,
                     child: Text(
-                      "Kenya Contacts",
+                      contactResource.country,
                       softWrap: true,
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
@@ -64,7 +67,7 @@ class ContactCard extends StatelessWidget {
                   Container(
                     width: 306.w,
                     child: Text(
-                      "Kenya Contacts",
+                      contactResource.country,
                       softWrap: true,
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
@@ -96,7 +99,7 @@ class ContactCard extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Text(
-                            "Befrienders Association of Kenya",
+                            contactResource.information,
                             style: TextStyle(
                               fontSize: 13.sp,
                               color: Colors.black87,
@@ -114,11 +117,11 @@ class ContactCard extends StatelessWidget {
                                 Icon(Icons.call, size: 18.w, color: accentColorDark),
                                 SizedBox(width: 15.w),
                                 Text(
-                                  '0722222222',
+                                  contactResource.phoneNumber,
                                   style: TextStyle(color: textBlack, fontSize: 15.sp),
                                 ),
                                 Spacer(),
-                                CopyToClipboard(toCopy: "072222222"),
+                                CopyToClipboard(toCopy: contactResource.phoneNumber),
                               ],
                             ),
                           ),
@@ -131,11 +134,11 @@ class ContactCard extends StatelessWidget {
                                 Icon(Icons.mail, size: 18.w, color: accentColorDark),
                                 SizedBox(width: 15.w),
                                 Text(
-                                  'johndoe@email.com',
+                                  contactResource.email,
                                   style: TextStyle(color: textBlack, fontSize: 15.sp),
                                 ),
                                 Spacer(),
-                                CopyToClipboard(toCopy: "johndoe@gmail.com"),
+                                CopyToClipboard(toCopy: contactResource.email),
                               ],
                             ),
                           ),
@@ -153,5 +156,3 @@ class ContactCard extends StatelessWidget {
     );
   }
 }
-
-void _launchURL(url) async => await canLaunch(url) ? await launch(url) : throw 'Could not launch $url';

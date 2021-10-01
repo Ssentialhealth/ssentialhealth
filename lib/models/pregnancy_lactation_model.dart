@@ -5,11 +5,20 @@
 import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:meta/meta.dart';
+import 'package:pocket_health/repository/pregnancy_lactation_repo.dart';
 
 PregnancyLactationModel pregnancyLactationModelFromJson(String str) => PregnancyLactationModel.fromJson(json.decode(str));
 
 String pregnancyLactationModelToJson(PregnancyLactationModel data) => json.encode(data.toJson());
+
+final AutoDisposeFutureProvider<PregnancyLactationModel> pregModelProvider = FutureProvider.autoDispose<PregnancyLactationModel>((ref) async {
+  ref.maintainState = true;
+  final pregService = ref.watch(pregServiceProvider);
+  final data = await pregService.getPregnancyLactationInfo();
+  return data;
+});
 
 class PregnancyLactationModel extends Equatable {
   PregnancyLactationModel({
