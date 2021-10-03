@@ -1,6 +1,7 @@
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pocket_health/models/pregnancy_lactation_resources_model.dart';
 import 'package:pocket_health/screens/mental_health/mental_health_resources_model.dart';
 import 'package:pocket_health/screens/pregnancy_lactation/widgets/pregnancy_lactation_resources.dart';
 import 'package:pocket_health/utils/constants.dart';
@@ -10,14 +11,9 @@ import 'copy_to_clipboard.dart';
 
 class LinkCard extends StatelessWidget {
   final MentalHealthResourcesModel mentalLinkResource;
-  final PregnancyLactationResources pregLinkResource;
+  final PregnancyLactationResourcesModel pregLinkResource;
   final String from;
-  const LinkCard({
-    Key key,
-    this.mentalLinkResource,
-    this.pregLinkResource,
-    this.from,
-  }) : super(key: key);
+  const LinkCard({Key key, this.mentalLinkResource, this.pregLinkResource, this.from}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +38,7 @@ class LinkCard extends StatelessWidget {
                   Container(
                     width: 306,
                     child: Text(
-                      from == "preg" ? pregLinkResource : mentalLinkResource.resourceInfo,
+                      from == "preg" ? pregLinkResource.resourceInfo : mentalLinkResource.resourceInfo,
                       softWrap: true,
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
@@ -74,7 +70,7 @@ class LinkCard extends StatelessWidget {
                   Container(
                     width: 306.w,
                     child: Text(
-                      mentalLinkResource.resourceInfo,
+                      from == "preg" ? pregLinkResource.resourceInfo : mentalLinkResource.resourceInfo,
                       softWrap: true,
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
@@ -109,7 +105,7 @@ class LinkCard extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Text(
-                            mentalLinkResource.information.split("http").first,
+                            from == "preg" ? pregLinkResource.information.split("http").first : mentalLinkResource.information.split("http").first,
                             style: TextStyle(
                               fontSize: 13.sp,
                               color: Colors.black87,
@@ -118,10 +114,14 @@ class LinkCard extends StatelessWidget {
                           SizedBox(height: 8.h),
                           GestureDetector(
                             onTap: () {
-                              _launchURL("http" + mentalLinkResource.information.split('http').last);
+                              from == "preg"
+                                  ? _launchURL("http" + pregLinkResource.information.split('http').last)
+                                  : _launchURL("http" + mentalLinkResource.information.split('http').last);
                             },
                             child: Text(
-                              "http" + mentalLinkResource.information.split('http').last,
+                              from == "preg"
+                                  ? "http" + pregLinkResource.information.split("http").last
+                                  : "http" + mentalLinkResource.information.split('http').last,
                               style: TextStyle(
                                 fontSize: 13.sp,
                                 color: Colors.lightBlue,
@@ -133,7 +133,9 @@ class LinkCard extends StatelessWidget {
                     ),
                     SizedBox(width: 8.w),
                     CopyToClipboard(
-                      toCopy: "http" + mentalLinkResource.information.split('http').last,
+                      toCopy: from == "preg"
+                          ? "http" + pregLinkResource.information.split('http').last
+                          : "http" + mentalLinkResource.information.split('http').last,
                     ),
                   ],
                 ),

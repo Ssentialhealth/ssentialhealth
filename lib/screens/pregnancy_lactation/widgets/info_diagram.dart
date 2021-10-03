@@ -28,7 +28,7 @@ class InfoDiagram extends StatelessWidget {
               final pregModelAsyncVal = watch(pregModelProvider);
 
               return pregModelAsyncVal.when(
-                data: (pregModels) => Padding(
+                data: (pregData) => Padding(
                   padding: EdgeInsets.all(16.0.w),
                   child: Column(
                     children: [
@@ -46,10 +46,12 @@ class InfoDiagram extends StatelessWidget {
                       SizedBox(height: 10),
                       Text(
                         category == 'Menstrual cycle (Period cycle)'
-                            ? pregModels.menstrualCycleOrPeriodCycle
+                            ? pregData.menstrualCycleOrPeriodCycle
                             : category == 'Normal Pregnancy or Lactation'
-                                ? pregModels.normalPregnancyOrLactation
-                                : "Mental Wellness Here",
+                                ? pregData.normalPregnancyOrLactation
+                                : category == "Mental Wellness"
+                                    ?pregData.mentalWellness
+                                    : "",
                         softWrap: true,
                         style: TextStyle(),
                       ),

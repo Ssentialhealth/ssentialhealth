@@ -143,13 +143,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ),
                             );
-                        }
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => PregnancyLactationPage(),
-                          ),
-                        );
+                        } else
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PregnancyLactationPage(),
+                            ),
+                          );
                       },
                       image: "assets/images/pregnancy_lactation.png",
                       text: "Pregnancy & Lactation",
@@ -191,13 +191,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                         ),
                                       ),
                                     );
-                                }
-                                if (index == 0) {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) => MentalHealthPage(),
-                                    ),
-                                  );
+                                } else {
+                                  if (index == 0) {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => MentalHealthPage(),
+                                      ),
+                                    );
+                                  }
                                 }
                               },
                             ),

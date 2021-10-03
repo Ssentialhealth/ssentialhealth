@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pocket_health/models/pregnancy_lactation_resources_model.dart';
 import 'package:pocket_health/utils/constants.dart';
 
 import 'contact_card.dart';
@@ -21,11 +23,51 @@ class PregnancyLactationResources extends StatelessWidget {
           backgroundColor: Color(0xFF00FFFF),
         ),
         body: SingleChildScrollView(
-          child: Column(
-            children: [
-              LinkCard(),
-              ContactCard(),
-            ],
+          child: Consumer(
+            builder: (context, ScopedReader watch, child) {
+              final resourcesAsyncVal = watch(pregnancyLactationResourcesModelFutureProvider);
+              return resourcesAsyncVal.when(
+                data: (resources) {
+                  final pregLinkResources = resources.where((element) => element.information.contains("http")).toList();
+
+                  return Column(
+                    children: [
+                      ListView.builder(
+                        itemCount: pregLinkResources.length,
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemBuilder: (BuildContext context, int index) {
+                          final pregLinkResource = pregLinkResources[index];
+                          return LinkCard(from: "preg", pregLinkResource: pregLinkResource);
+                        },
+                      ),
+                      ContactCard(from: "preg"),
+                    ],
+                  );
+                },
+                loading: () => Container(
+                  child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
+                ),
+                error: (err, stack) {
+                  print('--------|stack|--------|value -> ${stack.toString()}');
+
+                  return Container(
+                    height: 100,
+                    width: 100,
+                    color: Colors.red,
+                    child: Text(
+                      err,
+                      style: TextStyle(),
+                    ),
+                  );
+                },
+              );
+            },
           ),
         ),
       ),

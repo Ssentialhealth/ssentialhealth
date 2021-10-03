@@ -42,15 +42,7 @@ class MentalHealthResourcesPage extends StatelessWidget {
                         return LinkCard(mentalLinkResource: linkResource);
                       },
                     ),
-                    ListView.builder(
-                      itemCount: contactResources?.length,
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemBuilder: (BuildContext context, int index) {
-                        final contactResource = contactResources.isNotEmpty ? contactResources[index] : [MentalHealthResourcesService()];
-                        return ContactCard(contactResource: contactResource);
-                      },
-                    ),
+                    ContactCard(),
                   ],
                 );
               },

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pocket_health/models/pregnancy_lactation_model.dart';
 import 'package:pocket_health/screens/doctor_consult/doctor_consult.dart';
 import 'package:pocket_health/utils/constants.dart';
 
@@ -71,10 +73,10 @@ class _NutritionPhysicalWellnessState extends State<NutritionPhysicalWellness> w
                       ),
                       tabs: [
                         Tab(
-                          text: 'Nutrition',
+                          text: 'Nutritional',
                         ),
                         Tab(
-                          text: 'Wellness',
+                          text: 'Physical',
                         ),
                       ],
                     ),
@@ -88,18 +90,84 @@ class _NutritionPhysicalWellnessState extends State<NutritionPhysicalWellness> w
             children: [
               Column(
                 children: [
-                  Text(
-                    'a',
-                    style: TextStyle(),
-                  ),
+                  Consumer(
+                    builder: (context, ScopedReader watch, child) {
+                      final pregModelAsyncVal = watch(pregModelProvider);
+                      return pregModelAsyncVal.when(
+                        data: (pregData) => Padding(
+                          padding: EdgeInsets.all(16.0.w),
+                          child: Column(
+                            children: [
+                              Text(
+                                pregData.physicalWellness,
+                                style: TextStyle(),
+                              ),
+                            ],
+                          ),
+                        ),
+                        loading: () => Padding(
+                          padding: EdgeInsets.all(16.0.w),
+                          child: Container(
+                            height: 24.h,
+                            width: 24.h,
+                            child: CircularProgressIndicator(),
+                          ),
+                        ),
+                        error: (err, stack) {
+                          return Container(
+                            height: 100,
+                            width: 100,
+                            color: Colors.red,
+                            child: Text(
+                              err,
+                              style: TextStyle(),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  )
                 ],
               ),
               Column(
                 children: [
-                  Text(
-                    'a',
-                    style: TextStyle(),
-                  ),
+                  Consumer(
+                    builder: (context, ScopedReader watch, child) {
+                      final pregModelAsyncVal = watch(pregModelProvider);
+                      return pregModelAsyncVal.when(
+                        data: (pregData) => Padding(
+                          padding: EdgeInsets.all(16.0.w),
+                          child: Column(
+                            children: [
+                              Text(
+                                pregData.nutritionWellness,
+                                style: TextStyle(),
+                              ),
+                            ],
+                          ),
+                        ),
+                        loading: () => Padding(
+                          padding: EdgeInsets.all(16.0.w),
+                          child: Container(
+                            height: 24.h,
+                            width: 24.h,
+                            child: CircularProgressIndicator(),
+                          ),
+                        ),
+                        error: (err, stack) {
+                          return Container(
+                            height: 100,
+                            width: 100,
+                            color: Colors.red,
+                            child: Text(
+                              err,
+                              style: TextStyle(),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  )
                 ],
               ),
             ],

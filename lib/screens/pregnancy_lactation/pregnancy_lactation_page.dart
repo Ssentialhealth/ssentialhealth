@@ -20,7 +20,7 @@ class _PregnancyLactationPageState extends State<PregnancyLactationPage> {
     'Normal Pregnancy or Lactation',
     "Unwell in Pregnancy or Lactation",
     'Mental Wellness',
-    "Nutrition and physical wellness",
+    "Nutritional And Physical wellness",
     "Pregnancy or Lactation resources",
   ];
 
@@ -121,7 +121,7 @@ class _PregnancyLactationPageState extends State<PregnancyLactationPage> {
                               },
                             ),
                           )
-                        : category == "Nutrition and physical wellness"
+                        : category == "Nutritional And Physical wellness"
                             ? Navigator.of(context).push(
                                 MaterialPageRoute(
                                   builder: (context) {
