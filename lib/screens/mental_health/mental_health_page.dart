@@ -5,9 +5,9 @@ import 'package:pocket_health/bloc/list_practitioners/list_practitioners_cubit.d
 import 'package:pocket_health/screens/practitioners/practitioners_list_screen.dart';
 import 'package:pocket_health/utils/constants.dart';
 import 'package:pocket_health/widgets/child_card_item.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import 'mental_health_conditions_page.dart';
+import 'consult_categories.dart';
+import 'mental_health_overview_page.dart';
 import 'mental_health_resources_page.dart';
 
 class MentalHealthPage extends StatelessWidget {
@@ -33,12 +33,9 @@ class MentalHealthPage extends StatelessWidget {
               SizedBox(height: 10.h),
               ChildCardItem(
                 press: () async {
-                  SharedPreferences prefs = await SharedPreferences.getInstance();
-                  final bool mentalHealthIsAgreed = prefs.getBool("mentalHealthIsAgreed");
-                  final newVal = mentalHealthIsAgreed == null ? await prefs.setBool("mentalHealthIsAgreed", false) : mentalHealthIsAgreed;
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) => MentalHealthConditionsPage(disclaimer: newVal),
+                      builder: (context) => MentalHealthOverviewPage(),
                     ),
                   );
                 },
@@ -47,21 +44,9 @@ class MentalHealthPage extends StatelessWidget {
               ChildCardItem(
                 image: "assets/images/mental_health_consult_specialist.png",
                 press: () {
-                  context.read<ListPractitionersCubit>().filterPractitioners(
-                        filterByDistance: "null",
-                        practitionersCategory: "Psychologists, Counsellors",
-                        filterByPrice: "null",
-                        filterByAvailability: "null",
-                        sortByNearest: "null",
-                        sortByCheapest: "null",
-                        sortByHighestRated: "null",
-                        filterBySpeciality: "null",
-                      );
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) => PractitionersListScreen(
-                        practitionersCategory: 'Psychologists, Counsellors',
-                      ),
+                      builder: (context) => ConsultCategories(),
                     ),
                   );
                 },

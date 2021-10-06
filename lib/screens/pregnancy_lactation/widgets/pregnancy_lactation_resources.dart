@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pocket_health/models/pregnancy_lactation_resources_model.dart';
+import 'package:pocket_health/screens/emergency_screens/sexual_reproduction_screen.dart';
 import 'package:pocket_health/utils/constants.dart';
 
-import 'contact_card.dart';
 import 'link_card.dart';
 
 class PregnancyLactationResources extends StatelessWidget {
@@ -41,7 +41,40 @@ class PregnancyLactationResources extends StatelessWidget {
                           return LinkCard(from: "preg", pregLinkResource: pregLinkResource);
                         },
                       ),
-                      ContactCard(from: "preg"),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => SexualReproduction(),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(16),
+                          color: Colors.white,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                width: 306,
+                                child: Text(
+                                  "Hotline and Support Organisations",
+                                  softWrap: true,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 14,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ),
+                              Icon(
+                                Icons.keyboard_arrow_right,
+                                color: accentColorDark,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ],
                   );
                 },

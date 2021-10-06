@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import "package:flutter_screenutil/flutter_screenutil.dart";
+import 'package:pocket_health/screens/pregnancy_lactation/widgets/pregnancy_conditions_details.dart';
 import 'package:pocket_health/utils/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'mental_health_conditions_page.dart';
+class PregnancyLactationDisclaimer extends StatelessWidget {
+  final bool disclaimer;
 
-class MentalHealthDisclaimer extends StatelessWidget {
+  const PregnancyLactationDisclaimer({Key key, this.disclaimer}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -59,7 +62,7 @@ class MentalHealthDisclaimer extends StatelessWidget {
                   onPressed: () {
                     Navigator.of(context).pushReplacement(
                       MaterialPageRoute(
-                        builder: (context) => MentalHealthConditionsPage(),
+                        builder: (context) => PregnancyConditionsDetails(),
                       ),
                     );
                   },
@@ -90,8 +93,8 @@ class MentalHealthDisclaimer extends StatelessWidget {
                   ),
                   onPressed: () async {
                     SharedPreferences prefs = await SharedPreferences.getInstance();
-                    prefs.getBool("mentalHealthIsAgreed") != true ? prefs.setBool('mentalHealthIsAgreed', true) : null;
-                    final test = prefs.getBool('mentalHealthIsAgreed');
+                    prefs.getBool("pregnancyIsAgreed") != true ? prefs.setBool('pregnancyIsAgreed', true) : null;
+                    final test = prefs.getBool('pregnancyIsAgreed');
                     print('test' + test.toString());
                     Navigator.pop(context);
                   },

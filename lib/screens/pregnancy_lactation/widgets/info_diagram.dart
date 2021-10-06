@@ -17,7 +17,13 @@ class InfoDiagram extends StatelessWidget {
           centerTitle: true,
           elevation: 0.0,
           title: Text(
-            category,
+            category == "assets/images/mental_wellness.png"
+                ? "Mental Wellness"
+                : category == "assets/images/normal_pregnancy.png"
+                    ? "Normal Pregnancy or Lactation"
+                    : category == "assets/images/menstrual_cycle.png"
+                        ? "Menstrual Cycle (Period Cycle)"
+                        : "",
             style: appBarStyle,
           ),
           backgroundColor: Color(0xFF00FFFF),
@@ -45,12 +51,12 @@ class InfoDiagram extends StatelessWidget {
                       ),
                       SizedBox(height: 10),
                       Text(
-                        category == 'Menstrual cycle (Period cycle)'
+                        category == 'assets/images/menstrual_cycle.png'
                             ? pregData.menstrualCycleOrPeriodCycle
-                            : category == 'Normal Pregnancy or Lactation'
+                            : category == 'assets/images/normal_pregnancy.png'
                                 ? pregData.normalPregnancyOrLactation
-                                : category == "Mental Wellness"
-                                    ?pregData.mentalWellness
+                                : category == "assets/images/mental_wellness.png"
+                                    ? pregData.mentalWellness
                                     : "",
                         softWrap: true,
                         style: TextStyle(),

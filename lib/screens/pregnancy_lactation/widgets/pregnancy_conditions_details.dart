@@ -2,12 +2,35 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pocket_health/models/pregnancy_health_conditions_model.dart';
+import 'package:pocket_health/screens/pregnancy_lactation/widgets/pregnancy_lactation_disclaimer.dart';
 import 'package:pocket_health/utils/constants.dart';
 import 'package:pocket_health/widgets/widget.dart';
 
-class PregnancyConditionsDetails extends StatelessWidget {
+class PregnancyConditionsDetails extends StatefulWidget {
   final PregnancyHealthConditionsModel condition;
-  const PregnancyConditionsDetails({Key key, this.condition}) : super(key: key);
+  final bool disclaimer;
+  const PregnancyConditionsDetails({Key key, this.disclaimer, this.condition}) : super(key: key);
+
+  @override
+  _PregnancyConditionsDetailsState createState() => _PregnancyConditionsDetailsState();
+}
+
+class _PregnancyConditionsDetailsState extends State<PregnancyConditionsDetails> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      if (widget.disclaimer == false) {
+        await showDialog<void>(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext dialogContext) {
+            return PregnancyLactationDisclaimer(disclaimer: widget.disclaimer);
+          },
+        );
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +39,7 @@ class PregnancyConditionsDetails extends StatelessWidget {
         centerTitle: true,
         elevation: 0.0,
         title: Text(
-          condition.name,
+          widget.condition.name,
           style: appBarStyle,
         ),
         backgroundColor: Color(0xFF00FFFF),
@@ -49,7 +72,7 @@ class PregnancyConditionsDetails extends StatelessWidget {
               styleSheet: MarkdownStyleSheet(
                 h2: simpleTextStyle(),
               ),
-              data: condition.overview,
+              data: widget.condition.overview,
             ),
 
             //Medication
@@ -69,7 +92,7 @@ class PregnancyConditionsDetails extends StatelessWidget {
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
                   styleSheet: MarkdownStyleSheet(h2: simpleTextStyle()),
-                  data: "• " + condition.medications,
+                  data: "• " + widget.condition.medications,
                 ),
               ),
             ),
@@ -90,7 +113,7 @@ class PregnancyConditionsDetails extends StatelessWidget {
               shrinkWrap: true,
               physics: NeverScrollableScrollPhysics(),
               styleSheet: MarkdownStyleSheet(h2: simpleTextStyle()),
-              data: condition.treatment,
+              data: widget.condition.treatment,
             ),
 
             //Investigation
@@ -109,7 +132,7 @@ class PregnancyConditionsDetails extends StatelessWidget {
               shrinkWrap: true,
               physics: NeverScrollableScrollPhysics(),
               styleSheet: MarkdownStyleSheet(h2: simpleTextStyle()),
-              data: condition.investigation,
+              data: widget.condition.investigation,
             ),
 
             //Prevention
@@ -127,7 +150,7 @@ class PregnancyConditionsDetails extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                "• " + condition.prevention,
+                "• " + widget.condition.prevention,
               ),
             ),
 
@@ -147,7 +170,7 @@ class PregnancyConditionsDetails extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  condition.complications,
+                  widget.condition.complications,
                 ),
               ),
             ),

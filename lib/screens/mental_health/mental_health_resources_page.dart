@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import "package:flutter_screenutil/flutter_screenutil.dart";
 import 'package:pocket_health/repository/mental_health_resources_service.dart';
-import 'package:pocket_health/screens/pregnancy_lactation/widgets/contact_card.dart';
+import 'package:pocket_health/screens/emergency_screens/suicide_mental_screen.dart';
 import 'package:pocket_health/screens/pregnancy_lactation/widgets/link_card.dart';
 import 'package:pocket_health/utils/constants.dart';
 
@@ -30,7 +30,6 @@ class MentalHealthResourcesPage extends StatelessWidget {
             return mentalHealthResourcesAsyncVal.when(
               data: (resources) {
                 final linkResources = resources?.where((element) => element.information.contains("http"))?.toList();
-                final contactResources = resources?.where((element) => !element.information.contains("http"))?.toList();
                 return Column(
                   children: [
                     ListView.builder(
@@ -42,7 +41,40 @@ class MentalHealthResourcesPage extends StatelessWidget {
                         return LinkCard(mentalLinkResource: linkResource);
                       },
                     ),
-                    ContactCard(),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => SuicideMental(),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        padding: EdgeInsets.all(16),
+                        color: Colors.white,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              width: 306,
+                              child: Text(
+                                "Hotline and Support Organisations",
+                                softWrap: true,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ),
+                            Icon(
+                              Icons.keyboard_arrow_right,
+                              color: accentColorDark,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
                 );
               },

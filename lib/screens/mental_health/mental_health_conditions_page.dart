@@ -5,12 +5,8 @@ import 'package:pocket_health/models/mental_health_conditions_model.dart';
 import 'package:pocket_health/utils/constants.dart';
 
 import 'mental_health_condition_details_screen.dart';
-import 'mental_health_disclaimer.dart';
 
 class MentalHealthConditionsPage extends StatefulWidget {
-  final bool disclaimer;
-  const MentalHealthConditionsPage({Key key, this.disclaimer}) : super(key: key);
-
   @override
   _MentalHealthConditionsPageState createState() => _MentalHealthConditionsPageState();
 }
@@ -19,17 +15,6 @@ class _MentalHealthConditionsPageState extends State<MentalHealthConditionsPage>
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      if (widget.disclaimer == false) {
-        await showDialog<void>(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext dialogContext) {
-            return MentalHealthDisclaimer();
-          },
-        );
-      }
-    });
   }
 
   String searchQuery = "";
@@ -55,6 +40,8 @@ class _MentalHealthConditionsPageState extends State<MentalHealthConditionsPage>
                 return mentalHealthConditionsAsyncVal.when(
                   data: (conditions) {
                     return Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // search
                         Row(
@@ -69,7 +56,8 @@ class _MentalHealthConditionsPageState extends State<MentalHealthConditionsPage>
                                     onChanged: (val) async {
                                       setState(() {
                                         searchQuery = val.toLowerCase();
-                                        queriedConditions = conditions.where((element) => element.condition.contains(searchQuery)).toList();
+                                        queriedConditions =
+                                            conditions.where((element) => element.condition.toLowerCase().contains(searchQuery.toLowerCase())).toList();
                                       });
                                     },
                                     decoration: InputDecoration(
@@ -101,7 +89,6 @@ class _MentalHealthConditionsPageState extends State<MentalHealthConditionsPage>
                             ),
                           ],
                         ),
-
                         ListView.builder(
                           itemCount: searchQuery.isEmpty ? conditions.length : queriedConditions.length,
                           shrinkWrap: true,
@@ -137,7 +124,7 @@ class _MentalHealthConditionsPageState extends State<MentalHealthConditionsPage>
                   },
                   loading: () => Center(
                     child: Padding(
-                      padding:  EdgeInsets.all(8.0.w),
+                      padding: EdgeInsets.all(8.0.w),
                       child: Container(
                         height: 24.h,
                         width: 24.h,
