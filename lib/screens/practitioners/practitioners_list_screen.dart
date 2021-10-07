@@ -193,26 +193,9 @@ class _PractitionersListScreenState extends State<PractitionersListScreen> {
 
                         final surname = practitionerModel.surname;
                         final location = practitionerModel.location;
-                        final phoneNumber = practitionerModel.phoneNumber;
-                        final profileImgUrl = practitionerModel.profileImgUrl;
                         final region = practitionerModel.region;
-                        final user = practitionerModel.user;
-
-                        //health info
                         final practitioner = practitionerModel.healthInfo.practitioner;
-                        final speciality = practitionerModel.healthInfo.speciality;
-                        final affiliatedInstitution = practitionerModel.healthInfo.affiliatedInstitution;
-                        final healthInstitution = practitionerModel.healthInfo.healthInstitution;
-                        final careType = practitionerModel.healthInfo.careType;
 
-                        //rates info
-                        final followUpPerHour = practitionerModel.ratesInfo.followUpVisit.perHour;
-                        final followUpPerVisit = practitionerModel.ratesInfo.followUpVisit.perVisit;
-                        final inPersonPerHour = practitionerModel.ratesInfo.inPersonBooking.perHour;
-                        final inPersonPerVisit = practitionerModel.ratesInfo.inPersonBooking.perVisit;
-                        final upto1Hour = practitionerModel.ratesInfo.onlineBooking.upto1Hour;
-                        final upto15Mins = practitionerModel.ratesInfo.onlineBooking.upto15Mins;
-                        final upto30Mins = practitionerModel.ratesInfo.onlineBooking.upto30Mins;
 
                         bool isVerified = checkVerification(practitionerModel);
 

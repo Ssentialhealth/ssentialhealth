@@ -11,6 +11,7 @@ import 'package:pocket_health/screens/AdultUnwell/organs/organs.dart';
 import 'package:pocket_health/screens/AdultUnwell/symptoms/symptom_details_screen.dart';
 import 'package:pocket_health/screens/doctor_consult/doctor_consult.dart';
 import 'package:pocket_health/screens/facilities/facilities_categories_screen.dart';
+import 'package:pocket_health/utils/constants.dart';
 import 'package:pocket_health/widgets/adult_unwell_menu_items.dart';
 import 'package:pocket_health/widgets/widget.dart';
 
@@ -28,11 +29,12 @@ class _AdultUnwellState extends State<AdultUnwell> {
       backgroundColor: Color(0xFFEAFCF6),
       appBar: AppBar(
         title: Text(
-          "Most Notable Symptom/Sign",
-          style: TextStyle(fontSize: 18),
+          "Most Notable Symptoms",
+          style: appBarStyle,
         ),
-        backgroundColor: Color(0xFF00FFFF),
         centerTitle: true,
+        elevation: 0.0,
+        backgroundColor: Color(0xFF00FFFF),
       ),
       body: Container(
         child: BlocBuilder<AdultUnwellBloc, AdultUnwellState>(

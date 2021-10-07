@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pocket_health/utils/constants.dart';
 
 import 'organDetailsList.dart';
 
@@ -16,9 +17,13 @@ class _OrganDetailsScreenState extends State<OrganDetailsScreen> {
     return Scaffold(
       backgroundColor: Color(0xFFEAFCF6),
       appBar: AppBar(
-        title: Text(widget.title,style: TextStyle(fontSize: 18),),
-        backgroundColor: Color(0xFF00FFFF),
+        title: Text(
+          widget.title,
+          style: appBarStyle,
+        ),
         centerTitle: true,
+        elevation: 0.0,
+        backgroundColor: Color(0xFF00FFFF),
       ),
       body: Container(
         child: Column(
@@ -27,13 +32,15 @@ class _OrganDetailsScreenState extends State<OrganDetailsScreen> {
               padding: const EdgeInsets.all(8.0),
               child: Align(
                 alignment: Alignment.topLeft,
-                child: Text("Possible Conditions",
-                    style:TextStyle(
-                        fontSize: 18,
-                    )),
+                child: Text(
+                  "Possible Conditions",
+                  style: TextStyle(
+                    fontSize: 18,
+                  ),
+                ),
               ),
             ),
-            SizedBox(height: 15,),
+            SizedBox(height: 15),
             OrganDetailsCard(),
           ],
         ),

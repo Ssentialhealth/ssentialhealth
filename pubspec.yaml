@@ -75,6 +75,10 @@ dependencies:
   http_auth: ^1.0.1
   flutter_braintree: ^2.0.0+1
   date_picker_timeline: ^1.2.3
+  flutter_riverpod: ^0.12.4
+  expandable: ^5.0.1
+  fluttertoast: ^8.0.8
+
 
 
 flutter_icons:

@@ -272,7 +272,7 @@ class _FacilitiesListScreenState extends State<FacilitiesListScreen> {
                                               builder: (context, state) {
                                                 if (state is SavedFacilityContactsSuccess) {
                                                   final isSaved =
-                                                  state.savedFacilityContacts.contains("facilityIDTestThree" + '${facilityProfileModel.id.toString()}');
+                                                      state.savedFacilityContacts.contains("facilityIDTestThree" + '${facilityProfileModel.id.toString()}');
 
                                                   return GestureDetector(
                                                     child: Icon(

@@ -598,7 +598,21 @@ class ApiService {
                                     ? whereNotNull.where((element) => (30.0 <= double.parse(filterByDistance))).toList()
                                     // if not filtered
                                     : whereNotNull;
-    return filtered;
+    if (practitionersCategory == "Psychologists, Counsellors") {
+      _token = await getStringValuesSF();
+      final response = await this.httpClient.get(
+        "https://ssential.herokuapp.com/api/user/practitioner_profiles/",
+        headers: {
+          "Authorization": "Bearer " + _token,
+        },
+      );
+      if (response.statusCode != 200) {
+        throw Exception('Error Fetching practitioners');
+      }
+
+      return practitionerProfileListModelFromJson(response.body);
+    } else
+      return filtered;
   }
 
   Future<List<FacilityProfileModel>> fetchFilteredFacilities({
@@ -612,7 +626,7 @@ class ApiService {
     @required String filterByFacilityType,
     @required String filterByCountry,
   }) async {
-	  _token = await getStringValuesSF();
+    _token = await getStringValuesSF();
     final country = filterByCountry == "null" || filterByCountry == null ? "country=" : "country=" + filterByCountry + "&";
     final price = filterByPrice == "null" || filterByPrice == null ? "price<" : "price<" + filterByPrice + "&";
     final availability = filterByAvailability == "null" || filterByAvailability == null ? "available=" : "available=" + filterByAvailability;

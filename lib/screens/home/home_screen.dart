@@ -6,7 +6,9 @@ import 'package:pocket_health/bloc/login/loginState.dart';
 import 'package:pocket_health/screens/AdultUnwell/adult_unwell_screens/adult_unwell.dart';
 import 'package:pocket_health/screens/child_health/condition/child_health_immunization_screen.dart';
 import 'package:pocket_health/screens/facilities/facilities_categories_screen.dart';
+import 'package:pocket_health/screens/mental_health/mental_health_page.dart';
 import 'package:pocket_health/screens/practitioners/practitioners_categories_screen.dart';
+import 'package:pocket_health/screens/pregnancy_lactation/pregnancy_lactation_page.dart';
 import 'package:pocket_health/widgets/card_item.dart';
 import 'package:pocket_health/widgets/category_card.dart';
 import 'package:pocket_health/widgets/welcome_dart.dart';
@@ -95,7 +97,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     //adult unwell
                     CardItem(
                       press: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => AdultUnwell()));
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AdultUnwell(),
+                          ),
+                        );
                       },
                       image: "assets/images/adult_unwell.png",
                       text: "Adult Unwell- Check Symptoms \n& Conditions",
@@ -104,7 +111,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     //immunization
                     CardItem(
                       press: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => CHIScreen()));
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CHIScreen(),
+                          ),
+                        );
                       },
                       image: "assets/images/child_health_ immunisation.png",
                       text: "Child Health & Immunisation",
@@ -112,7 +124,33 @@ class _HomeScreenState extends State<HomeScreen> {
 
                     //pregnancy
                     CardItem(
-                      press: () {},
+                      press: () async {
+                        final _token = await getStringValuesSF();
+                        if (_token == null) {
+                          ScaffoldMessenger.of(context)
+                            ..clearSnackBars()
+                            ..showSnackBar(
+                              SnackBar(
+                                behavior: SnackBarBehavior.floating,
+                                backgroundColor: Color(0xff163C4D),
+                                duration: Duration(milliseconds: 6000),
+                                content: Text(
+                                  'Please Log In to access this feature.',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            );
+                        } else
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PregnancyLactationPage(),
+                            ),
+                          );
+                      },
                       image: "assets/images/pregnancy_lactation.png",
                       text: "Pregnancy & Lactation",
                     ),
@@ -134,7 +172,35 @@ class _HomeScreenState extends State<HomeScreen> {
                             (index) => CategoryCard(
                               icon: categories[index]["icon"],
                               text: categories[index]["text"],
-                              press: () {},
+                              press: () async {
+                                final _token = await getStringValuesSF();
+                                if (_token == null) {
+                                  ScaffoldMessenger.of(context)
+                                    ..clearSnackBars()
+                                    ..showSnackBar(
+                                      SnackBar(
+                                        behavior: SnackBarBehavior.floating,
+                                        backgroundColor: Color(0xff163C4D),
+                                        duration: Duration(milliseconds: 6000),
+                                        content: Text(
+                                          'Please Log In to access this feature.',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                } else {
+                                  if (index == 0) {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => MentalHealthPage(),
+                                      ),
+                                    );
+                                  }
+                                }
+                              },
                             ),
                           ),
                         ],
