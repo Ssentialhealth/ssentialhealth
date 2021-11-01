@@ -9,6 +9,7 @@ import 'package:pocket_health/screens/facilities/facilities_categories_screen.da
 import 'package:pocket_health/screens/mental_health/mental_health_page.dart';
 import 'package:pocket_health/screens/practitioners/practitioners_categories_screen.dart';
 import 'package:pocket_health/screens/pregnancy_lactation/pregnancy_lactation_page.dart';
+import 'package:pocket_health/screens/wellness/wellness_page.dart';
 import 'package:pocket_health/widgets/card_item.dart';
 import 'package:pocket_health/widgets/category_card.dart';
 import 'package:pocket_health/widgets/welcome_dart.dart';
@@ -196,6 +197,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
                                         builder: (context) => MentalHealthPage(),
+                                      ),
+                                    );
+                                  }
+                                  if (index == 1) {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => WellnessPage(),
                                       ),
                                     );
                                   }
