@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:pocket_health/screens/wellness/physical_activity_page.dart';
+import 'package:pocket_health/screens/wellness/physical_activity/physical_activity_page.dart';
 import 'package:pocket_health/utils/constants.dart';
+import 'package:pocket_health/widgets/child_card_item.dart';
 
-import 'nutrition_chart_resources_categories_page.dart';
-import 'nutrition_wellness_page.dart';
+import 'mental/mental_wellness_page.dart';
+import 'nutrition/nutrition_chart_resources_categories_page.dart';
+import 'nutrition/nutrition_wellness_page.dart';
 
 class WellnessPage extends StatelessWidget {
   const WellnessPage({Key key}) : super(key: key);
@@ -12,10 +13,10 @@ class WellnessPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<String> categories = [
-      "Nutrition",
-      "Nutrition Chart Resources",
-      "Physical Activity",
-      "Mental Wellness",
+      "assets/images/wellness_nutrition.png",
+      "assets/images/wellness_nutrition_chart_resources.png",
+      "assets/images/wellness_physical_activity.png",
+      "assets/images/wellness_mental_wellness.png",
     ];
 
     return SafeArea(
@@ -32,25 +33,14 @@ class WellnessPage extends StatelessWidget {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              ListView.separated(
-                separatorBuilder: (context, index) => Divider(height: 1.h, color: Colors.black26),
+              ListView.builder(
                 itemCount: categories.length,
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
                 itemBuilder: (BuildContext context, int index) {
-                  return ListTile(
-                    dense: true,
-                    isThreeLine: false,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 20.w),
-                    trailing: Icon(
-                      Icons.chevron_right,
-                      color: Color(0xff00FFFF),
-                    ),
-                    title: Text(
-                      categories[index],
-                      style: listTileTitleStyle,
-                    ),
-                    onTap: () {
+                  return ChildCardItem(
+                    image: categories[index],
+                    press: () async {
                       if (index == 0) {
                         Navigator.of(context).push(
                           MaterialPageRoute(builder: (context) => NutritionWellnessPage()),
@@ -64,6 +54,11 @@ class WellnessPage extends StatelessWidget {
                       if (index == 2) {
                         Navigator.of(context).push(
                           MaterialPageRoute(builder: (context) => PhysicalActivityPage()),
+                        );
+                      }
+                      if (index == 3) {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(builder: (context) => MentalWellnessPage()),
                         );
                       }
                       if (index == 2) {}

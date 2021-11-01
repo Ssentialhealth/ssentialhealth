@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pocket_health/models/links_model.dart';
 import 'package:pocket_health/models/nutrition_chart_resources_model.dart';
-import 'package:pocket_health/screens/wellness/physical_activity_resource_card.dart';
+import 'package:pocket_health/screens/wellness/resource_card.dart';
 import 'package:pocket_health/utils/constants.dart';
 
 class NutritionResourcesContentPage extends StatelessWidget {
@@ -46,7 +46,7 @@ class NutritionResourcesContentPage extends StatelessWidget {
                         return linksAsyncVal.when(
                           data: (links) {
                             final link = links.lastWhere((element) => element.id == resource.resourceLink);
-                            return PhysicalActivityResourceCard(link: link);
+                            return ResourceCard(link: link);
                           },
                           loading: () => Center(
                             child: Container(

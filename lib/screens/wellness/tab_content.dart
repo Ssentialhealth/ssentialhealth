@@ -9,10 +9,10 @@ import 'package:pocket_health/screens/pregnancy_lactation/widgets/copy_to_clipbo
 import 'package:pocket_health/screens/wellness/pdf_view_page.dart';
 import 'package:pocket_health/utils/constants.dart';
 
-class NutritionContent extends StatelessWidget {
+class TabContent extends StatelessWidget {
   final String overview;
   final int reference;
-  const NutritionContent({
+  const TabContent({
     Key key,
     this.overview,
     this.reference,

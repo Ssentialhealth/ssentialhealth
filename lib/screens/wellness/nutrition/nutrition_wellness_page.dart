@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pocket_health/models/nutrition_wellness_model.dart';
 import 'package:pocket_health/utils/constants.dart';
 
-import 'nutrition_content.dart';
+import '../tab_content.dart';
 
 class NutritionWellnessPage extends StatefulWidget {
   const NutritionWellnessPage({Key key}) : super(key: key);
@@ -95,13 +95,13 @@ class _NutritionWellnessPageState extends State<NutritionWellnessPage> {
                     print('--------|val|--------|value -> ${nutritionWellnessModel.basicLink.toString()}');
 
                     if (isSelected == 0) {
-                      return NutritionContent(overview: nutritionWellnessModel.basicOverview, reference: nutritionWellnessModel.basicLink);
+                      return TabContent(overview: nutritionWellnessModel.basicOverview, reference: nutritionWellnessModel.basicLink);
                     }
                     if (isSelected == 1) {
-                      return NutritionContent(overview: nutritionWellnessModel.foodProductsOverview, reference: nutritionWellnessModel.foodProductsLink);
+                      return TabContent(overview: nutritionWellnessModel.foodProductsOverview, reference: nutritionWellnessModel.foodProductsLink);
                     }
                     if (isSelected == 2) {
-                      return NutritionContent(overview: nutritionWellnessModel.weightGainLossOverview, reference: nutritionWellnessModel.weightGainLossLink);
+                      return TabContent(overview: nutritionWellnessModel.weightGainLossOverview, reference: nutritionWellnessModel.weightGainLossLink);
                     }
 
                     return SizedBox.shrink();

@@ -7,9 +7,9 @@ import 'package:pocket_health/screens/wellness/pdf_view_page.dart';
 import 'package:pocket_health/utils/constants.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class PhysicalActivityResourceCard extends StatelessWidget {
+class ResourceCard extends StatelessWidget {
   final LinkModel link;
-  const PhysicalActivityResourceCard({Key key, this.link}) : super(key: key);
+  const ResourceCard({Key key, this.link}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

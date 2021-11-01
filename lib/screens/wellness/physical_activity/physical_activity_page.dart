@@ -4,10 +4,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pocket_health/models/links_model.dart';
 import 'package:pocket_health/models/physical_activity_model.dart';
 import 'package:pocket_health/models/physical_activity_resources_model.dart';
-import 'package:pocket_health/screens/wellness/physical_activity_resource_card.dart';
+import 'package:pocket_health/screens/wellness/resource_card.dart';
 import 'package:pocket_health/utils/constants.dart';
 
-import 'nutrition_content.dart';
+import '../tab_content.dart';
 
 class PhysicalActivityPage extends StatefulWidget {
   const PhysicalActivityPage({Key key}) : super(key: key);
@@ -96,7 +96,10 @@ class _PhysicalActivityPageState extends State<PhysicalActivityPage> {
                 if (isSelected == 0) {
                   return physicalActivityAsyncVal.when(
                     data: (physicalActivityModel) {
-                      return NutritionContent(overview: physicalActivityModel.physicalActivity, reference: physicalActivityModel.resourceLink);
+                      return TabContent(
+                        overview: physicalActivityModel.physicalActivity,
+                        reference: physicalActivityModel.resourceLink,
+                      );
                     },
                     loading: () => Padding(
                       padding: EdgeInsets.all(8.0),
@@ -217,7 +220,7 @@ class _PhysicalActivityPageState extends State<PhysicalActivityPage> {
                                   return linksAsyncVal.when(
                                     data: (links) {
                                       final link = links.lastWhere((element) => element.id == resource.resourceLink);
-                                      return PhysicalActivityResourceCard(link: link);
+                                      return ResourceCard(link: link);
                                     },
                                     loading: () => Container(
                                       padding: EdgeInsets.all(16.w),
