@@ -16,19 +16,22 @@ class _ChildResourceDetailScreenState extends State<ChildResourceDetailScreen> {
     return Scaffold(
       backgroundColor: Color(0xFFEAFCF6),
       appBar: AppBar(
-        title: Text(widget.title,style: TextStyle(fontSize: 18),),
+        title: Text(
+          widget.title,
+          style: TextStyle(fontSize: 18),
+        ),
         backgroundColor: Color(0xFF00FFFF),
         centerTitle: true,
       ),
-      body:Container(
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                DetailData(),
-              ],
-            ),
-          )
-      )
+      body: Container(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              DetailData(),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
