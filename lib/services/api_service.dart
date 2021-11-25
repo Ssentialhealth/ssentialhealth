@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:json_patch/json_patch.dart';
 import 'package:pocket_health/models/ForgotPassword.dart';
 import 'package:pocket_health/models/accept_decline_model.dart';
+import 'package:pocket_health/models/agent_call_history_model.dart';
 import 'package:pocket_health/models/all_schedules_model.dart';
 import 'package:pocket_health/models/appoinment_model.dart';
 import 'package:pocket_health/models/call_balance_model.dart';
@@ -30,6 +31,7 @@ import 'package:pocket_health/models/facility_review_model.dart';
 import 'package:pocket_health/models/growth_chart_model.dart';
 import 'package:pocket_health/models/hotlines.dart';
 import 'package:pocket_health/models/immunization_schedule_model.dart' hide Vaccine;
+import 'package:pocket_health/models/insurance_review_model.dart';
 import 'package:pocket_health/models/loginModel.dart';
 import 'package:pocket_health/models/normal_development_Model.dart';
 import 'package:pocket_health/models/nutrition_model.dart';
@@ -42,6 +44,7 @@ import 'package:pocket_health/models/review_model.dart';
 import 'package:pocket_health/models/search_condition_model.dart';
 import 'package:pocket_health/models/symptom_model.dart';
 import 'package:pocket_health/models/symptoms_detail_model.dart';
+import 'package:pocket_health/repository/insurance_agent_model.dart';
 import 'package:pocket_health/utils/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -822,6 +825,19 @@ class ApiService {
     return reviewModelFromJson(response.body);
   }
 
+  Future<InsuranceReviewModel> postInsuranceReview(InsuranceReviewModel review) async {
+    _token = await getStringValuesSF();
+    final mapData = insuranceReviewModelToJson(review);
+
+    final response = await this.httpClient.post(
+          Uri.encodeFull('https://ssential.herokuapp.com/api/HealthInsuaranceReview/'),
+          headers: {"Content-Type": "application/json", "Authorization": "Bearer " + _token},
+          body: mapData,
+        );
+    print("review respsonse | ${response.body}");
+    return insuranceReviewModelFromJson(response.body);
+  }
+
   //fetch reviews
   Future<List<ReviewModel>> fetchReviews() async {
     _token = await getStringValuesSF();
@@ -832,6 +848,17 @@ class ApiService {
     );
     print("review respsonse | ${response.body}");
     return listOfReviewModelFromJson(response.body);
+  }
+
+  Future<List<InsuranceReviewModel>> fetchInsuranceReviews() async {
+    _token = await getStringValuesSF();
+
+    final response = await this.httpClient.get(
+      'https://ssential.herokuapp.com/api/HealthInsuaranceReview/',
+      headers: {"Content-Type": "application/json", "Authorization": "Bearer " + _token},
+    );
+    print("review respsonse | ${response.body}");
+    return insuranceReviewModelListFromJson(response.body);
   }
 
   //post review
@@ -894,6 +921,24 @@ class ApiService {
     print(response.body);
 
     return facilityCallHistoryModelFromJson(response.body);
+  }
+
+  Future<AgentCallHistoryModel> addAgentCallHistoryToDB(Map<String, dynamic> mapData) async {
+    _token = await getStringValuesSF();
+
+    final response = await http.post(
+      'https://ssential.herokuapp.com/api/AgentCallsHistory/',
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + _token,
+      },
+      body: json.encode(mapData),
+    );
+
+    print('--------|mapData|--------|value -> ${mapData.toString()}');
+    print(response.body);
+
+    return agentCallHistoryModelFromJson(response.body);
   }
 
   //appointments
@@ -1009,6 +1054,36 @@ class ApiService {
     }
   }
 
+  Future<List<InsuranceAgentModel>> fetchAllAgentsCalled(userID) async {
+    _token = await getStringValuesSF();
+    final response = await http.get(
+      "https://ssential.herokuapp.com/api/AgentCallsHistory/",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + _token,
+      },
+    );
+
+    final callList = agentCallHistoryListModelFromJson(response.body).where((element) => element.user == userID).toList();
+
+    if (callList.length == 0) {
+      return [];
+    } else {
+      Future<List<InsuranceAgentModel>> getAgents() async {
+        List<InsuranceAgentModel> allAgentDetails = [];
+        for (final agent in callList) {
+          final agentDetail = await this.fetchAgentDetails(agent.id);
+          allAgentDetails.add(agentDetail);
+        }
+
+        return allAgentDetails;
+      }
+
+      final allAgents = await getAgents();
+      return insuranceAgentModelListFromJson(allAgents.map((e) => jsonEncode(e)).toList().toSet().toList().toString());
+    }
+  }
+
   Future<List<CallHistoryModel>> fetchAllCallHistory(userID) async {
     _token = await getStringValuesSF();
     final response = await http.get(
@@ -1037,6 +1112,21 @@ class ApiService {
     print('--------|response call|--------|value -> ${response.body.toString()}');
 
     return facilityCallHistoryListModelFromJson(response.body).where((element) => element.user == userID).toList();
+  }
+
+  Future<List<AgentCallHistoryModel>> fetchAllAgentCallHistory(userID) async {
+    _token = await getStringValuesSF();
+    final response = await http.get(
+      "https://ssential.herokuapp.com/api/AgentCallsHistory",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + _token,
+      },
+    );
+
+    print('--------|response call|--------|value -> ${response.body.toString()}');
+
+    return agentCallHistoryListModelFromJson(response.body).where((element) => element.user == userID).toList();
   }
 
   Future<PractitionerProfileModel> fetchDocDetails(docID) async {
@@ -1069,6 +1159,22 @@ class ApiService {
 
     print(response.body);
     return facilityProfileModelFromJson(response.body);
+  }
+
+  Future<InsuranceAgentModel> fetchAgentDetails(agentID) async {
+    _token = await getStringValuesSF();
+    final response = await this.httpClient.get(
+      "https://ssential.herokuapp.com/api/Agent/$agentID/",
+      headers: {
+        "Authorization": "Bearer " + _token,
+      },
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Error Fetching practitioner DETAILS');
+    }
+
+    print(response.body);
+    return insuranceAgentModelFromJson(response.body);
   }
 
   //call balance

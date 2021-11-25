@@ -115,10 +115,15 @@ class _ChannelPageState extends State<ChannelPage> {
                       context: context,
                       builder: (dialogContext) {
                         final isDoc = streamProfile.extraData["userCategory"] == "health practitioner";
+                        final isAgent = streamProfile.extraData["userCategory"] == "insurance agent";
                         return StreamChannel(
                           channel: channel,
                           child: InitCallDialog(
-                            from: isDoc ? "doc-chat" : 'facility-chat',
+                            from: isAgent
+                                ? "agent-chat"
+                                : isDoc
+                                    ? "doc-chat"
+                                    : 'facility-chat',
                             videoMuted: false,
                             facilityHourlyRate: isDoc ? 0 : facilityHourlyRate,
                             isVerified: streamProfile.extraData["isVerified"] == "true" ? true : false,
@@ -144,10 +149,16 @@ class _ChannelPageState extends State<ChannelPage> {
                       context: context,
                       builder: (dialogContext) {
                         final isDoc = streamProfile.extraData["userCategory"] == "health practitioner";
+                        final isAgent = streamProfile.extraData["userCategory"] == "insurance agent";
+
                         return StreamChannel(
                           channel: channel,
                           child: InitCallDialog(
-                            from: isDoc ? "doc-chat" : 'facility-chat',
+                            from: isAgent
+                                ? "agent-chat"
+                                : isDoc
+                                    ? "doc-chat"
+                                    : 'facility-chat',
                             videoMuted: true,
                             facilityHourlyRate: isDoc ? 0 : facilityHourlyRate,
                             isVerified: streamProfile.extraData["isVerified"] == "true" ? true : false,

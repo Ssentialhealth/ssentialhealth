@@ -19,7 +19,7 @@ class InsuranceAgentService {
         },
       );
       print('--------|reasonPhrase|--------|value -> ${response.reasonPhrase.toString()}');
-      final agents = insuranceAgentModelFromJson(response.body);
+      final agents = insuranceAgentModelListFromJson(response.body);
       final filteredAgents = agents.where((element) => element.insuarance == insuranceId).toList();
       return filteredAgents;
     } catch (e, s) {

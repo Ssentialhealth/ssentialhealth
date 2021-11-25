@@ -36,6 +36,7 @@ import 'package:pocket_health/bloc/search_conditions/search_condition_bloc.dart'
 import 'package:pocket_health/bloc/search_organ/search_organ_bloc.dart';
 import 'package:pocket_health/bloc/symptoms/details/symptoms_bloc.dart';
 import 'package:pocket_health/repository/adultUnwellRepo.dart';
+import 'package:pocket_health/repository/agent_call_history_repo.dart';
 import 'package:pocket_health/repository/all_schedules_repo.dart';
 import 'package:pocket_health/repository/appointments_repo.dart';
 import 'package:pocket_health/repository/booking_history_repo.dart';
@@ -55,12 +56,14 @@ import 'package:pocket_health/repository/facility_booking_history_repo.dart';
 import 'package:pocket_health/repository/facility_call_history_repo.dart';
 import 'package:pocket_health/repository/facility_profile_repo.dart';
 import 'package:pocket_health/repository/facility_reviews_repo.dart';
+import 'package:pocket_health/repository/fetch_agent_call_history_repo.dart';
 import 'package:pocket_health/repository/fetch_call_history_repo.dart';
 import 'package:pocket_health/repository/fetch_facility_call_history_repo.dart';
 import 'package:pocket_health/repository/forgotPasswordRepo.dart';
 import 'package:pocket_health/repository/growth_charts_repo.dart';
 import 'package:pocket_health/repository/hotline_repo.dart';
 import 'package:pocket_health/repository/immunization_schedule_repo.dart';
+import 'package:pocket_health/repository/insurance_reviews_repo.dart';
 import 'package:pocket_health/repository/loginRepo.dart';
 import 'package:pocket_health/repository/manage_bookings_repo.dart';
 import 'package:pocket_health/repository/normal_development_repo.dart';
@@ -81,21 +84,26 @@ import 'package:pocket_health/simple_bloc_observer.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 import 'bloc/accept_decline/acccept_decline_repo.dart';
+import 'bloc/agent_call_history/agent_call_history_cubit.dart';
 import 'bloc/appointments/appointments_cubit.dart';
 import 'bloc/booking_history/booking_history_cubit.dart';
 import 'bloc/conditionDetails/conditionDetailsBloc.dart';
 import 'bloc/facility_appointments/facility_appointments_cubit.dart';
 import 'bloc/facility_booking_history/facility_booking_history_cubit.dart';
+import 'bloc/fetch_agent_call_history/fetch_agent_call_history_cubit.dart';
 import 'bloc/fetch_call_history/fetch_call_history_cubit.dart';
 import 'bloc/fetch_facility_call_history/fetch_facility_call_history_cubit.dart';
 import 'bloc/filter_facility_reviews/filter_facility_reviews_cubit.dart';
+import 'bloc/filter_insurance_reviews/filter_insurance_reviews_cubit.dart';
 import 'bloc/filter_reviews/filter_reviews_cubit.dart';
 import 'bloc/forgotPassword/forgotPasswordBloc.dart';
 import 'bloc/initialize_stream_chat/initialize_stream_chat_cubit.dart';
+import 'bloc/insurance_reviews/insurance_reviews_cubit.dart';
 import 'bloc/list_facility_open_hours/list_facility_open_hours_cubit.dart';
 import 'bloc/list_practitioners/list_practitioners_cubit.dart';
 import 'bloc/organDetails/organDetailsBloc.dart';
 import 'bloc/post_facility_review/post_facility_review_cubit.dart';
+import 'bloc/post_insurance_review/post_insurance_review_cubit.dart';
 import 'bloc/post_review/post_review_cubit.dart';
 import 'bloc/saved_facility_contacts/saved_facility_contacts_cubit.dart';
 import 'bloc/tab_switcher/tab_switcher_cubit.dart';
@@ -133,6 +141,8 @@ void main() async {
   final ReviewsRepo reviewsRepo = ReviewsRepo(ApiService(http.Client()));
   final CallHistoryRepo callHistoryRepo = CallHistoryRepo(ApiService(http.Client()));
   final FetchCallHistoryRepo fetchCallHistoryRepo = FetchCallHistoryRepo(ApiService(http.Client()));
+  final FetchAgentCallHistoryRepo fetchAgentCallHistoryRepo = FetchAgentCallHistoryRepo(ApiService(http.Client()));
+  final AgentCallHistoryRepo agentCallHistoryRepo = AgentCallHistoryRepo(ApiService(http.Client()));
   final AppointmentsRepo appointmentsRepo = AppointmentsRepo(ApiService(http.Client()));
   final FacilityAppointmentsRepo facilityAppointmentsRepo = FacilityAppointmentsRepo(ApiService(http.Client()));
   final BookingHistoryRepo bookingHistoryRepo = BookingHistoryRepo(ApiService(http.Client()));
@@ -146,6 +156,8 @@ void main() async {
   final FetchFacilityCallHistoryRepo fetchFacilityCallHistoryRepo = FetchFacilityCallHistoryRepo(ApiService(http.Client()));
   final ManageBookingsRepo manageBookingsRepo = ManageBookingsRepo(ApiService(http.Client()));
   final AcceptDeclineRepo acceptDeclineRepo = AcceptDeclineRepo(ApiService(http.Client()));
+  final InsuranceReviewsRepo postInsuranceReviewsRepo = InsuranceReviewsRepo(ApiService(http.Client()));
+  final InsuranceReviewsRepo insuranceReviewsRepo = InsuranceReviewsRepo(ApiService(http.Client()));
   runApp(ProviderScope(
     child: MyApp(
       forgotPasswordRepo: forgotPasswordRepo,
@@ -184,12 +196,16 @@ void main() async {
       callBalanceRepo: callBalanceRepo,
       facilityProfileRepo: facilityProfileRepo,
       facilityReviewsRepo: facilityReviewsRepo,
+      agentCallHistoryRepo: agentCallHistoryRepo,
+      fetchAgentCallHistoryRepo: fetchAgentCallHistoryRepo,
       postFacilityReviewsRepo: postFacilityReviewsRepo,
       openHoursRepo: openHoursRepo,
       fetchFacilityCallHistoryRepo: fetchFacilityCallHistoryRepo,
       facilityCallHistoryRepo: facilityCallHistoryRepo,
       manageBookingsRepo: manageBookingsRepo,
       acceptDeclineRepo: acceptDeclineRepo,
+      insuranceReviewsRepo: insuranceReviewsRepo,
+      postInsuranceReviewsRepo: postInsuranceReviewsRepo,
     ),
   ));
 }
@@ -224,6 +240,8 @@ class MyApp extends StatelessWidget {
   final ReviewsRepo reviewsRepo;
   final CallHistoryRepo callHistoryRepo;
   final FetchCallHistoryRepo fetchCallHistoryRepo;
+  final AgentCallHistoryRepo agentCallHistoryRepo;
+  final FetchAgentCallHistoryRepo fetchAgentCallHistoryRepo;
   final AppointmentsRepo appointmentsRepo;
   final FacilityAppointmentsRepo facilityAppointmentsRepo;
   final BookingHistoryRepo bookingHistoryRepo;
@@ -237,6 +255,8 @@ class MyApp extends StatelessWidget {
   final FacilityCallHistoryRepo facilityCallHistoryRepo;
   final ManageBookingsRepo manageBookingsRepo;
   final AcceptDeclineRepo acceptDeclineRepo;
+  final InsuranceReviewsRepo postInsuranceReviewsRepo;
+  final InsuranceReviewsRepo insuranceReviewsRepo;
 
   MyApp({
     Key key,
@@ -269,6 +289,8 @@ class MyApp extends StatelessWidget {
     @required this.reviewsRepo,
     @required this.callHistoryRepo,
     @required this.fetchCallHistoryRepo,
+    @required this.fetchAgentCallHistoryRepo,
+    @required this.agentCallHistoryRepo,
     @required this.appointmentsRepo,
     @required this.facilityAppointmentsRepo,
     @required this.bookingHistoryRepo,
@@ -281,6 +303,8 @@ class MyApp extends StatelessWidget {
     @required this.facilityCallHistoryRepo,
     @required this.fetchFacilityCallHistoryRepo,
     @required this.manageBookingsRepo,
+    @required this.insuranceReviewsRepo,
+    @required this.postInsuranceReviewsRepo,
     @required this.acceptDeclineRepo,
   }) : super(key: key);
 
@@ -306,6 +330,7 @@ class MyApp extends StatelessWidget {
           BlocProvider(create: (context) => ListPractitionersCubit(practitionerProfileRepo: practitionerProfileRepo)),
           BlocProvider(create: (context) => FilterReviewsCubit()..loadRecentlyRated()),
           BlocProvider(create: (context) => FilterFacilityReviewsCubit()..loadRecentlyRated()),
+          BlocProvider(create: (context) => FilterInsuranceReviewsCubit()..loadRecentlyRated()),
           BlocProvider(create: (context) => AdultUnwellBloc(adultUnwellRepo: adultUnwellRepo)),
           BlocProvider(create: (context) => ChildConditionBloc(childConditionsRepo: childConditionRepo)),
           BlocProvider(create: (context) => OrgansBloc(organsRepo: organsRepo)),
@@ -333,13 +358,17 @@ class MyApp extends StatelessWidget {
           BlocProvider(create: (context) => BookingHistoryCubit(bookingHistoryRepo)),
           BlocProvider(create: (context) => FacilityBookingHistoryCubit(facilityBookingHistoryRepo)),
           BlocProvider(create: (context) => FetchCallHistoryCubit(fetchCallHistoryRepo)),
+          BlocProvider(create: (context) => FetchAgentCallHistoryCubit(fetchAgentCallHistoryRepo)),
+          BlocProvider(create: (context) => AgentCallHistoryCubit(agentCallHistoryRepo)),
           BlocProvider(create: (context) => CallBalanceCubit(callBalanceRepo)),
           BlocProvider(create: (context) => SavedContactsCubit()..fetchContacts()),
           BlocProvider(create: (context) => SavedFacilityContactsCubit()..fetchContacts()),
           BlocProvider(create: (context) => TabSwitcherCubit()..loadPending()),
           BlocProvider(create: (context) => ListFacilitiesCubit(facilityProfileRepo: facilityProfileRepo)),
           BlocProvider(create: (context) => FacilityReviewsCubit(facilityReviewsRepo: facilityReviewsRepo)),
-          BlocProvider(create: (context) => PostFacilityReviewCubit(facilityReviewsRepo: postFacilityReviewsRepo)),
+          BlocProvider(create: (context) => InsuranceReviewsCubit(insuranceReviewsRepo: insuranceReviewsRepo)),
+          BlocProvider(create: (context) => PostInsuranceReviewCubit(insuranceReviewsRepo: postInsuranceReviewsRepo)),
+          BlocProvider(create: (context) => PostFacilityReviewCubit(facilityReviewsRepo: facilityReviewsRepo)),
           BlocProvider(create: (context) => ListFacilityOpenHoursCubit(openHoursRepo)),
           BlocProvider(create: (context) => FacilityCallHistoryCubit(facilityCallHistoryRepo)),
           BlocProvider(create: (context) => FetchFacilityCallHistoryCubit(fetchFacilityCallHistoryRepo)),

@@ -10,11 +10,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:pocket_health/bloc/agent_call_history/agent_call_history_cubit.dart';
 import 'package:pocket_health/bloc/call_balance/call_balance_cubit.dart';
 import 'package:pocket_health/bloc/call_history/call_history_cubit.dart';
 import 'package:pocket_health/bloc/facility_call_history/facility_call_history_cubit.dart';
 import 'package:pocket_health/models/facility_profile_model.dart';
 import 'package:pocket_health/models/practitioner_profile_model.dart';
+import 'package:pocket_health/repository/insurance_agent_model.dart';
 import 'package:pocket_health/screens/doctor_consult/call/utils.dart';
 import 'package:pocket_health/widgets/verified_tag.dart';
 
@@ -42,6 +44,11 @@ class CallPage extends StatefulWidget {
   final int facilityRatePerMin;
   final List<FacilityProfileModel> facilitiesCalled;
 
+  //agent
+  final int agentID;
+  final int agentRatePerMin;
+  final List<InsuranceAgentModel> agentsCalled;
+
   CallPage({
     Key key,
     this.channelName,
@@ -59,6 +66,9 @@ class CallPage extends StatefulWidget {
     this.facilityRatePerMin,
     this.facilitiesCalled,
     this.from,
+    this.agentID,
+    this.agentRatePerMin,
+    this.agentsCalled,
   }) : super(key: key);
 
   @override
@@ -191,13 +201,23 @@ class _CallPageState extends State<CallPage> {
 
           final duration = Duration(seconds: callTime).inMinutes.toInt();
 
-          final usedAmount = widget.from == "doc-dialog" ? duration * widget.docRatePerMin : duration * widget.facilityRatePerMin;
+          final usedAmount = widget.from == "agent-dialog"
+              ? duration * widget.agentRatePerMin
+              : widget.from == "doc-dialog"
+                  ? duration * widget.docRatePerMin
+                  : duration * widget.facilityRatePerMin;
+
           //deduct from balance
           final newBalance = widget.callBalanceAmount - usedAmount;
+
           if (widget.from == "doc-dialog")
             context.read<CallHistoryCubit>()..addCallHistory(5, widget.docID, preFormattedFrom.toString(), preFormattedTo.toString());
           if (widget.from == "facility-dialog")
             context.read<FacilityCallHistoryCubit>()..addCallHistory(5, widget.facilityID, preFormattedFrom.toString(), preFormattedTo.toString());
+
+          if (widget.from == "agent-dialog")
+            context.read<AgentCallHistoryCubit>()..addCallHistory(5, widget.agentID, preFormattedFrom.toString(), preFormattedTo.toString());
+
           context.read<CallBalanceCubit>()
             ..creditDeductAdd(paymentType: 'LIPA_MPESA', currency: "KES", amount: newBalance.toInt(), user: 5, balance: newBalance.toInt());
 

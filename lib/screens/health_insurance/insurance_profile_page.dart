@@ -1,13 +1,22 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart' hide BuildContextX;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pocket_health/bloc/filter_insurance_reviews/filter_insurance_reviews_cubit.dart';
+import 'package:pocket_health/bloc/insurance_reviews/insurance_reviews_cubit.dart';
+import 'package:pocket_health/bloc/post_insurance_review/post_insurance_review_cubit.dart';
 import 'package:pocket_health/models/health_insurance_model.dart';
+import 'package:pocket_health/models/insurance_review_model.dart';
 import 'package:pocket_health/models/practitioner_profile_model.dart';
 import 'package:pocket_health/repository/insurance_agent_model.dart';
 import 'package:pocket_health/screens/health_insurance/insurance_agent_profile_page.dart';
+import 'package:pocket_health/screens/health_insurance/sort_insurance_reviews_row.dart';
+import 'package:pocket_health/screens/health_insurance/write_insurance_review_dialog.dart';
 import 'package:pocket_health/utils/constants.dart';
+
+import 'insurance_reviews_list.dart';
 
 class InsuranceProfilePage extends StatefulWidget {
   final HealthInsuranceModel insuranceModel;
@@ -305,7 +314,9 @@ class _InsuranceProfilePageState extends State<InsuranceProfilePage> with Single
                           labelColor: accentColorDark,
                           unselectedLabelColor: Color(0xff777a7e),
                           indicatorPadding: EdgeInsets.zero,
-                          onTap: (tabIdx) {},
+                          onTap: (tabIdx) {
+                            if (tabIdx == 2) return context.read<InsuranceReviewsCubit>()..loadInsuranceReviews();
+                          },
                           labelPadding: EdgeInsets.zero,
                           labelStyle: TextStyle(
                             color: accentColorDark,
@@ -766,7 +777,13 @@ class _InsuranceProfilePageState extends State<InsuranceProfilePage> with Single
                           children: [
                             Text('Sort by:', style: sectionTitle),
                             GestureDetector(
-                              onTap: () {},
+                              onTap: () {
+                                context.read<PostInsuranceReviewCubit>()..loadInitial();
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => WriteInsuranceReviewDialog(insurance: widget.insuranceModel),
+                                );
+                              },
                               child: Text('Write a review', style: sectionTitle),
                             ),
                           ],
@@ -776,92 +793,93 @@ class _InsuranceProfilePageState extends State<InsuranceProfilePage> with Single
                       SizedBox(height: 10.h),
 
                       //filter chips
-                      // BlocBuilder<FacilityReviewsCubit, FacilityReviewsState>(
-                      //   builder: (context, state) {
-                      //     if (state is LoadFacilityReviewsLoaded) {
-                      //       final List<FacilityReviewModel> toSort = state.facilityReviewModels;
-                      //       return SortFacilityReviewsRow(toSort: toSort);
-                      //     } else
-                      //       return SortFacilityReviewsRow();
-                      //   },
-                      // ),
+                      BlocBuilder<InsuranceReviewsCubit, InsuranceReviewsState>(
+                        builder: (context, state) {
+                          if (state is LoadInsuranceReviewsLoaded) {
+                            final List<InsuranceReviewModel> toSort = state.insuranceReviewModels;
+                            return SortInsuranceReviewsRow(toSort: toSort);
+                          } else
+                            return SortInsuranceReviewsRow();
+                        },
+                      ),
 
                       SizedBox(height: 10.h),
 
                       //reviews
-                      // BlocBuilder<FacilityReviewsCubit, FacilityReviewsState>(
-                      //   builder: (context, reviewsState) {
-                      //     if (reviewsState is LoadFacilityReviewsLoaded) {
-                      //       return BlocBuilder<FilterFacilityReviewsCubit, FilterFacilityReviewsState>(
-                      //         builder: (context, state) {
-                      //           //recent
-                      //           if (state is RecentlyRatedLoaded) {
-                      //             return FacilityReviewsList(reviewsState.facilityReviewModels);
-                      //           }
-                      //
-                      //           //highest
-                      //           if (state is HighestRatedLoaded) {
-                      //             final sortedByHighestRated = state.sortedByHighestRated;
-                      //             return FacilityReviewsList(sortedByHighestRated);
-                      //           }
-                      //
-                      //           //lowest
-                      //           if (state is LowestRatedLoaded) {
-                      //             final sortedByLowestRated = state.sortedByLowestRated;
-                      //             return FacilityReviewsList(sortedByLowestRated);
-                      //           }
-                      //
-                      //           //loading
-                      //           if (state is FilterReviewsLoading) {
-                      //             return SizedBox(
-                      //               height: 20.w,
-                      //               width: 20.w,
-                      //               child: CircularProgressIndicator(
-                      //                 backgroundColor: Colors.tealAccent,
-                      //                 color: accentColorDark,
-                      //               ),
-                      //             );
-                      //           }
-                      //
-                      //           //failure
-                      //           if (state is FilterReviewsFailure) {
-                      //             return Container(
-                      //               height: 100,
-                      //               color: Colors.red,
-                      //             );
-                      //           }
-                      //
-                      //           return Container(
-                      //             height: 100,
-                      //             color: Colors.pink,
-                      //           );
-                      //         },
-                      //       );
-                      //     }
-                      //     if (reviewsState is LoadFacilityReviewsFailure) {
-                      //       return Container(
-                      //         height: 100,
-                      //         color: Colors.red,
-                      //       );
-                      //     }
-                      //
-                      //     if (reviewsState is LoadFacilityReviewsLoading) {
-                      //       return SizedBox(
-                      //         height: 20.w,
-                      //         width: 20.w,
-                      //         child: CircularProgressIndicator(
-                      //           backgroundColor: Colors.tealAccent,
-                      //           color: accentColorDark,
-                      //         ),
-                      //       );
-                      //     }
-                      //
-                      //     return Container(
-                      //       height: 100,
-                      //       color: Colors.yellow,
-                      //     );
-                      //   },
-                      // ),
+                      BlocBuilder<InsuranceReviewsCubit, InsuranceReviewsState>(
+                        builder: (context, reviewsState) {
+                          if (reviewsState is LoadInsuranceReviewsLoaded) {
+                            return BlocBuilder<FilterInsuranceReviewsCubit, FilterInsuranceReviewsState>(
+                              builder: (context, state) {
+                                //recent
+                                if (state is RecentlyRatedLoaded) {
+                                  return InsuranceReviewsList(reviewsState.insuranceReviewModels);
+                                }
+
+                                //highest
+                                if (state is HighestRatedLoaded) {
+                                  final sortedByHighestRated = state.sortedByHighestRated;
+                                  return InsuranceReviewsList(sortedByHighestRated);
+                                }
+
+                                //lowest
+                                if (state is LowestRatedLoaded) {
+                                  final sortedByLowestRated = state.sortedByLowestRated;
+                                  return InsuranceReviewsList(sortedByLowestRated);
+                                }
+
+                                //loading
+                                if (state is FilterReviewsLoading) {
+                                  return SizedBox(
+                                    height: 20.w,
+                                    width: 20.w,
+                                    child: CircularProgressIndicator(
+                                      backgroundColor: Colors.tealAccent,
+                                      color: accentColorDark,
+                                    ),
+                                  );
+                                }
+
+                                //failure
+                                if (state is FilterReviewsFailure) {
+                                  return Container(
+                                    height: 100,
+                                    color: Colors.red,
+                                  );
+                                }
+
+                                return Container(
+                                  height: 100,
+                                  color: Colors.pink,
+                                );
+                              },
+                            );
+                          }
+
+                          if (reviewsState is LoadInsuranceReviewsFailure) {
+                            return Container(
+                              height: 100,
+                              color: Colors.red,
+                            );
+                          }
+
+                          if (reviewsState is LoadInsuranceReviewsLoading) {
+                            return SizedBox(
+                              height: 20.w,
+                              width: 20.w,
+                              child: CircularProgressIndicator(
+                                backgroundColor: Colors.tealAccent,
+                                color: accentColorDark,
+                              ),
+                            );
+                          }
+
+                          return Container(
+                            height: 100,
+                            color: Colors.yellow,
+                          );
+                        },
+                      ),
                     ],
                   ),
                 ),

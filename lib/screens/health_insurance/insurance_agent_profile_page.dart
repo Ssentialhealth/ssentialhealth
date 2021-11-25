@@ -8,6 +8,7 @@ import 'package:pocket_health/bloc/login/loginBloc.dart';
 import 'package:pocket_health/bloc/login/loginState.dart';
 import 'package:pocket_health/models/practitioner_profile_model.dart';
 import 'package:pocket_health/repository/insurance_agent_model.dart';
+import 'package:pocket_health/screens/doctor_consult/call/init_call_dialog.dart';
 import 'package:pocket_health/screens/doctor_consult/chat/channel_page.dart';
 import 'package:pocket_health/utils/constants.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
@@ -458,40 +459,42 @@ class _InsuranceAgentProfilePageState extends State<InsuranceAgentProfilePage> w
                             SizedBox(width: 10.w),
 
                             //call
-                            TextButton(
-                              child: Icon(
-                                Icons.call,
-                                color: accentColorDark,
-                                size: 21.w,
-                              ),
-                              style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all(Colors.white),
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                minimumSize: MaterialStateProperty.all(Size(0, 0)),
-                                padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h)),
-                                shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5.w),
-                                  side: BorderSide(
+                            BlocBuilder<LoginBloc, LoginState>(
+                              builder: (context, loginState) {
+                                return TextButton(
+                                  child: Icon(
+                                    Icons.call,
                                     color: accentColorDark,
-                                    width: 1.w,
+                                    size: 21.w,
                                   ),
-                                )),
-                              ),
-                              onPressed: () async {
-                                // final apiService = ApiService(http.Client());
-                                // final hourlyRate = await apiService.fetchFacilityHourlyRate();
-                                // await showDialog(
-                                //   context: context,
-                                //   builder: (dialogContext) {
-                                //     return InitCallDialog(
-                                //       from: "facility-profile",
-                                //       videoMuted: false,
-                                //       facilityHourlyRate: int.parse(hourlyRate.split(".").first),
-                                //       facilityDetail: widget.facilityProfileModel,
-                                //       isVerified: widget.isVerified,
-                                //     );
-                                //   },
-                                // );
+                                  style: ButtonStyle(
+                                    backgroundColor: MaterialStateProperty.all(Colors.white),
+                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                    minimumSize: MaterialStateProperty.all(Size(0, 0)),
+                                    padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h)),
+                                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5.w),
+                                      side: BorderSide(
+                                        color: accentColorDark,
+                                        width: 1.w,
+                                      ),
+                                    )),
+                                  ),
+                                  onPressed: () async {
+                                    final hourlyRate = "600.0";
+                                    await showDialog(
+                                      context: context,
+                                      builder: (dialogContext) {
+                                        return InitCallDialog(
+                                          from: "agent-profile",
+                                          videoMuted: false,
+                                          agentDetail: widget.agentModel,
+                                          agentHourlyRate: int.parse(hourlyRate.split(".").first),
+                                        );
+                                      },
+                                    );
+                                  },
+                                );
                               },
                             ),
                           ],
