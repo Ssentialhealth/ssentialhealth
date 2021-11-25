@@ -6,6 +6,7 @@ import 'package:pocket_health/bloc/login/loginState.dart';
 import 'package:pocket_health/screens/AdultUnwell/adult_unwell_screens/adult_unwell.dart';
 import 'package:pocket_health/screens/child_health/condition/child_health_immunization_screen.dart';
 import 'package:pocket_health/screens/facilities/facilities_categories_screen.dart';
+import 'package:pocket_health/screens/health_insurance/health_insurance_page.dart';
 import 'package:pocket_health/screens/mental_health/mental_health_page.dart';
 import 'package:pocket_health/screens/practitioners/practitioners_categories_screen.dart';
 import 'package:pocket_health/screens/pregnancy_lactation/pregnancy_lactation_page.dart';
@@ -204,6 +205,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
                                         builder: (context) => WellnessPage(),
+                                      ),
+                                    );
+                                  }
+                                  if (index == 3) {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => HealthInsurancePage(),
                                       ),
                                     );
                                   }

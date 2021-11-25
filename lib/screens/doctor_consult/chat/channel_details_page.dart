@@ -5,7 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pocket_health/bloc/saved_contacts/saved_contacts_cubit.dart';
 import 'package:pocket_health/bloc/saved_facility_contacts/saved_facility_contacts_cubit.dart';
 import 'package:pocket_health/screens/doctor_consult/chat/search_messages_builder.dart';
-import 'package:pocket_health/screens/home/home.dart';
+import 'package:pocket_health/screens/home/base.dart';
 import 'package:pocket_health/screens/practitioners/filter_title.dart';
 import 'package:pocket_health/utils/constants.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
@@ -147,7 +147,7 @@ class _ChannelDetailsPageState extends State<ChannelDetailsPage> {
                       onTap: () {
                         channel.delete();
                         Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(builder: (c) => Home()),
+                          MaterialPageRoute(builder: (c) => Base()),
                           (route) => false,
                         );
                       },

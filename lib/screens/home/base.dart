@@ -10,12 +10,12 @@ import 'package:pocket_health/utils/constants.dart';
 
 import 'home_screen.dart';
 
-class Home extends StatefulWidget {
+class Base extends StatefulWidget {
   @override
-  _HomeState createState() => _HomeState();
+  _BaseState createState() => _BaseState();
 }
 
-class _HomeState extends State<Home> {
+class _BaseState extends State<Base> {
   int _selectedIndex = 0;
 
   List<Widget> tabPages = [HomeScreen(), HotlineScreen(), DoctorConsult(), ProfileScreen()];
