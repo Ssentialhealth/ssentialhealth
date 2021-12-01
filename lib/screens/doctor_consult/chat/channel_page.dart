@@ -11,7 +11,20 @@ import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 import 'channel_details_page.dart';
 import 'channel_info.dart';
 
+// enum Referral {
+//   LabRequest,
+//   ImagingRequest,
+//   Prescription,
+//   Self
+// }
+
 class ChannelPage extends StatefulWidget {
+  final String referral;
+
+  const ChannelPage({
+    Key key,
+    this.referral,
+  }) : super(key: key);
   @override
   _ChannelPageState createState() => _ChannelPageState();
 }
@@ -203,9 +216,14 @@ class _ChannelPageState extends State<ChannelPage> {
 
           //doctors input
           doctorsView
-              ? (allMessages.where((element) => element.user.id == userID).toList().length > 0) == true
+              ? (allMessages.where((element) => element.user.id == userID).toList().length > 0) == true || widget.referral == "lab"
                   //invite accepted // continue chatting
                   ? MessageInput(
+                      initialMessage: widget.referral == "lab"
+                          ? Message(
+                              text: "lab request",
+                            )
+                          : Message(),
                       onMessageSent: (message) async {},
                       quotedMessage: _quotedMessage,
                       onQuotedMessageCleared: () {
