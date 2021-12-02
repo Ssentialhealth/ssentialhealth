@@ -86,11 +86,15 @@ class _ListInsurancesPageState extends State<ListInsurancesPage> {
                 return healthInsurancesAsyncVal.when(
                   data: (data) {
                     return ListView.builder(
-                      itemCount: data.length,
+                      itemCount: filterByName != null
+                          ? data.where((element) => (element.name.toLowerCase().contains(filterByName.toLowerCase()))).length
+                          : data.length,
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
                       itemBuilder: (BuildContext context, int index) {
-                        final insurance = data[index];
+                        final HealthInsuranceModel insurance = filterByName != null
+                            ? data.where((element) => (element.name.toLowerCase().contains(filterByName.toLowerCase()))).toList()[index]
+                            : data[index];
                         return GestureDetector(
                           onTap: () {
                             Navigator.of(context).push(

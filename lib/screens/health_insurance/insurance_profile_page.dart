@@ -9,11 +9,14 @@ import 'package:pocket_health/bloc/insurance_reviews/insurance_reviews_cubit.dar
 import 'package:pocket_health/bloc/post_insurance_review/post_insurance_review_cubit.dart';
 import 'package:pocket_health/models/health_insurance_model.dart';
 import 'package:pocket_health/models/insurance_review_model.dart';
+import 'package:pocket_health/models/links_model.dart';
 import 'package:pocket_health/models/practitioner_profile_model.dart';
 import 'package:pocket_health/repository/insurance_agent_model.dart';
 import 'package:pocket_health/screens/health_insurance/insurance_agent_profile_page.dart';
+import 'package:pocket_health/screens/health_insurance/purchase_insurance_page.dart';
 import 'package:pocket_health/screens/health_insurance/sort_insurance_reviews_row.dart';
 import 'package:pocket_health/screens/health_insurance/write_insurance_review_dialog.dart';
+import 'package:pocket_health/screens/wellness/resource_card.dart';
 import 'package:pocket_health/utils/constants.dart';
 
 import 'insurance_reviews_list.dart';
@@ -60,7 +63,6 @@ class _InsuranceProfilePageState extends State<InsuranceProfilePage> with Single
   @override
   void initState() {
     super.initState();
-
     _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(() => setState(() {}));
   }
@@ -260,46 +262,141 @@ class _InsuranceProfilePageState extends State<InsuranceProfilePage> with Single
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             //purchase insurance btn
-                            Expanded(
-                              child: TextButton(
-                                child: Text(
-                                  'Purchase Insurance',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                style: ButtonStyle(
-                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                  backgroundColor: MaterialStateProperty.all(Color(0xff1A5864)),
-                                  minimumSize: MaterialStateProperty.all(Size(0, 0)),
-                                  padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 60.w, vertical: 10.h)),
-                                  shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(5.w),
-                                    side: BorderSide(
-                                      color: Color(0xff1A5864),
-                                      width: 1.w,
-                                    ),
-                                  )),
-                                ),
-                                onPressed: () {
-                                  // state is LoginLoaded && state.loginModel.user.userCategory == 'individual'
-                                  //     ? null
-                                  //     : SnackBar(
-                                  //   behavior: SnackBarBehavior.floating,
-                                  //   backgroundColor: Color(0xff163C4D),
-                                  //   duration: Duration(milliseconds: 6000),
-                                  //   content: Text(
-                                  //     'This feature is only available to users registered as individuals!',
-                                  //     style: TextStyle(
-                                  //       color: Colors.white,
-                                  //       fontWeight: FontWeight.w600,
-                                  //     ),
-                                  //   ),
-                                  // );
-                                },
-                              ),
+
+                            Consumer(
+                              builder: (context, ScopedReader watch, child) {
+                                final linksAsyncVal = watch(linksModelProvider);
+                                return linksAsyncVal.when(
+                                  data: (data) {
+                                    final links = data.where((e) => e.linkName.toLowerCase().contains("-${widget.insuranceModel.name.toLowerCase()}")).toList();
+
+                                    return Expanded(
+                                      child: TextButton(
+                                        child: Text(
+                                          'Purchase Insurance',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16.sp,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        style: ButtonStyle(
+                                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                          backgroundColor: MaterialStateProperty.all(Color(0xff1A5864)),
+                                          minimumSize: MaterialStateProperty.all(Size(0, 0)),
+                                          padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 60.w, vertical: 10.h)),
+                                          shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(5.w),
+                                            side: BorderSide(
+                                              color: Color(0xff1A5864),
+                                              width: 1.w,
+                                            ),
+                                          )),
+                                        ),
+                                        onPressed: () {
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                              builder: (context) => PurchaseInsurancePage(
+                                                policyLink: links[1],
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  },
+                                  loading: () {
+                                    return Expanded(
+                                      child: TextButton(
+                                        child: Text(
+                                          'Purchase Insurance',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16.sp,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        style: ButtonStyle(
+                                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                          backgroundColor: MaterialStateProperty.all(Color(0xff1A5864)),
+                                          minimumSize: MaterialStateProperty.all(Size(0, 0)),
+                                          padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 60.w, vertical: 10.h)),
+                                          shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(5.w),
+                                            side: BorderSide(
+                                              color: Color(0xff1A5864),
+                                              width: 1.w,
+                                            ),
+                                          )),
+                                        ),
+                                        onPressed: () {
+                                          ScaffoldMessenger.of(context)
+                                            ..clearSnackBars()
+                                            ..showSnackBar(
+                                              SnackBar(
+                                                behavior: SnackBarBehavior.floating,
+                                                backgroundColor: Color(0xff163C4D),
+                                                duration: Duration(milliseconds: 6000),
+                                                content: Text(
+                                                  'An error occured. Please try again!',
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                        },
+                                      ),
+                                    );
+                                  },
+                                  error: (err, stack) {
+                                    return Expanded(
+                                      child: TextButton(
+                                        child: Text(
+                                          'Purchase Insurance',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16.sp,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        style: ButtonStyle(
+                                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                          backgroundColor: MaterialStateProperty.all(Color(0xff1A5864)),
+                                          minimumSize: MaterialStateProperty.all(Size(0, 0)),
+                                          padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 60.w, vertical: 10.h)),
+                                          shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(5.w),
+                                            side: BorderSide(
+                                              color: Color(0xff1A5864),
+                                              width: 1.w,
+                                            ),
+                                          )),
+                                        ),
+                                        onPressed: () {
+                                          ScaffoldMessenger.of(context)
+                                            ..clearSnackBars()
+                                            ..showSnackBar(
+                                              SnackBar(
+                                                behavior: SnackBarBehavior.floating,
+                                                backgroundColor: Color(0xff163C4D),
+                                                duration: Duration(milliseconds: 6000),
+                                                content: Text(
+                                                  'An error occured. Please try again!',
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                        },
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
                             ),
                           ],
                         ),
@@ -355,29 +452,6 @@ class _InsuranceProfilePageState extends State<InsuranceProfilePage> with Single
                   ),
                 ),
                 actionsIconTheme: IconThemeData(),
-                actions: [
-                  //bookmark
-                  IconButton(
-                    icon: Icon(
-                      Icons.bookmark_outline,
-                      size: 22.sp,
-                      color: Color(0xff242424),
-                    ),
-                    onPressed: () async {},
-                  ),
-                  //share
-                  Padding(
-                    padding: EdgeInsets.only(right: 8.w),
-                    child: IconButton(
-                      icon: Icon(
-                        Icons.share,
-                        size: 22.sp,
-                        color: Color(0xff242424),
-                      ),
-                      onPressed: () {},
-                    ),
-                  ),
-                ],
               ),
             ];
           },
@@ -510,11 +584,82 @@ class _InsuranceProfilePageState extends State<InsuranceProfilePage> with Single
                   ),
 
                   SizedBox(height: 10.h),
+
+                  Container(
+                    clipBehavior: Clip.hardEdge,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(
+                        color: Color(0x19000000),
+                        width: 1.h,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color(0xC000000),
+                          blurRadius: 4.w,
+                          spreadRadius: 2.w,
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 15.h),
+                          child: Text(
+                            'Rates & Policy Documents',
+                            style: sectionTitle,
+                          ),
+                        ),
+                        Consumer(
+                          builder: (context, ScopedReader watch, child) {
+                            final linksAsyncVal = watch(linksModelProvider);
+                            return linksAsyncVal.when(
+                              data: (data) {
+                                final links = data.where((e) => e.linkName.toLowerCase().contains("-${widget.insuranceModel.name.toLowerCase()}")).toList();
+                                return Column(
+                                  children: [
+                                    ...List.generate(
+                                      links.length,
+                                      (index) {
+                                        print(links[index].linkName);
+                                        return Padding(
+                                          padding: EdgeInsets.only(bottom: 10.0),
+                                          child: ResourceCard(
+                                            link: links[index],
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                              loading: () {
+                                return Center(
+                                  child: Container(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                );
+                              },
+                              error: (err, stack) {
+                                return Text(
+                                  'An error occurred. Please try again.',
+                                  style: TextStyle(),
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
 
               //agents
-
               Consumer(
                 builder: (context, ScopedReader watch, child) {
                   final agentsModelAsyncVal = watch(insuranceAgentModelProvider(widget.insuranceModel.id));
@@ -599,50 +744,12 @@ class _InsuranceProfilePageState extends State<InsuranceProfilePage> with Single
                                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           children: [
                                             //name / verified / bookmark
-                                            Row(
-                                              crossAxisAlignment: CrossAxisAlignment.center,
-                                              children: [
-                                                //name
-                                                Text(
-                                                  agent.name,
-                                                  style: TextStyle(
-                                                    fontSize: 17.sp,
-                                                    color: Color(0xff242424),
-                                                  ),
-                                                ),
-                                                SizedBox(width: 10.w),
-
-                                                Spacer(),
-
-                                                //bookmark
-                                                // BlocBuilder<SavedFacilityContactsCubit, SavedFacilityContactsState>(
-                                                //   builder: (context, state) {
-                                                //     if (state is SavedFacilityContactsSuccess) {
-                                                //       final isSaved = state.savedFacilityContacts.contains("facilityIDTestThree" + '${facilityProfileModel.id.toString()}');
-                                                //
-                                                //       return GestureDetector(
-                                                //         child: Icon(
-                                                //           isSaved ? Icons.bookmark : Icons.bookmark_outline,
-                                                //           size: 20.w,
-                                                //           color: isSaved ? Color(0xff0e0e0e) : Color(0xff242424),
-                                                //         ),
-                                                //         onTap: () async {
-                                                //           setState(() {
-                                                //             saveContactVal = !isSaved;
-                                                //           });
-                                                //           context.read<SavedFacilityContactsCubit>()
-                                                //             ..addRemoveContacts(saveContactVal, "facilityIDTestThree" + "${facilityProfileModel.id.toString()}");
-                                                //         },
-                                                //       );
-                                                //     }
-                                                //     return Icon(
-                                                //       Icons.bookmark_outline,
-                                                //       size: 20.w,
-                                                //       color: Color(0xff242424),
-                                                //     );
-                                                //   },
-                                                // ),
-                                              ],
+                                            Text(
+                                              agent.name,
+                                              style: TextStyle(
+                                                fontSize: 17.sp,
+                                                color: Color(0xff242424),
+                                              ),
                                             ),
 
                                             //location / get directions

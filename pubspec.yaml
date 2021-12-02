@@ -78,6 +78,7 @@ dependencies:
   flutter_riverpod: ^0.12.4
   expandable: ^5.0.1
   fluttertoast: ^8.0.8
+  flutter_signature_pad: ^3.0.0
 
 
 

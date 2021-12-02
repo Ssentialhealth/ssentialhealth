@@ -8,13 +8,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:meta/meta.dart';
 import 'package:pocket_health/repository/insurance_agent_service.dart';
 
-
 List<InsuranceAgentModel> insuranceAgentModelListFromJson(String str) =>
     List<InsuranceAgentModel>.from(json.decode(str).map((x) => InsuranceAgentModel.fromJson(x)));
 
 InsuranceAgentModel insuranceAgentModelFromJson(String str) => InsuranceAgentModel.fromJson(json.decode(str));
-
-
 
 String insuranceAgentModelToJson(List<InsuranceAgentModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 

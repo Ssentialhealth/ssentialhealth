@@ -9,6 +9,7 @@ import 'package:json_patch/json_patch.dart';
 import 'package:pocket_health/models/ForgotPassword.dart';
 import 'package:pocket_health/models/accept_decline_model.dart';
 import 'package:pocket_health/models/agent_call_history_model.dart';
+import 'package:pocket_health/models/agent_review_model.dart';
 import 'package:pocket_health/models/all_schedules_model.dart';
 import 'package:pocket_health/models/appoinment_model.dart';
 import 'package:pocket_health/models/call_balance_model.dart';
@@ -837,6 +838,18 @@ class ApiService {
     print("review respsonse | ${response.body}");
     return insuranceReviewModelFromJson(response.body);
   }
+  Future<AgentReviewModel> postAgentReview(AgentReviewModel review) async {
+    _token = await getStringValuesSF();
+    final mapData = agentReviewModelToJson(review);
+
+    final response = await this.httpClient.post(
+          Uri.encodeFull('https://ssential.herokuapp.com/api/AgentReview/'),
+          headers: {"Content-Type": "application/json", "Authorization": "Bearer " + _token},
+          body: mapData,
+        );
+    print("review respsonse | ${response.body}");
+    return agentReviewModelFromJson(response.body);
+  }
 
   //fetch reviews
   Future<List<ReviewModel>> fetchReviews() async {
@@ -859,6 +872,16 @@ class ApiService {
     );
     print("review respsonse | ${response.body}");
     return insuranceReviewModelListFromJson(response.body);
+  }
+  Future<List<AgentReviewModel>> fetchAgentReviews() async {
+    _token = await getStringValuesSF();
+
+    final response = await this.httpClient.get(
+      'https://ssential.herokuapp.com/api/AgentReview/',
+      headers: {"Content-Type": "application/json", "Authorization": "Bearer " + _token},
+    );
+    print("review respsonse | ${response.body}");
+    return agentReviewModelListFromJson(response.body);
   }
 
   //post review

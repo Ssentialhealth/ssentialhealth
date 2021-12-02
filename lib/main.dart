@@ -37,6 +37,7 @@ import 'package:pocket_health/bloc/search_organ/search_organ_bloc.dart';
 import 'package:pocket_health/bloc/symptoms/details/symptoms_bloc.dart';
 import 'package:pocket_health/repository/adultUnwellRepo.dart';
 import 'package:pocket_health/repository/agent_call_history_repo.dart';
+import 'package:pocket_health/repository/agent_reviews_repo.dart';
 import 'package:pocket_health/repository/all_schedules_repo.dart';
 import 'package:pocket_health/repository/appointments_repo.dart';
 import 'package:pocket_health/repository/booking_history_repo.dart';
@@ -85,6 +86,7 @@ import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 import 'bloc/accept_decline/acccept_decline_repo.dart';
 import 'bloc/agent_call_history/agent_call_history_cubit.dart';
+import 'bloc/agent_reviews/agent_reviews_cubit.dart';
 import 'bloc/appointments/appointments_cubit.dart';
 import 'bloc/booking_history/booking_history_cubit.dart';
 import 'bloc/conditionDetails/conditionDetailsBloc.dart';
@@ -93,6 +95,7 @@ import 'bloc/facility_booking_history/facility_booking_history_cubit.dart';
 import 'bloc/fetch_agent_call_history/fetch_agent_call_history_cubit.dart';
 import 'bloc/fetch_call_history/fetch_call_history_cubit.dart';
 import 'bloc/fetch_facility_call_history/fetch_facility_call_history_cubit.dart';
+import 'bloc/filter_agent_reviews/filter_agent_reviews_cubit.dart';
 import 'bloc/filter_facility_reviews/filter_facility_reviews_cubit.dart';
 import 'bloc/filter_insurance_reviews/filter_insurance_reviews_cubit.dart';
 import 'bloc/filter_reviews/filter_reviews_cubit.dart';
@@ -102,6 +105,7 @@ import 'bloc/insurance_reviews/insurance_reviews_cubit.dart';
 import 'bloc/list_facility_open_hours/list_facility_open_hours_cubit.dart';
 import 'bloc/list_practitioners/list_practitioners_cubit.dart';
 import 'bloc/organDetails/organDetailsBloc.dart';
+import 'bloc/post_agent_review/post_agent_review_cubit.dart';
 import 'bloc/post_facility_review/post_facility_review_cubit.dart';
 import 'bloc/post_insurance_review/post_insurance_review_cubit.dart';
 import 'bloc/post_review/post_review_cubit.dart';
@@ -158,6 +162,9 @@ void main() async {
   final AcceptDeclineRepo acceptDeclineRepo = AcceptDeclineRepo(ApiService(http.Client()));
   final InsuranceReviewsRepo postInsuranceReviewsRepo = InsuranceReviewsRepo(ApiService(http.Client()));
   final InsuranceReviewsRepo insuranceReviewsRepo = InsuranceReviewsRepo(ApiService(http.Client()));
+  final AgentReviewsRepo postAgentReviewsRepo = AgentReviewsRepo(ApiService(http.Client()));
+  final AgentReviewsRepo agentReviewsRepo = AgentReviewsRepo(ApiService(http.Client()));
+
   runApp(ProviderScope(
     child: MyApp(
       forgotPasswordRepo: forgotPasswordRepo,
@@ -206,6 +213,8 @@ void main() async {
       acceptDeclineRepo: acceptDeclineRepo,
       insuranceReviewsRepo: insuranceReviewsRepo,
       postInsuranceReviewsRepo: postInsuranceReviewsRepo,
+      agentReviewsRepo: agentReviewsRepo,
+      postAgentReviewsRepo: postAgentReviewsRepo,
     ),
   ));
 }
@@ -257,6 +266,8 @@ class MyApp extends StatelessWidget {
   final AcceptDeclineRepo acceptDeclineRepo;
   final InsuranceReviewsRepo postInsuranceReviewsRepo;
   final InsuranceReviewsRepo insuranceReviewsRepo;
+  final AgentReviewsRepo postAgentReviewsRepo;
+  final AgentReviewsRepo agentReviewsRepo;
 
   MyApp({
     Key key,
@@ -306,6 +317,8 @@ class MyApp extends StatelessWidget {
     @required this.insuranceReviewsRepo,
     @required this.postInsuranceReviewsRepo,
     @required this.acceptDeclineRepo,
+    @required this.postAgentReviewsRepo,
+    @required this.agentReviewsRepo,
   }) : super(key: key);
 
   @override
@@ -331,6 +344,7 @@ class MyApp extends StatelessWidget {
           BlocProvider(create: (context) => FilterReviewsCubit()..loadRecentlyRated()),
           BlocProvider(create: (context) => FilterFacilityReviewsCubit()..loadRecentlyRated()),
           BlocProvider(create: (context) => FilterInsuranceReviewsCubit()..loadRecentlyRated()),
+          BlocProvider(create: (context) => FilterAgentReviewsCubit()..loadRecentlyRated()),
           BlocProvider(create: (context) => AdultUnwellBloc(adultUnwellRepo: adultUnwellRepo)),
           BlocProvider(create: (context) => ChildConditionBloc(childConditionsRepo: childConditionRepo)),
           BlocProvider(create: (context) => OrgansBloc(organsRepo: organsRepo)),
@@ -367,7 +381,9 @@ class MyApp extends StatelessWidget {
           BlocProvider(create: (context) => ListFacilitiesCubit(facilityProfileRepo: facilityProfileRepo)),
           BlocProvider(create: (context) => FacilityReviewsCubit(facilityReviewsRepo: facilityReviewsRepo)),
           BlocProvider(create: (context) => InsuranceReviewsCubit(insuranceReviewsRepo: insuranceReviewsRepo)),
+          BlocProvider(create: (context) => AgentReviewsCubit(agentReviewsRepo: agentReviewsRepo)),
           BlocProvider(create: (context) => PostInsuranceReviewCubit(insuranceReviewsRepo: postInsuranceReviewsRepo)),
+          BlocProvider(create: (context) => PostAgentReviewCubit(agentReviewsRepo: postAgentReviewsRepo)),
           BlocProvider(create: (context) => PostFacilityReviewCubit(facilityReviewsRepo: facilityReviewsRepo)),
           BlocProvider(create: (context) => ListFacilityOpenHoursCubit(openHoursRepo)),
           BlocProvider(create: (context) => FacilityCallHistoryCubit(facilityCallHistoryRepo)),
