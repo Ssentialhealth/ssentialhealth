@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -19,6 +17,7 @@ class _SearchUsersScreenState extends State<SearchUsersScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print("searchedByName $searchedByName");
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -133,49 +132,167 @@ class _SearchUsersScreenState extends State<SearchUsersScreen> {
           ),
 
           // users listed
-          searchedByName.isNotEmpty
-              ? Consumer(
-                  builder: (context, ScopedReader watch, child) {
-                    final allUsersAsyncVal = watch(allUsersModelProvider);
-
-                    return allUsersAsyncVal.when(
-                      data: (data) {
-                        log(data.last.surname);
-                        final searchedUsers = data.where((e) => e.surname.toLowerCase().contains(searchedByName.toLowerCase())).toList();
-                        // data.forEach((element) {
-                        //   print(element.surname);
-                        // });
-
-                        if (searchedUsers.length == 0)
-                          return Text(
-                            'No match found',
-                            style: TextStyle(),
-                          );
-
-                        return Text(
-                          searchedUsers.last.surname,
-                          style: TextStyle(),
-                        );
-                      },
-                      loading: () => Text(
-                        'loading',
-                        style: TextStyle(),
-                      ),
-                      error: (error, stack) => Text(
-                        'error',
+          Consumer(
+            builder: (context, ScopedReader watch, child) {
+              final allUsersAsyncVal = watch(allUsersModelProvider);
+              return allUsersAsyncVal.when(
+                data: (data) {
+                  if (data.length == 0)
+                    return Center(
+                      child: Text(
+                        'No match found',
                         style: TextStyle(),
                       ),
                     );
-                  },
+
+                  return Container(
+                    height: 144.w,
+                    clipBehavior: Clip.hardEdge,
+                    padding: EdgeInsets.symmetric(vertical: 15.w, horizontal: 15.w),
+                    margin: EdgeInsets.only(bottom: 10.w),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(5.w),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color(0xC000000),
+                          blurRadius: 4.w,
+                          spreadRadius: 2.w,
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            //avi
+                            CircleAvatar(
+                              radius: 32.w,
+                              backgroundImage: AssetImage("assets/images/progile.jpeg"),
+                            ),
+
+                            SizedBox(height: 8.h),
+
+                            //rating
+                            Text(
+                              '4.6/5',
+                              style: TextStyle(
+                                fontSize: 12.sp,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xffF06E20),
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        SizedBox(width: 20.w),
+
+                        //details
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              //name / verified / bookmark
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  //name
+                                  Text(
+                                    data[5].surname == "" ? "Name N/A" : data[5].surname,
+                                    style: TextStyle(
+                                      fontSize: 17.sp,
+                                      color: Color(0xff242424),
+                                    ),
+                                  ),
+                                  SizedBox(width: 10.w),
+
+                                  Spacer(),
+
+                                  //bookmark
+                                ],
+                              ),
+
+                              //speciality
+                              Text(
+                                "Individual User",
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  color: Color(0xff242424),
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+
+                              //location / get directions
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  //location
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.location_on,
+                                        size: 15.w,
+                                        color: Color(0xff1A5864),
+                                      ),
+                                      SizedBox(
+                                        width: 150.w,
+                                        child: Text(
+                                          data[5].residence,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            fontSize: 14.sp,
+                                            color: Color(0xff242424),
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+
+                                  Spacer(),
+                                  //get directions
+                                  Text(
+                                    'Get Directions',
+                                    style: TextStyle(
+                                      fontSize: 14.sp,
+                                      color: Color(0xff1A5864),
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                              SizedBox(height: 4.h),
+
+                              //view profile btn / book appointment btn
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+                loading: () => Center(
+                  child: Container(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+                error: (error, stack) => Center(
                   child: Text(
-                    'child',
+                    'Error fetching users. Please try again later.',
                     style: TextStyle(),
                   ),
-                )
-              : Text(
-                  'search empty',
-                  style: TextStyle(),
                 ),
+              );
+            },
+          ),
         ],
       ),
     );
