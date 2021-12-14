@@ -50,7 +50,7 @@ dependencies:
   flutter_svg: ^0.19.2
   syncfusion_flutter_pdfviewer: any
   pull_to_refresh: ^2.0.0
-  material_design_icons_flutter: ^4.0.5955
+  material_design_icons_flutter: ^5.0.6595
   syncfusion_flutter_sliders: any
   supercharged: ^2.0.0
   flutter_rating_bar: ^4.0.0

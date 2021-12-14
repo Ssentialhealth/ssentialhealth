@@ -42,7 +42,7 @@ class ResourceCard extends StatelessWidget {
                         ),
                       ),
                       Icon(
-                        MdiIcons.adobeAcrobat,
+                        MdiIcons.filePdfBox,
                         color: Colors.red,
                         size: 16.w,
                       ),
