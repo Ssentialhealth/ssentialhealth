@@ -11,8 +11,6 @@ import 'package:pocket_health/models/health_insurance_model.dart';
 import 'package:pocket_health/models/insurance_review_model.dart';
 import 'package:pocket_health/models/links_model.dart';
 import 'package:pocket_health/models/practitioner_profile_model.dart';
-import 'package:pocket_health/repository/insurance_agent_model.dart';
-import 'package:pocket_health/screens/health_insurance/insurance_agent_profile_page.dart';
 import 'package:pocket_health/screens/health_insurance/purchase_insurance_page.dart';
 import 'package:pocket_health/screens/health_insurance/sort_insurance_reviews_row.dart';
 import 'package:pocket_health/screens/health_insurance/write_insurance_review_dialog.dart';
@@ -63,7 +61,7 @@ class _InsuranceProfilePageState extends State<InsuranceProfilePage> with Single
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
     _tabController.addListener(() => setState(() {}));
   }
 
@@ -436,7 +434,13 @@ class _InsuranceProfilePageState extends State<InsuranceProfilePage> with Single
                             SizedBox(
                               height: 28.h,
                               child: Tab(
-                                text: '   Agents   ',
+                                text: '   Rates   ',
+                              ),
+                            ),
+                            SizedBox(
+                              height: 28.h,
+                              child: Tab(
+                                text: '   Policy   ',
                               ),
                             ),
                             SizedBox(
@@ -612,247 +616,86 @@ class _InsuranceProfilePageState extends State<InsuranceProfilePage> with Single
                             style: sectionTitle,
                           ),
                         ),
-                        Consumer(
-                          builder: (context, ScopedReader watch, child) {
-                            final linksAsyncVal = watch(linksModelProvider);
-                            return linksAsyncVal.when(
-                              data: (data) {
-                                final links = data.where((e) => e.linkName.toLowerCase().contains("-${widget.insuranceModel.name.toLowerCase()}")).toList();
-                                return Column(
-                                  children: [
-                                    ...List.generate(
-                                      links.length,
-                                      (index) {
-                                        print(links[index].linkName);
-                                        return Padding(
-                                          padding: EdgeInsets.only(bottom: 10.0),
-                                          child: ResourceCard(
-                                            link: links[index],
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ],
-                                );
-                              },
-                              loading: () {
-                                return Center(
-                                  child: Container(
-                                    height: 20,
-                                    width: 20,
-                                    child: CircularProgressIndicator(),
-                                  ),
-                                );
-                              },
-                              error: (err, stack) {
-                                return Text(
-                                  'An error occurred. Please try again.',
-                                  style: TextStyle(),
-                                );
-                              },
-                            );
-                          },
-                        ),
                       ],
                     ),
                   ),
                 ],
               ),
 
-              //agents
+              //rates
               Consumer(
                 builder: (context, ScopedReader watch, child) {
-                  final agentsModelAsyncVal = watch(insuranceAgentModelProvider(widget.insuranceModel.id));
-                  return agentsModelAsyncVal.when(
+                  final linksAsyncVal = watch(linksModelProvider);
+                  return linksAsyncVal.when(
                     data: (data) {
-                      return ListView.builder(
-                        itemCount: data.length,
-                        shrinkWrap: true,
-                        itemBuilder: (BuildContext context, int index) {
-                          final agent = data[index];
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => InsuranceAgentProfilePage(agentModel: agent),
-                                ),
-                              );
-                            },
-                            child: Container(
-                              height: 130.w,
-                              clipBehavior: Clip.hardEdge,
-                              padding: EdgeInsets.symmetric(vertical: 15.w, horizontal: 15.w),
-                              margin: EdgeInsets.only(bottom: 10.w),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(5.w),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Color(0xC000000),
-                                    blurRadius: 4.w,
-                                    spreadRadius: 2.w,
-                                  ),
-                                ],
-                              ),
-                              child: Hero(
-                                tag: "agent-profile-${agent.id}",
-                                child: Material(
-                                  type: MaterialType.transparency,
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      //avi / rating
-                                      Column(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: [
-                                          //avi
-                                          CircleAvatar(
-                                            radius: 32.w,
-                                            child: Padding(
-                                              padding: EdgeInsets.all(8.0),
-                                              child: agent.profileImgUrl == "" || agent.profileImgUrl == null
-                                                  ? SizedBox.shrink()
-                                                  : Image(
-                                                      image: NetworkImage(agent.profileImgUrl),
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                            ),
-                                          ),
-
-                                          SizedBox(height: 8.h),
-
-                                          //rating
-                                          Text(
-                                            '4.6/5',
-                                            style: TextStyle(
-                                              fontSize: 12.sp,
-                                              fontWeight: FontWeight.w600,
-                                              color: Color(0xffF06E20),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-
-                                      SizedBox(width: 20.w),
-
-                                      //details
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          mainAxisSize: MainAxisSize.max,
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            //name / verified / bookmark
-                                            Text(
-                                              agent.name,
-                                              style: TextStyle(
-                                                fontSize: 17.sp,
-                                                color: Color(0xff242424),
-                                              ),
-                                            ),
-
-                                            //location / get directions
-                                            Row(
-                                              crossAxisAlignment: CrossAxisAlignment.center,
-                                              children: [
-                                                //location
-                                                Row(
-                                                  children: [
-                                                    Icon(
-                                                      Icons.location_on,
-                                                      size: 15.w,
-                                                      color: Color(0xff1A5864),
-                                                    ),
-                                                    SizedBox(
-                                                      width: 150.w,
-                                                      child: Text(
-                                                        agent.location ?? "N/A",
-                                                        overflow: TextOverflow.ellipsis,
-                                                        style: TextStyle(
-                                                          fontSize: 14.sp,
-                                                          color: Color(0xff242424),
-                                                          fontWeight: FontWeight.w400,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-
-                                                Spacer(),
-                                                //get directions
-                                                Text(
-                                                  'Get Directions',
-                                                  style: TextStyle(
-                                                    fontSize: 14.sp,
-                                                    color: Color(0xff1A5864),
-                                                    fontWeight: FontWeight.w500,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-
-                                            SizedBox(height: 4.h),
-
-                                            //view profile btn / book appointment btn
-                                            Row(
-                                              children: [
-                                                Expanded(
-                                                  child: RawMaterialButton(
-                                                    elevation: 0.0,
-                                                    fillColor: Colors.white,
-                                                    padding: EdgeInsets.zero,
-                                                    shape: ContinuousRectangleBorder(
-                                                      borderRadius: BorderRadius.circular(8.r),
-                                                      side: BorderSide(color: accentColorDark),
-                                                    ),
-                                                    child: Text(
-                                                      'View Profile',
-                                                      style: TextStyle(
-                                                        color: Color(0xff1A5864),
-                                                        fontSize: 15.sp,
-                                                        fontWeight: FontWeight.w500,
-                                                      ),
-                                                    ),
-                                                    onPressed: () {
-                                                      Navigator.of(context).push(
-                                                        MaterialPageRoute(
-                                                          builder: (context) => InsuranceAgentProfilePage(agentModel: agent),
-                                                        ),
-                                                      );
-                                                    },
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
+                      final links = data.where((e) => e.linkName.toLowerCase().contains("-${widget.insuranceModel.name.toLowerCase()}")).toList();
+                      return Column(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(bottom: 10.0),
+                            child: ResourceCard(
+                              link: links[0],
                             ),
-                          );
-                        },
+                          ),
+                        ],
                       );
                     },
-                    loading: () => Center(
-                      child: Container(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(),
-                      ),
-                    ),
-                    error: (err, stack) => Text(
-                      "err",
-                      style: TextStyle(),
-                    ),
+                    loading: () {
+                      return Center(
+                        child: Container(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+                    },
+                    error: (err, stack) {
+                      return Text(
+                        'An error occurred. Please try again.',
+                        style: TextStyle(),
+                      );
+                    },
                   );
                 },
               ),
 
-              //reviews
+              //policy
+              Consumer(
+                builder: (context, ScopedReader watch, child) {
+                  final linksAsyncVal = watch(linksModelProvider);
+                  return linksAsyncVal.when(
+                    data: (data) {
+                      final links = data.where((e) => e.linkName.toLowerCase().contains("-${widget.insuranceModel.name.toLowerCase()}")).toList();
+                      return Column(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(bottom: 10.0),
+                            child: ResourceCard(
+                              link: links[1],
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                    loading: () {
+                      return Center(
+                        child: Container(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+                    },
+                    error: (err, stack) {
+                      return Text(
+                        'An error occurred. Please try again.',
+                        style: TextStyle(),
+                      );
+                    },
+                  );
+                },
+              ),
+
               SingleChildScrollView(
                 padding: EdgeInsets.symmetric(vertical: 15.w),
                 clipBehavior: Clip.hardEdge,
