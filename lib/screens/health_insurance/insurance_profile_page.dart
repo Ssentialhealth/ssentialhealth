@@ -792,25 +792,16 @@ class _InsuranceProfilePageState extends State<InsuranceProfilePage> with Single
 
                                 //failure
                                 if (state is FilterReviewsFailure) {
-                                  return Container(
-                                    height: 100,
-                                    color: Colors.red,
-                                  );
+                                  return Container();
                                 }
 
-                                return Container(
-                                  height: 100,
-                                  color: Colors.pink,
-                                );
+                                return Container();
                               },
                             );
                           }
 
                           if (reviewsState is LoadInsuranceReviewsFailure) {
-                            return Container(
-                              height: 100,
-                              color: Colors.red,
-                            );
+                            return Container();
                           }
 
                           if (reviewsState is LoadInsuranceReviewsLoading) {
@@ -824,10 +815,7 @@ class _InsuranceProfilePageState extends State<InsuranceProfilePage> with Single
                             );
                           }
 
-                          return Container(
-                            height: 100,
-                            color: Colors.yellow,
-                          );
+                          return Container();
                         },
                       ),
                     ],

@@ -1230,24 +1230,15 @@ class _PractitionerProfileScreenState extends State<PractitionerProfileScreen> w
 
                                 //failure
                                 if (state is FilterReviewsFailure) {
-                                  return Container(
-                                    height: 100,
-                                    color: Colors.red,
-                                  );
+                                  return Container();
                                 }
 
-                                return Container(
-                                  height: 100,
-                                  color: Colors.pink,
-                                );
+                                return Container();
                               },
                             );
                           }
                           if (reviewsState is LoadReviewsFailure) {
-                            return Container(
-                              height: 100,
-                              color: Colors.red,
-                            );
+                            return Container();
                           }
 
                           if (reviewsState is LoadReviewsLoading) {
@@ -1261,10 +1252,7 @@ class _PractitionerProfileScreenState extends State<PractitionerProfileScreen> w
                             );
                           }
 
-                          return Container(
-                            height: 100,
-                            color: Colors.yellow,
-                          );
+                          return Container();
                         },
                       ),
                     ],

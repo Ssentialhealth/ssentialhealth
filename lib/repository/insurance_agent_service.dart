@@ -8,23 +8,16 @@ final insuranceAgentServiceProvider = Provider<InsuranceAgentService>((ref) {
 });
 
 class InsuranceAgentService {
-  Future<List<InsuranceAgentModel>> fetchAgentsById(int insuranceId) async {
-    try {
-      final _token = await getStringValuesSF();
-      final response = await http.get(
-        "https://ssential.herokuapp.com/api/Agent/",
-        headers: {
-          'Authorization': 'Bearer ' + _token,
-          'Content-Type': 'application/json',
-        },
-      );
-      print('--------|reasonPhrase|--------|value -> ${response.reasonPhrase.toString()}');
-      final agents = insuranceAgentModelListFromJson(response.body);
-      final filteredAgents = agents.where((element) => element.insuarance == insuranceId).toList();
-      return filteredAgents;
-    } catch (e, s) {
-      print('--------|failed to fetch|--------|value -> $s');
-      return throw Exception();
-    }
+  Future<List<InsuranceAgentModel>> fetchAgents() async {
+    final _token = await getStringValuesSF();
+    final response = await http.get(
+      "https://ssential.herokuapp.com/api/Agent/",
+      headers: {
+        'Authorization': 'Bearer ' + _token,
+        'Content-Type': 'application/json',
+      },
+    );
+    print('--------|reasonPhrase|--------|value -> ${response.reasonPhrase.toString()}');
+    return insuranceAgentModelListFromJson(response.body);
   }
 }

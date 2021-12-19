@@ -780,25 +780,16 @@ class _InsuranceAgentProfilePageState extends State<InsuranceAgentProfilePage> w
 
                                 //failure
                                 if (state is FilterReviewsFailure) {
-                                  return Container(
-                                    height: 100,
-                                    color: Colors.red,
-                                  );
+                                  return Container();
                                 }
 
-                                return Container(
-                                  height: 100,
-                                  color: Colors.pink,
-                                );
+                                return Container();
                               },
                             );
                           }
 
                           if (reviewsState is LoadAgentReviewsFailure) {
-                            return Container(
-                              height: 100,
-                              color: Colors.red,
-                            );
+                            return Container();
                           }
 
                           if (reviewsState is LoadAgentReviewsLoading) {
@@ -812,10 +803,7 @@ class _InsuranceAgentProfilePageState extends State<InsuranceAgentProfilePage> w
                             );
                           }
 
-                          return Container(
-                            height: 100,
-                            color: Colors.yellow,
-                          );
+                          return Container();
                         },
                       ),
                     ],

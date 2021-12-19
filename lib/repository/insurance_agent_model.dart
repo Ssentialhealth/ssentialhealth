@@ -15,9 +15,9 @@ InsuranceAgentModel insuranceAgentModelFromJson(String str) => InsuranceAgentMod
 
 String insuranceAgentModelToJson(List<InsuranceAgentModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
-final insuranceAgentModelProvider = FutureProvider.autoDispose.family<List<InsuranceAgentModel>, int>((ref, insuranceId) async {
+final insuranceAgentModelProvider = FutureProvider.autoDispose((ref) async {
   final service = ref.watch(insuranceAgentServiceProvider);
-  final data = await service.fetchAgentsById(insuranceId);
+  final data = await service.fetchAgents();
   return data;
 });
 
