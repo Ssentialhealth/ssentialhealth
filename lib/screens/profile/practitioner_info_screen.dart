@@ -566,7 +566,7 @@ class _PractitionerInfoState extends State<PractitionerInfo> {
             GestureDetector(
               onTap: () {
                 BlocProvider.of<PractitionerProfileBloc>(context).add(CreatePractitionerProfile(
-                    surname: surname.text,
+                    surname: _fullName,
                     location: location.text,
                     region: region.text,
                     phone: phone.text,
