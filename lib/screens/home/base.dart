@@ -4,6 +4,7 @@ import 'package:pocket_health/bloc/login/loginBloc.dart';
 import 'package:pocket_health/bloc/login/loginState.dart';
 import 'package:pocket_health/screens/doctor_consult/doctor_consult.dart';
 import 'package:pocket_health/screens/emergency_screens/hotlines_landing_screen.dart';
+import 'package:pocket_health/screens/home/search_users_screen.dart';
 import 'package:pocket_health/screens/practitioners/practitioners_categories_screen.dart';
 import 'package:pocket_health/screens/profile/profile_screen.dart';
 import 'package:pocket_health/utils/constants.dart';
@@ -45,22 +46,14 @@ class _BaseState extends State<Base> {
                     );
                   }
                 : () {
-                    ScaffoldMessenger.of(context)
-                      ..clearSnackBars()
-                      ..showSnackBar(
-                        SnackBar(
-                          behavior: SnackBarBehavior.floating,
-                          backgroundColor: Color(0xff163C4D),
-                          duration: Duration(milliseconds: 6000),
-                          content: Text(
-                            'This feature is only available to users registered as individuals!',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      );
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) {
+                          return SearchUsersScreen(fromFAB: true);
+                        },
+                      ),
+                    );
                   },
           );
         },

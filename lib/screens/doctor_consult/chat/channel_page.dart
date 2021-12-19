@@ -11,6 +11,12 @@ import 'channel_details_page.dart';
 import 'channel_info.dart';
 
 class ChannelPage extends StatefulWidget {
+  final String referral;
+
+  const ChannelPage({
+    Key key,
+    this.referral,
+  }) : super(key: key);
   @override
   _ChannelPageState createState() => _ChannelPageState();
 }
