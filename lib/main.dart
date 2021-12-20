@@ -64,6 +64,7 @@ import 'package:pocket_health/repository/forgotPasswordRepo.dart';
 import 'package:pocket_health/repository/growth_charts_repo.dart';
 import 'package:pocket_health/repository/hotline_repo.dart';
 import 'package:pocket_health/repository/immunization_schedule_repo.dart';
+import 'package:pocket_health/repository/insurance_call_history_repo.dart';
 import 'package:pocket_health/repository/insurance_reviews_repo.dart';
 import 'package:pocket_health/repository/loginRepo.dart';
 import 'package:pocket_health/repository/manage_bookings_repo.dart';
@@ -101,6 +102,7 @@ import 'bloc/filter_insurance_reviews/filter_insurance_reviews_cubit.dart';
 import 'bloc/filter_reviews/filter_reviews_cubit.dart';
 import 'bloc/forgotPassword/forgotPasswordBloc.dart';
 import 'bloc/initialize_stream_chat/initialize_stream_chat_cubit.dart';
+import 'bloc/insurance_call_history/insurance_call_history_cubit.dart';
 import 'bloc/insurance_reviews/insurance_reviews_cubit.dart';
 import 'bloc/list_facility_open_hours/list_facility_open_hours_cubit.dart';
 import 'bloc/list_practitioners/list_practitioners_cubit.dart';
@@ -109,7 +111,9 @@ import 'bloc/post_agent_review/post_agent_review_cubit.dart';
 import 'bloc/post_facility_review/post_facility_review_cubit.dart';
 import 'bloc/post_insurance_review/post_insurance_review_cubit.dart';
 import 'bloc/post_review/post_review_cubit.dart';
+import 'bloc/saved_agent_contacts/saved_agent_contacts_cubit.dart';
 import 'bloc/saved_facility_contacts/saved_facility_contacts_cubit.dart';
+import 'bloc/saved_insurance_contacts/saved_insurance_contacts_cubit.dart';
 import 'bloc/tab_switcher/tab_switcher_cubit.dart';
 
 void main() async {
@@ -164,6 +168,7 @@ void main() async {
   final InsuranceReviewsRepo insuranceReviewsRepo = InsuranceReviewsRepo(ApiService(http.Client()));
   final AgentReviewsRepo postAgentReviewsRepo = AgentReviewsRepo(ApiService(http.Client()));
   final AgentReviewsRepo agentReviewsRepo = AgentReviewsRepo(ApiService(http.Client()));
+  final InsuranceCallHistoryRepo insuranceCallHistoryRepo = InsuranceCallHistoryRepo(ApiService(http.Client()));
 
   runApp(ProviderScope(
     child: MyApp(
@@ -215,6 +220,7 @@ void main() async {
       postInsuranceReviewsRepo: postInsuranceReviewsRepo,
       agentReviewsRepo: agentReviewsRepo,
       postAgentReviewsRepo: postAgentReviewsRepo,
+      insuranceCallHistoryRepo: insuranceCallHistoryRepo,
     ),
   ));
 }
@@ -262,6 +268,7 @@ class MyApp extends StatelessWidget {
   final OpenHoursRepo openHoursRepo;
   final FetchFacilityCallHistoryRepo fetchFacilityCallHistoryRepo;
   final FacilityCallHistoryRepo facilityCallHistoryRepo;
+  final InsuranceCallHistoryRepo insuranceCallHistoryRepo;
   final ManageBookingsRepo manageBookingsRepo;
   final AcceptDeclineRepo acceptDeclineRepo;
   final InsuranceReviewsRepo postInsuranceReviewsRepo;
@@ -319,6 +326,7 @@ class MyApp extends StatelessWidget {
     @required this.acceptDeclineRepo,
     @required this.postAgentReviewsRepo,
     @required this.agentReviewsRepo,
+    @required this.insuranceCallHistoryRepo,
   }) : super(key: key);
 
   @override
@@ -377,6 +385,8 @@ class MyApp extends StatelessWidget {
           BlocProvider(create: (context) => CallBalanceCubit(callBalanceRepo)),
           BlocProvider(create: (context) => SavedContactsCubit()..fetchContacts()),
           BlocProvider(create: (context) => SavedFacilityContactsCubit()..fetchContacts()),
+          BlocProvider(create: (context) => SavedInsuranceContactsCubit()..fetchContacts()),
+          BlocProvider(create: (context) => SavedAgentContactsCubit()..fetchContacts()),
           BlocProvider(create: (context) => TabSwitcherCubit()..loadPending()),
           BlocProvider(create: (context) => ListFacilitiesCubit(facilityProfileRepo: facilityProfileRepo)),
           BlocProvider(create: (context) => FacilityReviewsCubit(facilityReviewsRepo: facilityReviewsRepo)),
@@ -387,6 +397,7 @@ class MyApp extends StatelessWidget {
           BlocProvider(create: (context) => PostFacilityReviewCubit(facilityReviewsRepo: facilityReviewsRepo)),
           BlocProvider(create: (context) => ListFacilityOpenHoursCubit(openHoursRepo)),
           BlocProvider(create: (context) => FacilityCallHistoryCubit(facilityCallHistoryRepo)),
+          BlocProvider(create: (context) => InsuranceCallHistoryCubit(insuranceCallHistoryRepo)),
           BlocProvider(create: (context) => FetchFacilityCallHistoryCubit(fetchFacilityCallHistoryRepo)),
           BlocProvider(create: (context) => ManageBookingsCubit(manageBookingsRepo)),
           BlocProvider(create: (context) => AcceptDeclineCubit(acceptDeclineRepo)),

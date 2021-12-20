@@ -10,6 +10,7 @@ import 'package:pocket_health/bloc/initialize_stream_chat/initialize_stream_chat
 import 'package:pocket_health/bloc/login/loginBloc.dart';
 import 'package:pocket_health/bloc/login/loginState.dart';
 import 'package:pocket_health/bloc/post_agent_review/post_agent_review_cubit.dart';
+import 'package:pocket_health/bloc/saved_agent_contacts/saved_agent_contacts_cubit.dart';
 import 'package:pocket_health/models/agent_review_model.dart';
 import 'package:pocket_health/models/practitioner_profile_model.dart';
 import 'package:pocket_health/repository/insurance_agent_model.dart';
@@ -548,6 +549,37 @@ class _InsuranceAgentProfilePageState extends State<InsuranceAgentProfilePage> w
                   ),
                 ),
                 actionsIconTheme: IconThemeData(),
+                actions: [
+                  BlocBuilder<SavedAgentContactsCubit, SavedAgentContactsState>(
+                    builder: (context, state) {
+                      if (state is SavedAgentContactsSuccess) {
+                        final isSaved = state.savedAgentContacts.contains("agentIDTestThree" + '${widget.agentModel.id.toString()}');
+
+                        return GestureDetector(
+                          child: Icon(
+                            isSaved ? Icons.bookmark : Icons.bookmark_outline,
+                            size: 20.w,
+                            color: isSaved ? Color(0xff0e0e0e) : Color(0xff242424),
+                          ),
+                          onTap: () async {
+                            setState(() {
+                              saveContactVal = !isSaved;
+                            });
+                            context.read<SavedAgentContactsCubit>()
+                              ..addRemoveContacts(saveContactVal, "agentIDTestThree" + "${widget.agentModel.id.toString()}");
+                          },
+                        );
+                      }
+                      return Icon(
+                        Icons.bookmark_outline,
+                        size: 20.w,
+                        color: Color(0xff242424),
+                      );
+                    },
+                  ),
+
+                  SizedBox(width: 16),
+                ],
               ),
             ];
           },

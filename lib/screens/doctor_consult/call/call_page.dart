@@ -14,9 +14,11 @@ import 'package:pocket_health/bloc/agent_call_history/agent_call_history_cubit.d
 import 'package:pocket_health/bloc/call_balance/call_balance_cubit.dart';
 import 'package:pocket_health/bloc/call_history/call_history_cubit.dart';
 import 'package:pocket_health/bloc/facility_call_history/facility_call_history_cubit.dart';
+import 'package:pocket_health/bloc/insurance_call_history/insurance_call_history_cubit.dart';
 import 'package:pocket_health/bloc/login/loginBloc.dart';
 import 'package:pocket_health/bloc/login/loginState.dart';
 import 'package:pocket_health/models/facility_profile_model.dart';
+import 'package:pocket_health/models/health_insurance_model.dart';
 import 'package:pocket_health/models/practitioner_profile_model.dart';
 import 'package:pocket_health/repository/insurance_agent_model.dart';
 import 'package:pocket_health/screens/doctor_consult/call/referral_dialog.dart';
@@ -53,6 +55,11 @@ class CallPage extends StatefulWidget {
   final int agentRatePerMin;
   final List<InsuranceAgentModel> agentsCalled;
 
+  //insuranceID
+  final int insuranceID;
+  final int insuranceRatePerMin;
+  final List<HealthInsuranceModel> insurancesCalled;
+
   CallPage({
     Key key,
     this.channelName,
@@ -73,6 +80,9 @@ class CallPage extends StatefulWidget {
     this.agentID,
     this.agentRatePerMin,
     this.agentsCalled,
+    this.insuranceID,
+    this.insuranceRatePerMin,
+    this.insurancesCalled,
   }) : super(key: key);
 
   @override
@@ -205,11 +215,13 @@ class _CallPageState extends State<CallPage> {
 
           final duration = Duration(seconds: callTime).inMinutes.toInt();
 
-          final usedAmount = widget.from == "agent-dialog"
-              ? duration * widget.agentRatePerMin
-              : widget.from == "doc-dialog"
-                  ? duration * widget.docRatePerMin
-                  : duration * widget.facilityRatePerMin;
+          final usedAmount = widget.from == "insurance-dialog"
+              ? duration * widget.insuranceRatePerMin
+              : widget.from == "agent-dialog"
+                  ? duration * widget.agentRatePerMin
+                  : widget.from == "doc-dialog"
+                      ? duration * widget.docRatePerMin
+                      : duration * widget.facilityRatePerMin;
 
           //deduct from balance
           final newBalance = widget.callBalanceAmount - usedAmount;
@@ -221,6 +233,9 @@ class _CallPageState extends State<CallPage> {
 
           if (widget.from == "agent-dialog")
             context.read<AgentCallHistoryCubit>()..addCallHistory(5, widget.agentID, preFormattedFrom.toString(), preFormattedTo.toString());
+
+          if (widget.from == "insurance-dialog")
+            context.read<InsuranceCallHistoryCubit>()..addCallHistory(5, widget.insuranceID, preFormattedFrom.toString(), preFormattedTo.toString());
 
           context.read<CallBalanceCubit>()
             ..creditDeductAdd(paymentType: 'LIPA_MPESA', currency: "KES", amount: newBalance.toInt(), user: 5, balance: newBalance.toInt());

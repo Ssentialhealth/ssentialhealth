@@ -10,10 +10,12 @@ import 'package:pocket_health/bloc/insurance_reviews/insurance_reviews_cubit.dar
 import 'package:pocket_health/bloc/login/loginBloc.dart';
 import 'package:pocket_health/bloc/login/loginState.dart';
 import 'package:pocket_health/bloc/post_insurance_review/post_insurance_review_cubit.dart';
+import 'package:pocket_health/bloc/saved_insurance_contacts/saved_insurance_contacts_cubit.dart';
 import 'package:pocket_health/models/health_insurance_model.dart';
 import 'package:pocket_health/models/insurance_review_model.dart';
 import 'package:pocket_health/models/links_model.dart';
 import 'package:pocket_health/models/practitioner_profile_model.dart';
+import 'package:pocket_health/screens/doctor_consult/call/init_call_dialog.dart';
 import 'package:pocket_health/screens/doctor_consult/chat/channel_page.dart';
 import 'package:pocket_health/screens/health_insurance/purchase_insurance_page.dart';
 import 'package:pocket_health/screens/health_insurance/sort_insurance_reviews_row.dart';
@@ -180,7 +182,7 @@ class _InsuranceProfilePageState extends State<InsuranceProfilePage> with Single
                                       mainAxisSize: MainAxisSize.max,
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
-                                        //name / verified / bookmark
+                                        //name / verified /
                                         Row(
                                           crossAxisAlignment: CrossAxisAlignment.center,
                                           children: [
@@ -281,7 +283,7 @@ class _InsuranceProfilePageState extends State<InsuranceProfilePage> with Single
                                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                   backgroundColor: MaterialStateProperty.all(Color(0xff1A5864)),
                                   minimumSize: MaterialStateProperty.all(Size(0, 0)),
-                                  padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 60.w, vertical: 10.h)),
+                                  padding: MaterialStateProperty.all(EdgeInsets.symmetric(vertical: 10.h)),
                                   shape: MaterialStateProperty.all(RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(5.w),
                                     side: BorderSide(
@@ -484,6 +486,48 @@ class _InsuranceProfilePageState extends State<InsuranceProfilePage> with Single
                                 );
                               },
                             ),
+
+                            SizedBox(width: 10),
+
+                            //call
+                            BlocBuilder<LoginBloc, LoginState>(
+                              builder: (context, loginState) {
+                                return TextButton(
+                                  child: Icon(
+                                    Icons.call,
+                                    color: accentColorDark,
+                                    size: 21.w,
+                                  ),
+                                  style: ButtonStyle(
+                                    backgroundColor: MaterialStateProperty.all(Colors.white),
+                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                    minimumSize: MaterialStateProperty.all(Size(0, 0)),
+                                    padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h)),
+                                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5.w),
+                                      side: BorderSide(
+                                        color: accentColorDark,
+                                        width: 1.w,
+                                      ),
+                                    )),
+                                  ),
+                                  onPressed: () async {
+                                    await showDialog(
+                                      context: context,
+                                      builder: (dialogContext) {
+                                        return InitCallDialog(
+                                          from: "insurance-profile",
+                                          videoMuted: false,
+                                          insuranceHourlyRate: 10,
+                                          insuranceDetail: widget.insuranceModel,
+                                          isVerified: false,
+                                        );
+                                      },
+                                    );
+                                  },
+                                );
+                              },
+                            ),
                           ],
                         ),
 
@@ -544,6 +588,36 @@ class _InsuranceProfilePageState extends State<InsuranceProfilePage> with Single
                   ),
                 ),
                 actionsIconTheme: IconThemeData(),
+                actions: [
+                  BlocBuilder<SavedInsuranceContactsCubit, SavedInsuranceContactsState>(
+                    builder: (context, state) {
+                      if (state is SavedInsuranceContactsSuccess) {
+                        final isSaved = state.savedInsuranceContacts.contains("insuranceIDTestThree" + '${widget.insuranceModel.id.toString()}');
+
+                        return GestureDetector(
+                          child: Icon(
+                            isSaved ? Icons.bookmark : Icons.bookmark_outline,
+                            size: 20.w,
+                            color: isSaved ? Color(0xff0e0e0e) : Color(0xff242424),
+                          ),
+                          onTap: () async {
+                            setState(() {
+                              saveContactVal = !isSaved;
+                            });
+                            context.read<SavedInsuranceContactsCubit>()
+                              ..addRemoveContacts(saveContactVal, "insuranceIDTestThree" + "${widget.insuranceModel.id.toString()}");
+                          },
+                        );
+                      }
+                      return Icon(
+                        Icons.bookmark_outline,
+                        size: 20.w,
+                        color: Color(0xff242424),
+                      );
+                    },
+                  ),
+                  SizedBox(width: 16),
+                ],
               ),
             ];
           },
@@ -676,7 +750,6 @@ class _InsuranceProfilePageState extends State<InsuranceProfilePage> with Single
                   ),
 
                   SizedBox(height: 10.h),
-
                 ],
               ),
 
@@ -714,13 +787,13 @@ class _InsuranceProfilePageState extends State<InsuranceProfilePage> with Single
                       ],
                     ),
                   ),
-                  SizedBox(height: 10),
+                  SizedBox(height: 20),
                   Consumer(
                     builder: (context, ScopedReader watch, child) {
                       final linksAsyncVal = watch(linksModelProvider);
                       return linksAsyncVal.when(
                         data: (data) {
-                          final links = data.where((e) => e.linkName.toLowerCase().contains("-${widget.insuranceModel.name.toLowerCase()}")).toList();
+                          final links = data.where((e) => e.linkName.toLowerCase().contains("${widget.insuranceModel.name.toLowerCase()}")).toList();
                           if (links.length == 0)
                             return Padding(
                               padding: EdgeInsets.all(10.0),
@@ -756,6 +829,15 @@ class _InsuranceProfilePageState extends State<InsuranceProfilePage> with Single
                         },
                       );
                     },
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 15.h),
+                    child: Text(
+                      'Thank you for viewing our rates!',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -794,13 +876,13 @@ class _InsuranceProfilePageState extends State<InsuranceProfilePage> with Single
                       ],
                     ),
                   ),
-                  SizedBox(height: 10),
+                  SizedBox(height: 20),
                   Consumer(
                     builder: (context, ScopedReader watch, child) {
                       final linksAsyncVal = watch(linksModelProvider);
                       return linksAsyncVal.when(
                         data: (data) {
-                          final links = data.where((e) => e.linkName.toLowerCase().contains("-${widget.insuranceModel.name.toLowerCase()}")).toList();
+                          final links = data.where((e) => e.linkName.toLowerCase().contains("${widget.insuranceModel.name.toLowerCase()}")).toList();
                           if (links.length == 0)
                             return Padding(
                               padding: EdgeInsets.all(10.0),
@@ -836,6 +918,15 @@ class _InsuranceProfilePageState extends State<InsuranceProfilePage> with Single
                         },
                       );
                     },
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 15.h),
+                    child: Text(
+                      'Please be sure to abide by these terms and conditions.',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   ),
                 ],
               ),

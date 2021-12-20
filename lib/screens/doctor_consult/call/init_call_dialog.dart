@@ -8,6 +8,7 @@ import 'package:pocket_health/bloc/fetch_agent_call_history/fetch_agent_call_his
 import 'package:pocket_health/bloc/fetch_call_history/fetch_call_history_cubit.dart';
 import 'package:pocket_health/bloc/fetch_facility_call_history/fetch_facility_call_history_cubit.dart';
 import 'package:pocket_health/models/facility_profile_model.dart';
+import 'package:pocket_health/models/health_insurance_model.dart';
 import 'package:pocket_health/models/practitioner_profile_model.dart';
 import 'package:pocket_health/repository/insurance_agent_model.dart';
 import 'package:pocket_health/utils/constants.dart';
@@ -33,6 +34,10 @@ class InitCallDialog extends StatefulWidget {
   final InsuranceAgentModel agentDetail;
   final int agentHourlyRate;
 
+  //insurance
+  final HealthInsuranceModel insuranceDetail;
+  final int insuranceHourlyRate;
+
   InitCallDialog({
     Key key,
     this.from,
@@ -44,6 +49,8 @@ class InitCallDialog extends StatefulWidget {
     this.agentDetail,
     this.agentHourlyRate,
     this.facilityHourlyRate,
+    this.insuranceDetail,
+    this.insuranceHourlyRate,
   }) : super(key: key);
 
   @override
@@ -71,7 +78,7 @@ class _InitCallDialogState extends State<InitCallDialog> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0.w)),
       child: Container(
         width: 1.sw,
-        child: widget.from.contains("agent")
+        child: widget.from.contains("insurance")
             ? BlocConsumer<CallBalanceCubit, CallBalanceState>(
                 listener: (context, state) {},
                 builder: (context, balanceState) {
@@ -82,22 +89,22 @@ class _InitCallDialogState extends State<InitCallDialog> {
                         final int balanceInUSD = int.parse(balanceState.callBalanceModel.amount.split('.').first);
 
                         //doc
-                        final streamAgentID = widget.from == "agent-profile" ? "" : widget.streamProfile.id.replaceAll("agentIDTestFive", "");
-                        final agentID = widget.from == "agent-profile" ? widget.agentDetail.id : int.parse(streamAgentID);
-                        final int agentRatePerMin = widget.agentHourlyRate ~/ 60;
+                        final streamInsuranceID = widget.from == "insurance-profile" ? "" : widget.streamProfile.id.replaceAll("insuranceIDTestFive", "");
+                        final insuranceID = widget.from == "insurance-profile" ? widget.insuranceDetail.id : int.parse(streamInsuranceID);
+                        final int insuranceRatePerMin = widget.insuranceHourlyRate ~/ 60;
 
                         final double amountToUse = durationVal == "5 minutes"
-                            ? (5 * agentRatePerMin).toDouble()
+                            ? (5 * insuranceRatePerMin).toDouble()
                             : durationVal == "10 minutes"
-                                ? (10 * agentRatePerMin).toDouble()
+                                ? (10 * insuranceRatePerMin).toDouble()
                                 : durationVal == "15 minutes"
-                                    ? (15 * agentRatePerMin).toDouble()
+                                    ? (15 * insuranceRatePerMin).toDouble()
                                     : durationVal == "30 minutes"
-                                        ? (30 * agentRatePerMin).toDouble()
+                                        ? (30 * insuranceRatePerMin).toDouble()
                                         : durationVal == "45 minutes"
-                                            ? (45 * agentRatePerMin).toDouble()
+                                            ? (45 * insuranceRatePerMin).toDouble()
                                             : durationVal == "60 minutes"
-                                                ? (60 * agentRatePerMin).toDouble()
+                                                ? (60 * insuranceRatePerMin).toDouble()
                                                 : null;
 
                         return Column(
@@ -109,7 +116,7 @@ class _InitCallDialogState extends State<InitCallDialog> {
 
                             //doc name
                             Text(
-                              widget.from == "agent-chat" ? widget.streamProfile.extraData["name"] : widget.agentDetail.name,
+                              widget.from == "insurance-chat" ? widget.streamProfile.extraData["name"] : widget.insuranceDetail.name,
                               style: TextStyle(
                                 fontSize: 15.sp,
                                 color: Colors.black87,
@@ -241,22 +248,22 @@ class _InitCallDialogState extends State<InitCallDialog> {
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) => CallPage(
-                                                callDuration: int.parse(durationVal.split(" ").first),
-                                                channelName: 'testchannel1',
-                                                role: ClientRole.Broadcaster,
-                                                mutedAudio: false,
-                                                mutedVideo: widget.videoMuted,
-                                                from: "agent-dialog",
+                                              callDuration: int.parse(durationVal.split(" ").first),
+                                              channelName: 'testchannel1',
+                                              role: ClientRole.Broadcaster,
+                                              mutedAudio: false,
+                                              mutedVideo: widget.videoMuted,
+                                              from: "insurance-dialog",
 
-                                                //user
-                                                callBalanceAmount: double.parse(balanceState.callBalanceModel.amount.split(".").first),
-                                                userID: 5,
+                                              //user
+                                              callBalanceAmount: double.parse(balanceState.callBalanceModel.amount.split(".").first),
+                                              userID: 5,
 
-                                                //agent
-                                                agentID: agentID,
-                                                agentRatePerMin: agentRatePerMin,
-                                                agentsCalled: historyState.allAgentsCalled,
-                                                isVerified: false),
+                                              //insurance
+                                              insuranceID: insuranceID,
+                                              insuranceRatePerMin: insuranceRatePerMin,
+                                              isVerified: false,
+                                            ),
                                           ),
                                         )
                                       : Navigator.pushReplacement(
@@ -350,37 +357,33 @@ class _InitCallDialogState extends State<InitCallDialog> {
                   );
                 },
               )
-            : widget.from.contains("doc")
-                // call doctors
+            : widget.from.contains("agent")
                 ? BlocConsumer<CallBalanceCubit, CallBalanceState>(
                     listener: (context, state) {},
                     builder: (context, balanceState) {
-                      return BlocBuilder<FetchCallHistoryCubit, FetchCallHistoryState>(
+                      return BlocBuilder<FetchAgentCallHistoryCubit, FetchAgentCallHistoryState>(
                         builder: (context, historyState) {
-                          if (balanceState is CallBalanceFetchSuccess && historyState is FetchCallHistorySuccess) {
+                          if (balanceState is CallBalanceFetchSuccess && historyState is FetchAgentCallHistorySuccess) {
                             //user
                             final int balanceInUSD = int.parse(balanceState.callBalanceModel.amount.split('.').first);
 
                             //doc
-                            final streamDocID = widget.from == "doc-chat" ? widget.streamProfile.id.replaceAll("docIDTestThree", "") : "";
-                            final docID = widget.from == "doc-chat" ? int.parse(streamDocID) : widget.docDetail.user;
-                            final int docHourlyRate = widget.from == "doc-chat"
-                                ? int.parse((widget.streamProfile.extraData['docDetail']['rates_info']['online_booking']['upto_1_hour']).split(".").first) ?? 0
-                                : int.parse(widget.docDetail.ratesInfo.onlineBooking.upto1Hour.split('.').first);
-                            final int docRatePerMin = docHourlyRate ~/ 60;
+                            final streamAgentID = widget.from == "agent-profile" ? "" : widget.streamProfile.id.replaceAll("agentIDTestFive", "");
+                            final agentID = widget.from == "agent-profile" ? widget.agentDetail.id : int.parse(streamAgentID);
+                            final int agentRatePerMin = widget.agentHourlyRate ~/ 60;
 
                             final double amountToUse = durationVal == "5 minutes"
-                                ? (5 * docRatePerMin).toDouble()
+                                ? (5 * agentRatePerMin).toDouble()
                                 : durationVal == "10 minutes"
-                                    ? (10 * docRatePerMin).toDouble()
+                                    ? (10 * agentRatePerMin).toDouble()
                                     : durationVal == "15 minutes"
-                                        ? (15 * docRatePerMin).toDouble()
+                                        ? (15 * agentRatePerMin).toDouble()
                                         : durationVal == "30 minutes"
-                                            ? (30 * docRatePerMin).toDouble()
+                                            ? (30 * agentRatePerMin).toDouble()
                                             : durationVal == "45 minutes"
-                                                ? (45 * docRatePerMin).toDouble()
+                                                ? (45 * agentRatePerMin).toDouble()
                                                 : durationVal == "60 minutes"
-                                                    ? (60 * docRatePerMin).toDouble()
+                                                    ? (60 * agentRatePerMin).toDouble()
                                                     : null;
 
                             return Column(
@@ -392,7 +395,7 @@ class _InitCallDialogState extends State<InitCallDialog> {
 
                                 //doc name
                                 Text(
-                                  widget.from == "doc-chat" ? widget.streamProfile.extraData["name"] : widget.docDetail.surname,
+                                  widget.from == "agent-chat" ? widget.streamProfile.extraData["name"] : widget.agentDetail.name,
                                   style: TextStyle(
                                     fontSize: 15.sp,
                                     color: Colors.black87,
@@ -524,33 +527,22 @@ class _InitCallDialogState extends State<InitCallDialog> {
                                               context,
                                               MaterialPageRoute(
                                                 builder: (context) => CallPage(
-                                                  callDuration: int.parse(durationVal.split(" ").first),
-                                                  channelName: 'testchannel1',
-                                                  role: ClientRole.Broadcaster,
-                                                  mutedAudio: false,
-                                                  mutedVideo: widget.videoMuted,
-                                                  from: "doc-dialog",
+                                                    callDuration: int.parse(durationVal.split(" ").first),
+                                                    channelName: 'testchannel1',
+                                                    role: ClientRole.Broadcaster,
+                                                    mutedAudio: false,
+                                                    mutedVideo: widget.videoMuted,
+                                                    from: "agent-dialog",
 
-                                                  //doc
-                                                  docID: docID,
-                                                  docRatePerMin: docRatePerMin,
-                                                  doctorsCalled: historyState.allDoctorsCalled,
+                                                    //user
+                                                    callBalanceAmount: double.parse(balanceState.callBalanceModel.amount.split(".").first),
+                                                    userID: 5,
 
-                                                  //user
-                                                  callBalanceAmount: double.parse(balanceState.callBalanceModel.amount.split(".").first),
-                                                  userID: 5,
-
-                                                  //facility
-                                                  // facilityID: facilityID,
-                                                  // facilityRatePerMin: facilityRatePerMin,
-                                                  // facilitiesCalled: historyState.allDoctorsCalled,
-
-                                                  isVerified: widget.from == "doc-chat"
-                                                      ? widget.streamProfile.extraData["isVerified"] == "true"
-                                                          ? true
-                                                          : false
-                                                      : widget.isVerified,
-                                                ),
+                                                    //agent
+                                                    agentID: agentID,
+                                                    agentRatePerMin: agentRatePerMin,
+                                                    agentsCalled: historyState.allAgentsCalled,
+                                                    isVerified: false),
                                               ),
                                             )
                                           : Navigator.pushReplacement(
@@ -610,7 +602,7 @@ class _InitCallDialogState extends State<InitCallDialog> {
 
                               //doc name
                               Text(
-                                widget.from == "doc-chat" ? widget.streamProfile.extraData["name"] : widget.docDetail.surname,
+                                "...",
                                 style: TextStyle(
                                   fontSize: 15.sp,
                                   color: Colors.black87,
@@ -644,291 +636,589 @@ class _InitCallDialogState extends State<InitCallDialog> {
                       );
                     },
                   )
-                // call facilities
-                : BlocConsumer<CallBalanceCubit, CallBalanceState>(
-                    listener: (context, state) {},
-                    builder: (context, balanceState) {
-                      return BlocBuilder<FetchFacilityCallHistoryCubit, FetchFacilityCallHistoryState>(
-                        builder: (context, historyState) {
-                          if (balanceState is CallBalanceFetchSuccess && historyState is FetchFacilityCallHistorySuccess) {
-                            //user
-                            final int balanceInUSD = int.parse(balanceState.callBalanceModel.amount.split('.').first);
+                : widget.from.contains("doc")
+                    // call doctors
+                    ? BlocConsumer<CallBalanceCubit, CallBalanceState>(
+                        listener: (context, state) {},
+                        builder: (context, balanceState) {
+                          return BlocBuilder<FetchCallHistoryCubit, FetchCallHistoryState>(
+                            builder: (context, historyState) {
+                              if (balanceState is CallBalanceFetchSuccess && historyState is FetchCallHistorySuccess) {
+                                //user
+                                final int balanceInUSD = int.parse(balanceState.callBalanceModel.amount.split('.').first);
 
-                            //doc
-                            final streamFacilityID = widget.from == "facility-chat" ? widget.streamProfile.id.replaceAll("facilityIDTestThree", "") : "";
-                            final facilityID = widget.from == "facility-chat" ? int.parse(streamFacilityID) : widget.facilityDetail.id;
-                            final int facilityRatePerMin = widget.facilityHourlyRate ~/ 60;
+                                //doc
+                                final streamDocID = widget.from == "doc-chat" ? widget.streamProfile.id.replaceAll("docIDTestThree", "") : "";
+                                final docID = widget.from == "doc-chat" ? int.parse(streamDocID) : widget.docDetail.user;
+                                final int docHourlyRate = widget.from == "doc-chat"
+                                    ? int.parse(
+                                            (widget.streamProfile.extraData['docDetail']['rates_info']['online_booking']['upto_1_hour']).split(".").first) ??
+                                        0
+                                    : int.parse(widget.docDetail.ratesInfo.onlineBooking.upto1Hour.split('.').first);
+                                final int docRatePerMin = docHourlyRate ~/ 60;
 
-                            final double amountToUse = durationVal == "5 minutes"
-                                ? (5 * facilityRatePerMin).toDouble()
-                                : durationVal == "10 minutes"
-                                    ? (10 * facilityRatePerMin).toDouble()
-                                    : durationVal == "15 minutes"
-                                        ? (15 * facilityRatePerMin).toDouble()
-                                        : durationVal == "30 minutes"
-                                            ? (30 * facilityRatePerMin).toDouble()
-                                            : durationVal == "45 minutes"
-                                                ? (45 * facilityRatePerMin).toDouble()
-                                                : durationVal == "60 minutes"
-                                                    ? (60 * facilityRatePerMin).toDouble()
-                                                    : null;
+                                final double amountToUse = durationVal == "5 minutes"
+                                    ? (5 * docRatePerMin).toDouble()
+                                    : durationVal == "10 minutes"
+                                        ? (10 * docRatePerMin).toDouble()
+                                        : durationVal == "15 minutes"
+                                            ? (15 * docRatePerMin).toDouble()
+                                            : durationVal == "30 minutes"
+                                                ? (30 * docRatePerMin).toDouble()
+                                                : durationVal == "45 minutes"
+                                                    ? (45 * docRatePerMin).toDouble()
+                                                    : durationVal == "60 minutes"
+                                                        ? (60 * docRatePerMin).toDouble()
+                                                        : null;
 
-                            return Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                SizedBox(height: 15.h),
+                                return Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    SizedBox(height: 15.h),
 
-                                //doc name
-                                Text(
-                                  widget.from == "facility-chat" ? widget.streamProfile.extraData["name"] : widget.facilityDetail.facilityName,
-                                  style: TextStyle(
-                                    fontSize: 15.sp,
-                                    color: Colors.black87,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-
-                                SizedBox(height: 15.h),
-
-                                Divider(height: 1, thickness: 1.r, color: Color(0xffB3B3B3)),
-
-                                SizedBox(height: 15.h),
-                                Text(
-                                  'Estimated Call Cost',
-                                  style: TextStyle(
-                                    fontSize: 14.sp,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-
-                                //cost
-                                Text(
-                                  "USD " + "$amountToUse",
-                                  style: TextStyle(
-                                    fontSize: 14.sp,
-                                    fontWeight: FontWeight.w700,
-                                    color: Colors.orange,
-                                  ),
-                                ),
-                                SizedBox(height: 10.h),
-
-                                //drop down
-                                Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 20.w),
-                                  child: DropdownButtonFormField(
-                                    value: durationVal,
-                                    isExpanded: true,
-                                    onTap: () {},
-                                    onChanged: (val) {
-                                      setState(() {
-                                        durationVal = val;
-                                      });
-                                    },
-                                    icon: Icon(
-                                      Icons.keyboard_arrow_down,
-                                      size: 24.r,
-                                      color: accentColorDark,
-                                    ),
-                                    decoration: InputDecoration(
-                                      enabledBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                          color: accentColorDark,
-                                          width: 1.w,
-                                        ),
-                                      ),
-                                      border: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                          color: accentColorDark,
-                                          width: 1.w,
-                                        ),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                          color: accentColorDark,
-                                          width: 1.w,
-                                        ),
-                                      ),
-                                      fillColor: Colors.white,
-                                      filled: true,
-                                      contentPadding: EdgeInsets.symmetric(horizontal: 20.r),
-                                    ),
-                                    elevation: 0,
-                                    style: TextStyle(
-                                      fontSize: 14.sp,
-                                      color: Color(0xff707070),
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                    dropdownColor: Colors.white,
-                                    hint: Text(
-                                      'Select Duration',
+                                    //doc name
+                                    Text(
+                                      widget.from == "doc-chat" ? widget.streamProfile.extraData["name"] : widget.docDetail.surname,
                                       style: TextStyle(
-                                        fontSize: 14.sp,
-                                        color: Color(0xff707070),
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    items: ["5 minutes", "10 minutes", "15 minutes", "30 minutes", "45 minutes", "60 minutes", ""]
-                                        .map(
-                                          (e) => DropdownMenuItem(
-                                            value: e,
-                                            child: Text(
-                                              e,
-                                              style: TextStyle(),
-                                            ),
-                                          ),
-                                        )
-                                        .toList(),
-                                  ),
-                                ),
-                                SizedBox(height: 15.h),
-                                Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 20.w),
-                                  child: MaterialButton(
-                                    minWidth: 374.w,
-                                    elevation: 0.0,
-                                    child: Text(
-                                      'Continue',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 13.sp,
+                                        fontSize: 15.sp,
+                                        color: Colors.black87,
                                         fontWeight: FontWeight.w500,
                                       ),
                                     ),
-                                    highlightElevation: 0.0,
-                                    focusElevation: 0.0,
-                                    disabledElevation: 0.0,
-                                    color: Color(0xff1A5864),
-                                    height: 40.h,
-                                    highlightColor: Colors.transparent,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(4.r),
+
+                                    SizedBox(height: 15.h),
+
+                                    Divider(height: 1, thickness: 1.r, color: Color(0xffB3B3B3)),
+
+                                    SizedBox(height: 15.h),
+                                    Text(
+                                      'Estimated Call Cost',
+                                      style: TextStyle(
+                                        fontSize: 14.sp,
+                                        fontWeight: FontWeight.w500,
+                                      ),
                                     ),
-                                    onPressed: () async {
-                                      await Permission.camera.request();
-                                      await Permission.microphone.request();
 
-                                      (double.parse(balanceState.callBalanceModel.amount) >= amountToUse)
-                                          ? Navigator.pushReplacement(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) => CallPage(
-                                                  callDuration: int.parse(durationVal.split(" ").first),
-                                                  channelName: 'testchannel1',
-                                                  role: ClientRole.Broadcaster,
-                                                  mutedAudio: false,
-                                                  mutedVideo: widget.videoMuted,
-                                                  from: "facility-dialog",
+                                    //cost
+                                    Text(
+                                      "USD " + "$amountToUse",
+                                      style: TextStyle(
+                                        fontSize: 14.sp,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.orange,
+                                      ),
+                                    ),
+                                    SizedBox(height: 10.h),
 
-                                                  //user
-                                                  callBalanceAmount: double.parse(balanceState.callBalanceModel.amount.split(".").first),
-                                                  userID: 5,
-
-                                                  //facility
-                                                  facilityID: facilityID,
-                                                  facilityRatePerMin: facilityRatePerMin,
-                                                  facilitiesCalled: historyState.allFacilitiesCalled,
-
-                                                  isVerified: widget.from == "facility-chat"
-                                                      ? widget.streamProfile.extraData["isVerified"] == "true"
-                                                          ? true
-                                                          : false
-                                                      : widget.isVerified,
+                                    //drop down
+                                    Padding(
+                                      padding: EdgeInsets.symmetric(horizontal: 20.w),
+                                      child: DropdownButtonFormField(
+                                        value: durationVal,
+                                        isExpanded: true,
+                                        onTap: () {},
+                                        onChanged: (val) {
+                                          setState(() {
+                                            durationVal = val;
+                                          });
+                                        },
+                                        icon: Icon(
+                                          Icons.keyboard_arrow_down,
+                                          size: 24.r,
+                                          color: accentColorDark,
+                                        ),
+                                        decoration: InputDecoration(
+                                          enabledBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: accentColorDark,
+                                              width: 1.w,
+                                            ),
+                                          ),
+                                          border: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: accentColorDark,
+                                              width: 1.w,
+                                            ),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: accentColorDark,
+                                              width: 1.w,
+                                            ),
+                                          ),
+                                          fillColor: Colors.white,
+                                          filled: true,
+                                          contentPadding: EdgeInsets.symmetric(horizontal: 20.r),
+                                        ),
+                                        elevation: 0,
+                                        style: TextStyle(
+                                          fontSize: 14.sp,
+                                          color: Color(0xff707070),
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                        dropdownColor: Colors.white,
+                                        hint: Text(
+                                          'Select Duration',
+                                          style: TextStyle(
+                                            fontSize: 14.sp,
+                                            color: Color(0xff707070),
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        items: ["5 minutes", "10 minutes", "15 minutes", "30 minutes", "45 minutes", "60 minutes", ""]
+                                            .map(
+                                              (e) => DropdownMenuItem(
+                                                value: e,
+                                                child: Text(
+                                                  e,
+                                                  style: TextStyle(),
                                                 ),
                                               ),
                                             )
-                                          : Navigator.pushReplacement(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) => TopUpAccount(),
-                                              ),
-                                            );
-                                    },
-                                  ),
-                                ),
+                                            .toList(),
+                                      ),
+                                    ),
+                                    SizedBox(height: 15.h),
+                                    Padding(
+                                      padding: EdgeInsets.symmetric(horizontal: 20.w),
+                                      child: MaterialButton(
+                                        minWidth: 374.w,
+                                        elevation: 0.0,
+                                        child: Text(
+                                          'Continue',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 13.sp,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        highlightElevation: 0.0,
+                                        focusElevation: 0.0,
+                                        disabledElevation: 0.0,
+                                        color: Color(0xff1A5864),
+                                        height: 40.h,
+                                        highlightColor: Colors.transparent,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(4.r),
+                                        ),
+                                        onPressed: () async {
+                                          await Permission.camera.request();
+                                          await Permission.microphone.request();
 
-                                SizedBox(height: 15.h),
+                                          (double.parse(balanceState.callBalanceModel.amount) >= amountToUse)
+                                              ? Navigator.pushReplacement(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) => CallPage(
+                                                      callDuration: int.parse(durationVal.split(" ").first),
+                                                      channelName: 'testchannel1',
+                                                      role: ClientRole.Broadcaster,
+                                                      mutedAudio: false,
+                                                      mutedVideo: widget.videoMuted,
+                                                      from: "doc-dialog",
 
-                                //show balance
-                                TextButton(
-                                  onPressed: () async {
-                                    setState(() {
-                                      showBalance = !showBalance;
-                                    });
-                                  },
-                                  child: Text(
-                                    showBalance ? "Hide Balance" : 'Show Balance',
+                                                      //doc
+                                                      docID: docID,
+                                                      docRatePerMin: docRatePerMin,
+                                                      doctorsCalled: historyState.allDoctorsCalled,
+
+                                                      //user
+                                                      callBalanceAmount: double.parse(balanceState.callBalanceModel.amount.split(".").first),
+                                                      userID: 5,
+
+                                                      //facility
+                                                      // facilityID: facilityID,
+                                                      // facilityRatePerMin: facilityRatePerMin,
+                                                      // facilitiesCalled: historyState.allDoctorsCalled,
+
+                                                      isVerified: widget.from == "doc-chat"
+                                                          ? widget.streamProfile.extraData["isVerified"] == "true"
+                                                              ? true
+                                                              : false
+                                                          : widget.isVerified,
+                                                    ),
+                                                  ),
+                                                )
+                                              : Navigator.pushReplacement(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) => TopUpAccount(),
+                                                  ),
+                                                );
+                                        },
+                                      ),
+                                    ),
+
+                                    SizedBox(height: 15.h),
+
+                                    //show balance
+                                    TextButton(
+                                      onPressed: () async {
+                                        setState(() {
+                                          showBalance = !showBalance;
+                                        });
+                                      },
+                                      child: Text(
+                                        showBalance ? "Hide Balance" : 'Show Balance',
+                                        style: TextStyle(
+                                          decoration: TextDecoration.underline,
+                                          color: accentColorDark,
+                                          fontSize: 13.sp,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+
+                                    showBalance
+                                        ? Text(
+                                            "USD " + "$balanceInUSD",
+                                            style: TextStyle(
+                                              fontSize: 14.sp,
+                                              fontWeight: FontWeight.w700,
+                                              color: Colors.orange,
+                                            ),
+                                          )
+                                        : Text(
+                                            "",
+                                            style: TextStyle(),
+                                          ),
+
+                                    SizedBox(height: 15.h),
+                                  ],
+                                );
+                              }
+                              return Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  SizedBox(height: 15.h),
+
+                                  //doc name
+                                  Text(
+                                    "...",
                                     style: TextStyle(
-                                      decoration: TextDecoration.underline,
+                                      fontSize: 15.sp,
+                                      color: Colors.black87,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+
+                                  SizedBox(height: 15.h),
+
+                                  SizedBox(
+                                    height: 24.w,
+                                    width: 24.w,
+                                    child: CircularProgressIndicator(),
+                                  ),
+
+                                  SizedBox(height: 15.h),
+
+                                  Text(
+                                    '  Please wait...',
+                                    style: TextStyle(
                                       color: accentColorDark,
                                       fontSize: 13.sp,
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
-                                ),
 
-                                showBalance
-                                    ? Text(
-                                        "USD " + "$balanceInUSD",
-                                        style: TextStyle(
-                                          fontSize: 14.sp,
-                                          fontWeight: FontWeight.w700,
-                                          color: Colors.orange,
-                                        ),
-                                      )
-                                    : Text(
-                                        "",
-                                        style: TextStyle(),
-                                      ),
+                                  SizedBox(height: 45.h),
+                                ],
+                              );
 
-                                SizedBox(height: 15.h),
-                              ],
-                            );
-                          }
-                          return Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              SizedBox(height: 15.h),
-
-                              //doc name
-                              Text(
-                                widget.from == "facility-chat" ? widget.streamProfile.extraData["name"] : widget.facilityDetail.facilityName,
-                                style: TextStyle(
-                                  fontSize: 15.sp,
-                                  color: Colors.black87,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-
-                              SizedBox(height: 15.h),
-
-                              SizedBox(
-                                height: 24.w,
-                                width: 24.w,
-                                child: CircularProgressIndicator(),
-                              ),
-
-                              SizedBox(height: 15.h),
-
-                              Text(
-                                '  Please wait...',
-                                style: TextStyle(
-                                  color: accentColorDark,
-                                  fontSize: 13.sp,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-
-                              SizedBox(height: 45.h),
-                            ],
+                            },
                           );
                         },
-                      );
-                    },
-                  ),
+                      )
+                    // call facilities
+                    : BlocConsumer<CallBalanceCubit, CallBalanceState>(
+                        listener: (context, state) {},
+                        builder: (context, balanceState) {
+                          return BlocBuilder<FetchFacilityCallHistoryCubit, FetchFacilityCallHistoryState>(
+                            builder: (context, historyState) {
+                              if (balanceState is CallBalanceFetchSuccess && historyState is FetchFacilityCallHistorySuccess) {
+                                //user
+                                final int balanceInUSD = int.parse(balanceState.callBalanceModel.amount.split('.').first);
+
+                                //doc
+                                final streamFacilityID = widget.from == "facility-chat" ? widget.streamProfile.id.replaceAll("facilityIDTestThree", "") : "";
+                                final facilityID = widget.from == "facility-chat" ? int.parse(streamFacilityID) : widget.facilityDetail.id;
+                                final int facilityRatePerMin = widget.facilityHourlyRate ~/ 60;
+
+                                final double amountToUse = durationVal == "5 minutes"
+                                    ? (5 * facilityRatePerMin).toDouble()
+                                    : durationVal == "10 minutes"
+                                        ? (10 * facilityRatePerMin).toDouble()
+                                        : durationVal == "15 minutes"
+                                            ? (15 * facilityRatePerMin).toDouble()
+                                            : durationVal == "30 minutes"
+                                                ? (30 * facilityRatePerMin).toDouble()
+                                                : durationVal == "45 minutes"
+                                                    ? (45 * facilityRatePerMin).toDouble()
+                                                    : durationVal == "60 minutes"
+                                                        ? (60 * facilityRatePerMin).toDouble()
+                                                        : null;
+
+                                return Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    SizedBox(height: 15.h),
+
+                                    //doc name
+                                    Text(
+                                      widget.from == "facility-chat" ? widget.streamProfile.extraData["name"] : widget.facilityDetail.facilityName,
+                                      style: TextStyle(
+                                        fontSize: 15.sp,
+                                        color: Colors.black87,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+
+                                    SizedBox(height: 15.h),
+
+                                    Divider(height: 1, thickness: 1.r, color: Color(0xffB3B3B3)),
+
+                                    SizedBox(height: 15.h),
+                                    Text(
+                                      'Estimated Call Cost',
+                                      style: TextStyle(
+                                        fontSize: 14.sp,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+
+                                    //cost
+                                    Text(
+                                      "USD " + "$amountToUse",
+                                      style: TextStyle(
+                                        fontSize: 14.sp,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.orange,
+                                      ),
+                                    ),
+                                    SizedBox(height: 10.h),
+
+                                    //drop down
+                                    Padding(
+                                      padding: EdgeInsets.symmetric(horizontal: 20.w),
+                                      child: DropdownButtonFormField(
+                                        value: durationVal,
+                                        isExpanded: true,
+                                        onTap: () {},
+                                        onChanged: (val) {
+                                          setState(() {
+                                            durationVal = val;
+                                          });
+                                        },
+                                        icon: Icon(
+                                          Icons.keyboard_arrow_down,
+                                          size: 24.r,
+                                          color: accentColorDark,
+                                        ),
+                                        decoration: InputDecoration(
+                                          enabledBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: accentColorDark,
+                                              width: 1.w,
+                                            ),
+                                          ),
+                                          border: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: accentColorDark,
+                                              width: 1.w,
+                                            ),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: accentColorDark,
+                                              width: 1.w,
+                                            ),
+                                          ),
+                                          fillColor: Colors.white,
+                                          filled: true,
+                                          contentPadding: EdgeInsets.symmetric(horizontal: 20.r),
+                                        ),
+                                        elevation: 0,
+                                        style: TextStyle(
+                                          fontSize: 14.sp,
+                                          color: Color(0xff707070),
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                        dropdownColor: Colors.white,
+                                        hint: Text(
+                                          'Select Duration',
+                                          style: TextStyle(
+                                            fontSize: 14.sp,
+                                            color: Color(0xff707070),
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        items: ["5 minutes", "10 minutes", "15 minutes", "30 minutes", "45 minutes", "60 minutes", ""]
+                                            .map(
+                                              (e) => DropdownMenuItem(
+                                                value: e,
+                                                child: Text(
+                                                  e,
+                                                  style: TextStyle(),
+                                                ),
+                                              ),
+                                            )
+                                            .toList(),
+                                      ),
+                                    ),
+                                    SizedBox(height: 15.h),
+                                    Padding(
+                                      padding: EdgeInsets.symmetric(horizontal: 20.w),
+                                      child: MaterialButton(
+                                        minWidth: 374.w,
+                                        elevation: 0.0,
+                                        child: Text(
+                                          'Continue',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 13.sp,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        highlightElevation: 0.0,
+                                        focusElevation: 0.0,
+                                        disabledElevation: 0.0,
+                                        color: Color(0xff1A5864),
+                                        height: 40.h,
+                                        highlightColor: Colors.transparent,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(4.r),
+                                        ),
+                                        onPressed: () async {
+                                          await Permission.camera.request();
+                                          await Permission.microphone.request();
+
+                                          (double.parse(balanceState.callBalanceModel.amount) >= amountToUse)
+                                              ? Navigator.pushReplacement(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) => CallPage(
+                                                      callDuration: int.parse(durationVal.split(" ").first),
+                                                      channelName: 'testchannel1',
+                                                      role: ClientRole.Broadcaster,
+                                                      mutedAudio: false,
+                                                      mutedVideo: widget.videoMuted,
+                                                      from: "facility-dialog",
+
+                                                      //user
+                                                      callBalanceAmount: double.parse(balanceState.callBalanceModel.amount.split(".").first),
+                                                      userID: 5,
+
+                                                      //facility
+                                                      facilityID: facilityID,
+                                                      facilityRatePerMin: facilityRatePerMin,
+                                                      facilitiesCalled: historyState.allFacilitiesCalled,
+
+                                                      isVerified: widget.from == "facility-chat"
+                                                          ? widget.streamProfile.extraData["isVerified"] == "true"
+                                                              ? true
+                                                              : false
+                                                          : widget.isVerified,
+                                                    ),
+                                                  ),
+                                                )
+                                              : Navigator.pushReplacement(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) => TopUpAccount(),
+                                                  ),
+                                                );
+                                        },
+                                      ),
+                                    ),
+
+                                    SizedBox(height: 15.h),
+
+                                    //show balance
+                                    TextButton(
+                                      onPressed: () async {
+                                        setState(() {
+                                          showBalance = !showBalance;
+                                        });
+                                      },
+                                      child: Text(
+                                        showBalance ? "Hide Balance" : 'Show Balance',
+                                        style: TextStyle(
+                                          decoration: TextDecoration.underline,
+                                          color: accentColorDark,
+                                          fontSize: 13.sp,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+
+                                    showBalance
+                                        ? Text(
+                                            "USD " + "$balanceInUSD",
+                                            style: TextStyle(
+                                              fontSize: 14.sp,
+                                              fontWeight: FontWeight.w700,
+                                              color: Colors.orange,
+                                            ),
+                                          )
+                                        : Text(
+                                            "",
+                                            style: TextStyle(),
+                                          ),
+
+                                    SizedBox(height: 15.h),
+                                  ],
+                                );
+                              }
+                              return Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  SizedBox(height: 15.h),
+
+                                  //doc name
+                                  Text(
+                                    "...",
+                                    style: TextStyle(
+                                      fontSize: 15.sp,
+                                      color: Colors.black87,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+
+                                  SizedBox(height: 15.h),
+
+                                  SizedBox(
+                                    height: 24.w,
+                                    width: 24.w,
+                                    child: CircularProgressIndicator(),
+                                  ),
+
+                                  SizedBox(height: 15.h),
+
+                                  Text(
+                                    '  Please wait...',
+                                    style: TextStyle(
+                                      color: accentColorDark,
+                                      fontSize: 13.sp,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+
+                                  SizedBox(height: 45.h),
+                                ],
+                              );
+
+                            },
+                          );
+                        },
+                      ),
       ),
     );
   }

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart' hide BuildContextX;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:pocket_health/bloc/saved_insurance_contacts/saved_insurance_contacts_cubit.dart';
 import 'package:pocket_health/models/health_insurance_model.dart';
 import 'package:pocket_health/screens/health_insurance/filter_insurances_screen.dart';
 import 'package:pocket_health/screens/health_insurance/insurance_profile_page.dart';
@@ -17,6 +19,8 @@ class ListInsurancesPage extends StatefulWidget {
 
 class _ListInsurancesPageState extends State<ListInsurancesPage> {
   String filterByName = "";
+
+  bool saveContactVal = false;
 
   @override
   Widget build(BuildContext context) {
@@ -238,34 +242,35 @@ class _ListInsurancesPageState extends State<ListInsurancesPage> {
 
                                               Spacer(),
 
-                                              //bookmark
-                                              // BlocBuilder<SavedFacilityContactsCubit, SavedFacilityContactsState>(
-                                              //   builder: (context, state) {
-                                              //     if (state is SavedFacilityContactsSuccess) {
-                                              //       final isSaved = state.savedFacilityContacts.contains("facilityIDTestThree" + '${facilityProfileModel.id.toString()}');
-                                              //
-                                              //       return GestureDetector(
-                                              //         child: Icon(
-                                              //           isSaved ? Icons.bookmark : Icons.bookmark_outline,
-                                              //           size: 20.w,
-                                              //           color: isSaved ? Color(0xff0e0e0e) : Color(0xff242424),
-                                              //         ),
-                                              //         onTap: () async {
-                                              //           setState(() {
-                                              //             saveContactVal = !isSaved;
-                                              //           });
-                                              //           context.read<SavedFacilityContactsCubit>()
-                                              //             ..addRemoveContacts(saveContactVal, "facilityIDTestThree" + "${facilityProfileModel.id.toString()}");
-                                              //         },
-                                              //       );
-                                              //     }
-                                              //     return Icon(
-                                              //       Icons.bookmark_outline,
-                                              //       size: 20.w,
-                                              //       color: Color(0xff242424),
-                                              //     );
-                                              //   },
-                                              // ),
+                                              // bookmark
+                                              BlocBuilder<SavedInsuranceContactsCubit, SavedInsuranceContactsState>(
+                                                builder: (context, state) {
+                                                  if (state is SavedInsuranceContactsSuccess) {
+                                                    final isSaved =
+                                                        state.savedInsuranceContacts.contains("insuranceIDTestThree" + '${insurance.id.toString()}');
+
+                                                    return GestureDetector(
+                                                      child: Icon(
+                                                        isSaved ? Icons.bookmark : Icons.bookmark_outline,
+                                                        size: 20.w,
+                                                        color: isSaved ? Color(0xff0e0e0e) : Color(0xff242424),
+                                                      ),
+                                                      onTap: () async {
+                                                        setState(() {
+                                                          saveContactVal = !isSaved;
+                                                        });
+                                                        context.read<SavedInsuranceContactsCubit>()
+                                                          ..addRemoveContacts(saveContactVal, "insuranceIDTestThree" + "${insurance.id.toString()}");
+                                                      },
+                                                    );
+                                                  }
+                                                  return Icon(
+                                                    Icons.bookmark_outline,
+                                                    size: 20.w,
+                                                    color: Color(0xff242424),
+                                                  );
+                                                },
+                                              ),
                                             ],
                                           ),
 

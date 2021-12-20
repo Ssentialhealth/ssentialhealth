@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pocket_health/screens/facilities/list_agents_page.dart';
+import 'package:pocket_health/screens/facilities/pay_insurances_list_page.dart';
 import 'package:pocket_health/screens/health_insurance/list_insurances_page.dart';
 import 'package:pocket_health/utils/constants.dart';
 
@@ -69,6 +70,14 @@ class InsuranceCategoriesScreen extends StatelessWidget {
                           MaterialPageRoute(
                             builder: (BuildContext context) {
                               return ListDocumentsPage();
+                            },
+                          ),
+                        );
+                      if (index == 3)
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (BuildContext context) {
+                              return PayInsurancesListPage();
                             },
                           ),
                         );

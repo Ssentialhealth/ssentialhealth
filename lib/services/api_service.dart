@@ -32,6 +32,7 @@ import 'package:pocket_health/models/facility_review_model.dart';
 import 'package:pocket_health/models/growth_chart_model.dart';
 import 'package:pocket_health/models/hotlines.dart';
 import 'package:pocket_health/models/immunization_schedule_model.dart' hide Vaccine;
+import 'package:pocket_health/models/insurance_call_history_model.dart';
 import 'package:pocket_health/models/insurance_review_model.dart';
 import 'package:pocket_health/models/loginModel.dart';
 import 'package:pocket_health/models/normal_development_Model.dart';
@@ -964,6 +965,24 @@ class ApiService {
     print(response.body);
 
     return agentCallHistoryModelFromJson(response.body);
+  }
+
+  Future<InsuranceCallHistoryModel> addInsuranceCallHistoryToDB(Map<String, dynamic> mapData) async {
+    _token = await getStringValuesSF();
+
+    final response = await http.post(
+      'https://ssential.herokuapp.com/api/InsuranceCallsHistory/',
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + _token,
+      },
+      body: json.encode(mapData),
+    );
+
+    print('--------|mapData|--------|value -> ${mapData.toString()}');
+    print(response.body);
+
+    return insuranceCallHistoryModelFromJson(response.body);
   }
 
   //appointments
