@@ -10,12 +10,20 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:pocket_health/bloc/agent_call_history/agent_call_history_cubit.dart';
 import 'package:pocket_health/bloc/call_balance/call_balance_cubit.dart';
 import 'package:pocket_health/bloc/call_history/call_history_cubit.dart';
 import 'package:pocket_health/bloc/facility_call_history/facility_call_history_cubit.dart';
+import 'package:pocket_health/bloc/insurance_call_history/insurance_call_history_cubit.dart';
+import 'package:pocket_health/bloc/login/loginBloc.dart';
+import 'package:pocket_health/bloc/login/loginState.dart';
 import 'package:pocket_health/models/facility_profile_model.dart';
+import 'package:pocket_health/models/health_insurance_model.dart';
 import 'package:pocket_health/models/practitioner_profile_model.dart';
+import 'package:pocket_health/repository/insurance_agent_model.dart';
+import 'package:pocket_health/screens/doctor_consult/call/referral_dialog.dart';
 import 'package:pocket_health/screens/doctor_consult/call/utils.dart';
+import 'package:pocket_health/utils/constants.dart';
 import 'package:pocket_health/widgets/verified_tag.dart';
 
 class CallPage extends StatefulWidget {
@@ -42,6 +50,16 @@ class CallPage extends StatefulWidget {
   final int facilityRatePerMin;
   final List<FacilityProfileModel> facilitiesCalled;
 
+  //agent
+  final int agentID;
+  final int agentRatePerMin;
+  final List<InsuranceAgentModel> agentsCalled;
+
+  //insuranceID
+  final int insuranceID;
+  final int insuranceRatePerMin;
+  final List<HealthInsuranceModel> insurancesCalled;
+
   CallPage({
     Key key,
     this.channelName,
@@ -59,6 +77,12 @@ class CallPage extends StatefulWidget {
     this.facilityRatePerMin,
     this.facilitiesCalled,
     this.from,
+    this.agentID,
+    this.agentRatePerMin,
+    this.agentsCalled,
+    this.insuranceID,
+    this.insuranceRatePerMin,
+    this.insurancesCalled,
   }) : super(key: key);
 
   @override
@@ -191,13 +215,28 @@ class _CallPageState extends State<CallPage> {
 
           final duration = Duration(seconds: callTime).inMinutes.toInt();
 
-          final usedAmount = widget.from == "doc-dialog" ? duration * widget.docRatePerMin : duration * widget.facilityRatePerMin;
+          final usedAmount = widget.from == "insurance-dialog"
+              ? duration * widget.insuranceRatePerMin
+              : widget.from == "agent-dialog"
+                  ? duration * widget.agentRatePerMin
+                  : widget.from == "doc-dialog"
+                      ? duration * widget.docRatePerMin
+                      : duration * widget.facilityRatePerMin;
+
           //deduct from balance
           final newBalance = widget.callBalanceAmount - usedAmount;
+
           if (widget.from == "doc-dialog")
             context.read<CallHistoryCubit>()..addCallHistory(5, widget.docID, preFormattedFrom.toString(), preFormattedTo.toString());
           if (widget.from == "facility-dialog")
             context.read<FacilityCallHistoryCubit>()..addCallHistory(5, widget.facilityID, preFormattedFrom.toString(), preFormattedTo.toString());
+
+          if (widget.from == "agent-dialog")
+            context.read<AgentCallHistoryCubit>()..addCallHistory(5, widget.agentID, preFormattedFrom.toString(), preFormattedTo.toString());
+
+          if (widget.from == "insurance-dialog")
+            context.read<InsuranceCallHistoryCubit>()..addCallHistory(5, widget.insuranceID, preFormattedFrom.toString(), preFormattedTo.toString());
+
           context.read<CallBalanceCubit>()
             ..creditDeductAdd(paymentType: 'LIPA_MPESA', currency: "KES", amount: newBalance.toInt(), user: 5, balance: newBalance.toInt());
 
@@ -682,6 +721,7 @@ class _CallPageState extends State<CallPage> {
         ),
       );
 
+  //call ended state
   Widget _callEndedView(String status) => AnimatedContainer(
         duration: Duration(milliseconds: 1000),
         alignment: Alignment.topCenter,
@@ -747,6 +787,182 @@ class _CallPageState extends State<CallPage> {
                 fontWeight: FontWeight.w300,
               ),
             ),
+            SizedBox(height: 20.h),
+
+            //requests
+            BlocBuilder<LoginBloc, LoginState>(
+              builder: (context, state) {
+                if (state is LoginLoaded) {
+                  final userID = state.loginModel.user.fullNames.split(' ').last;
+                  final userCategory = state.loginModel.user.userCategory;
+
+                  if (userCategory != "individual") {
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        //lab request
+                        GestureDetector(
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return ReferralDialog(
+                                  patientID: 5,
+                                  userCategory: userCategory,
+                                  referralType: "patient",
+                                );
+                              },
+                            );
+                          },
+                          child: Container(
+                            height: 90,
+                            width: 100,
+                            decoration: BoxDecoration(
+                              color: accentColorLight,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Lab\nRequest',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: accentColorDark,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        //imaging request
+                        GestureDetector(
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return ReferralDialog(
+                                  patientID: 5,
+                                  userCategory: userCategory,
+                                  referralType: "facility",
+                                );
+                              },
+                            );
+                          },
+                          child: Container(
+                            height: 90,
+                            width: 100,
+                            decoration: BoxDecoration(
+                              color: accentColorLight,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Imaging\nRequest',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: accentColorDark,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        // Prescription
+                        GestureDetector(
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return ReferralDialog(
+                                  patientID: 5,
+                                  userCategory: userCategory,
+                                  referralType: "facility",
+                                );
+                              },
+                            );
+                          },
+                          child: Container(
+                            height: 90,
+                            width: 100,
+                            decoration: BoxDecoration(
+                              color: accentColorLight,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Prescription',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: accentColorDark,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  } else
+                    return SizedBox.shrink();
+                }
+                return SizedBox.shrink();
+              },
+            ),
+
+            //Refer to Self
+            BlocBuilder<LoginBloc, LoginState>(
+              builder: (context, state) {
+                if (state is LoginLoaded) {
+                  final userID = state.loginModel.user.fullNames.split(' ').last;
+                  final userCategory = state.loginModel.user.userCategory;
+
+                  if (userCategory != "individual") {
+                    return GestureDetector(
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return ReferralDialog(
+                              patientID: 5,
+                              userCategory: userCategory,
+                              referralType: "patient",
+                            );
+                          },
+                        );
+                      },
+                      child: Padding(
+                        padding: EdgeInsets.all(20.0),
+                        child: Container(
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: accentColorLight,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Center(
+                            child: Text(
+                              'Refer to Self',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: accentColorDark,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  } else
+                    return SizedBox.shrink();
+                }
+
+                return Container();
+              },
+            ),
           ],
         ),
       );
@@ -784,6 +1000,7 @@ class _CallPageState extends State<CallPage> {
     print(widget.callDuration);
     return SafeArea(
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         backgroundColor: Color(0xff202124),
         body: Center(
           child: Stack(

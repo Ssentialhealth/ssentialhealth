@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:pocket_health/screens/home/home.dart';
+import 'package:pocket_health/screens/home/base.dart';
 import 'package:pocket_health/utils/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -64,7 +64,7 @@ class PractitionerViewDisclaimer extends StatelessWidget {
                         onPressed: () {
                           Navigator.of(context).pushReplacement(
                             MaterialPageRoute(
-                              builder: (context) => Home(),
+                              builder: (context) => Base(),
                             ),
                           );
                         },
@@ -128,7 +128,7 @@ class PractitionerViewDisclaimer extends StatelessWidget {
                         onPressed: () {
                           Navigator.of(context).pushReplacement(
                             MaterialPageRoute(
-                              builder: (context) => Home(),
+                              builder: (context) => Base(),
                             ),
                           );
                         },

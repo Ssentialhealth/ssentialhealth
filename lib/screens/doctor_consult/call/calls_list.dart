@@ -874,7 +874,7 @@ class _CallsListState extends State<CallsList> with SingleTickerProviderStateMix
                                                         onPressed: () {
                                                           context
                                                               .read<InitializeStreamChatCubit>()
-                                                              .initializeChannel(userID, docDetail, userCategory, isVerified);
+                                                              .initializePractitionerChannel(userID, docDetail, userCategory, isVerified);
                                                         },
                                                       );
                                                     },

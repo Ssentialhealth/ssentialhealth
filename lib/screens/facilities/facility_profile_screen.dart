@@ -1883,24 +1883,15 @@ class _FacilityProfileScreenState extends State<FacilityProfileScreen> with Sing
 
                                 //failure
                                 if (state is FilterReviewsFailure) {
-                                  return Container(
-                                    height: 100,
-                                    color: Colors.red,
-                                  );
+                                  return Container();
                                 }
 
-                                return Container(
-                                  height: 100,
-                                  color: Colors.pink,
-                                );
+                                return Container();
                               },
                             );
                           }
                           if (reviewsState is LoadFacilityReviewsFailure) {
-                            return Container(
-                              height: 100,
-                              color: Colors.red,
-                            );
+                            return Container();
                           }
 
                           if (reviewsState is LoadFacilityReviewsLoading) {
@@ -1914,10 +1905,7 @@ class _FacilityProfileScreenState extends State<FacilityProfileScreen> with Sing
                             );
                           }
 
-                          return Container(
-                            height: 100,
-                            color: Colors.yellow,
-                          );
+                          return Container();
                         },
                       ),
                     ],

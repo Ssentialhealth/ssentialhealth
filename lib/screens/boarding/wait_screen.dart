@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pocket_health/screens/home/home.dart';
+import 'package:pocket_health/screens/home/base.dart';
 import 'package:pocket_health/widgets/widget.dart';
 
 import '../Authentication/Authenticate.dart';
@@ -83,7 +83,7 @@ class _WaitScreenState extends State<WaitScreen> {
               padding: const EdgeInsets.all(26.0),
               child: GestureDetector(
                 onTap: () {
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Home()));
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Base()));
                 },
                 child: Container(
                   alignment: Alignment.center,

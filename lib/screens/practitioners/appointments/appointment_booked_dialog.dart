@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:pocket_health/screens/home/home.dart';
+import 'package:pocket_health/screens/home/base.dart';
 
 class AppointmentBookedDialog extends StatelessWidget {
   @override
@@ -61,7 +61,7 @@ class AppointmentBookedDialog extends StatelessWidget {
                 ),
                 onPressed: () {
                   Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (c) => Home()),
+                    MaterialPageRoute(builder: (c) => Base()),
                     (route) => false,
                   );
                 },

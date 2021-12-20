@@ -19,13 +19,18 @@ class PdfViewPage extends StatelessWidget {
           ),
           backgroundColor: Color(0xFF00FFFF),
         ),
-        body: Container(
-          height: 1000,
-          child: SfPdfViewer.network(
-            pdf,
-            canShowScrollHead: false,
-            canShowScrollStatus: false,
-          ),
+        body: Column(
+          children: [
+            Expanded(
+              child: Container(
+                child: SfPdfViewer.network(
+                  pdf,
+                  canShowScrollHead: false,
+                  canShowScrollStatus: false,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

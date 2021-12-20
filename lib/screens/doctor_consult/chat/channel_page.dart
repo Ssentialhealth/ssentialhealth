@@ -5,13 +5,20 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:pocket_health/screens/doctor_consult/call/init_call_dialog.dart';
 import 'package:pocket_health/screens/doctor_consult/chat/thread_page.dart';
 import 'package:pocket_health/services/api_service.dart';
-import 'package:pocket_health/utils/constants.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 import 'channel_details_page.dart';
 import 'channel_info.dart';
 
 class ChannelPage extends StatefulWidget {
+  final Map<String, dynamic> referral;
+  final String referralType;
+
+  const ChannelPage({
+    Key key,
+    this.referral,
+    this.referralType,
+  }) : super(key: key);
   @override
   _ChannelPageState createState() => _ChannelPageState();
 }
@@ -26,10 +33,19 @@ class _ChannelPageState extends State<ChannelPage> {
     final channel = StreamChannel.of(context).channel;
     final channelID = StreamChannel.of(context).channel.id;
     final userID = StreamChat.of(context).user.id;
-    final List<Message> allMessages = channel.state.messages;
     bool doctorsView = user.extraData['userCategory'] != "individual" && user.extraData['userCategory'] != null;
 
     print('channel page user  ---------------------------  $userID');
+
+    if (widget.referral!= null) {
+      channel.sendMessage(
+        Message(
+          text: widget.referralType == 'patient'
+              ? '**Patient Referral**  \n\n\n----------\n\n\nPatient of ID: **${widget.referral['patientID']}**,\n\n\nis requested to visit practitioner: **${widget.referral['doctor'].surname == "" ? "name is null" : widget.referral['doctor'].surname}**,\n\n\nand/or the following facility: **${widget.referral['facility'].facilityName}**,\n\n\nfor the following tests: **${widget.referral['requested'].toString().trimRight()}**\n\n\n----------\n\n\n*Please proceed as the referral above indicates*\n\n*This is a generated referral text message*'
+              : '**Facility Referral**  \n\n\n----------\n\n\nRequest for: **${widget.referral['request'].toString().trimRight()}**,\n\n\nfor patient of ID number:  **${widget.referral['patientID']}**\n\n\n----------\n\n\n*Please proceed as the referral above indicates*\n\n*This is a generated referral text message*',
+        ),
+      );
+    }
 
     return Scaffold(
       //header
@@ -115,10 +131,15 @@ class _ChannelPageState extends State<ChannelPage> {
                       context: context,
                       builder: (dialogContext) {
                         final isDoc = streamProfile.extraData["userCategory"] == "health practitioner";
+                        final isAgent = streamProfile.extraData["userCategory"] == "insurance agent";
                         return StreamChannel(
                           channel: channel,
                           child: InitCallDialog(
-                            from: isDoc ? "doc-chat" : 'facility-chat',
+                            from: isAgent
+                                ? "agent-chat"
+                                : isDoc
+                                    ? "doc-chat"
+                                    : 'facility-chat',
                             videoMuted: false,
                             facilityHourlyRate: isDoc ? 0 : facilityHourlyRate,
                             isVerified: streamProfile.extraData["isVerified"] == "true" ? true : false,
@@ -144,10 +165,16 @@ class _ChannelPageState extends State<ChannelPage> {
                       context: context,
                       builder: (dialogContext) {
                         final isDoc = streamProfile.extraData["userCategory"] == "health practitioner";
+                        final isAgent = streamProfile.extraData["userCategory"] == "insurance agent";
+
                         return StreamChannel(
                           channel: channel,
                           child: InitCallDialog(
-                            from: isDoc ? "doc-chat" : 'facility-chat',
+                            from: isAgent
+                                ? "agent-chat"
+                                : isDoc
+                                    ? "doc-chat"
+                                    : 'facility-chat',
                             videoMuted: true,
                             facilityHourlyRate: isDoc ? 0 : facilityHourlyRate,
                             isVerified: streamProfile.extraData["isVerified"] == "true" ? true : false,
@@ -201,108 +228,13 @@ class _ChannelPageState extends State<ChannelPage> {
             ),
           ),
 
-          //doctors input
-          doctorsView
-              ? (allMessages.where((element) => element.user.id == userID).toList().length > 0) == true
-                  //invite accepted // continue chatting
-                  ? MessageInput(
-                      onMessageSent: (message) async {},
-                      quotedMessage: _quotedMessage,
-                      onQuotedMessageCleared: () {
-                        setState(() => _quotedMessage = null);
-                      },
-                    )
-                  //invite pending
-                  : ColoredBox(
-                      color: accentColorLight,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          //reject invite
-                          RawMaterialButton(
-                            elevation: 0.0,
-                            highlightElevation: 0.0,
-                            highlightColor: Colors.transparent,
-                            textStyle: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16.sp,
-                            ),
-                            splashColor: Color(0xffeecccc),
-                            onPressed: () async {
-                              await channel.rejectInvite();
-                              await channel.delete();
-                              Navigator.pop(context);
-                            },
-                            child: Text(
-                              'Reject',
-                              style: TextStyle(color: Colors.red),
-                            ),
-                          ),
-
-                          //accept invite
-                          RawMaterialButton(
-                            elevation: 0.0,
-                            highlightElevation: 0.0,
-                            highlightColor: Colors.transparent,
-                            textStyle: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16.sp,
-                            ),
-                            splashColor: Color(0xffcae9ca),
-                            onPressed: () async {
-                              await channel.acceptInvite(
-                                Message(
-                                  text: channelID + ' has accepted your invite. You can continue chatting',
-                                ),
-                              );
-                              setState(() {});
-                            },
-                            child: Text(
-                              'Accept',
-                              style: TextStyle(color: Colors.green),
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-
-              // users input
-              : (allMessages.where((element) => element.user.id != userID).toList().length > 0)
-                  //invite accepted // continue chatting
-                  ? MessageInput(
-                      onMessageSent: (message) async {},
-                      quotedMessage: _quotedMessage,
-                      onQuotedMessageCleared: () {
-                        setState(() => _quotedMessage = null);
-                      },
-                    )
-                  //invite pending
-                  : ((allMessages.where((element) => element.user.id != userID).toList().length > 0) == false)
-                      ? (allMessages.length >= 2)
-                          //waiting for response / disable spamming invites
-                          ? MessageInput(
-                              onMessageSent: (message) async {},
-                              quotedMessage: _quotedMessage,
-                              onQuotedMessageCleared: () {
-                                setState(() => _quotedMessage = null);
-                              },
-                            )
-                          //invite doc
-                          : MessageInput(
-                              onMessageSent: (message) async {
-                                await channel.inviteMembers(
-                                  [channelID],
-                                  Message(
-                                    text: userID + ' wants to invite you to a chat. Accept or Reject',
-                                  ),
-                                );
-                              },
-                              quotedMessage: _quotedMessage,
-                              onQuotedMessageCleared: () {
-                                setState(() => _quotedMessage = null);
-                              },
-                            )
-                      : null,
+          MessageInput(
+            onMessageSent: (message) async {},
+            quotedMessage: _quotedMessage,
+            onQuotedMessageCleared: () {
+              setState(() => _quotedMessage = null);
+            },
+          ),
         ],
       ),
     );

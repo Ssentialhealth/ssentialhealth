@@ -1,10 +1,8 @@
-import 'package:agora_rtc_engine/rtc_engine.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:pocket_health/bloc/call_balance/call_balance_cubit.dart';
 import 'package:pocket_health/bloc/filter_reviews/filter_reviews_cubit.dart';
 import 'package:pocket_health/bloc/initialize_stream_chat/initialize_stream_chat_cubit.dart';
@@ -15,9 +13,7 @@ import 'package:pocket_health/bloc/reviews/reviews_cubit.dart';
 import 'package:pocket_health/bloc/saved_contacts/saved_contacts_cubit.dart';
 import 'package:pocket_health/models/practitioner_profile_model.dart';
 import 'package:pocket_health/models/review_model.dart';
-import 'package:pocket_health/screens/doctor_consult/call/call_page.dart';
 import 'package:pocket_health/screens/doctor_consult/call/init_call_dialog.dart';
-import 'package:pocket_health/screens/doctor_consult/call/top_up_account.dart';
 import 'package:pocket_health/screens/doctor_consult/chat/channel_page.dart';
 import 'package:pocket_health/screens/practitioners/reviews_list.dart';
 import 'package:pocket_health/screens/practitioners/sort_reviews_row.dart';
@@ -335,60 +331,6 @@ class _PractitionerProfileScreenState extends State<PractitionerProfileScreen> w
 
                                   return BlocConsumer<InitializeStreamChatCubit, InitializeStreamChatState>(
                                     listener: (context, state) {
-                                      if (state is StreamChannelSuccess) {
-                                        Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                            builder: (context) {
-                                              return StreamChat(
-                                                streamChatThemeData: StreamChatThemeData(
-                                                  //input bar
-                                                  messageInputTheme: MessageInputTheme(
-                                                    sendAnimationDuration: Duration(milliseconds: 500),
-                                                  ),
-
-                                                  //messages styling
-                                                  ownMessageTheme: MessageTheme(
-                                                    messageBorderColor: accentColorDark,
-                                                    messageBackgroundColor: accentColorLight,
-                                                    messageText: TextStyle(
-                                                      color: Color(0xff373737),
-                                                    ),
-                                                  ),
-                                                  otherMessageTheme: MessageTheme(
-                                                    messageBorderColor: Color(0x19000000),
-                                                    messageBackgroundColor: Color(0xF000000),
-                                                    messageText: TextStyle(
-                                                      color: Color(0xff373737),
-                                                    ),
-                                                  ),
-
-                                                  //list styling
-                                                  channelPreviewTheme: ChannelPreviewTheme(
-                                                    unreadCounterColor: accentColorDark,
-                                                  ),
-
-                                                  //channel styling
-                                                  channelTheme: ChannelTheme(
-                                                    channelHeaderTheme: ChannelHeaderTheme(
-                                                      color: accentColor,
-                                                      subtitle: TextStyle(
-                                                        fontSize: 11.5.sp,
-                                                        color: Colors.grey[700],
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                                client: context.read<InitializeStreamChatCubit>().client,
-                                                child: StreamChannel(
-                                                  channel: state.channel,
-                                                  child: ChannelPage(),
-                                                ),
-                                              );
-                                            },
-                                          ),
-                                        );
-                                      }
-
                                       if (state is StreamChannelError) {
                                         ScaffoldMessenger.of(context)
                                           ..clearSnackBars()
@@ -479,7 +421,81 @@ class _PractitionerProfileScreenState extends State<PractitionerProfileScreen> w
                                           )),
                                         ),
                                         onPressed: () {
-                                          context.read<InitializeStreamChatCubit>().initializeChannel(userID, doc, userCategory, widget.isVerified);
+                                          context.read<InitializeStreamChatCubit>().initializePractitionerChannel(userID, doc, userCategory, widget.isVerified);
+
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                              builder: (context) => Scaffold(
+                                                backgroundColor: Colors.white,
+                                                body: BlocConsumer<InitializeStreamChatCubit, InitializeStreamChatState>(
+                                                  listener: (context, state) {
+                                                    if (state is StreamChannelSuccess) {
+                                                      Navigator.of(context).pushReplacement(
+                                                        MaterialPageRoute(
+                                                          builder: (context) {
+                                                            return StreamChat(
+                                                              streamChatThemeData: StreamChatThemeData(
+                                                                //input bar
+                                                                messageInputTheme: MessageInputTheme(
+                                                                  sendAnimationDuration: Duration(milliseconds: 500),
+                                                                ),
+
+                                                                //messages styling
+                                                                ownMessageTheme: MessageTheme(
+                                                                  messageBorderColor: accentColorDark,
+                                                                  messageBackgroundColor: accentColorLight,
+                                                                  messageText: TextStyle(
+                                                                    color: Color(0xff373737),
+                                                                  ),
+                                                                ),
+                                                                otherMessageTheme: MessageTheme(
+                                                                  messageBorderColor: Color(0x19000000),
+                                                                  messageBackgroundColor: Color(0xF000000),
+                                                                  messageText: TextStyle(
+                                                                    color: Color(0xff373737),
+                                                                  ),
+                                                                ),
+
+                                                                //list styling
+                                                                channelPreviewTheme: ChannelPreviewTheme(
+                                                                  unreadCounterColor: accentColorDark,
+                                                                ),
+
+                                                                //channel styling
+                                                                channelTheme: ChannelTheme(
+                                                                  channelHeaderTheme: ChannelHeaderTheme(
+                                                                    color: accentColor,
+                                                                    subtitle: TextStyle(
+                                                                      fontSize: 11.5.sp,
+                                                                      color: Colors.grey[700],
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                              client: context.read<InitializeStreamChatCubit>().client,
+                                                              child: StreamChannel(
+                                                                channel: state.channel,
+                                                                child: ChannelPage(),
+                                                              ),
+                                                            );
+                                                          },
+                                                        ),
+                                                      );
+                                                    }
+                                                  },
+                                                  builder: (context, state) {
+                                                    return Center(
+                                                      child: Container(
+                                                        height: 20,
+                                                        width: 20,
+                                                        child: CircularProgressIndicator(),
+                                                      ),
+                                                    );
+                                                  },
+                                                ),
+                                              ),
+                                            ),
+                                          );
                                         },
                                       );
                                     },
@@ -532,7 +548,7 @@ class _PractitionerProfileScreenState extends State<PractitionerProfileScreen> w
                                     )),
                                   ),
                                   onPressed: () async {
-                                    await showDialog(
+                                    showDialog(
                                       context: context,
                                       builder: (dialogContext) {
                                         return InitCallDialog(
@@ -1230,24 +1246,15 @@ class _PractitionerProfileScreenState extends State<PractitionerProfileScreen> w
 
                                 //failure
                                 if (state is FilterReviewsFailure) {
-                                  return Container(
-                                    height: 100,
-                                    color: Colors.red,
-                                  );
+                                  return Container();
                                 }
 
-                                return Container(
-                                  height: 100,
-                                  color: Colors.pink,
-                                );
+                                return Container();
                               },
                             );
                           }
                           if (reviewsState is LoadReviewsFailure) {
-                            return Container(
-                              height: 100,
-                              color: Colors.red,
-                            );
+                            return Container();
                           }
 
                           if (reviewsState is LoadReviewsLoading) {
@@ -1261,10 +1268,7 @@ class _PractitionerProfileScreenState extends State<PractitionerProfileScreen> w
                             );
                           }
 
-                          return Container(
-                            height: 100,
-                            color: Colors.yellow,
-                          );
+                          return Container();
                         },
                       ),
                     ],

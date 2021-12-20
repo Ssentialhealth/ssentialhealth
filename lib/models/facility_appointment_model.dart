@@ -13,7 +13,7 @@ String facilityAppointmentModelToJson(FacilityAppointmentModel data) => json.enc
 
 class FacilityAppointmentModel {
   FacilityAppointmentModel({
-    @required this.id,
+    this.id,
     @required this.appointmentDate,
     @required this.timeSlotFrom,
     @required this.timeSlotTo,

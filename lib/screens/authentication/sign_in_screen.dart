@@ -5,7 +5,7 @@ import 'package:pocket_health/bloc/initialize_stream_chat/initialize_stream_chat
 import 'package:pocket_health/bloc/login/loginBloc.dart';
 import 'package:pocket_health/bloc/login/loginEvent.dart';
 import 'package:pocket_health/bloc/login/loginState.dart';
-import 'package:pocket_health/screens/home/home.dart';
+import 'package:pocket_health/screens/home/base.dart';
 import 'package:pocket_health/widgets/widget.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
@@ -51,7 +51,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   builder: (context) {
                     return StreamChat(
                       client: client,
-                      child: Home(),
+                      child: Base(),
                     );
                   },
                 ),
