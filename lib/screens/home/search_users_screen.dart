@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:pocket_health/models/all_users_model.dart';
+import 'package:pocket_health/models/user_profile_model.dart';
 import 'package:pocket_health/utils/constants.dart';
 
 class SearchUsersScreen extends StatefulWidget {
@@ -134,7 +134,7 @@ class _SearchUsersScreenState extends State<SearchUsersScreen> {
           // users listed
           Consumer(
             builder: (context, ScopedReader watch, child) {
-              final allUsersAsyncVal = watch(allUsersModelProvider);
+              final allUsersAsyncVal = watch(allUserProfilesProvider);
               return allUsersAsyncVal.when(
                 data: (data) {
                   if (data.length == 0)

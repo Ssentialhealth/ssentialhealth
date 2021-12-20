@@ -1,7 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:pocket_health/models/facility_profile_model.dart';
+import 'package:pocket_health/models/health_insurance_model.dart';
 import 'package:pocket_health/models/practitioner_profile_model.dart';
+import 'package:pocket_health/models/user_profile_model.dart';
 import 'package:pocket_health/repository/insurance_agent_model.dart';
 import 'package:start_jwt/json_web_token.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
@@ -69,7 +71,7 @@ class InitializeStreamChatCubit extends Cubit<InitializeStreamChatState> {
     }
   }
 
-  void initializeChannel(String streamUserID, PractitionerProfileModel doc, String userCategory, bool isVerified) async {
+  void initializePractitionerChannel(String streamUserID, PractitionerProfileModel doc, String userCategory, bool isVerified) async {
     //TODO: inProduction | add real data
     emit(StreamChannelLoading());
     // final docID = streamDocID.split(' ').first;
@@ -119,6 +121,57 @@ class InitializeStreamChatCubit extends Cubit<InitializeStreamChatState> {
     }
   }
 
+  void initializePatientChannel(String streamUserID, UserProfileModel user, String userCategory, bool isVerified) async {
+    print('--------|streamUserID|--------|value -> ${streamUserID.toString()}');
+    //TODO: inProduction | add real data
+    emit(StreamChannelLoading());
+    // final docID = streamDocID.split(' ').first;
+    // final userID = streamUserID.split(' ').first;
+
+    final patientID = 'patientIDTestFive${user.user}';
+    // final userID = 'TestLewis';
+    try {
+      await client.disconnect();
+
+      await client.connectUserWithProvider(
+        User(
+          id: patientID,
+          extraData: {
+            "userCategory": 'individual',
+            "patientDetail": user.toJson(),
+            "name": "${user.surname}",
+            "isVerified": "$isVerified",
+          },
+        ),
+      );
+
+      await client.disconnect();
+
+      await client.connectUserWithProvider(
+        User(
+          id: 'TestAlice5',
+          extraData: {
+            "userCategory": 'health practitioner',
+            "name": 'Doctor Alice Test',
+          },
+        ),
+      );
+
+      final channel = client.channel(
+        'messaging',
+        id: patientID,
+      );
+
+      await channel.create();
+      await channel.addMembers([patientID, 'TestAlice5']);
+      await channel.watch();
+      emit(StreamChannelSuccess(channel, patientID));
+    } catch (err) {
+      emit(StreamChannelError(err.toString()));
+      print("create channel failed | $err");
+    }
+  }
+
   void initializeFacilityChannel(String streamUserID, FacilityProfileModel facility, String userCategory, bool isVerified, int facilityHourlyRate) async {
     //TODO: inProduction | add real data
     emit(StreamChannelLoading());
@@ -156,6 +209,48 @@ class InitializeStreamChatCubit extends Cubit<InitializeStreamChatState> {
       await channel.addMembers([facilityID, 'TestUser5']);
       await channel.watch();
       emit(StreamChannelSuccess(channel, facilityID));
+    } catch (err) {
+      emit(StreamChannelError(err.toString()));
+      print("create channel failed | $err");
+    }
+  }
+
+  void initializeInsuranceChannel(String streamUserID, HealthInsuranceModel insurance, String userCategory, bool isVerified) async {
+    //TODO: inProduction | add real data
+    emit(StreamChannelLoading());
+
+    final insuranceID = 'insuranceIDTestFive${insurance.id}';
+    try {
+      await client.disconnect();
+      await client.connectUserWithProvider(
+        User(
+          id: insuranceID,
+          extraData: {
+            "userCategory": "health insurance",
+            "name": "${insurance.name}",
+            "insuranceDetail": insurance.toJson(),
+            "isVerified": "$isVerified",
+          },
+        ),
+      );
+      await client.disconnect();
+      await client.connectUserWithProvider(
+        User(
+          id: "TestUser5",
+          extraData: {
+            "userCategory": 'individual',
+            "name": "David Mochoge",
+          },
+        ),
+      );
+      final channel = client.channel(
+        'messaging',
+        id: insuranceID,
+      );
+      await channel.create();
+      await channel.addMembers([insuranceID, 'TestUser5']);
+      await channel.watch();
+      emit(StreamChannelSuccess(channel, insuranceID));
     } catch (err) {
       emit(StreamChannelError(err.toString()));
       print("create channel failed | $err");

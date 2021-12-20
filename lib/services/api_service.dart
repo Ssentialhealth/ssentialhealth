@@ -838,6 +838,7 @@ class ApiService {
     print("review respsonse | ${response.body}");
     return insuranceReviewModelFromJson(response.body);
   }
+
   Future<AgentReviewModel> postAgentReview(AgentReviewModel review) async {
     _token = await getStringValuesSF();
     final mapData = agentReviewModelToJson(review);
@@ -873,6 +874,7 @@ class ApiService {
     print("review respsonse | ${response.body}");
     return insuranceReviewModelListFromJson(response.body);
   }
+
   Future<List<AgentReviewModel>> fetchAgentReviews() async {
     _token = await getStringValuesSF();
 
@@ -1161,6 +1163,8 @@ class ApiService {
       },
     );
     if (response.statusCode != 200) {
+      print('--------|reasonPhrase|--------|value -> ${response.reasonPhrase.toString()}');
+
       throw Exception('Error Fetching practitioner DETAILS');
     }
 
@@ -1177,7 +1181,8 @@ class ApiService {
       },
     );
     if (response.statusCode != 200) {
-      throw Exception('Error Fetching practitioner DETAILS');
+      print('--------|reasonPhrase|--------|value -> ${response.reasonPhrase.toString()}');
+      throw Exception('Error Fetching facility DETAILS');
     }
 
     print(response.body);

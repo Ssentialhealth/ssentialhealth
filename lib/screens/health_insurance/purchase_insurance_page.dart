@@ -1,21 +1,20 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_signature_pad/flutter_signature_pad.dart';
-import 'package:pocket_health/bloc/call_balance/call_balance_cubit.dart';
-import 'package:pocket_health/models/links_model.dart';
-import 'package:pocket_health/screens/doctor_consult/call/top_up_account.dart';
-import 'package:pocket_health/screens/health_insurance/view_policy_content.dart';
-import 'package:pocket_health/screens/home/base.dart';
+import 'package:pocket_health/bloc/initialize_stream_chat/initialize_stream_chat_cubit.dart';
+import 'package:pocket_health/bloc/login/loginBloc.dart';
+import 'package:pocket_health/bloc/login/loginState.dart';
+import 'package:pocket_health/models/health_insurance_model.dart';
+import 'package:pocket_health/screens/doctor_consult/chat/channel_page.dart';
 import 'package:pocket_health/utils/constants.dart';
+import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 class PurchaseInsurancePage extends StatefulWidget {
-  final LinkModel policyLink;
+  final HealthInsuranceModel insuranceModel;
   const PurchaseInsurancePage({
     Key key,
-    this.policyLink,
+    this.insuranceModel,
   }) : super(key: key);
 
   @override
@@ -23,17 +22,10 @@ class PurchaseInsurancePage extends StatefulWidget {
 }
 
 class _PurchaseInsurancePageState extends State<PurchaseInsurancePage> {
-  int amountToUse;
-  int currentStep = 0;
-  bool showBalance = false;
-  bool hasSignature = false;
-
-  final _sign = GlobalKey<SignatureState>();
-
   @override
   void initState() {
     super.initState();
-    context.read<CallBalanceCubit>()..getCallBalance(5);
+    context.read<InitializeStreamChatCubit>()..loadInitial();
   }
 
   @override
@@ -44,396 +36,267 @@ class _PurchaseInsurancePageState extends State<PurchaseInsurancePage> {
         centerTitle: true,
         backgroundColor: accentColor,
         title: Text(
-          'Purchase Insurance Process',
+          'Purchase Insurance',
           style: appBarStyle,
         ),
       ),
-      body: Column(
-        children: [
-          Container(
-            child: Expanded(
-              child: Theme(
-                data: ThemeData(canvasColor: Colors.white, primaryColor: Color(0xff163C4D)),
-                child: Stepper(
-                  type: StepperType.horizontal,
-                  steps: [
-                    Step(
-                      title: Text('Policy'),
-                      isActive: currentStep == 0,
-                      subtitle: Text(
-                        "View Policy",
-                        style: TextStyle(),
-                      ),
-                      content: Container(
-                        height: 400.h,
-                        child: ViewPolicyContent(pdf: widget.policyLink.resourceLink),
-                      ),
-                    ),
-                    Step(
-                      title: Text('Agreement'),
-                      isActive: currentStep == 1,
-                      subtitle: Text(
-                        'Sign Agreement',
-                        style: TextStyle(),
-                      ),
-                      content: Container(
-                        height: 400.h,
-                        clipBehavior: Clip.hardEdge,
-                        decoration: BoxDecoration(
-                          color: accentColorLight,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Stack(
-                          children: [
-                            Signature(
-                              color: accentColorDark,
-                              strokeWidth: 3.0,
-                              backgroundPainter: null,
-                              onSign: () {
-                                setState(() {
-                                  hasSignature = true;
-                                });
-                              },
-                              key: _sign,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            //banner
+            Stack(
+              alignment: Alignment.topLeft,
+              children: [
+                Container(
+                  height: 110.h,
+                  width: 1.sw,
+                ),
+                Container(
+                  width: 1.sw,
+                  child: Image(
+                    fit: BoxFit.fitWidth,
+                    image: AssetImage('assets/images/practitioners_banner.png'),
+                  ),
+                ),
+              ],
+            ),
+            //text
+
+            Padding(
+              padding: EdgeInsets.all(10),
+              child: Text(
+                "a) Contact insurance or insurance agent through chat or call to understand and clarify any further questions you may have on the insurance. Understand the terms of payment and insurance conditions before purchase.\n\nb) On satisfactorily understanding the terms of the insurance and the required pre-insurance, the insurance or agent sends an online referral to you or their chosen provider.\n\nc) If health examination or tests are required as a pre-condition, you will go to the designated provider to have these done.\n\nd) Your health exam findings and results may be shared in app or mailed to you and your potential insurer.\n\ne) The insurance or agent will contact you to discuss and offer final details on the insurance contract.\n\nf) On agreeing, you will pay the premium to the insurer through thisplatform and submit the electronically signed copy of the insurancecontract to the insurance or agent.\n\ng) Your insurance will begin as per terms accorded.\n\nh) Subsequent payments will be through the platform as dictated by the insurance contract.\n\n ",
+                style: TextStyle(
+                  fontSize: 15.sp,
+                ),
+              ),
+            ),
+
+            //proceeed
+            BlocBuilder<LoginBloc, LoginState>(
+              builder: (context, state) {
+                if (state is LoginLoaded) {
+                  final userID = state.loginModel.user.fullNames.split(' ').last;
+                  final insurance = widget.insuranceModel;
+                  final userCategory = state.loginModel.user.userCategory;
+
+                  return BlocConsumer<InitializeStreamChatCubit, InitializeStreamChatState>(
+                    listener: (context, state) {
+                      if (state is StreamChannelSuccess) {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return StreamChat(
+                                streamChatThemeData: StreamChatThemeData(
+                                  //input bar
+                                  messageInputTheme: MessageInputTheme(
+                                    sendAnimationDuration: Duration(milliseconds: 500),
+                                  ),
+
+                                  //messages styling
+                                  ownMessageTheme: MessageTheme(
+                                    messageBorderColor: accentColorDark,
+                                    messageBackgroundColor: accentColorLight,
+                                    messageText: TextStyle(
+                                      color: Color(0xff373737),
+                                    ),
+                                  ),
+                                  otherMessageTheme: MessageTheme(
+                                    messageBorderColor: Color(0x19000000),
+                                    messageBackgroundColor: Color(0xF000000),
+                                    messageText: TextStyle(
+                                      color: Color(0xff373737),
+                                    ),
+                                  ),
+
+                                  //list styling
+                                  channelPreviewTheme: ChannelPreviewTheme(
+                                    unreadCounterColor: accentColorDark,
+                                  ),
+
+                                  //channel styling
+                                  channelTheme: ChannelTheme(
+                                    channelHeaderTheme: ChannelHeaderTheme(
+                                      color: accentColor,
+                                      subtitle: TextStyle(
+                                        fontSize: 11.5.sp,
+                                        color: Colors.grey[700],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                client: context.read<InitializeStreamChatCubit>().client,
+                                child: StreamChannel(
+                                  channel: state.channel,
+                                  child: ChannelPage(),
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      }
+
+                      if (state is StreamChannelError) {
+                        ScaffoldMessenger.of(context)
+                          ..clearSnackBars()
+                          ..showSnackBar(
+                            SnackBar(
+                              behavior: SnackBarBehavior.floating,
+                              backgroundColor: Color(0xff163C4D),
+                              duration: Duration(milliseconds: 6000),
+                              content: Text(
+                                state.err,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             ),
-                            Positioned(
-                              bottom: 0.0,
-                              right: 0.0,
-                              child: IconButton(
-                                icon: Icon(
-                                  Icons.delete,
+                          );
+                      }
+                    },
+                    builder: (context, state) {
+                      if (state is StreamChannelLoading) {
+                        return Expanded(
+                          child: TextButton(
+                            child: SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 1,
+                                color: accentColorDark,
+                                backgroundColor: Colors.white,
+                              ),
+                            ),
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all(Colors.white),
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              minimumSize: MaterialStateProperty.all(Size(0, 0)),
+                              padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h)),
+                              shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5.w),
+                                side: BorderSide(
                                   color: accentColorDark,
+                                  width: 1.w,
+                                ),
+                              )),
+                            ),
+                            onPressed: () {},
+                          ),
+                        );
+                      }
+                      if (state is StreamChannelSuccess) {
+                        return Padding(
+                          padding: EdgeInsets.all(10),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: TextButton(
+                                  child: Text(
+                                    'Proceed',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  style: ButtonStyle(
+                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                    backgroundColor: MaterialStateProperty.all(Color(0xff1A5864)),
+                                    minimumSize: MaterialStateProperty.all(Size(0, 0)),
+                                    padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 60.w, vertical: 10.h)),
+                                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5.w),
+                                      side: BorderSide(
+                                        color: Color(0xff1A5864),
+                                        width: 1.w,
+                                      ),
+                                    )),
+                                  ),
+                                  onPressed: () {
+                                    context.read<InitializeStreamChatCubit>().initializeInsuranceChannel(userID, insurance, userCategory, false);
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                      return Padding(
+                        padding: EdgeInsets.all(10),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: TextButton(
+                                child: Text(
+                                  'Proceed',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16.sp,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                style: ButtonStyle(
+                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                  backgroundColor: MaterialStateProperty.all(Color(0xff1A5864)),
+                                  minimumSize: MaterialStateProperty.all(Size(0, 0)),
+                                  padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 60.w, vertical: 10.h)),
+                                  shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5.w),
+                                    side: BorderSide(
+                                      color: Color(0xff1A5864),
+                                      width: 1.w,
+                                    ),
+                                  )),
                                 ),
                                 onPressed: () {
-                                  final sign = _sign.currentState;
-                                  sign.clear();
-                                  setState(() {
-                                    hasSignature = false;
-                                  });
+                                  context.read<InitializeStreamChatCubit>().initializeInsuranceChannel(userID, insurance, userCategory, false);
                                 },
                               ),
                             ),
                           ],
                         ),
-                      ),
-                    ),
-                    Step(
-                      title: Text('Pay'),
-                      isActive: currentStep == 2,
-                      subtitle: Text(
-                        'Pay Insurance',
-                        style: TextStyle(),
-                      ),
-                      content: BlocConsumer<CallBalanceCubit, CallBalanceState>(
-                        listener: (context, state) {},
-                        builder: (context, balanceState) {
-                          if (balanceState is CallBalanceFetchSuccess) {
-                            final int balanceInUSD = int.parse(balanceState.callBalanceModel.amount.split('.').first);
-                            return Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                SizedBox(height: 15.h),
-
-                                Text(
-                                  'Your Ssential Balance',
-                                  style: TextStyle(
-                                    color: Colors.grey[600],
-                                    fontSize: 14.sp,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                SizedBox(height: 15.h),
-
-                                Text(
-                                  showBalance ? "**** USD" : '$balanceInUSD USD',
-                                  style: TextStyle(
-                                    color: Colors.black87,
-                                    fontSize: 22.sp,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-
-                                //show balance
-                                TextButton(
-                                  onPressed: () async {
-                                    setState(() {
-                                      showBalance = !showBalance;
-                                    });
-                                  },
-                                  child: Text(
-                                    showBalance ? "Hide Balance" : 'Show Balance',
-                                    style: TextStyle(
-                                      decoration: TextDecoration.underline,
-                                      color: accentColorDark,
-                                      fontSize: 13.sp,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-
-                                SizedBox(height: 15.h),
-
-                                Text(
-                                  'Enter amount quoted by agent',
-                                  style: TextStyle(
-                                    fontSize: 17.sp,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-
-                                SizedBox(height: 15.h),
-
-                                //cost
-                                SizedBox(
-                                  height: 40.h,
-                                  child: TextField(
-                                    keyboardType: TextInputType.number,
-                                    inputFormatters: [
-                                      FilteringTextInputFormatter.deny('.'),
-                                      FilteringTextInputFormatter.deny(','),
-                                    ],
-                                    onChanged: (val) {
-                                      val == null || val == ''
-                                          ? setState(() {
-                                              amountToUse = null;
-                                            })
-                                          : setState(() {
-                                              amountToUse = int.parse(val);
-                                            });
-
-                                      print('--------|amountToPay|--------|value -> ${amountToUse.toString()}');
-                                    },
-                                    onTap: () {},
-                                    decoration: InputDecoration(
-                                      fillColor: Colors.white,
-                                      filled: true,
-                                      focusColor: Colors.white,
-                                      contentPadding: EdgeInsets.all(10.0.w),
-                                      hintText: 'Enter amount quoted by agent in USD',
-                                      hintStyle: TextStyle(
-                                        color: Colors.grey,
-                                        fontSize: 15.sp,
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(Radius.circular(5.0.w)),
-                                        borderSide: BorderSide(color: Color(0xFF00FFFF)),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(Radius.circular(5.0.w)),
-                                        borderSide: BorderSide(color: Color(0xFF00FFFF)),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-
-                                SizedBox(height: 15.h),
-
-                                SizedBox(height: 15.h),
-
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: MaterialButton(
-                                        elevation: 0.0,
-                                        child: Text(
-                                          amountToUse == null
-                                              ? "Pay Insurance"
-                                              : (double.parse(balanceState.callBalanceModel.amount) >= amountToUse)
-                                                  ? 'Pay Insurance'
-                                                  : "Top Up Account",
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16.sp,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                        highlightElevation: 0.0,
-                                        focusElevation: 0.0,
-                                        disabledElevation: 0.0,
-                                        color: amountToUse == null ? Colors.grey[600] : Color(0xff1A5864),
-                                        height: 40.h,
-                                        highlightColor: Colors.transparent,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(4.r),
-                                        ),
-                                        onPressed: () async {
-                                          if (amountToUse == null)
-                                            null;
-                                          else if (double.parse(balanceState.callBalanceModel.amount) >= amountToUse) {
-                                            final newBalance = double.parse(balanceState.callBalanceModel.amount) - amountToUse;
-
-                                            context.read<CallBalanceCubit>()
-                                              ..creditDeductAdd(
-                                                  paymentType: 'LIPA_MPESA', currency: "KES", amount: newBalance.toInt(), user: 5, balance: newBalance.toInt());
-
-                                            showDialog(
-                                              context: context,
-                                              builder: (context) {
-                                                return Dialog(
-                                                  backgroundColor: Colors.white,
-                                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0.w)),
-                                                  child: Container(
-                                                    width: 1.sw,
-                                                    child: Column(
-                                                      mainAxisSize: MainAxisSize.min,
-                                                      children: [
-                                                        Container(
-                                                          padding: EdgeInsets.only(top: 30.w),
-                                                          height: 130.h,
-                                                          child: Image(
-                                                            image: AssetImage('assets/images/undraw_happy_announcement_ac67.png'),
-                                                            fit: BoxFit.fitHeight,
-                                                          ),
-                                                        ),
-                                                        Padding(
-                                                          padding: EdgeInsets.symmetric(vertical: 25.w, horizontal: 15.w),
-                                                          child: Text(
-                                                            "Success! Get in touch with an agent for more information",
-                                                            maxLines: 3,
-                                                            textAlign: TextAlign.center,
-                                                            softWrap: true,
-                                                            overflow: TextOverflow.ellipsis,
-                                                            style: TextStyle(
-                                                              fontSize: 14.sp,
-                                                              fontWeight: FontWeight.w500,
-                                                              color: Color(0xff6A6969),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        Padding(
-                                                          padding: EdgeInsets.only(bottom: 30.0.w),
-                                                          child: TextButton(
-                                                            child: Text(
-                                                              'Back to Home',
-                                                              style: TextStyle(
-                                                                color: Colors.white,
-                                                                fontWeight: FontWeight.w500,
-                                                              ),
-                                                            ),
-                                                            style: ButtonStyle(
-                                                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                                              backgroundColor: MaterialStateProperty.all(Color(0xff1A5864)),
-                                                              minimumSize: MaterialStateProperty.all(Size(0, 0)),
-                                                              padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 32.w, vertical: 10.w)),
-                                                              shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                                                                borderRadius: BorderRadius.circular(5.w),
-                                                                side: BorderSide(
-                                                                  color: Color(0xff1A5864),
-                                                                  width: 1.w,
-                                                                ),
-                                                              )),
-                                                            ),
-                                                            onPressed: () {
-                                                              Navigator.of(context).pushAndRemoveUntil(
-                                                                MaterialPageRoute(builder: (c) => Base()),
-                                                                (route) => false,
-                                                              );
-                                                            },
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                );
-                                              },
-                                            );
-                                          } else {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) => TopUpAccount(),
-                                              ),
-                                            );
-                                          }
-                                        },
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            );
-                          }
-                          return Center(
-                            child: Container(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(),
+                      );
+                    },
+                  );
+                }
+                return Padding(
+                  padding: EdgeInsets.all(10),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextButton(
+                          child: Text(
+                            'Proceed',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w500,
                             ),
-                          );
-                        },
+                          ),
+                          style: ButtonStyle(
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            backgroundColor: MaterialStateProperty.all(Color(0xff1A5864)),
+                            minimumSize: MaterialStateProperty.all(Size(0, 0)),
+                            padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 60.w, vertical: 10.h)),
+                            shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5.w),
+                              side: BorderSide(
+                                color: Color(0xff1A5864),
+                                width: 1.w,
+                              ),
+                            )),
+                          ),
+                          onPressed: () {},
+                        ),
                       ),
-                    ),
-                  ],
-                  currentStep: currentStep,
-                  onStepCancel: null,
-                  onStepContinue: () {},
-                  controlsBuilder: (
-                    BuildContext context, {
-                    VoidCallback onStepContinue,
-                    VoidCallback onStepCancel,
-                  }) {
-                    return Padding(
-                      padding: EdgeInsets.only(top: 40.0.h),
-                      child: Row(
-                        children: [
-                          currentStep != 2
-                              ? Expanded(
-                                  child: TextButton(
-                                    child: Text(
-                                      currentStep == 0 ? 'Proceed to Sign' : 'Proceed to Pay',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16.sp,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    style: ButtonStyle(
-                                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                      backgroundColor: currentStep != 1
-                                          ? MaterialStateProperty.all(Color(0xff1A5864))
-                                          : hasSignature
-                                              ? MaterialStateProperty.all(Color(0xff1A5864))
-                                              : MaterialStateProperty.all(Colors.grey[600]),
-                                      minimumSize: MaterialStateProperty.all(Size(0, 0)),
-                                      padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 60.w, vertical: 10.h)),
-                                      shape: MaterialStateProperty.all(
-                                        RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(5.w),
-                                          side: BorderSide(
-                                            color: Color(0xff1A5864),
-                                            width: 1.w,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    onPressed: () {
-                                      if (currentStep == 0) {
-                                        setState(() {
-                                          currentStep++;
-                                        });
-                                      }
-                                      if (currentStep == 1 && hasSignature) {
-                                        setState(() {
-                                          currentStep++;
-                                        });
-                                      } else if (currentStep == 1 && !hasSignature) {
-                                        null;
-                                      }
-                                    },
-                                  ),
-                                )
-                              : SizedBox.shrink(),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
+                    ],
+                  ),
+                );
+              },
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

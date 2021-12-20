@@ -770,7 +770,7 @@ class _SavedListState extends State<SavedList> {
                                                         onPressed: () {
                                                           context
                                                               .read<InitializeStreamChatCubit>()
-                                                              .initializeChannel(userID, docDetail, userCategory, isVerified);
+                                                              .initializePractitionerChannel(userID, docDetail, userCategory, isVerified);
                                                         },
                                                       );
                                                     },

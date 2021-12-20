@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:pocket_health/models/health_insurance_model.dart';
+import 'package:pocket_health/screens/health_insurance/filter_insurances_screen.dart';
 import 'package:pocket_health/screens/health_insurance/insurance_profile_page.dart';
 import 'package:pocket_health/utils/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ListInsurancesPage extends StatefulWidget {
   const ListInsurancesPage({Key key}) : super(key: key);
@@ -35,11 +38,11 @@ class _ListInsurancesPageState extends State<ListInsurancesPage> {
         child: Column(
           children: [
             //search
-            Row(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.all(10.w),
+            Padding(
+              padding: EdgeInsets.all(10.w),
+              child: Row(
+                children: [
+                  Expanded(
                     child: SizedBox(
                       height: 40.h,
                       child: TextFormField(
@@ -75,8 +78,59 @@ class _ListInsurancesPageState extends State<ListInsurancesPage> {
                       ),
                     ),
                   ),
-                ),
-              ],
+
+                  SizedBox(width: 10),
+                  //filter
+                  MaterialButton(
+                    padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.w),
+                    elevation: 0.0,
+                    highlightElevation: 0.0,
+                    focusElevation: 0.0,
+                    disabledElevation: 0.0,
+                    color: Color(0xff1A5864),
+                    height: 40.h,
+                    highlightColor: Colors.transparent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4.w),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          MdiIcons.filterMenu,
+                          color: Colors.white,
+                          size: 20.r,
+                        ),
+                        SizedBox(width: 10.w),
+                        Text(
+                          'Filter',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w400,
+                            fontSize: 15.sp,
+                          ),
+                        ),
+                      ],
+                    ),
+                    onPressed: () async {
+                      SharedPreferences prefs = await SharedPreferences.getInstance();
+                      prefs.containsKey('filterAgentsByPrice') ? prefs.remove('filterAgentsByPrice') : null;
+                      prefs.containsKey('filterAgentsByDistance') ? prefs.remove('filterAgentsByDistance') : null;
+                      prefs.containsKey('filterAgentsByCountry') ? prefs.remove('filterAgentsByCountry') : null;
+                      prefs.containsKey('sortAgentsByCheapest') ? prefs.remove('sortAgentsByCheapest') : null;
+                      prefs.containsKey('filterAgentsByAvailability') ? prefs.remove('filterAgentsByAvailability') : null;
+                      prefs.containsKey('sortAgentsByNearest') ? prefs.remove('sortAgentsByNearest') : null;
+                      prefs.containsKey('filterAgentsBySpeciality') ? prefs.remove('filterAgentsBySpeciality') : null;
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (BuildContext context) {
+                            return FilterInsurancesScreen();
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
 
             //listview

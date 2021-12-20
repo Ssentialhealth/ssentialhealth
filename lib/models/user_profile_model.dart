@@ -4,41 +4,39 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:meta/meta.dart';
 import 'package:pocket_health/repository/all_users_service.dart';
 
-List<AllUsersModel> allUsersModelFromJson(String str) => List<AllUsersModel>.from(json.decode(str).map((x) => AllUsersModel.fromJson(x)));
+List<UserProfileModel> allUserProfileModelsFromJson(String str) => List<UserProfileModel>.from(json.decode(str).map((x) => UserProfileModel.fromJson(x)));
 
-String allUsersModelToJson(List<AllUsersModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+String allUserProfileModelsToJson(List<UserProfileModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
-final allUsersModelProvider = FutureProvider.autoDispose<List<AllUsersModel>>((ref) async {
+final allUserProfilesProvider = FutureProvider.autoDispose<List<UserProfileModel>>((ref) async {
   final service = ref.watch(allUsersServiceProvider);
   final data = await service.fetchAllUsers();
   return data;
 });
 
-class AllUsersModel {
-  AllUsersModel({
-    @required this.id,
-    @required this.user,
-    @required this.surname,
-    @required this.phoneNumber,
-    @required this.dateOfBirth,
-    @required this.gender,
-    @required this.residence,
-    @required this.country,
-    @required this.bloodGroup,
-    @required this.previousAdmissions,
-    @required this.chronicCondition,
-    @required this.mentalConditions,
-    @required this.disabilities,
-    @required this.longTermMedications,
-    @required this.familyChronicConditions,
-    @required this.recreationalDrugUse,
-    @required this.drugAllergies,
-    @required this.foodAllergies,
-    @required this.profileImgUrl,
-    @required this.healthProvision,
+class UserProfileModel {
+  UserProfileModel({
+    this.user,
+    this.surname,
+    this.phoneNumber,
+    this.dateOfBirth,
+    this.gender,
+    this.residence,
+    this.country,
+    this.bloodGroup,
+    this.previousAdmissions,
+    this.chronicCondition,
+    this.mentalConditions,
+    this.disabilities,
+    this.longTermMedications,
+    this.familyChronicConditions,
+    this.recreationalDrugUse,
+    this.drugAllergies,
+    this.foodAllergies,
+    this.profileImgUrl,
+    this.healthProvision,
   });
 
-  final int id;
   final int user;
   final String surname;
   final String phoneNumber;
@@ -59,8 +57,7 @@ class AllUsersModel {
   final String profileImgUrl;
   final bool healthProvision;
 
-  factory AllUsersModel.fromJson(Map<String, dynamic> json) => AllUsersModel(
-        id: json["id"],
+  factory UserProfileModel.fromJson(Map<String, dynamic> json) => UserProfileModel(
         user: json["user"],
         surname: json["surname"],
         phoneNumber: json["phone_number"],
@@ -83,7 +80,6 @@ class AllUsersModel {
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
         "user": user,
         "surname": surname,
         "phone_number": phoneNumber,

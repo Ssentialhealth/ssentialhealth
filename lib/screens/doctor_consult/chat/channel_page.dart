@@ -11,11 +11,13 @@ import 'channel_details_page.dart';
 import 'channel_info.dart';
 
 class ChannelPage extends StatefulWidget {
-  final String referral;
+  final Map<String, dynamic> referral;
+  final String referralType;
 
   const ChannelPage({
     Key key,
     this.referral,
+    this.referralType,
   }) : super(key: key);
   @override
   _ChannelPageState createState() => _ChannelPageState();
@@ -34,6 +36,16 @@ class _ChannelPageState extends State<ChannelPage> {
     bool doctorsView = user.extraData['userCategory'] != "individual" && user.extraData['userCategory'] != null;
 
     print('channel page user  ---------------------------  $userID');
+
+    if (widget.referral!= null) {
+      channel.sendMessage(
+        Message(
+          text: widget.referralType == 'patient'
+              ? '**Patient Referral**  \n\n\n----------\n\n\nPatient of ID: **${widget.referral['patientID']}**,\n\n\nis requested to visit practitioner: **${widget.referral['doctor'].surname == "" ? "name is null" : widget.referral['doctor'].surname}**,\n\n\nand/or the following facility: **${widget.referral['facility'].facilityName}**,\n\n\nfor the following tests: **${widget.referral['requested'].toString().trimRight()}**\n\n\n----------\n\n\n*Please proceed as the referral above indicates*\n\n*This is a generated referral text message*'
+              : '**Facility Referral**  \n\n\n----------\n\n\nRequest for: **${widget.referral['request'].toString().trimRight()}**,\n\n\nfor patient of ID number:  **${widget.referral['patientID']}**\n\n\n----------\n\n\n*Please proceed as the referral above indicates*\n\n*This is a generated referral text message*',
+        ),
+      );
+    }
 
     return Scaffold(
       //header

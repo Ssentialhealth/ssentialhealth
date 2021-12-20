@@ -4,6 +4,8 @@ import 'package:pocket_health/screens/facilities/list_agents_page.dart';
 import 'package:pocket_health/screens/health_insurance/list_insurances_page.dart';
 import 'package:pocket_health/utils/constants.dart';
 
+import 'list_documents_page.dart';
+
 class InsuranceCategoriesScreen extends StatelessWidget {
   final List<String> items = [
     "Shop and compare Health Insurances",
@@ -58,6 +60,15 @@ class InsuranceCategoriesScreen extends StatelessWidget {
                           MaterialPageRoute(
                             builder: (BuildContext context) {
                               return ListAgentsPage();
+                            },
+                          ),
+                        );
+
+                      if (index == 2)
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (BuildContext context) {
+                              return ListDocumentsPage();
                             },
                           ),
                         );

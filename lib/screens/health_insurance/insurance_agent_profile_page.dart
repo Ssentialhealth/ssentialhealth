@@ -254,7 +254,7 @@ class _InsuranceAgentProfilePageState extends State<InsuranceAgentProfilePage> w
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            //book appointment btn
+                            //purchase insurance BTN
                             BlocBuilder<LoginBloc, LoginState>(
                               builder: (context, state) {
                                 if (state is LoginLoaded) {

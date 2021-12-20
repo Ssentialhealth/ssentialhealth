@@ -14,15 +14,15 @@ import 'package:pocket_health/bloc/agent_call_history/agent_call_history_cubit.d
 import 'package:pocket_health/bloc/call_balance/call_balance_cubit.dart';
 import 'package:pocket_health/bloc/call_history/call_history_cubit.dart';
 import 'package:pocket_health/bloc/facility_call_history/facility_call_history_cubit.dart';
-import 'package:pocket_health/bloc/initialize_stream_chat/initialize_stream_chat_cubit.dart';
+import 'package:pocket_health/bloc/login/loginBloc.dart';
+import 'package:pocket_health/bloc/login/loginState.dart';
 import 'package:pocket_health/models/facility_profile_model.dart';
 import 'package:pocket_health/models/practitioner_profile_model.dart';
 import 'package:pocket_health/repository/insurance_agent_model.dart';
+import 'package:pocket_health/screens/doctor_consult/call/referral_dialog.dart';
 import 'package:pocket_health/screens/doctor_consult/call/utils.dart';
-import 'package:pocket_health/screens/doctor_consult/chat/channel_page.dart';
 import 'package:pocket_health/utils/constants.dart';
 import 'package:pocket_health/widgets/verified_tag.dart';
-import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 class CallPage extends StatefulWidget {
   //settings
@@ -775,190 +775,178 @@ class _CallPageState extends State<CallPage> {
             SizedBox(height: 20.h),
 
             //requests
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                //lab request
-                BlocConsumer<InitializeStreamChatCubit, InitializeStreamChatState>(
-                  listener: (context, state) {
-                    if (state is StreamChannelSuccess) {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return StreamChat(
-                              streamChatThemeData: StreamChatThemeData(
-                                //input bar
-                                messageInputTheme: MessageInputTheme(
-                                  sendAnimationDuration: Duration(milliseconds: 500),
-                                ),
+            BlocBuilder<LoginBloc, LoginState>(
+              builder: (context, state) {
+                if (state is LoginLoaded) {
+                  final userID = state.loginModel.user.fullNames.split(' ').last;
+                  final userCategory = state.loginModel.user.userCategory;
 
-                                //messages styling
-                                ownMessageTheme: MessageTheme(
-                                  messageBorderColor: accentColorDark,
-                                  messageBackgroundColor: accentColorLight,
-                                  messageText: TextStyle(
-                                    color: Color(0xff373737),
-                                  ),
-                                ),
-                                otherMessageTheme: MessageTheme(
-                                  messageBorderColor: Color(0x19000000),
-                                  messageBackgroundColor: Color(0xF000000),
-                                  messageText: TextStyle(
-                                    color: Color(0xff373737),
-                                  ),
-                                ),
-
-                                //list styling
-                                channelPreviewTheme: ChannelPreviewTheme(
-                                  unreadCounterColor: accentColorDark,
-                                ),
-
-                                //channel styling
-                                channelTheme: ChannelTheme(
-                                  channelHeaderTheme: ChannelHeaderTheme(
-                                    color: accentColor,
-                                    subtitle: TextStyle(
-                                      fontSize: 11.5.sp,
-                                      color: Colors.grey[700],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              client: context.read<InitializeStreamChatCubit>().client,
-                              child: StreamChannel(
-                                channel: state.channel,
-                                child: ChannelPage(referral: "lab"),
-                              ),
+                  if (userCategory != "individual") {
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        //lab request
+                        GestureDetector(
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return ReferralDialog(
+                                  patientID: 5,
+                                  userCategory: userCategory,
+                                  referralType: "patient",
+                                );
+                              },
                             );
                           },
-                        ),
-                      );
-                    }
-
-                    if (state is StreamChannelError) {
-                      ScaffoldMessenger.of(context)
-                        ..clearSnackBars()
-                        ..showSnackBar(
-                          SnackBar(
-                            behavior: SnackBarBehavior.floating,
-                            backgroundColor: Color(0xff163C4D),
-                            duration: Duration(milliseconds: 6000),
-                            content: Text(
-                              state.err,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
+                          child: Container(
+                            height: 90,
+                            width: 100,
+                            decoration: BoxDecoration(
+                              color: accentColorLight,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Lab\nRequest',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: accentColorDark,
+                                ),
                               ),
                             ),
                           ),
-                        );
-                    }
-                  },
-                  builder: (context, state) => GestureDetector(
-                    onTap: () {
-                      context
-                          .read<InitializeStreamChatCubit>()
-                          .initializeFacilityChannel("Doctor", FacilityProfileModel(), "practitioner", widget.isVerified, 100);
+                        ),
 
-                      Map<String, dynamic> request = {
-                        "id": 1,
-                        "test_requested": "BMI",
-                        "brief_medical_history": "None",
-                        "profile": 1,
-                        "patient": 5,
-                        "lab_facility": 1
-                      };
-                    },
-                    child: Container(
-                      height: 90,
-                      width: 100,
-                      decoration: BoxDecoration(
-                        color: accentColorLight,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Center(
-                        child: Text(
-                          state is StreamChannelLoading
-                              ? "Loading..."
-                              : state is StreamChannelSuccess
-                                  ? "Redirecting..."
-                                  : 'Lab\nRequest',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: accentColorDark,
+                        //imaging request
+                        GestureDetector(
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return ReferralDialog(
+                                  patientID: 5,
+                                  userCategory: userCategory,
+                                  referralType: "facility",
+                                );
+                              },
+                            );
+                          },
+                          child: Container(
+                            height: 90,
+                            width: 100,
+                            decoration: BoxDecoration(
+                              color: accentColorLight,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Imaging\nRequest',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: accentColorDark,
+                                ),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                  ),
-                ),
-                //imaging request
-                Container(
-                  height: 90,
-                  width: 100,
-                  decoration: BoxDecoration(
-                    color: accentColorLight,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Center(
-                    child: Text(
-                      'Imaging\nRequest',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: accentColorDark,
-                      ),
-                    ),
-                  ),
-                ),
 
-                // Prescription
-                Container(
-                  height: 90,
-                  width: 100,
-                  decoration: BoxDecoration(
-                    color: accentColorLight,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Center(
-                    child: Text(
-                      'Prescription',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: accentColorDark,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+                        // Prescription
+                        GestureDetector(
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return ReferralDialog(
+                                  patientID: 5,
+                                  userCategory: userCategory,
+                                  referralType: "facility",
+                                );
+                              },
+                            );
+                          },
+                          child: Container(
+                            height: 90,
+                            width: 100,
+                            decoration: BoxDecoration(
+                              color: accentColorLight,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Prescription',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: accentColorDark,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  } else
+                    return SizedBox.shrink();
+                }
+                return SizedBox.shrink();
+              },
             ),
 
             //Refer to Self
-            Padding(
-              padding: EdgeInsets.all(20.0),
-              child: Container(
-                height: 48,
-                decoration: BoxDecoration(
-                  color: accentColorLight,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Center(
-                  child: Text(
-                    'Refer to Self',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: accentColorDark,
-                    ),
-                  ),
-                ),
-              ),
+            BlocBuilder<LoginBloc, LoginState>(
+              builder: (context, state) {
+                if (state is LoginLoaded) {
+                  final userID = state.loginModel.user.fullNames.split(' ').last;
+                  final userCategory = state.loginModel.user.userCategory;
+
+                  if (userCategory != "individual") {
+                    return GestureDetector(
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return ReferralDialog(
+                              patientID: 5,
+                              userCategory: userCategory,
+                              referralType: "patient",
+                            );
+                          },
+                        );
+                      },
+                      child: Padding(
+                        padding: EdgeInsets.all(20.0),
+                        child: Container(
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: accentColorLight,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Center(
+                            child: Text(
+                              'Refer to Self',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: accentColorDark,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  } else
+                    return SizedBox.shrink();
+                }
+
+                return Container();
+              },
             ),
           ],
         ),
@@ -997,6 +985,7 @@ class _CallPageState extends State<CallPage> {
     print(widget.callDuration);
     return SafeArea(
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         backgroundColor: Color(0xff202124),
         body: Center(
           child: Stack(

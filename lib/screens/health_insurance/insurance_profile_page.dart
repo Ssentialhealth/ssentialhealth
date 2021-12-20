@@ -5,17 +5,22 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' hide BuildContextX;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pocket_health/bloc/filter_insurance_reviews/filter_insurance_reviews_cubit.dart';
+import 'package:pocket_health/bloc/initialize_stream_chat/initialize_stream_chat_cubit.dart';
 import 'package:pocket_health/bloc/insurance_reviews/insurance_reviews_cubit.dart';
+import 'package:pocket_health/bloc/login/loginBloc.dart';
+import 'package:pocket_health/bloc/login/loginState.dart';
 import 'package:pocket_health/bloc/post_insurance_review/post_insurance_review_cubit.dart';
 import 'package:pocket_health/models/health_insurance_model.dart';
 import 'package:pocket_health/models/insurance_review_model.dart';
 import 'package:pocket_health/models/links_model.dart';
 import 'package:pocket_health/models/practitioner_profile_model.dart';
+import 'package:pocket_health/screens/doctor_consult/chat/channel_page.dart';
 import 'package:pocket_health/screens/health_insurance/purchase_insurance_page.dart';
 import 'package:pocket_health/screens/health_insurance/sort_insurance_reviews_row.dart';
 import 'package:pocket_health/screens/health_insurance/write_insurance_review_dialog.dart';
 import 'package:pocket_health/screens/wellness/resource_card.dart';
 import 'package:pocket_health/utils/constants.dart';
+import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 import 'insurance_reviews_list.dart';
 
@@ -61,6 +66,7 @@ class _InsuranceProfilePageState extends State<InsuranceProfilePage> with Single
   @override
   void initState() {
     super.initState();
+    context.read<InitializeStreamChatCubit>()..loadInitial();
     _tabController = TabController(length: 4, vsync: this);
     _tabController.addListener(() => setState(() {}));
   }
@@ -261,138 +267,220 @@ class _InsuranceProfilePageState extends State<InsuranceProfilePage> with Single
                           children: [
                             //purchase insurance btn
 
-                            Consumer(
-                              builder: (context, ScopedReader watch, child) {
-                                final linksAsyncVal = watch(linksModelProvider);
-                                return linksAsyncVal.when(
-                                  data: (data) {
-                                    final links = data.where((e) => e.linkName.toLowerCase().contains("-${widget.insuranceModel.name.toLowerCase()}")).toList();
+                            Expanded(
+                              child: TextButton(
+                                child: Text(
+                                  'Purchase Insurance',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16.sp,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                style: ButtonStyle(
+                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                  backgroundColor: MaterialStateProperty.all(Color(0xff1A5864)),
+                                  minimumSize: MaterialStateProperty.all(Size(0, 0)),
+                                  padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 60.w, vertical: 10.h)),
+                                  shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5.w),
+                                    side: BorderSide(
+                                      color: Color(0xff1A5864),
+                                      width: 1.w,
+                                    ),
+                                  )),
+                                ),
+                                onPressed: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => PurchaseInsurancePage(insuranceModel: widget.insuranceModel),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
 
-                                    return Expanded(
-                                      child: TextButton(
-                                        child: Text(
-                                          'Purchase Insurance',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16.sp,
-                                            fontWeight: FontWeight.w500,
+                            SizedBox(width: 10),
+
+                            BlocBuilder<LoginBloc, LoginState>(
+                              builder: (context, state) {
+                                if (state is LoginLoaded) {
+                                  final userID = state.loginModel.user.fullNames.split(' ').last;
+                                  final insurance = widget.insuranceModel;
+                                  final userCategory = state.loginModel.user.userCategory;
+
+                                  return BlocConsumer<InitializeStreamChatCubit, InitializeStreamChatState>(
+                                    listener: (context, state) {
+                                      if (state is StreamChannelSuccess) {
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (context) {
+                                              return StreamChat(
+                                                streamChatThemeData: StreamChatThemeData(
+                                                  //input bar
+                                                  messageInputTheme: MessageInputTheme(
+                                                    sendAnimationDuration: Duration(milliseconds: 500),
+                                                  ),
+
+                                                  //messages styling
+                                                  ownMessageTheme: MessageTheme(
+                                                    messageBorderColor: accentColorDark,
+                                                    messageBackgroundColor: accentColorLight,
+                                                    messageText: TextStyle(
+                                                      color: Color(0xff373737),
+                                                    ),
+                                                  ),
+                                                  otherMessageTheme: MessageTheme(
+                                                    messageBorderColor: Color(0x19000000),
+                                                    messageBackgroundColor: Color(0xF000000),
+                                                    messageText: TextStyle(
+                                                      color: Color(0xff373737),
+                                                    ),
+                                                  ),
+
+                                                  //list styling
+                                                  channelPreviewTheme: ChannelPreviewTheme(
+                                                    unreadCounterColor: accentColorDark,
+                                                  ),
+
+                                                  //channel styling
+                                                  channelTheme: ChannelTheme(
+                                                    channelHeaderTheme: ChannelHeaderTheme(
+                                                      color: accentColor,
+                                                      subtitle: TextStyle(
+                                                        fontSize: 11.5.sp,
+                                                        color: Colors.grey[700],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                client: context.read<InitializeStreamChatCubit>().client,
+                                                child: StreamChannel(
+                                                  channel: state.channel,
+                                                  child: ChannelPage(),
+                                                ),
+                                              );
+                                            },
                                           ),
-                                        ),
-                                        style: ButtonStyle(
-                                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                          backgroundColor: MaterialStateProperty.all(Color(0xff1A5864)),
-                                          minimumSize: MaterialStateProperty.all(Size(0, 0)),
-                                          padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 60.w, vertical: 10.h)),
-                                          shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(5.w),
-                                            side: BorderSide(
-                                              color: Color(0xff1A5864),
-                                              width: 1.w,
-                                            ),
-                                          )),
-                                        ),
-                                        onPressed: () {
-                                          Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                              builder: (context) => PurchaseInsurancePage(
-                                                policyLink: links[1],
+                                        );
+                                      }
+
+                                      if (state is StreamChannelError) {
+                                        ScaffoldMessenger.of(context)
+                                          ..clearSnackBars()
+                                          ..showSnackBar(
+                                            SnackBar(
+                                              behavior: SnackBarBehavior.floating,
+                                              backgroundColor: Color(0xff163C4D),
+                                              duration: Duration(milliseconds: 6000),
+                                              content: Text(
+                                                state.err,
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
                                               ),
                                             ),
                                           );
-                                        },
-                                      ),
-                                    );
-                                  },
-                                  loading: () {
-                                    return Expanded(
-                                      child: TextButton(
-                                        child: Text(
-                                          'Purchase Insurance',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16.sp,
-                                            fontWeight: FontWeight.w500,
+                                      }
+                                    },
+                                    builder: (context, state) {
+                                      if (state is StreamChannelLoading) {
+                                        return TextButton(
+                                          child: SizedBox(
+                                            height: 20,
+                                            width: 20,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 1,
+                                              color: accentColorDark,
+                                              backgroundColor: Colors.white,
+                                            ),
                                           ),
+                                          style: ButtonStyle(
+                                            backgroundColor: MaterialStateProperty.all(Colors.white),
+                                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                            minimumSize: MaterialStateProperty.all(Size(0, 0)),
+                                            padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h)),
+                                            shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(5.w),
+                                              side: BorderSide(
+                                                color: accentColorDark,
+                                                width: 1.w,
+                                              ),
+                                            )),
+                                          ),
+                                          onPressed: () {},
+                                        );
+                                      }
+                                      if (state is StreamChannelSuccess) {
+                                        return TextButton(
+                                          child: Icon(
+                                            Icons.chat_bubble_outline,
+                                            color: accentColorDark,
+                                            size: 21.w,
+                                          ),
+                                          style: ButtonStyle(
+                                            backgroundColor: MaterialStateProperty.all(Colors.white),
+                                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                            minimumSize: MaterialStateProperty.all(Size(0, 0)),
+                                            padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h)),
+                                            shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(5.w),
+                                              side: BorderSide(
+                                                color: accentColorDark,
+                                                width: 1.w,
+                                              ),
+                                            )),
+                                          ),
+                                          onPressed: () {},
+                                        );
+                                      }
+                                      return TextButton(
+                                        child: Icon(
+                                          Icons.chat_bubble_outline,
+                                          color: accentColorDark,
+                                          size: 21.w,
                                         ),
                                         style: ButtonStyle(
+                                          backgroundColor: MaterialStateProperty.all(Colors.white),
                                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                          backgroundColor: MaterialStateProperty.all(Color(0xff1A5864)),
                                           minimumSize: MaterialStateProperty.all(Size(0, 0)),
-                                          padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 60.w, vertical: 10.h)),
+                                          padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h)),
                                           shape: MaterialStateProperty.all(RoundedRectangleBorder(
                                             borderRadius: BorderRadius.circular(5.w),
                                             side: BorderSide(
-                                              color: Color(0xff1A5864),
+                                              color: accentColorDark,
                                               width: 1.w,
                                             ),
                                           )),
                                         ),
                                         onPressed: () {
-                                          ScaffoldMessenger.of(context)
-                                            ..clearSnackBars()
-                                            ..showSnackBar(
-                                              SnackBar(
-                                                behavior: SnackBarBehavior.floating,
-                                                backgroundColor: Color(0xff163C4D),
-                                                duration: Duration(milliseconds: 6000),
-                                                content: Text(
-                                                  'An error occured. Please try again!',
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.w600,
-                                                  ),
-                                                ),
-                                              ),
-                                            );
+                                          context.read<InitializeStreamChatCubit>().initializeInsuranceChannel(userID, insurance, userCategory, false);
                                         },
+                                      );
+                                    },
+                                  );
+                                }
+                                return TextButton(
+                                  child: Icon(
+                                    Icons.chat_bubble_outline,
+                                    color: accentColorDark,
+                                    size: 21.w,
+                                  ),
+                                  style: ButtonStyle(
+                                    backgroundColor: MaterialStateProperty.all(Colors.white),
+                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                    minimumSize: MaterialStateProperty.all(Size(0, 0)),
+                                    padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h)),
+                                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5.w),
+                                      side: BorderSide(
+                                        color: accentColorDark,
+                                        width: 1.w,
                                       ),
-                                    );
-                                  },
-                                  error: (err, stack) {
-                                    return Expanded(
-                                      child: TextButton(
-                                        child: Text(
-                                          'Purchase Insurance',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16.sp,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                        style: ButtonStyle(
-                                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                          backgroundColor: MaterialStateProperty.all(Color(0xff1A5864)),
-                                          minimumSize: MaterialStateProperty.all(Size(0, 0)),
-                                          padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 60.w, vertical: 10.h)),
-                                          shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(5.w),
-                                            side: BorderSide(
-                                              color: Color(0xff1A5864),
-                                              width: 1.w,
-                                            ),
-                                          )),
-                                        ),
-                                        onPressed: () {
-                                          ScaffoldMessenger.of(context)
-                                            ..clearSnackBars()
-                                            ..showSnackBar(
-                                              SnackBar(
-                                                behavior: SnackBarBehavior.floating,
-                                                backgroundColor: Color(0xff163C4D),
-                                                duration: Duration(milliseconds: 6000),
-                                                content: Text(
-                                                  'An error occured. Please try again!',
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.w600,
-                                                  ),
-                                                ),
-                                              ),
-                                            );
-                                        },
-                                      ),
-                                    );
-                                  },
+                                    )),
+                                  ),
+                                  onPressed: () {},
                                 );
                               },
                             ),
@@ -589,6 +677,13 @@ class _InsuranceProfilePageState extends State<InsuranceProfilePage> with Single
 
                   SizedBox(height: 10.h),
 
+                ],
+              ),
+
+              //rates
+              ListView(
+                padding: EdgeInsets.symmetric(vertical: 10.h),
+                children: [
                   Container(
                     clipBehavior: Clip.hardEdge,
                     decoration: BoxDecoration(
@@ -612,88 +707,137 @@ class _InsuranceProfilePageState extends State<InsuranceProfilePage> with Single
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 15.h),
                           child: Text(
-                            'Rates & Policy Documents',
+                            'Rates',
                             style: sectionTitle,
                           ),
                         ),
                       ],
                     ),
                   ),
+                  SizedBox(height: 10),
+                  Consumer(
+                    builder: (context, ScopedReader watch, child) {
+                      final linksAsyncVal = watch(linksModelProvider);
+                      return linksAsyncVal.when(
+                        data: (data) {
+                          final links = data.where((e) => e.linkName.toLowerCase().contains("-${widget.insuranceModel.name.toLowerCase()}")).toList();
+                          if (links.length == 0)
+                            return Padding(
+                              padding: EdgeInsets.all(10.0),
+                              child: Center(
+                                child: Text("Documents not found for this insurance"),
+                              ),
+                            );
+                          return Column(
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(bottom: 10.0),
+                                child: ResourceCard(
+                                  link: links[0],
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                        loading: () {
+                          return Center(
+                            child: Container(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(),
+                            ),
+                          );
+                        },
+                        error: (err, stack) {
+                          return Text(
+                            'An error occurred. Please try again.',
+                            style: TextStyle(),
+                          );
+                        },
+                      );
+                    },
+                  ),
                 ],
               ),
 
-              //rates
-              Consumer(
-                builder: (context, ScopedReader watch, child) {
-                  final linksAsyncVal = watch(linksModelProvider);
-                  return linksAsyncVal.when(
-                    data: (data) {
-                      final links = data.where((e) => e.linkName.toLowerCase().contains("-${widget.insuranceModel.name.toLowerCase()}")).toList();
-                      return Column(
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(bottom: 10.0),
-                            child: ResourceCard(
-                              link: links[0],
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                    loading: () {
-                      return Center(
-                        child: Container(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(),
-                        ),
-                      );
-                    },
-                    error: (err, stack) {
-                      return Text(
-                        'An error occurred. Please try again.',
-                        style: TextStyle(),
-                      );
-                    },
-                  );
-                },
-              ),
-
               //policy
-              Consumer(
-                builder: (context, ScopedReader watch, child) {
-                  final linksAsyncVal = watch(linksModelProvider);
-                  return linksAsyncVal.when(
-                    data: (data) {
-                      final links = data.where((e) => e.linkName.toLowerCase().contains("-${widget.insuranceModel.name.toLowerCase()}")).toList();
-                      return Column(
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(bottom: 10.0),
-                            child: ResourceCard(
-                              link: links[1],
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                    loading: () {
-                      return Center(
-                        child: Container(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(),
+              ListView(
+                padding: EdgeInsets.symmetric(vertical: 10.h),
+                children: [
+                  Container(
+                    clipBehavior: Clip.hardEdge,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(
+                        color: Color(0x19000000),
+                        width: 1.h,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color(0xC000000),
+                          blurRadius: 4.w,
+                          spreadRadius: 2.w,
                         ),
+                      ],
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 15.h),
+                          child: Text(
+                            'Policy Documents',
+                            style: sectionTitle,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Consumer(
+                    builder: (context, ScopedReader watch, child) {
+                      final linksAsyncVal = watch(linksModelProvider);
+                      return linksAsyncVal.when(
+                        data: (data) {
+                          final links = data.where((e) => e.linkName.toLowerCase().contains("-${widget.insuranceModel.name.toLowerCase()}")).toList();
+                          if (links.length == 0)
+                            return Padding(
+                              padding: EdgeInsets.all(10.0),
+                              child: Center(
+                                child: Text("Documents not found for this insurance"),
+                              ),
+                            );
+                          return Column(
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(bottom: 10.0),
+                                child: ResourceCard(
+                                  link: links[1],
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                        loading: () {
+                          return Center(
+                            child: Container(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(),
+                            ),
+                          );
+                        },
+                        error: (err, stack) {
+                          return Text(
+                            'An error occurred. Please try again.',
+                            style: TextStyle(),
+                          );
+                        },
                       );
                     },
-                    error: (err, stack) {
-                      return Text(
-                        'An error occurred. Please try again.',
-                        style: TextStyle(),
-                      );
-                    },
-                  );
-                },
+                  ),
+                ],
               ),
 
               SingleChildScrollView(

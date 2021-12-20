@@ -237,7 +237,7 @@ class _InitCallDialogState extends State<InitCallDialog> {
                                   await Permission.microphone.request();
 
                                   (double.parse(balanceState.callBalanceModel.amount) >= amountToUse)
-                                      ? Navigator.push(
+                                      ? Navigator.pushReplacement(
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) => CallPage(
@@ -259,7 +259,7 @@ class _InitCallDialogState extends State<InitCallDialog> {
                                                 isVerified: false),
                                           ),
                                         )
-                                      : Navigator.push(
+                                      : Navigator.pushReplacement(
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) => TopUpAccount(),
@@ -520,7 +520,7 @@ class _InitCallDialogState extends State<InitCallDialog> {
                                       await Permission.microphone.request();
 
                                       (double.parse(balanceState.callBalanceModel.amount) >= amountToUse)
-                                          ? Navigator.push(
+                                          ? Navigator.pushReplacement(
                                               context,
                                               MaterialPageRoute(
                                                 builder: (context) => CallPage(
@@ -553,7 +553,7 @@ class _InitCallDialogState extends State<InitCallDialog> {
                                                 ),
                                               ),
                                             )
-                                          : Navigator.push(
+                                          : Navigator.pushReplacement(
                                               context,
                                               MaterialPageRoute(
                                                 builder: (context) => TopUpAccount(),
@@ -810,7 +810,7 @@ class _InitCallDialogState extends State<InitCallDialog> {
                                       await Permission.microphone.request();
 
                                       (double.parse(balanceState.callBalanceModel.amount) >= amountToUse)
-                                          ? Navigator.push(
+                                          ? Navigator.pushReplacement(
                                               context,
                                               MaterialPageRoute(
                                                 builder: (context) => CallPage(
@@ -838,7 +838,7 @@ class _InitCallDialogState extends State<InitCallDialog> {
                                                 ),
                                               ),
                                             )
-                                          : Navigator.push(
+                                          : Navigator.pushReplacement(
                                               context,
                                               MaterialPageRoute(
                                                 builder: (context) => TopUpAccount(),
