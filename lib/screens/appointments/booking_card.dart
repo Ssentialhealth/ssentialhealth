@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:pocket_health/bloc/accept_decline/accept_decline_cubit.dart';
 import 'package:pocket_health/models/doc_bookings.dart';
-import 'package:pocket_health/screens/Appointments/user_profile_model.dart';
+import 'package:pocket_health/models/user_profile_model.dart';
 import 'package:pocket_health/services/api_service.dart';
 
 class BookingCard extends StatefulWidget {
@@ -30,7 +30,7 @@ class _BookingCardState extends State<BookingCard> {
         'Content-Type': 'application/json',
       },
     );
-    final users = userProfileModelFromJson(response.body);
+    final users = allUserProfileModelsFromJson(response.body);
     final user = users.lastWhere((element) => element.user == id);
     setState(() {
       profileURL = user.profileImgUrl;
