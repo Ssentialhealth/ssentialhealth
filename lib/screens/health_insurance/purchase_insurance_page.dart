@@ -44,21 +44,24 @@ class _PurchaseInsurancePageState extends State<PurchaseInsurancePage> {
         child: Column(
           children: [
             //banner
-            Stack(
-              alignment: Alignment.topLeft,
-              children: [
-                Container(
-                  height: 110.h,
-                  width: 1.sw,
-                ),
-                Container(
-                  width: 1.sw,
-                  child: Image(
-                    fit: BoxFit.fitWidth,
-                    image: AssetImage('assets/images/practitioners_banner.png'),
+            Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Stack(
+                alignment: Alignment.topLeft,
+                children: [
+                  Container(
+                    height: 110.h,
+                    width: 1.sw,
                   ),
-                ),
-              ],
+                  Container(
+                    width: 1.sw,
+                    child: Image(
+                      fit: BoxFit.fitWidth,
+                      image: AssetImage('assets/images/purchase_insurance.png'),
+                    ),
+                  ),
+                ],
+              ),
             ),
             //text
 

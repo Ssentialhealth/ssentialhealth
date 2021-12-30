@@ -67,7 +67,10 @@ class ResourceCard extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => PdfViewPage(pdf: link.resourceLink),
+                                builder: (context) => PdfViewPage(
+                                  pdf: link.resourceLink,
+                                  pdfTitle: link.linkName,
+                                ),
                               ),
                             );
                           },
