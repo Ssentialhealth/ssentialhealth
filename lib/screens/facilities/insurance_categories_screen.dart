@@ -1,17 +1,17 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pocket_health/screens/facilities/documents_categories_page.dart';
 import 'package:pocket_health/screens/facilities/list_agents_page.dart';
 import 'package:pocket_health/screens/facilities/pay_insurances_list_page.dart';
 import 'package:pocket_health/screens/health_insurance/list_insurances_page.dart';
 import 'package:pocket_health/utils/constants.dart';
 
-import 'list_documents_page.dart';
-
 class InsuranceCategoriesScreen extends StatelessWidget {
   final List<String> items = [
     "Shop and compare Health Insurances",
-    "Talk to agents",
-    "Documents",
+    "Health Insurance Agents",
+    "Insurance Documents",
     "Pay Premium",
   ];
   @override
@@ -21,7 +21,7 @@ class InsuranceCategoriesScreen extends StatelessWidget {
         centerTitle: true,
         elevation: 0.0,
         title: Text(
-          'Health Insurances',
+          'Health Insurance',
           style: appBarStyle,
         ),
         backgroundColor: Color(0xFF00FFFF),
@@ -69,7 +69,7 @@ class InsuranceCategoriesScreen extends StatelessWidget {
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (BuildContext context) {
-                              return ListDocumentsPage();
+                              return DocumentsCategoriesPage();
                             },
                           ),
                         );
@@ -94,6 +94,22 @@ class InsuranceCategoriesScreen extends StatelessWidget {
                     ),
                   ),
                 ],
+              ),
+            ),
+
+            //banner
+            Padding(
+              padding: EdgeInsets.all(12.0),
+              child: Container(
+                width: 1.sw,
+                clipBehavior: Clip.hardEdge,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Image(
+                  fit: BoxFit.fitWidth,
+                  image: AssetImage('assets/images/pay_insurance_instructions_banner.png'),
+                ),
               ),
             ),
           ],

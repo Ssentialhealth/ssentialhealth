@@ -54,11 +54,14 @@ class ListDocumentsPage extends StatelessWidget {
                 );
               },
               loading: () {
-                return Center(
-                  child: Container(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(),
+                return Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Center(
+                    child: Container(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(),
+                    ),
                   ),
                 );
               },

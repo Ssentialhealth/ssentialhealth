@@ -22,6 +22,7 @@ import 'package:pocket_health/screens/health_insurance/sort_insurance_reviews_ro
 import 'package:pocket_health/screens/health_insurance/write_insurance_review_dialog.dart';
 import 'package:pocket_health/screens/wellness/resource_card.dart';
 import 'package:pocket_health/utils/constants.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 import 'insurance_reviews_list.dart';
@@ -616,7 +617,19 @@ class _InsuranceProfilePageState extends State<InsuranceProfilePage> with Single
                       );
                     },
                   ),
-                  SizedBox(width: 16),
+                  Padding(
+                    padding: EdgeInsets.only(right: 8.w),
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.share,
+                        size: 22.sp,
+                        color: Color(0xff242424),
+                      ),
+                      onPressed: () {
+                        Share.share("Follow the link below to find ${widget.insuranceModel.name} as Health Insurance on Ssential\n\nhttps://ssential.herokuapp.com");
+                      },
+                    ),
+                  ),
                 ],
               ),
             ];

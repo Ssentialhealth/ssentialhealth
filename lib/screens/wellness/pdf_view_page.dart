@@ -1,13 +1,24 @@
+import 'dart:io';
+
+import 'package:ext_storage/ext_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:pocket_health/utils/constants.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 class PdfViewPage extends StatelessWidget {
   final String pdf;
-  const PdfViewPage({Key key, this.pdf}) : super(key: key);
+  final String pdfTitle;
+
+  const PdfViewPage({
+    Key key,
+    this.pdfTitle,
+    this.pdf,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    print(pdf);
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -27,6 +38,13 @@ class PdfViewPage extends StatelessWidget {
                   pdf,
                   canShowScrollHead: false,
                   canShowScrollStatus: false,
+                  onDocumentLoaded: (details) async {
+                    await Permission.storage.request();
+                    final List<int> bytes = details.document.save();
+                    final path = await ExtStorage.getExternalStoragePublicDirectory(ExtStorage.DIRECTORY_DOWNLOADS);
+                    final file = await File(path + '/$pdfTitle.pdf').writeAsBytes(bytes);
+                    print(file.absolute.path);
+                  },
                 ),
               ),
             ),

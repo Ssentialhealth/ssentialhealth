@@ -19,6 +19,7 @@ import 'package:pocket_health/screens/doctor_consult/chat/channel_page.dart';
 import 'package:pocket_health/screens/health_insurance/sort_agent_reviews_row.dart';
 import 'package:pocket_health/screens/health_insurance/write_agent_review_dialog.dart';
 import 'package:pocket_health/utils/constants.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 import 'agent_reviews_list.dart';
@@ -265,59 +266,59 @@ class _InsuranceAgentProfilePageState extends State<InsuranceAgentProfilePage> w
 
                                   return BlocConsumer<InitializeStreamChatCubit, InitializeStreamChatState>(
                                     listener: (context, state) {
-                                      if (state is StreamChannelSuccess) {
-                                        Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                            builder: (context) {
-                                              return StreamChat(
-                                                streamChatThemeData: StreamChatThemeData(
-                                                  //input bar
-                                                  messageInputTheme: MessageInputTheme(
-                                                    sendAnimationDuration: Duration(milliseconds: 500),
-                                                  ),
-
-                                                  //messages styling
-                                                  ownMessageTheme: MessageTheme(
-                                                    messageBorderColor: accentColorDark,
-                                                    messageBackgroundColor: accentColorLight,
-                                                    messageText: TextStyle(
-                                                      color: Color(0xff373737),
-                                                    ),
-                                                  ),
-                                                  otherMessageTheme: MessageTheme(
-                                                    messageBorderColor: Color(0x19000000),
-                                                    messageBackgroundColor: Color(0xF000000),
-                                                    messageText: TextStyle(
-                                                      color: Color(0xff373737),
-                                                    ),
-                                                  ),
-
-                                                  //list styling
-                                                  channelPreviewTheme: ChannelPreviewTheme(
-                                                    unreadCounterColor: accentColorDark,
-                                                  ),
-
-                                                  //channel styling
-                                                  channelTheme: ChannelTheme(
-                                                    channelHeaderTheme: ChannelHeaderTheme(
-                                                      color: accentColor,
-                                                      subtitle: TextStyle(
-                                                        fontSize: 11.5.sp,
-                                                        color: Colors.grey[700],
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                                client: context.read<InitializeStreamChatCubit>().client,
-                                                child: StreamChannel(
-                                                  channel: state.channel,
-                                                  child: ChannelPage(),
-                                                ),
-                                              );
-                                            },
-                                          ),
-                                        );
-                                      }
+                                      // if (state is StreamChannelSuccess) {
+                                      //   Navigator.of(context).push(
+                                      //     MaterialPageRoute(
+                                      //       builder: (context) {
+                                      //         return StreamChat(
+                                      //           streamChatThemeData: StreamChatThemeData(
+                                      //             //input bar
+                                      //             messageInputTheme: MessageInputTheme(
+                                      //               sendAnimationDuration: Duration(milliseconds: 500),
+                                      //             ),
+                                      //
+                                      //             //messages styling
+                                      //             ownMessageTheme: MessageTheme(
+                                      //               messageBorderColor: accentColorDark,
+                                      //               messageBackgroundColor: accentColorLight,
+                                      //               messageText: TextStyle(
+                                      //                 color: Color(0xff373737),
+                                      //               ),
+                                      //             ),
+                                      //             otherMessageTheme: MessageTheme(
+                                      //               messageBorderColor: Color(0x19000000),
+                                      //               messageBackgroundColor: Color(0xF000000),
+                                      //               messageText: TextStyle(
+                                      //                 color: Color(0xff373737),
+                                      //               ),
+                                      //             ),
+                                      //
+                                      //             //list styling
+                                      //             channelPreviewTheme: ChannelPreviewTheme(
+                                      //               unreadCounterColor: accentColorDark,
+                                      //             ),
+                                      //
+                                      //             //channel styling
+                                      //             channelTheme: ChannelTheme(
+                                      //               channelHeaderTheme: ChannelHeaderTheme(
+                                      //                 color: accentColor,
+                                      //                 subtitle: TextStyle(
+                                      //                   fontSize: 11.5.sp,
+                                      //                   color: Colors.grey[700],
+                                      //                 ),
+                                      //               ),
+                                      //             ),
+                                      //           ),
+                                      //           client: context.read<InitializeStreamChatCubit>().client,
+                                      //           child: StreamChannel(
+                                      //             channel: state.channel,
+                                      //             child: ChannelPage(),
+                                      //           ),
+                                      //         );
+                                      //       },
+                                      //     ),
+                                      //   );
+                                      // }
 
                                       if (state is StreamChannelError) {
                                         ScaffoldMessenger.of(context)
@@ -339,35 +340,6 @@ class _InsuranceAgentProfilePageState extends State<InsuranceAgentProfilePage> w
                                       }
                                     },
                                     builder: (context, state) {
-                                      if (state is StreamChannelLoading) {
-                                        return Expanded(
-                                          child: TextButton(
-                                            child: SizedBox(
-                                              height: 20,
-                                              width: 20,
-                                              child: CircularProgressIndicator(
-                                                strokeWidth: 1,
-                                                color: accentColorDark,
-                                                backgroundColor: Colors.white,
-                                              ),
-                                            ),
-                                            style: ButtonStyle(
-                                              backgroundColor: MaterialStateProperty.all(Colors.white),
-                                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                              minimumSize: MaterialStateProperty.all(Size(0, 0)),
-                                              padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h)),
-                                              shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(5.w),
-                                                side: BorderSide(
-                                                  color: accentColorDark,
-                                                  width: 1.w,
-                                                ),
-                                              )),
-                                            ),
-                                            onPressed: () {},
-                                          ),
-                                        );
-                                      }
                                       if (state is StreamChannelSuccess) {
                                         return Expanded(
                                           child: TextButton(
@@ -420,7 +392,82 @@ class _InsuranceAgentProfilePageState extends State<InsuranceAgentProfilePage> w
                                             )),
                                           ),
                                           onPressed: () {
-                                            context.read<InitializeStreamChatCubit>().initializeInsuranceAgentChannel(userID, agent, userCategory, false);
+                                            if (state is StreamChannelInitial) {
+                                              context.read<InitializeStreamChatCubit>().initializeInsuranceAgentChannel(userID, agent, userCategory, false);
+                                              Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                  builder: (context) => Scaffold(
+                                                    backgroundColor: Colors.white,
+                                                    body: BlocConsumer<InitializeStreamChatCubit, InitializeStreamChatState>(
+                                                      listener: (context, state) {
+                                                        if (state is StreamChannelSuccess) {
+                                                          Navigator.of(context).pushReplacement(
+                                                            MaterialPageRoute(
+                                                              builder: (context) {
+                                                                return StreamChat(
+                                                                  streamChatThemeData: StreamChatThemeData(
+                                                                    //input bar
+                                                                    messageInputTheme: MessageInputTheme(
+                                                                      sendAnimationDuration: Duration(milliseconds: 500),
+                                                                    ),
+
+                                                                    //messages styling
+                                                                    ownMessageTheme: MessageTheme(
+                                                                      messageBorderColor: accentColorDark,
+                                                                      messageBackgroundColor: accentColorLight,
+                                                                      messageText: TextStyle(
+                                                                        color: Color(0xff373737),
+                                                                      ),
+                                                                    ),
+                                                                    otherMessageTheme: MessageTheme(
+                                                                      messageBorderColor: Color(0x19000000),
+                                                                      messageBackgroundColor: Color(0xF000000),
+                                                                      messageText: TextStyle(
+                                                                        color: Color(0xff373737),
+                                                                      ),
+                                                                    ),
+
+                                                                    //list styling
+                                                                    channelPreviewTheme: ChannelPreviewTheme(
+                                                                      unreadCounterColor: accentColorDark,
+                                                                    ),
+
+                                                                    //channel styling
+                                                                    channelTheme: ChannelTheme(
+                                                                      channelHeaderTheme: ChannelHeaderTheme(
+                                                                        color: accentColor,
+                                                                        subtitle: TextStyle(
+                                                                          fontSize: 11.5.sp,
+                                                                          color: Colors.grey[700],
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  client: context.read<InitializeStreamChatCubit>().client,
+                                                                  child: StreamChannel(
+                                                                    channel: state.channel,
+                                                                    child: ChannelPage(),
+                                                                  ),
+                                                                );
+                                                              },
+                                                            ),
+                                                          );
+                                                        }
+                                                      },
+                                                      builder: (context, state) {
+                                                        return Center(
+                                                          child: Container(
+                                                            height: 20,
+                                                            width: 20,
+                                                            child: CircularProgressIndicator(),
+                                                          ),
+                                                        );
+                                                      },
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            }
                                           },
                                         ),
                                       );
@@ -452,6 +499,162 @@ class _InsuranceAgentProfilePageState extends State<InsuranceAgentProfilePage> w
                                     ),
                                     onPressed: () {},
                                   ),
+                                );
+                              },
+                            ),
+
+                            SizedBox(width: 10.w),
+
+                            BlocBuilder<LoginBloc, LoginState>(
+                              builder: (context, state) {
+                                if (state is LoginLoaded) {
+                                  final userID = state.loginModel.user.fullNames.split(' ').last;
+                                  final userCategory = state.loginModel.user.userCategory;
+                                  final agent = widget.agentModel;
+
+                                  return BlocConsumer<InitializeStreamChatCubit, InitializeStreamChatState>(
+                                    listener: (context, state) {
+                                      if (state is StreamChannelError) {
+                                        ScaffoldMessenger.of(context)
+                                          ..clearSnackBars()
+                                          ..showSnackBar(
+                                            SnackBar(
+                                              behavior: SnackBarBehavior.floating,
+                                              backgroundColor: Color(0xff163C4D),
+                                              duration: Duration(milliseconds: 6000),
+                                              content: Text(
+                                                state.err,
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                      }
+                                    },
+                                    builder: (context, state) {
+                                      return TextButton(
+                                        child: Icon(
+                                          Icons.chat_bubble_outline,
+                                          color: accentColorDark,
+                                          size: 21.w,
+                                        ),
+                                        style: ButtonStyle(
+                                          backgroundColor: MaterialStateProperty.all(Colors.white),
+                                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                          minimumSize: MaterialStateProperty.all(Size(0, 0)),
+                                          padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h)),
+                                          shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(5.w),
+                                            side: BorderSide(
+                                              color: accentColorDark,
+                                              width: 1.w,
+                                            ),
+                                          )),
+                                        ),
+                                        onPressed: () {
+                                          if (state is StreamChannelInitial) {
+                                            context.read<InitializeStreamChatCubit>().initializeInsuranceAgentChannel(userID, agent, userCategory, false);
+                                            Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                builder: (context) => Scaffold(
+                                                  backgroundColor: Colors.white,
+                                                  body: BlocConsumer<InitializeStreamChatCubit, InitializeStreamChatState>(
+                                                    listener: (context, state) {
+                                                      if (state is StreamChannelSuccess) {
+                                                        Navigator.of(context).pushReplacement(
+                                                          MaterialPageRoute(
+                                                            builder: (context) {
+                                                              return StreamChat(
+                                                                streamChatThemeData: StreamChatThemeData(
+                                                                  //input bar
+                                                                  messageInputTheme: MessageInputTheme(
+                                                                    sendAnimationDuration: Duration(milliseconds: 500),
+                                                                  ),
+
+                                                                  //messages styling
+                                                                  ownMessageTheme: MessageTheme(
+                                                                    messageBorderColor: accentColorDark,
+                                                                    messageBackgroundColor: accentColorLight,
+                                                                    messageText: TextStyle(
+                                                                      color: Color(0xff373737),
+                                                                    ),
+                                                                  ),
+                                                                  otherMessageTheme: MessageTheme(
+                                                                    messageBorderColor: Color(0x19000000),
+                                                                    messageBackgroundColor: Color(0xF000000),
+                                                                    messageText: TextStyle(
+                                                                      color: Color(0xff373737),
+                                                                    ),
+                                                                  ),
+
+                                                                  //list styling
+                                                                  channelPreviewTheme: ChannelPreviewTheme(
+                                                                    unreadCounterColor: accentColorDark,
+                                                                  ),
+
+                                                                  //channel styling
+                                                                  channelTheme: ChannelTheme(
+                                                                    channelHeaderTheme: ChannelHeaderTheme(
+                                                                      color: accentColor,
+                                                                      subtitle: TextStyle(
+                                                                        fontSize: 11.5.sp,
+                                                                        color: Colors.grey[700],
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                                client: context.read<InitializeStreamChatCubit>().client,
+                                                                child: StreamChannel(
+                                                                  channel: state.channel,
+                                                                  child: ChannelPage(),
+                                                                ),
+                                                              );
+                                                            },
+                                                          ),
+                                                        );
+                                                      }
+                                                    },
+                                                    builder: (context, state) {
+                                                      return Center(
+                                                        child: Container(
+                                                          height: 20,
+                                                          width: 20,
+                                                          child: CircularProgressIndicator(),
+                                                        ),
+                                                      );
+                                                    },
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          }
+                                        },
+                                      );
+                                    },
+                                  );
+                                }
+                                return TextButton(
+                                  child: Icon(
+                                    Icons.chat_bubble_outline,
+                                    color: accentColorDark,
+                                    size: 21.w,
+                                  ),
+                                  style: ButtonStyle(
+                                    backgroundColor: MaterialStateProperty.all(Colors.white),
+                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                    minimumSize: MaterialStateProperty.all(Size(0, 0)),
+                                    padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h)),
+                                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5.w),
+                                      side: BorderSide(
+                                        color: accentColorDark,
+                                        width: 1.w,
+                                      ),
+                                    )),
+                                  ),
+                                  onPressed: () {},
                                 );
                               },
                             ),
@@ -550,6 +753,7 @@ class _InsuranceAgentProfilePageState extends State<InsuranceAgentProfilePage> w
                 ),
                 actionsIconTheme: IconThemeData(),
                 actions: [
+                  //save
                   BlocBuilder<SavedAgentContactsCubit, SavedAgentContactsState>(
                     builder: (context, state) {
                       if (state is SavedAgentContactsSuccess) {
@@ -578,7 +782,21 @@ class _InsuranceAgentProfilePageState extends State<InsuranceAgentProfilePage> w
                     },
                   ),
 
-                  SizedBox(width: 16),
+                  //share
+                  Padding(
+                    padding: EdgeInsets.only(right: 8.w),
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.share,
+                        size: 22.sp,
+                        color: Color(0xff242424),
+                      ),
+                      onPressed: () {
+                        Share.share(
+                            "Follow the link below to find ${widget.agentModel.name} as Health Insurance Agent on Ssential\n\nhttps://ssential.herokuapp.com");
+                      },
+                    ),
+                  ),
                 ],
               ),
             ];
