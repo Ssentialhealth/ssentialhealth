@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:pocket_health/screens/boarding/wait_screen.dart';
+import 'package:pocket_health/utils/constants.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -23,13 +24,18 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void navigationPage() {
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => WaitScreen()));
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (BuildContext context) => WaitScreen(),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: accentColorLight,
       body: InkWell(
         child: Stack(
           fit: StackFit.expand,

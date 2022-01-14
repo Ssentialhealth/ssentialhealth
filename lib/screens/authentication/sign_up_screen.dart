@@ -50,6 +50,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       appBar: AppBar(
         title: Text("Sign Up"),
         centerTitle: true,
+        elevation: 0.0,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -79,7 +80,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ),
                       ),
                       Text(
-                        "Please Register to Access more features",
+                        "Please sign up to access more features",
                         style: TextStyle(color: Colors.black),
                       ),
                       SizedBox(
@@ -213,7 +214,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            "Already have an Account ?",
+                            "Already have an account? ",
                             style: mediumTextStyle(),
                           ),
                           GestureDetector(
