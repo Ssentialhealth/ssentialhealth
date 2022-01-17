@@ -28,11 +28,11 @@ class _PregnancyLactationPageState extends State<PregnancyLactationPage> {
       appBar: AppBar(
         centerTitle: true,
         elevation: 0.0,
+        backgroundColor: Color(0xFF00FFFF),
         title: Text(
           "Pregnancy & Lactation",
           style: appBarStyle,
         ),
-        backgroundColor: Color(0xFF00FFFF),
       ),
       body: SingleChildScrollView(
         child: Column(

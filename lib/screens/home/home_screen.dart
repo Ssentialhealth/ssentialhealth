@@ -7,15 +7,14 @@ import 'package:pocket_health/screens/AdultUnwell/adult_unwell_screens/adult_unw
 import 'package:pocket_health/screens/child_health/condition/child_health_immunization_screen.dart';
 import 'package:pocket_health/screens/facilities/facilities_categories_screen.dart';
 import 'package:pocket_health/screens/facilities/insurance_categories_screen.dart';
-import 'package:pocket_health/screens/health_insurance/list_insurances_page.dart';
 import 'package:pocket_health/screens/mental_health/mental_health_page.dart';
 import 'package:pocket_health/screens/practitioners/practitioners_categories_screen.dart';
 import 'package:pocket_health/screens/pregnancy_lactation/pregnancy_lactation_page.dart';
 import 'package:pocket_health/screens/wellness/wellness_page.dart';
+import 'package:pocket_health/utils/constants.dart';
 import 'package:pocket_health/widgets/card_item.dart';
 import 'package:pocket_health/widgets/category_card.dart';
 import 'package:pocket_health/widgets/welcome_dart.dart';
-import 'package:pocket_health/widgets/widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -42,10 +41,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     List<Map<String, dynamic>> categories = [
-      {"icon": "assets/images/mental_health.png", "text": "Mental Health"},
-      {"icon": "assets/images/wellness.png", "text": "Wellness"},
-      {"icon": "assets/images/first_aid.png", "text": "First Aid"},
-      {"icon": "assets/images/health_insurace.png", "text": "Health Insuran.."},
+      {"icon": "assets/icons/mental_health.png", "text": "Mental Health"},
+      {"icon": "assets/icons/wellness.png", "text": "Wellness"},
+      {"icon": "assets/icons/first_aid.png", "text": "First Aid"},
+      {"icon": "assets/icons/health_insurance.png", "text": "Health Insurance"},
     ];
 
     FlutterStatusbarcolor.setStatusBarColor(Color(0xFF00FFFF));
@@ -57,11 +56,15 @@ class _HomeScreenState extends State<HomeScreen> {
         appBar: AppBar(
           elevation: 0.0,
           automaticallyImplyLeading: false,
-          title: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Image.asset(
-              'assets/images/homelogo.png',
-              fit: BoxFit.scaleDown,
+          toolbarHeight: 68,
+          centerTitle: true,
+          title: Center(
+            child: Container(
+              height: 60,
+              child: Image.asset(
+                'assets/images/homelogo.png',
+                fit: BoxFit.contain,
+              ),
             ),
           ),
           backgroundColor: Color(0xFF00FFFF),
@@ -76,24 +79,49 @@ class _HomeScreenState extends State<HomeScreen> {
                     SizedBox(height: 5),
 
                     //search box
-                    Container(
-                      height: 55,
-                      child: Row(
-                        children: <Widget>[
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 6),
+                      child: Container(
+                        height: 40,
+                        child: Row(
+                          children: <Widget>[
+                            Expanded(
                               child: TextFormField(
                                 cursorColor: Colors.grey,
-                                decoration: searchFieldInputDecoration("Search for services"),
+                                decoration: InputDecoration(
+                                  contentPadding: new EdgeInsets.symmetric(vertical: 6.0, horizontal: 10.0),
+                                  hintText: "Search for services",
+                                  prefixIcon: Icon(
+                                    Icons.search,
+                                    color: Colors.grey,
+                                  ),
+                                  hintStyle: TextStyle(
+                                    color: Colors.grey,
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                    borderSide: BorderSide(
+                                      color: Color(0xFF00FFFF),
+                                    ),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                    borderSide: BorderSide(
+                                      color: Color(0xFF00FFFF),
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: GestureDetector(onTap: () async {}, child: Icon(Icons.settings)),
-                          ),
-                        ],
+                            IconButton(
+                              onPressed: () {},
+                              icon: Icon(
+                                Icons.settings,
+                                color: accentColorDark,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
 
@@ -107,8 +135,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         );
                       },
-                      image: "assets/images/adult_unwell.png",
-                      text: "Adult Unwell- Check Symptoms \n& Conditions",
+                      image: "assets/icons/adult.png",
+                      text: "Adult Unwell - Check Symptoms &\nConditions",
                     ),
 
                     //immunization
@@ -121,7 +149,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         );
                       },
-                      image: "assets/images/child_health_ immunisation.png",
+                      image: "assets/icons/child.png",
                       text: "Child Health & Immunisation",
                     ),
 
@@ -154,18 +182,16 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           );
                       },
-                      image: "assets/images/pregnancy_lactation.png",
+                      image: "assets/icons/pregnancy.png",
                       text: "Pregnancy & Lactation",
                     ),
-                    SizedBox(height: 8),
 
                     //welcome
-                    Visibility(visible: visibilityController, child: WelcomeCard()),
-                    SizedBox(height: 8),
+                    // Visibility(visible: visibilityController, child: WelcomeCard()),
 
                     //categories
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -186,7 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         backgroundColor: Color(0xff163C4D),
                                         duration: Duration(milliseconds: 6000),
                                         content: Text(
-                                          'Please Log In to access this feature.',
+                                          'Please Sign In to access this feature.',
                                           style: TextStyle(
                                             color: Colors.white,
                                             fontWeight: FontWeight.w600,
@@ -223,7 +249,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                     ),
-                    SizedBox(height: 8),
 
                     //doctors and practitioners
                     CardItem(
@@ -256,7 +281,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 );
                             },
-                      image: "assets/images/doctors_practitioners.png",
+                      image: "assets/icons/doctor.png",
                       text: "Doctors & Practitioners",
                     ),
 
@@ -291,7 +316,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 );
                             },
-                      image: "assets/images/hospital_facilities.png",
+                      image: "assets/icons/hospital.png",
                       text: "Health Facilities",
                     ),
                   ],
