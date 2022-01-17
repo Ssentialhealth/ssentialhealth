@@ -88,9 +88,8 @@ class _InitCallDialogState extends State<InitCallDialog> {
                         //user
                         final int balanceInUSD = int.parse(balanceState.callBalanceModel.amount.split('.').first);
 
-                        //doc
-                        final streamInsuranceID = widget.from == "insurance-profile" ? "" : widget.streamProfile.id.replaceAll("insuranceIDTestFive", "");
-                        final insuranceID = widget.from == "insurance-profile" ? widget.insuranceDetail.id : int.parse(streamInsuranceID);
+                        final streamInsuranceID = widget.from == "insurance-chat" ? widget.streamProfile.id.replaceAll("insuranceIDTestFive", "") : "";
+                        final insuranceID = widget.from == "insurance-chat" ? int.parse(streamInsuranceID) : widget.insuranceDetail.id;
                         final int insuranceRatePerMin = widget.insuranceHourlyRate ~/ 60;
 
                         final double amountToUse = durationVal == "5 minutes"
@@ -367,9 +366,9 @@ class _InitCallDialogState extends State<InitCallDialog> {
                             //user
                             final int balanceInUSD = int.parse(balanceState.callBalanceModel.amount.split('.').first);
 
-                            //doc
-                            final streamAgentID = widget.from == "agent-profile" ? "" : widget.streamProfile.id.replaceAll("agentIDTestFive", "");
-                            final agentID = widget.from == "agent-profile" ? widget.agentDetail.id : int.parse(streamAgentID);
+                            //agent
+                            final streamAgentID = widget.from == "agent-chat" ? widget.streamProfile.id.replaceAll("agentIDTestFive", "") : "";
+                            final agentID = widget.from == "agent-chat" ? int.parse(streamAgentID) : widget.agentDetail.id;
                             final int agentRatePerMin = widget.agentHourlyRate ~/ 60;
 
                             final double amountToUse = durationVal == "5 minutes"
@@ -928,7 +927,6 @@ class _InitCallDialogState extends State<InitCallDialog> {
                                   SizedBox(height: 45.h),
                                 ],
                               );
-
                             },
                           );
                         },
@@ -1214,7 +1212,6 @@ class _InitCallDialogState extends State<InitCallDialog> {
                                   SizedBox(height: 45.h),
                                 ],
                               );
-
                             },
                           );
                         },

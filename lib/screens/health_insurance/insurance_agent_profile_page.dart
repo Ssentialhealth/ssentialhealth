@@ -70,6 +70,7 @@ class _InsuranceAgentProfilePageState extends State<InsuranceAgentProfilePage> w
 
   @override
   Widget build(BuildContext context) {
+    // print(widget.agentModel.);
     return SafeArea(
       child: Scaffold(
         body: NestedScrollView(
@@ -684,7 +685,6 @@ class _InsuranceAgentProfilePageState extends State<InsuranceAgentProfilePage> w
                                     )),
                                   ),
                                   onPressed: () async {
-                                    final hourlyRate = "600.0";
                                     await showDialog(
                                       context: context,
                                       builder: (dialogContext) {
@@ -692,7 +692,7 @@ class _InsuranceAgentProfilePageState extends State<InsuranceAgentProfilePage> w
                                           from: "agent-profile",
                                           videoMuted: false,
                                           agentDetail: widget.agentModel,
-                                          agentHourlyRate: int.parse(hourlyRate.split(".").first),
+                                          agentHourlyRate: 10,
                                         );
                                       },
                                     );

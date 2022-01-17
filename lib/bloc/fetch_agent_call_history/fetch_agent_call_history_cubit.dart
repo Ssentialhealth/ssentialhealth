@@ -14,13 +14,13 @@ class FetchAgentCallHistoryCubit extends Cubit<FetchAgentCallHistoryState> {
   void getCallHistory(int userID) async {
     try {
       emit(FetchAgentCallHistoryLoading());
-      final allFacilitiesCalled = await fetchAgentCallHistoryRepo.getCallHistoryAgentDetails(userID);
-      final allAgentCallHistory = await fetchAgentCallHistoryRepo.getAllCallHistory(allFacilitiesCalled, userID);
+      final allAgentsCalled = await fetchAgentCallHistoryRepo.getCallHistoryAgentDetails(userID);
+      final allAgentCallHistory = await fetchAgentCallHistoryRepo.getAllCallHistory(allAgentsCalled, userID);
 
-      emit(FetchAgentCallHistorySuccess(allFacilitiesCalled, allAgentCallHistory));
-    } catch (_) {
+      emit(FetchAgentCallHistorySuccess(allAgentsCalled, allAgentCallHistory));
+    } catch (_, e) {
       emit(FetchAgentCallHistoryFailure());
-      print("get call history failed | $_");
+      print("get agent call history failed | $e");
     }
   }
 }

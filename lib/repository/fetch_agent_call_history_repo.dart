@@ -17,7 +17,7 @@ class FetchAgentCallHistoryRepo {
     Future<List<AgentCallHistoryModel>> getCallHistoryByAgentID() async {
       List<AgentCallHistoryModel> all = [];
       for (final agent in allAgents) {
-        final history = allCallHistory.lastWhere((element) => element.agent == agent.id);
+        final history = allCallHistory?.lastWhere((element) => element.id == agent.id);
         print('--------|ended|--------|value -> ${history.endTime.toString()}');
 
         all.add(history);

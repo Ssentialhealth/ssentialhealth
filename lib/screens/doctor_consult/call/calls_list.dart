@@ -67,6 +67,8 @@ class _CallsListState extends State<CallsList> with SingleTickerProviderStateMix
     super.initState();
     context.read<FetchCallHistoryCubit>()..getCallHistory(5); //testing
     context.read<FetchFacilityCallHistoryCubit>()..getCallHistory(5); //testing
+    context.read<FetchAgentCallHistoryCubit>()..getCallHistory(5); //testing
+    context.read<FetchInsuranceCallHistoryCubit>()..getCallHistory(5); //testing
     context.read<CallBalanceCubit>()..getCallBalance(5);
     context.read<InitializeStreamChatCubit>()..loadInitial();
     tabController = TabController(vsync: this, length: 4);
@@ -1093,8 +1095,16 @@ class _CallsListState extends State<CallsList> with SingleTickerProviderStateMix
                               },
                             );
                           },
-                          loading: () => SizedBox.shrink(),
-                          error: (err, stack) => SizedBox.shrink(),
+                          loading: () => Container(
+                            color: Colors.yellow,
+                            height: 100,
+                            width: 1.sw,
+                          ),
+                          error: (err, stack) => Container(
+                            color: Colors.red,
+                            height: 100,
+                            width: 1.sw,
+                          ),
                         );
                       },
                     );
@@ -1123,6 +1133,7 @@ class _CallsListState extends State<CallsList> with SingleTickerProviderStateMix
                         return agentsModelAsyncVal.when(
                           data: (data) {
                             final allAgentsCalled = historyState.allAgentsCalled;
+                            print('--------|allAgentsCalled|--------|value -> ${allAgentsCalled.length.toString()}');
                             final queriedAgents = allAgentsCalled?.where((element) => element?.name?.toLowerCase()?.contains(searchAgentText))?.toList();
 
                             return BlocConsumer<InitializeStreamChatCubit, InitializeStreamChatState>(
@@ -1417,7 +1428,11 @@ class _CallsListState extends State<CallsList> with SingleTickerProviderStateMix
                               child: CircularProgressIndicator(),
                             ),
                           ),
-                          error: (err, stack) => SizedBox.shrink(),
+                          error: (err, stack) => Container(
+                            color: Colors.red,
+                            height: 100,
+                            width: 1.sw,
+                          ),
                         );
                       },
                     );

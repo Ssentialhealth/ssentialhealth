@@ -18,7 +18,7 @@ class AgentCallHistoryCubit extends Cubit<AgentCallHistoryState> {
         "endTime": endedAt,
         "duration": null,
         "user": userID,
-        "profile": 16, //testing
+        "agent": 2, //testing
       };
 
       final addedCall = await agentCallHistoryRepo.registerAgentCallHistory(mapData);

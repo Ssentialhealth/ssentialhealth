@@ -18,9 +18,9 @@ class FetchInsuranceCallHistoryCubit extends Cubit<FetchInsuranceCallHistoryStat
       final allInsuranceCallHistory = await fetchInsuranceCallHistoryRepo.getAllCallHistory(allInsurancesCalled, userID);
 
       emit(FetchInsuranceCallHistorySuccess(allInsurancesCalled, allInsuranceCallHistory));
-    } catch (_) {
+    } catch (_, e) {
       emit(FetchInsuranceCallHistoryFailure());
-      print("get call history failed | $_");
+      print("get call history failed | $e");
     }
   }
 }

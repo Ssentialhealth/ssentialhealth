@@ -1045,18 +1045,18 @@ class _SavedListState extends State<SavedList> with SingleTickerProviderStateMix
                                                     color: accentColorDark,
                                                   ),
                                                   onPressed: () async {
-                                                    // await showDialog(
-                                                    //   context: context,
-                                                    //   builder: (dialogContext) {
-                                                    //     return InitCallDialog(
-                                                    //       from: "agent-callhistory",
-                                                    //       videoMuted: false,
-                                                    //       agentDetail: agentDetail,
-                                                    //       isVerified: false,
-                                                    //       agentHourlyRate: 10,
-                                                    //     );
-                                                    //   },
-                                                    // );
+                                                    await showDialog(
+                                                      context: context,
+                                                      builder: (dialogContext) {
+                                                        return InitCallDialog(
+                                                          from: "insurance-callhistory",
+                                                          videoMuted: false,
+                                                          insuranceDetail: insuranceDetail,
+                                                          isVerified: false,
+                                                          insuranceHourlyRate: 10,
+                                                        );
+                                                      },
+                                                    );
                                                   },
                                                 ),
 
@@ -1068,18 +1068,18 @@ class _SavedListState extends State<SavedList> with SingleTickerProviderStateMix
                                                     color: accentColorDark,
                                                   ),
                                                   onPressed: () async {
-                                                    // await showDialog(
-                                                    //   context: context,
-                                                    //   builder: (dialogContext) {
-                                                    //     return InitCallDialog(
-                                                    //       from: "agent-callhistory",
-                                                    //       videoMuted: false,
-                                                    //       agentDetail: agentDetail,
-                                                    //       isVerified: false,
-                                                    //       agentHourlyRate: 10,
-                                                    //     );
-                                                    //   },
-                                                    // );
+                                                    await showDialog(
+                                                      context: context,
+                                                      builder: (dialogContext) {
+                                                        return InitCallDialog(
+                                                          from: "insurance-callhistory",
+                                                          videoMuted: true,
+                                                          insuranceDetail: insuranceDetail,
+                                                          isVerified: false,
+                                                          insuranceHourlyRate: 10,
+                                                        );
+                                                      },
+                                                    );
                                                   },
                                                 ),
                                               ],
@@ -1292,7 +1292,7 @@ class _SavedListState extends State<SavedList> with SingleTickerProviderStateMix
                                             crossAxisAlignment: CrossAxisAlignment.center,
                                             children: [
                                               Text(
-                                                agentDetail.name == '' || agentDetail.name.isEmpty ? "Agent" : agentDetail.name,
+                                                agentDetail.name == '' || agentDetail.name.isEmpty ? " Agent" : agentDetail.name,
                                                 style: TextStyle(
                                                   color: Color(0xff515050),
                                                   fontSize: 16.sp,
@@ -1397,7 +1397,7 @@ class _SavedListState extends State<SavedList> with SingleTickerProviderStateMix
                                                       builder: (dialogContext) {
                                                         return InitCallDialog(
                                                           from: "agent-callhistory",
-                                                          videoMuted: false,
+                                                          videoMuted: true,
                                                           agentDetail: agentDetail,
                                                           isVerified: false,
                                                           agentHourlyRate: 10,

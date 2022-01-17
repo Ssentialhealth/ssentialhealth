@@ -17,7 +17,7 @@ class FetchInsuranceCallHistoryRepo {
     Future<List<InsuranceCallHistoryModel>> getCallHistoryByInsuranceID() async {
       List<InsuranceCallHistoryModel> all = [];
       for (final insurance in allInsurances) {
-        final history = allCallHistory.lastWhere((element) => element.insurance == insurance.id);
+        final history = allCallHistory.lastWhere((element) => element.id == insurance.id);
         print('--------|ended|--------|value -> ${history.endTime.toString()}');
 
         all.add(history);

@@ -1102,7 +1102,7 @@ class ApiService {
   Future<List<HealthInsuranceModel>> fetchAllInsurancesCalled(userID) async {
     _token = await getStringValuesSF();
     final response = await http.get(
-      "https://ssential.herokuapp.com/api/HealthInsuarance/CallsHistory",
+      "https://ssential.herokuapp.com/api/HealthFacility/CallsHistory",
       headers: {
         "Content-Type": "application/json",
         "Authorization": "Bearer " + _token,
@@ -1192,14 +1192,14 @@ class ApiService {
   Future<List<InsuranceCallHistoryModel>> fetchAllInsuranceCallHistory(userID) async {
     _token = await getStringValuesSF();
     final response = await http.get(
-      "https://ssential.herokuapp.com/api/HealthInsurance/CallsHistory",
+      "https://ssential.herokuapp.com/api/HealthFacility/CallsHistory",
       headers: {
         "Content-Type": "application/json",
         "Authorization": "Bearer " + _token,
       },
     );
 
-    print('--------|response call|--------|value -> ${response.body.toString()}');
+    print('--------|response call|--------|value -> ${response.reasonPhrase.toString()}');
     return insuranceCallHistoryListModelFromJson(response.body).where((element) => element.id == userID).toList();
   }
 
@@ -1213,7 +1213,7 @@ class ApiService {
       },
     );
 
-    print('--------|response call|--------|value -> ${response.body.toString()}');
+    print('--------|response call|--------|value -> ${response.reasonPhrase.toString()}');
 
     return agentCallHistoryListModelFromJson(response.body).where((element) => element.user == userID).toList();
   }
@@ -1256,7 +1256,7 @@ class ApiService {
   Future<HealthInsuranceModel> fetchInsuranceDetails(insuranceID) async {
     _token = await getStringValuesSF();
     final response = await this.httpClient.get(
-      "https://ssential.herokuapp.com/api/HealthInsuarance/$insuranceID/",
+      "https://ssential.herokuapp.com/api/HealthFacility/4/",
       headers: {
         "Authorization": "Bearer " + _token,
       },
