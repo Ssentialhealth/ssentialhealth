@@ -23,6 +23,7 @@ import 'package:pocket_health/models/practitioner_profile_model.dart';
 import 'package:pocket_health/repository/insurance_agent_model.dart';
 import 'package:pocket_health/screens/doctor_consult/call/referral_dialog.dart';
 import 'package:pocket_health/screens/doctor_consult/call/utils.dart';
+import 'package:pocket_health/services/api_service.dart';
 import 'package:pocket_health/utils/constants.dart';
 import 'package:pocket_health/widgets/verified_tag.dart';
 
@@ -95,7 +96,7 @@ class _CallPageState extends State<CallPage> {
 
   RtcEngine _engine;
   bool showEndedScreen = false;
-  String baseUrl = ''; //Add the link to your deployed server here
+  String baseUrl = 'https://ssential.herokuapp.com/api/rtc_token/'; //Add the link to your deployed server here
 
   int callTime;
 
@@ -138,9 +139,9 @@ class _CallPageState extends State<CallPage> {
     configuration.dimensions = VideoDimensions(1920, 1080);
     await _engine.setVideoEncoderConfiguration(configuration);
     final token = await getToken();
-    await _engine.joinChannel(TEST_TOKEN, widget.channelName, null, 0);
+    // await _engine.joinChannel(TEST_TOKEN, widget.channelName, null, 0);
     // await _engine.ren
-    // await _engine.joinChannel(token, widget.channelName, null, 0);
+    await _engine.joinChannel(token, widget.channelName, null, 0);
   }
 
   // get token from token server
@@ -157,10 +158,20 @@ class _CallPageState extends State<CallPage> {
               : widget.doctorsCalled.length + widget.facilitiesCalled.length <= 3
                   ? 15
                   : widget.callDuration;
-      final response = await http.get(
-        Uri.parse(
-          baseUrl + '/rtc/' + widget.channelName + '/publisher/uid/' + 0.toString() + '?expiry=$expiry',
-        ),
+      final Map<String, dynamic> details = {
+        "account": 1,
+        "role": "0",
+        "channel": widget.channelName,
+        "time": expiry,
+      };
+      final _token = getStringValuesSF();
+      final response = await http.post(
+        Uri.parse(baseUrl),
+        body: json.encode(details),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + _token,
+        },
       );
       return jsonDecode(response.body)['rtcToken'].toString();
     } catch (_) {
