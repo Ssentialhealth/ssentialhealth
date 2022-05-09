@@ -32,85 +32,86 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
         : new Container();
     return SafeArea(
       child: Scaffold(
-          key: _scaffoldKey,
-          appBar: AppBar(
-            title: Text("Forgot Pin"),
-            centerTitle: true,
-            systemOverlayStyle: SystemUiOverlayStyle.dark,
-          ),
-          body: Container(
-            child: Padding(
-              padding: EdgeInsets.all(12.0),
-              child: Form(
-                autovalidateMode: AutovalidateMode.disabled,
-                key: _formKey,
-                child: Column(
-                  children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.only(top: 24),
+        key: _scaffoldKey,
+        appBar: AppBar(
+          title: Text("Forgot Pin"),
+          centerTitle: true,
+          systemOverlayStyle: SystemUiOverlayStyle.dark,
+        ),
+        body: Container(
+          child: Padding(
+            padding: EdgeInsets.all(12.0),
+            child: Form(
+              autovalidateMode: AutovalidateMode.disabled,
+              key: _formKey,
+              child: Column(
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.only(top: 24),
+                    child: Text(
+                      "Enter the Email address to registered"
+                      " with and we will send you a link to reset your pin",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 24,
+                  ),
+                  TextFormField(
+                    validator: (val) {
+                      return RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(val) ? null : "Enter a valid Email";
+                    },
+                    // controller: emailTextEditingController,
+                    style: simpleTextStyle(),
+                    controller: emailTextEditingController,
+                    decoration: textFieldInputDecoration("Email"),
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  new Align(
+                    child: loadingIndicator,
+                    alignment: FractionalOffset.topCenter,
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      BlocProvider.of<ForgotPasswordBloc>(context).add(GetResetEmail(email: emailTextEditingController.text));
+                    },
+                    child: Container(
+                      alignment: Alignment.center,
+                      width: MediaQuery.of(context).size.width,
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5), gradient: LinearGradient(colors: [const Color(0xff163C4D), const Color(0xff32687F)])),
                       child: Text(
-                        "Enter the Email address to registered"
-                        " with and we will send you a link to reset your pin",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.black),
+                        "Reset Pin",
+                        style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold),
                       ),
                     ),
-                    SizedBox(
-                      height: 24,
-                    ),
-                    TextFormField(
-                      validator: (val) {
-                        return RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(val) ? null : "Enter a valid Email";
-                      },
-                      // controller: emailTextEditingController,
-                      style: simpleTextStyle(),
-                      controller: emailTextEditingController,
-                      decoration: textFieldInputDecoration("Email"),
-                    ),
-                    SizedBox(
-                      height: 15,
-                    ),
-                    new Align(
-                      child: loadingIndicator,
-                      alignment: FractionalOffset.topCenter,
-                    ),
-                    SizedBox(
-                      height: 15,
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        BlocProvider.of<ForgotPasswordBloc>(context).add(GetResetEmail(email: emailTextEditingController.text));
-                      },
-                      child: Container(
-                        alignment: Alignment.center,
-                        width: MediaQuery.of(context).size.width,
-                        padding: EdgeInsets.symmetric(vertical: 16),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5), gradient: LinearGradient(colors: [const Color(0xff163C4D), const Color(0xff32687F)])),
-                        child: Text(
-                          "Reset Pin",
-                          style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 15,
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Authenticate()));
-                      },
-                      child: Text("BACK TO SIGN IN",
-                          style: TextStyle(
-                            color: Color(0xFF163C4D),
-                            fontSize: 17,
-                          )),
-                    ),
-                  ],
-                ),
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Authenticate()));
+                    },
+                    child: Text("BACK TO SIGN IN",
+                        style: TextStyle(
+                          color: Color(0xFF163C4D),
+                          fontSize: 17,
+                        )),
+                  ),
+                ],
               ),
             ),
-          )),
+          ),
+        ),
+      ),
     );
   }
 }

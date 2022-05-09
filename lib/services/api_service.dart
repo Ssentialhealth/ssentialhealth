@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:math' as math;
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:json_patch/json_patch.dart';
@@ -50,6 +49,7 @@ import 'package:pocket_health/models/symptoms_detail_model.dart';
 import 'package:pocket_health/repository/insurance_agent_model.dart';
 import 'package:pocket_health/utils/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class ApiService {
   final http.Client httpClient;

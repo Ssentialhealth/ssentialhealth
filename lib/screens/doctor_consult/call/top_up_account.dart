@@ -10,7 +10,7 @@ import 'package:pocket_health/bloc/call_balance/call_balance_cubit.dart';
 import 'package:pocket_health/bloc/login/loginBloc.dart';
 import 'package:pocket_health/bloc/login/loginState.dart';
 import 'package:pocket_health/utils/constants.dart';
-import 'package:rave_flutter/rave_flutter.dart';
+// import 'package:rave_flutter/rave_flutter.dart';
 
 class TopUpAccount extends StatefulWidget {
   @override
@@ -239,135 +239,135 @@ class _TopUpAccountState extends State<TopUpAccount> {
                               'Continue',
                               style: TextStyle(color: Colors.white),
                             ),
-                            onPressed: amountToPay != null
-                                ? selectedVal == 'M-Pesa' || selectedVal == 'Card'
-                                    ? () async {
-                                        // Get a reference to RavePayInitializer
-                                        RavePayInitializer initializer = RavePayInitializer(
-                                          amount: selectedVal == 'M-Pesa' ? amountToPay.toDouble() * 110.00 : amountToPay.toDouble(),
-                                          country: "KE",
-                                          currency: selectedVal == 'M-Pesa' ? "KES" : "USD",
-                                          email: "",
-                                          txRef: "txRefTesting-${loginState.loginModel.user.email}",
-                                          narration: 'For Ssential Health Credit',
-                                          displayEmail: true,
-                                          companyName: Text(
-                                            'For Ssential Health Credit',
-                                            style: TextStyle(
-                                              color: accentColorDark,
-                                              fontSize: 14.sp,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          ),
-                                          fName: loginState.loginModel.user.fullNames.split(" ").first,
-                                          lName: loginState.loginModel.user.fullNames.split(" ").last,
-                                          acceptMpesaPayments: selectedVal == "M-Pesa",
-                                          acceptAccountPayments: false,
-                                          acceptCardPayments: selectedVal == "Card",
-                                          companyLogo: Image(
-                                            image: AssetImage('assets/images/logonotag.png'),
-                                            fit: BoxFit.fitWidth,
-                                          ),
-                                          acceptAchPayments: false,
-                                          acceptGHMobileMoneyPayments: false,
-                                          acceptUgMobileMoneyPayments: false,
-                                          staging: false,
-                                          isPreAuth: true,
-                                          displayAmount: true,
-                                          displayFee: true,
-                                          publicKey: 'FLWPUBK-01d949a9c04f029cc1f1a927af871079-X',
-                                          encryptionKey: '4c6325b0afa75beb8a0dc641',
-                                        );
-
-                                        // Initialize and get the transaction result
-                                        try {
-                                          RaveResult response = await RavePayManager().prompt(context: context, initializer: initializer);
-                                          print(response.status);
-                                          if (response == null) {
-                                            print('--------|status|--------|value -> ${response.status.toString()}');
-                                            print('--------|message|--------|value -> ${response.message.toString()}');
-                                            if (response.rawResponse["message"] ==
-                                                "Transaction Reference already exist. Try again in 2 minutes time to use the same ref for a new transaction") {
-                                              ScaffoldMessenger.of(context).showSnackBar(
-                                                SnackBar(
-                                                  behavior: SnackBarBehavior.floating,
-                                                  backgroundColor: Color(0xff163C4D),
-                                                  duration: Duration(milliseconds: 6000),
-                                                  content: Text(
-                                                    'Please try again in 2 minutes time!',
-                                                    style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontWeight: FontWeight.w600,
-                                                    ),
-                                                  ),
-                                                ),
-                                              );
-                                            }
-                                          } else {
-                                            final txID = response.rawResponse['data']['id'];
-                                            final verifyResponse = await http.get(
-                                              'https://api.flutterwave.com/v3/transactions/$txID/verify',
-                                              headers: {"Authorization": "Bearer " + "FLWSECK-4c6325b0afa7d07c4f285745e2884847-X"},
-                                            );
-                                            if (jsonDecode(verifyResponse.body)['message'] == "Transaction fetched successfully") {
-                                              print("success");
-                                              final paymentType = jsonDecode(verifyResponse.body)['data']['auth_model'];
-
-                                              context.read<CallBalanceCubit>()
-                                                ..creditDeductAdd(
-                                                  paymentType: paymentType,
-                                                  balance: (balanceInUSD ?? 0) + amountToPay,
-                                                  amount: (balanceInUSD ?? 0) + amountToPay,
-                                                  currency: "USD",
-                                                  user: 5,
-                                                );
-                                            }
-                                          }
-                                        } catch (e) {
-                                          print('--------|flutterwave error|--------|value -> ${e.toString()}');
-                                        }
-                                      }
-                                    : selectedVal == 'PayPal'
-                                        ? () async {
-                                            final request = BraintreeDropInRequest(
-                                              tokenizationKey: 'sandbox_ykgj6x4t_zjcjvpvw83bjxqkd',
-                                              cardEnabled: false,
-                                              paypalRequest: BraintreePayPalRequest(
-                                                amount: amountToPay.toString(),
-                                                currencyCode: 'USD',
-                                                billingAgreementDescription: 'NULL',
-                                                displayName: 'Ssential Health',
-                                              ),
-                                            );
-
-                                            try {
-                                              BraintreeDropInResult result = await BraintreeDropIn.start(request);
-                                              if (result != null) {
-                                                context.read<CallBalanceCubit>()
-                                                  ..creditDeductAdd(
-                                                    paymentType: 'PayPal',
-                                                    balance: (balanceInUSD ?? 0) + amountToPay,
-                                                    amount: (balanceInUSD ?? 0) + amountToPay,
-                                                    currency: "USD",
-                                                    user: 5,
-                                                  );
-                                                print('--------|devicedata|--------|value -> ${result.deviceData.toString()}');
-
-                                                print('description: ${result.paymentMethodNonce.description} ');
-                                                print('Nonce: ${result.paymentMethodNonce.nonce}');
-                                              } else {
-                                                print('Selection was canceled.');
-                                              }
-                                            } catch (_) {
-                                              print('--------|drop-in-error|--------|value -> ${_.toString()}');
-                                            }
-                                          }
-                                        : () {
-                                            print('value');
-                                          }
-                                : () {
-                                    print('EMPTY');
-                                  },
+//                             onPressed: amountToPay != null
+//                                 ? selectedVal == 'M-Pesa' || selectedVal == 'Card'
+//                                     ? () async {
+//                                         // Get a reference to RavePayInitializer
+//                                         RavePayInitializer initializer = RavePayInitializer(
+//                                           amount: selectedVal == 'M-Pesa' ? amountToPay.toDouble() * 110.00 : amountToPay.toDouble(),
+//                                           country: "KE",
+//                                           currency: selectedVal == 'M-Pesa' ? "KES" : "USD",
+//                                           email: "",
+//                                           txRef: "txRefTesting-${loginState.loginModel.user.email}",
+//                                           narration: 'For Ssential Health Credit',
+//                                           displayEmail: true,
+//                                           companyName: Text(
+//                                             'For Ssential Health Credit',
+//                                             style: TextStyle(
+//                                               color: accentColorDark,
+//                                               fontSize: 14.sp,
+//                                               fontWeight: FontWeight.w600,
+//                                             ),
+//                                           ),
+//                                           fName: loginState.loginModel.user.fullNames.split(" ").first,
+//                                           lName: loginState.loginModel.user.fullNames.split(" ").last,
+//                                           acceptMpesaPayments: selectedVal == "M-Pesa",
+//                                           acceptAccountPayments: false,
+//                                           acceptCardPayments: selectedVal == "Card",
+//                                           companyLogo: Image(
+//                                             image: AssetImage('assets/images/logonotag.png'),
+//                                             fit: BoxFit.fitWidth,
+//                                           ),
+//                                           acceptAchPayments: false,
+//                                           acceptGHMobileMoneyPayments: false,
+//                                           acceptUgMobileMoneyPayments: false,
+//                                           staging: false,
+//                                           isPreAuth: true,
+//                                           displayAmount: true,
+//                                           displayFee: true,
+//                                           publicKey: 'FLWPUBK-01d949a9c04f029cc1f1a927af871079-X',
+//                                           encryptionKey: '4c6325b0afa75beb8a0dc641',
+//                                         );
+// 
+//                                         // Initialize and get the transaction result
+//                                         try {
+//                                           RaveResult response = await RavePayManager().prompt(context: context, initializer: initializer);
+//                                           print(response.status);
+//                                           if (response == null) {
+//                                             print('--------|status|--------|value -> ${response.status.toString()}');
+//                                             print('--------|message|--------|value -> ${response.message.toString()}');
+//                                             if (response.rawResponse["message"] ==
+//                                                 "Transaction Reference already exist. Try again in 2 minutes time to use the same ref for a new transaction") {
+//                                               ScaffoldMessenger.of(context).showSnackBar(
+//                                                 SnackBar(
+//                                                   behavior: SnackBarBehavior.floating,
+//                                                   backgroundColor: Color(0xff163C4D),
+//                                                   duration: Duration(milliseconds: 6000),
+//                                                   content: Text(
+//                                                     'Please try again in 2 minutes time!',
+//                                                     style: TextStyle(
+//                                                       color: Colors.white,
+//                                                       fontWeight: FontWeight.w600,
+//                                                     ),
+//                                                   ),
+//                                                 ),
+//                                               );
+//                                             }
+//                                           } else {
+//                                             final txID = response.rawResponse['data']['id'];
+//                                             final verifyResponse = await http.get(
+//                                               'https://api.flutterwave.com/v3/transactions/$txID/verify',
+//                                               headers: {"Authorization": "Bearer " + "FLWSECK-4c6325b0afa7d07c4f285745e2884847-X"},
+//                                             );
+//                                             if (jsonDecode(verifyResponse.body)['message'] == "Transaction fetched successfully") {
+//                                               print("success");
+//                                               final paymentType = jsonDecode(verifyResponse.body)['data']['auth_model'];
+// 
+//                                               context.read<CallBalanceCubit>()
+//                                                 ..creditDeductAdd(
+//                                                   paymentType: paymentType,
+//                                                   balance: (balanceInUSD ?? 0) + amountToPay,
+//                                                   amount: (balanceInUSD ?? 0) + amountToPay,
+//                                                   currency: "USD",
+//                                                   user: 5,
+//                                                 );
+//                                             }
+//                                           }
+//                                         } catch (e) {
+//                                           print('--------|flutterwave error|--------|value -> ${e.toString()}');
+//                                         }
+//                                       }
+//                                     : selectedVal == 'PayPal'
+//                                         ? () async {
+//                                             final request = BraintreeDropInRequest(
+//                                               tokenizationKey: 'sandbox_ykgj6x4t_zjcjvpvw83bjxqkd',
+//                                               cardEnabled: false,
+//                                               paypalRequest: BraintreePayPalRequest(
+//                                                 amount: amountToPay.toString(),
+//                                                 currencyCode: 'USD',
+//                                                 billingAgreementDescription: 'NULL',
+//                                                 displayName: 'Ssential Health',
+//                                               ),
+//                                             );
+// 
+//                                             try {
+//                                               BraintreeDropInResult result = await BraintreeDropIn.start(request);
+//                                               if (result != null) {
+//                                                 context.read<CallBalanceCubit>()
+//                                                   ..creditDeductAdd(
+//                                                     paymentType: 'PayPal',
+//                                                     balance: (balanceInUSD ?? 0) + amountToPay,
+//                                                     amount: (balanceInUSD ?? 0) + amountToPay,
+//                                                     currency: "USD",
+//                                                     user: 5,
+//                                                   );
+//                                                 print('--------|devicedata|--------|value -> ${result.deviceData.toString()}');
+// 
+//                                                 print('description: ${result.paymentMethodNonce.description} ');
+//                                                 print('Nonce: ${result.paymentMethodNonce.nonce}');
+//                                               } else {
+//                                                 print('Selection was canceled.');
+//                                               }
+//                                             } catch (_) {
+//                                               print('--------|drop-in-error|--------|value -> ${_.toString()}');
+//                                             }
+//                                           }
+//                                         : () {
+//                                             print('value');
+//                                           }
+//                                 : () {
+//                                     print('EMPTY');
+//                                   },
                           ),
                         );
                       }

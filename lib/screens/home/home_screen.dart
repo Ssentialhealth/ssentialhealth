@@ -16,6 +16,7 @@ import 'package:pocket_health/widgets/card_item.dart';
 import 'package:pocket_health/widgets/category_card.dart';
 import 'package:pocket_health/widgets/welcome_dart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -73,6 +74,8 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Container(
             child: BlocBuilder<LoginBloc, LoginState>(
               builder: (context, state) {
+               
+
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
