@@ -19,7 +19,12 @@ class Base extends StatefulWidget {
 class _BaseState extends State<Base> {
   int _selectedIndex = 0;
 
-  List<Widget> tabPages = [HomeScreen(), HotlineScreen(), DoctorConsult(), ProfileScreen()];
+  List<Widget> tabPages = [
+    HomeScreen(),
+    HotlineScreen(),
+    DoctorConsult(),
+    ProfileScreen(),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -61,49 +66,50 @@ class _BaseState extends State<Base> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         type: BottomNavigationBarType.fixed,
+        selectedItemColor: Color(0xff163C4D),
+        iconSize: 24,
+        selectedLabelStyle: TextStyle(fontWeight: FontWeight.w600),
+        unselectedItemColor: Color(0xffACBBBE),
+        backgroundColor: accentColorLight,
+        elevation: 16.0,
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: new Image.asset(
-              'assets/images/icons/Home_colored.png',
-              height: 20,
-              width: 20,
+            icon: ImageIcon(
+              AssetImage('assets/icons/home.png'),
+              size: 24,
+              color: Color(0xff163C4D),
             ),
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: new Image.asset(
-              'assets/images/icons/emergency red.png',
-              height: 20,
-              width: 20,
+            icon: ImageIcon(
+              AssetImage('assets/icons/emergency.png'),
+              size: 24,
+              color: Color(0xffEC6363),
             ),
             label: 'Emergency',
           ),
           BottomNavigationBarItem(
-            icon: new Image.asset(
-              'assets/images/icons/doctor_consult_colored.png',
-              height: 20,
-              width: 20,
+            icon: ImageIcon(
+              AssetImage('assets/icons/consult.png'),
+              size: 24,
+              color: Color(0xff0A77C4),
             ),
             label: 'Consult',
           ),
           BottomNavigationBarItem(
-            icon: new Image.asset(
-              'assets/images/icons/settings.png',
-              height: 20,
-              width: 20,
+            icon: ImageIcon(
+              AssetImage('assets/icons/account.png'),
+              size: 24,
+              color: Color(0xeb163c4d),
             ),
             label: 'Account',
           ),
         ],
-        selectedItemColor: Color(0xff163C4D),
-        unselectedItemColor: Colors.grey,
         onTap: (int index) {
           setState(() {
             _selectedIndex = index;
           });
-          if (index == 2) {
-            // context.read<InitializeStreamChatCubit>().initialize('MochogeDavid');
-          }
         },
       ),
     );

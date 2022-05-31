@@ -31,8 +31,11 @@ class _SignInScreenState extends State<SignInScreen> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text("Sign In"),
+        iconTheme: IconThemeData(color: Colors.black),
+        title: Text("Sign In", style: TextStyle(color: Colors.black)),
+        backgroundColor: Colors.transparent,
         centerTitle: true,
+        elevation: 0.0,
       ),
       body: SingleChildScrollView(
         child: BlocListener<LoginBloc, LoginState>(
@@ -88,7 +91,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       ],
                     )),
                     Text(
-                      "Please Login to Access more features",
+                      "Please sign in to access more features",
                       style: TextStyle(color: Colors.black),
                     ),
                     SizedBox(
@@ -127,7 +130,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         child: Container(
                           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                           child: Text(
-                            "Forgot Pin ?",
+                            "Forgot Pin?",
                             style: simpleTextStyle(),
                           ),
                         ),
@@ -164,7 +167,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "Need an Account?",
+                          "Create an account? ",
                           style: mediumTextStyle(),
                         ),
                         GestureDetector(

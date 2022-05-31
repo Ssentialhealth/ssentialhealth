@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:math' as math;
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:json_patch/json_patch.dart';
@@ -30,6 +29,7 @@ import 'package:pocket_health/models/facility_open_hours_model.dart';
 import 'package:pocket_health/models/facility_profile_model.dart';
 import 'package:pocket_health/models/facility_review_model.dart';
 import 'package:pocket_health/models/growth_chart_model.dart';
+import 'package:pocket_health/models/health_insurance_model.dart';
 import 'package:pocket_health/models/hotlines.dart';
 import 'package:pocket_health/models/immunization_schedule_model.dart' hide Vaccine;
 import 'package:pocket_health/models/insurance_call_history_model.dart';
@@ -49,6 +49,7 @@ import 'package:pocket_health/models/symptoms_detail_model.dart';
 import 'package:pocket_health/repository/insurance_agent_model.dart';
 import 'package:pocket_health/utils/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class ApiService {
   final http.Client httpClient;
@@ -1098,6 +1099,36 @@ class ApiService {
     }
   }
 
+  Future<List<HealthInsuranceModel>> fetchAllInsurancesCalled(userID) async {
+    _token = await getStringValuesSF();
+    final response = await http.get(
+      "https://ssential.herokuapp.com/api/HealthFacility/CallsHistory",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + _token,
+      },
+    );
+
+    final callList = insuranceCallHistoryListModelFromJson(response.body).where((element) => element.user == userID).toList();
+
+    if (callList.length == 0) {
+      return [];
+    } else {
+      Future<List<HealthInsuranceModel>> getInsurances() async {
+        List<HealthInsuranceModel> allInsuranceDetails = [];
+        for (final insurance in callList) {
+          final insuranceDetail = await this.fetchInsuranceDetails(insurance.id);
+          allInsuranceDetails.add(insuranceDetail);
+        }
+
+        return allInsuranceDetails;
+      }
+
+      final allFacilities = await getInsurances();
+      return healthInsuranceModelListFromJson(allFacilities.map((e) => jsonEncode(e)).toList().toSet().toList().toString());
+    }
+  }
+
   Future<List<InsuranceAgentModel>> fetchAllAgentsCalled(userID) async {
     _token = await getStringValuesSF();
     final response = await http.get(
@@ -1158,6 +1189,20 @@ class ApiService {
     return facilityCallHistoryListModelFromJson(response.body).where((element) => element.user == userID).toList();
   }
 
+  Future<List<InsuranceCallHistoryModel>> fetchAllInsuranceCallHistory(userID) async {
+    _token = await getStringValuesSF();
+    final response = await http.get(
+      "https://ssential.herokuapp.com/api/HealthFacility/CallsHistory",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + _token,
+      },
+    );
+
+    print('--------|response call|--------|value -> ${response.reasonPhrase.toString()}');
+    return insuranceCallHistoryListModelFromJson(response.body).where((element) => element.id == userID).toList();
+  }
+
   Future<List<AgentCallHistoryModel>> fetchAllAgentCallHistory(userID) async {
     _token = await getStringValuesSF();
     final response = await http.get(
@@ -1168,7 +1213,7 @@ class ApiService {
       },
     );
 
-    print('--------|response call|--------|value -> ${response.body.toString()}');
+    print('--------|response call|--------|value -> ${response.reasonPhrase.toString()}');
 
     return agentCallHistoryListModelFromJson(response.body).where((element) => element.user == userID).toList();
   }
@@ -1206,6 +1251,23 @@ class ApiService {
 
     print(response.body);
     return facilityProfileModelFromJson(response.body);
+  }
+
+  Future<HealthInsuranceModel> fetchInsuranceDetails(insuranceID) async {
+    _token = await getStringValuesSF();
+    final response = await this.httpClient.get(
+      "https://ssential.herokuapp.com/api/HealthFacility/4/",
+      headers: {
+        "Authorization": "Bearer " + _token,
+      },
+    );
+    if (response.statusCode != 200) {
+      print('--------|reasonPhrase|--------|value -> ${response.reasonPhrase.toString()}');
+      throw Exception('Error Fetching facility DETAILS');
+    }
+
+    print(response.body);
+    return healthInsuranceModelFromJson(response.body);
   }
 
   Future<InsuranceAgentModel> fetchAgentDetails(agentID) async {

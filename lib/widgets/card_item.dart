@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 class CardItem extends StatelessWidget {
-  const CardItem ({
+  const CardItem({
     Key key,
     @required this.image,
     @required this.text,
-    @required this.press
+    @required this.press,
   }) : super(key: key);
 
   final String image, text;
@@ -13,40 +13,46 @@ class CardItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: press,
-      child: Container(
-        height: 90,
-        child: Padding(
-          padding: const EdgeInsets.only(left:10,right: 10),
-          child: Card(
-            color: Color(0xFFFEEEF1),
-            child: Row(
-              children: <Widget>[
-                Container(
-                  child: Padding(
-                    padding: const EdgeInsets.only(left:8.0),
-                    child: Image.asset(image, height: 40,),
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      child: Material(
+        color: Color(0xffFEEEF1),
+        clipBehavior: Clip.hardEdge,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+          side: BorderSide(
+            width: 1,
+            color: Color(0xffc8c8c8),
+          ),
+        ),
+        animationDuration: Duration(milliseconds: 100),
+        child: InkWell(
+          onTap: press,
+          highlightColor: Color(0x9afeeef1),
+          child: Row(
+            children: <Widget>[
+              Container(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 20.0),
+                  child: Image.asset(
+                    image,
+                    width: 40,
+                    height: 40,
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical:8.0,horizontal: 20),
-                  child: Text( text,style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 17
-                  ),
-                  ),
+              ),
+              Text(
+                text,
+                style: TextStyle(
+                  color: Color(0xff2E3748),
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
                 ),
-
-
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
-
-
-
 }

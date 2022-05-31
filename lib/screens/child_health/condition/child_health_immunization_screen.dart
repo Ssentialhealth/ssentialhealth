@@ -7,6 +7,7 @@ import 'package:pocket_health/screens/child_health/congenital_conditions/congeni
 import 'package:pocket_health/screens/child_health/nutrition/nutrition_screen.dart';
 import 'package:pocket_health/screens/child_health/resource/child_resource_screen.dart';
 import 'package:pocket_health/screens/child_health/unwell_child/unwell_child_screen.dart';
+import 'package:pocket_health/utils/constants.dart';
 import 'package:pocket_health/widgets/child_card_item.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -29,12 +30,13 @@ class _CHIScreenState extends State<CHIScreen> {
       key: _scaffoldKey,
       backgroundColor: Color(0xFFEAFCF6),
       appBar: AppBar(
+        elevation: 0.0,
+        centerTitle: true,
+        backgroundColor: accentColor,
         title: Text(
           "Child Health & Immunization",
-          style: TextStyle(fontSize: 18),
+          style: appBarStyle,
         ),
-        backgroundColor: Color(0xFF00FFFF),
-        centerTitle: true,
       ),
       body: Container(
         child: Column(
@@ -49,7 +51,7 @@ class _CHIScreenState extends State<CHIScreen> {
                 press: () async {
                   _token = await getStringValuesSF();
                   if (_token != null) {
-	                  context.read<AllSchedulesBloc>()..add(FetchAllSchedules());
+                    context.read<AllSchedulesBloc>()..add(FetchAllSchedules());
                     Navigator.push(context, MaterialPageRoute(builder: (context) => AllImmunizationSchedulesScreen()));
                   } else {
                     _showErrorSnack("Login To Access This Feature");

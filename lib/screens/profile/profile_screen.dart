@@ -11,6 +11,7 @@ import 'package:pocket_health/screens/profile/user_info_screen.dart';
 import 'package:pocket_health/widgets/menu_items.dart';
 import 'package:pocket_health/widgets/widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -18,7 +19,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-	final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   String _type = "...";
   String nullCall = "Hello";
 
@@ -61,7 +62,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       height: 100,
                       width: MediaQuery.of(context).size.width,
                       child: GestureDetector(
-	                      onTap: () {
+                        onTap: () {
                           Navigator.push(context, MaterialPageRoute(builder: (context) => UserInfoScreen()));
                         },
                         child: Column(
@@ -71,7 +72,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 Padding(
                                   padding: EdgeInsets.all(12.0),
                                   child: Container(
-	                                  child: ClipRRect(
+                                    child: ClipRRect(
                                         borderRadius: BorderRadius.circular(40),
                                         child: Image.asset(
                                           "assets/images/profile.png",
@@ -80,7 +81,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                 ),
                                 Padding(
-	                                padding: EdgeInsets.symmetric(vertical: 20),
+                                  padding: EdgeInsets.symmetric(vertical: 20),
                                   child: Column(
                                     children: [
                                       Text("$_fullName", style: mediumTextStyle()),
@@ -172,7 +173,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Column(
                     children: [
                       Padding(
-	                      padding: EdgeInsets.all(8.0),
+                        padding: EdgeInsets.all(8.0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
@@ -184,7 +185,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                             ),
                             Padding(
-	                            padding: EdgeInsets.all(8.0),
+                              padding: EdgeInsets.all(8.0),
                               child: Icon(Icons.arrow_forward_ios),
                             ),
                           ],
@@ -235,7 +236,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         MenuItems(
                           image: "assets/images/icons/Saved.png",
                           text: "Saved",
-                          press: () {},
+                          press: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => WebSocketDemo(title: 'test'),
+                              ),
+                            );
+                          },
                         ),
                         Divider(
                           color: Color(0xFFC6C6C6),
@@ -263,87 +270,87 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           endIndent: 10,
                         ),
                         MenuItems(
-		                      image: "assets/images/icons/shared medical.png",
-		                      text: "Shared Medical Info",
-		                      press: () {},
-	                      ),
-	                      Divider(height: 1, color: Color(0xFFC6C6C6)),
+                          image: "assets/images/icons/shared medical.png",
+                          text: "Shared Medical Info",
+                          press: () {},
+                        ),
+                        Divider(height: 1, color: Color(0xFFC6C6C6)),
                       ],
                     ),
                   ),
                 ),
-	              SizedBox(
-		              height: 9,
-	              ),
-	              Container(
-		              color: Colors.white,
-		              child: Column(
-			              children: <Widget>[
-				              Divider(
-					              height: 1,
-					              color: Color(0xFFC6C6C6),
-				              ),
-				              MenuItems(
-					              image: "assets/images/icons/help.png",
-					              text: "Help",
-					              press: () {},
-				              ),
-				              Divider(
-					              color: Color(0xFFC6C6C6),
-					              indent: 10,
-					              endIndent: 10,
-				              ),
-				              MenuItems(
-					              image: "assets/images/icons/feedback.png",
-					              text: "Feedback",
-					              press: () {
-						              Navigator.push(context, MaterialPageRoute(builder: (context) => FeedbackPage()));
-					              },
-				              ),
-				              Divider(
-					              color: Color(0xFFC6C6C6),
-					              indent: 10,
-					              endIndent: 10,
-				              ),
-				              MenuItems(
-					              image: "assets/images/icons/contact us.png",
-					              text: "Contact Us",
-					              press: () {
-						              Navigator.push(context, MaterialPageRoute(builder: (context) => ContactUs()));
-					              },
-				              ),
-				              Divider(height: 1, color: Color(0xFFC6C6C6)),
-			              ],
-		              ),
-	              ),
-	              SizedBox(
-		              height: 9,
-	              ),
-	              Container(
-		              color: Colors.white,
-		              child: Column(
-			              children: <Widget>[
-				              Divider(
-					              height: 1,
-					              color: Color(0xFFC6C6C6),
-				              ),
-				              MenuItems(
-					              image: "assets/images/icons/terms and conditions.png",
-					              text: "Terms & Conditions",
-					              press: () {},
-				              ),
-				              Divider(
-					              color: Color(0xFFC6C6C6),
-					              indent: 10,
-					              endIndent: 10,
-				              ),
-				              MenuItems(
-					              image: "assets/images/icons/terms and conditions.png",
-					              text: "Privacy Policy",
-					              press: () {},
-				              ),
-				              Divider(height: 1, color: Color(0xFFC6C6C6)),
-			              ],
+                SizedBox(
+                  height: 9,
+                ),
+                Container(
+                  color: Colors.white,
+                  child: Column(
+                    children: <Widget>[
+                      Divider(
+                        height: 1,
+                        color: Color(0xFFC6C6C6),
+                      ),
+                      MenuItems(
+                        image: "assets/images/icons/help.png",
+                        text: "Help",
+                        press: () {},
+                      ),
+                      Divider(
+                        color: Color(0xFFC6C6C6),
+                        indent: 10,
+                        endIndent: 10,
+                      ),
+                      MenuItems(
+                        image: "assets/images/icons/feedback.png",
+                        text: "Feedback",
+                        press: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => FeedbackPage()));
+                        },
+                      ),
+                      Divider(
+                        color: Color(0xFFC6C6C6),
+                        indent: 10,
+                        endIndent: 10,
+                      ),
+                      MenuItems(
+                        image: "assets/images/icons/contact us.png",
+                        text: "Contact Us",
+                        press: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => ContactUs()));
+                        },
+                      ),
+                      Divider(height: 1, color: Color(0xFFC6C6C6)),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 9,
+                ),
+                Container(
+                  color: Colors.white,
+                  child: Column(
+                    children: <Widget>[
+                      Divider(
+                        height: 1,
+                        color: Color(0xFFC6C6C6),
+                      ),
+                      MenuItems(
+                        image: "assets/images/icons/terms and conditions.png",
+                        text: "Terms & Conditions",
+                        press: () {},
+                      ),
+                      Divider(
+                        color: Color(0xFFC6C6C6),
+                        indent: 10,
+                        endIndent: 10,
+                      ),
+                      MenuItems(
+                        image: "assets/images/icons/terms and conditions.png",
+                        text: "Privacy Policy",
+                        press: () {},
+                      ),
+                      Divider(height: 1, color: Color(0xFFC6C6C6)),
+                    ],
                   ),
                 ),
               ],
@@ -373,4 +380,72 @@ getTypeValuesSF() async {
   //Return String
   String stringValue = prefs.getString('userType');
   return stringValue;
+}
+
+class WebSocketDemo extends StatefulWidget {
+  const WebSocketDemo({
+    Key key,
+    @required this.title,
+  }) : super(key: key);
+
+  final String title;
+
+  @override
+  _WebSocketDemoState createState() => _WebSocketDemoState();
+}
+
+class _WebSocketDemoState extends State<WebSocketDemo> {
+  final TextEditingController _controller = TextEditingController();
+
+  final _channel = WebSocketChannel.connect(
+    Uri.parse('wss://echo.websocket.events'),
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Form(
+              child: TextFormField(
+                controller: _controller,
+                decoration: const InputDecoration(labelText: 'Send a message'),
+              ),
+            ),
+            const SizedBox(height: 24),
+            StreamBuilder(
+              stream: _channel.stream,
+              builder: (context, snapshot) {
+                return Text(snapshot.hasData ? '${snapshot.data}' : '');
+              },
+            )
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _sendMessage,
+        tooltip: 'Send message',
+        child: const Icon(Icons.send),
+      ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+
+  void _sendMessage() {
+    if (_controller.text.isNotEmpty) {
+      _channel.sink.add(_controller.text);
+    }
+  }
+
+  @override
+  void dispose() {
+    _channel.sink.close();
+    _controller.dispose();
+    super.dispose();
+  }
 }

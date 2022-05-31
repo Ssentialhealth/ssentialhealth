@@ -23,6 +23,7 @@ import 'package:pocket_health/bloc/child_health/schedule_detail/schedule_detail_
 import 'package:pocket_health/bloc/emergency_contact/emergencyContactBloc.dart';
 import 'package:pocket_health/bloc/facility_call_history/facility_call_history_cubit.dart';
 import 'package:pocket_health/bloc/facility_reviews/facility_reviews_cubit.dart';
+import 'package:pocket_health/bloc/fetch_insurance_call_history/fetch_insurance_call_history_cubit.dart';
 import 'package:pocket_health/bloc/hotlines/hotlinesBloc.dart';
 import 'package:pocket_health/bloc/list_facilities/list_facilities_cubit.dart';
 import 'package:pocket_health/bloc/login/loginBloc.dart';
@@ -60,6 +61,7 @@ import 'package:pocket_health/repository/facility_reviews_repo.dart';
 import 'package:pocket_health/repository/fetch_agent_call_history_repo.dart';
 import 'package:pocket_health/repository/fetch_call_history_repo.dart';
 import 'package:pocket_health/repository/fetch_facility_call_history_repo.dart';
+import 'package:pocket_health/repository/fetch_insurance_call_history_repo.dart';
 import 'package:pocket_health/repository/forgotPasswordRepo.dart';
 import 'package:pocket_health/repository/growth_charts_repo.dart';
 import 'package:pocket_health/repository/hotline_repo.dart';
@@ -162,6 +164,7 @@ void main() async {
   final OpenHoursRepo openHoursRepo = OpenHoursRepo(ApiService(http.Client()));
   final FacilityCallHistoryRepo facilityCallHistoryRepo = FacilityCallHistoryRepo(ApiService(http.Client()));
   final FetchFacilityCallHistoryRepo fetchFacilityCallHistoryRepo = FetchFacilityCallHistoryRepo(ApiService(http.Client()));
+  final FetchInsuranceCallHistoryRepo fetchInsuranceCallHistoryRepo = FetchInsuranceCallHistoryRepo(ApiService(http.Client()));
   final ManageBookingsRepo manageBookingsRepo = ManageBookingsRepo(ApiService(http.Client()));
   final AcceptDeclineRepo acceptDeclineRepo = AcceptDeclineRepo(ApiService(http.Client()));
   final InsuranceReviewsRepo postInsuranceReviewsRepo = InsuranceReviewsRepo(ApiService(http.Client()));
@@ -221,6 +224,7 @@ void main() async {
       agentReviewsRepo: agentReviewsRepo,
       postAgentReviewsRepo: postAgentReviewsRepo,
       insuranceCallHistoryRepo: insuranceCallHistoryRepo,
+      fetchInsuranceCallHistoryRepo: fetchInsuranceCallHistoryRepo,
     ),
   ));
 }
@@ -273,6 +277,7 @@ class MyApp extends StatelessWidget {
   final AcceptDeclineRepo acceptDeclineRepo;
   final InsuranceReviewsRepo postInsuranceReviewsRepo;
   final InsuranceReviewsRepo insuranceReviewsRepo;
+  final FetchInsuranceCallHistoryRepo fetchInsuranceCallHistoryRepo;
   final AgentReviewsRepo postAgentReviewsRepo;
   final AgentReviewsRepo agentReviewsRepo;
 
@@ -327,6 +332,7 @@ class MyApp extends StatelessWidget {
     @required this.postAgentReviewsRepo,
     @required this.agentReviewsRepo,
     @required this.insuranceCallHistoryRepo,
+    @required this.fetchInsuranceCallHistoryRepo,
   }) : super(key: key);
 
   @override
@@ -399,6 +405,7 @@ class MyApp extends StatelessWidget {
           BlocProvider(create: (context) => FacilityCallHistoryCubit(facilityCallHistoryRepo)),
           BlocProvider(create: (context) => InsuranceCallHistoryCubit(insuranceCallHistoryRepo)),
           BlocProvider(create: (context) => FetchFacilityCallHistoryCubit(fetchFacilityCallHistoryRepo)),
+          BlocProvider(create: (context) => FetchInsuranceCallHistoryCubit(fetchInsuranceCallHistoryRepo)),
           BlocProvider(create: (context) => ManageBookingsCubit(manageBookingsRepo)),
           BlocProvider(create: (context) => AcceptDeclineCubit(acceptDeclineRepo)),
         ],

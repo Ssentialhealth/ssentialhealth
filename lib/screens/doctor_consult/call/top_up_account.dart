@@ -5,12 +5,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_braintree/flutter_braintree.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutterwave/core/flutterwave.dart';
+import 'package:flutterwave/models/responses/charge_response.dart';
 import 'package:http/http.dart' as http;
 import 'package:pocket_health/bloc/call_balance/call_balance_cubit.dart';
 import 'package:pocket_health/bloc/login/loginBloc.dart';
 import 'package:pocket_health/bloc/login/loginState.dart';
+import 'package:pocket_health/services/api_service.dart';
 import 'package:pocket_health/utils/constants.dart';
-import 'package:rave_flutter/rave_flutter.dart';
 
 class TopUpAccount extends StatefulWidget {
   @override
@@ -243,50 +245,58 @@ class _TopUpAccountState extends State<TopUpAccount> {
                                 ? selectedVal == 'M-Pesa' || selectedVal == 'Card'
                                     ? () async {
                                         // Get a reference to RavePayInitializer
-                                        RavePayInitializer initializer = RavePayInitializer(
-                                          amount: selectedVal == 'M-Pesa' ? amountToPay.toDouble() * 110.00 : amountToPay.toDouble(),
-                                          country: "KE",
+                                        Flutterwave flutterwave = Flutterwave.forUIPayment(
+                                          context: context,
+                                          amount: selectedVal == 'M-Pesa' ? (amountToPay.toDouble() * 110.00).toString() : amountToPay.toDouble().toString(),
+                                          // country: "KE",
                                           currency: selectedVal == 'M-Pesa' ? "KES" : "USD",
-                                          email: "",
+                                          email: "mwakicodes@gmail.com",
                                           txRef: "txRefTesting-${loginState.loginModel.user.email}",
                                           narration: 'For Ssential Health Credit',
-                                          displayEmail: true,
-                                          companyName: Text(
-                                            'For Ssential Health Credit',
-                                            style: TextStyle(
-                                              color: accentColorDark,
-                                              fontSize: 14.sp,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          ),
-                                          fName: loginState.loginModel.user.fullNames.split(" ").first,
-                                          lName: loginState.loginModel.user.fullNames.split(" ").last,
-                                          acceptMpesaPayments: selectedVal == "M-Pesa",
-                                          acceptAccountPayments: false,
-                                          acceptCardPayments: selectedVal == "Card",
-                                          companyLogo: Image(
-                                            image: AssetImage('assets/images/logonotag.png'),
-                                            fit: BoxFit.fitWidth,
-                                          ),
-                                          acceptAchPayments: false,
-                                          acceptGHMobileMoneyPayments: false,
-                                          acceptUgMobileMoneyPayments: false,
-                                          staging: false,
-                                          isPreAuth: true,
-                                          displayAmount: true,
-                                          displayFee: true,
-                                          publicKey: 'FLWPUBK-01d949a9c04f029cc1f1a927af871079-X',
-                                          encryptionKey: '4c6325b0afa75beb8a0dc641',
+                                          // displayEmail: true,
+                                          // companyName: Text(
+                                          //   'For Ssential Health Credit',
+                                          //   style: TextStyle(
+                                          //     color: accentColorDark,
+                                          //     fontSize: 14.sp,
+                                          //     fontWeight: FontWeight.w600,
+                                          //   ),
+                                          // ),
+                                          phoneNumber: "0745943954",
+                                          fullName: loginState.loginModel.user.fullNames,
+                                          acceptMpesaPayment: selectedVal == "M-Pesa",
+                                          acceptAccountPayment: false,
+                                          acceptCardPayment: selectedVal == "Card",
+
+                                          // companyLogo: Image(
+                                          //   image: AssetImage('assets/images/logonotag.png'),
+                                          //   fit: BoxFit.fitWidth,
+                                          // ),
+                                          acceptGhanaPayment: false,
+                                          acceptBankTransfer: false,
+                                          acceptFrancophoneMobileMoney: false,
+
+                                          acceptRwandaMoneyPayment: false,
+                                          acceptZambiaPayment: false,
+                                          acceptUSSDPayment: false,
+                                          acceptUgandaPayment: false,
+                                          // staging: false,
+                                          // isPreAuth: true,
+                                          // displayAmount: true,
+                                          // displayFee: true,
+                                          isDebugMode: false,
+                                          publicKey: 'FLWPUBK_TEST-5dfcc2a9e928b309981885c6bc20f2c8-X',
+                                          encryptionKey: 'FLWSECK_TEST8f63c9a22a92',
                                         );
 
                                         // Initialize and get the transaction result
                                         try {
-                                          RaveResult response = await RavePayManager().prompt(context: context, initializer: initializer);
+                                          final ChargeResponse response = await flutterwave.initializeForUiPayments();
                                           print(response.status);
                                           if (response == null) {
                                             print('--------|status|--------|value -> ${response.status.toString()}');
                                             print('--------|message|--------|value -> ${response.message.toString()}');
-                                            if (response.rawResponse["message"] ==
+                                            if (response.message ==
                                                 "Transaction Reference already exist. Try again in 2 minutes time to use the same ref for a new transaction") {
                                               ScaffoldMessenger.of(context).showSnackBar(
                                                 SnackBar(
@@ -304,7 +314,7 @@ class _TopUpAccountState extends State<TopUpAccount> {
                                               );
                                             }
                                           } else {
-                                            final txID = response.rawResponse['data']['id'];
+                                            final txID = response.data.id;
                                             final verifyResponse = await http.get(
                                               'https://api.flutterwave.com/v3/transactions/$txID/verify',
                                               headers: {"Authorization": "Bearer " + "FLWSECK-4c6325b0afa7d07c4f285745e2884847-X"},
@@ -321,6 +331,21 @@ class _TopUpAccountState extends State<TopUpAccount> {
                                                   currency: "USD",
                                                   user: 5,
                                                 );
+
+                                              final _token = await getStringValuesSF();
+                                              http
+                                                  .post(
+                                                    "https://ssential.herokuapp.com/api/payments/",
+                                                    headers: {
+                                                      "Content-Type": "application/json",
+                                                      "Authorization": "Bearer " + _token,
+                                                    },
+                                                    body: json.encode({
+                                                      "amount": amountToPay,
+                                                      "method": paymentType,
+                                                    }),
+                                                  )
+                                                  .then((value) => print(value.reasonPhrase));
                                             }
                                           }
                                         } catch (e) {
@@ -330,7 +355,7 @@ class _TopUpAccountState extends State<TopUpAccount> {
                                     : selectedVal == 'PayPal'
                                         ? () async {
                                             final request = BraintreeDropInRequest(
-                                              tokenizationKey: 'sandbox_ykgj6x4t_zjcjvpvw83bjxqkd',
+                                              tokenizationKey: 'sandbox_tvzphh3c_99pqmdz6svvv8y5f',
                                               cardEnabled: false,
                                               paypalRequest: BraintreePayPalRequest(
                                                 amount: amountToPay.toString(),

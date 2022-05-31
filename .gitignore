@@ -1,5 +1,7 @@
 ### Flutter Generated
 
+
+.fvm/
 # Miscellaneous
 *.class
 *.lock

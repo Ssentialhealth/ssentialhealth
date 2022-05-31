@@ -4,10 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:meta/meta.dart';
 import 'package:pocket_health/repository/health_insurance_service.dart';
 
-List<HealthInsuranceModel> healthInsuranceModelFromJson(String str) =>
+List<HealthInsuranceModel> healthInsuranceModelListFromJson(String str) =>
     List<HealthInsuranceModel>.from(json.decode(str).map((x) => HealthInsuranceModel.fromJson(x)));
 
 String healthInsuranceModelToJson(List<HealthInsuranceModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+HealthInsuranceModel healthInsuranceModelFromJson(String str) => HealthInsuranceModel.fromJson(json.decode(str));
 
 final healthInsuranceModelProvider = FutureProvider.autoDispose<List<HealthInsuranceModel>>((ref) async {
   final service = ref.watch(healthInsuranceServiceProvider);

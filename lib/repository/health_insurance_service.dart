@@ -19,7 +19,7 @@ class HealthInsuranceService {
         },
       );
       print('--------|reasonPhrase|--------|value -> ${response.reasonPhrase.toString()}');
-      return healthInsuranceModelFromJson(response.body);
+      return healthInsuranceModelListFromJson(response.body);
     } catch (e, s) {
       print('--------|failed to fetch|--------|value -> $s');
       return throw Exception();

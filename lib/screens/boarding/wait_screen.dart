@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_health/screens/home/base.dart';
+import 'package:pocket_health/utils/constants.dart';
 import 'package:pocket_health/widgets/widget.dart';
 
 import '../Authentication/Authenticate.dart';
@@ -13,7 +14,7 @@ class _WaitScreenState extends State<WaitScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFEFEFEF),
+      backgroundColor: accentColorLight,
       body: InkWell(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -39,7 +40,7 @@ class _WaitScreenState extends State<WaitScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  "Create an Account ?",
+                  "Create an account? ",
                   style: mediumTextStyle(),
                 ),
                 GestureDetector(
@@ -61,12 +62,17 @@ class _WaitScreenState extends State<WaitScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  "Already have an Account ?",
+                  "Already have an account? ",
                   style: mediumTextStyle(),
                 ),
                 GestureDetector(
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => Authenticate()));
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Authenticate(),
+                      ),
+                    );
                   },
                   child: Container(
                     padding: EdgeInsets.symmetric(vertical: 8),
@@ -83,7 +89,12 @@ class _WaitScreenState extends State<WaitScreen> {
               padding: const EdgeInsets.all(26.0),
               child: GestureDetector(
                 onTap: () {
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Base()));
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Base(),
+                    ),
+                  );
                 },
                 child: Container(
                   alignment: Alignment.center,
