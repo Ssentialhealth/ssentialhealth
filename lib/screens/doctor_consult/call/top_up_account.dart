@@ -11,6 +11,7 @@ import 'package:http/http.dart' as http;
 import 'package:pocket_health/bloc/call_balance/call_balance_cubit.dart';
 import 'package:pocket_health/bloc/login/loginBloc.dart';
 import 'package:pocket_health/bloc/login/loginState.dart';
+import 'package:pocket_health/services/api_service.dart';
 import 'package:pocket_health/utils/constants.dart';
 
 class TopUpAccount extends StatefulWidget {
@@ -331,12 +332,17 @@ class _TopUpAccountState extends State<TopUpAccount> {
                                                   user: 5,
                                                 );
 
+                                              final _token = await getStringValuesSF();
                                               http
                                                   .post(
-                                                    "paymentendpoint",
+                                                    "https://ssential.herokuapp.com/api/payments/",
+                                                    headers: {
+                                                      "Content-Type": "application/json",
+                                                      "Authorization": "Bearer " + _token,
+                                                    },
                                                     body: json.encode({
                                                       "amount": amountToPay,
-                                                      "paymentType": paymentType,
+                                                      "method": paymentType,
                                                     }),
                                                   )
                                                   .then((value) => print(value.reasonPhrase));
