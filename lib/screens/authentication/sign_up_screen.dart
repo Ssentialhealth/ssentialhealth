@@ -48,7 +48,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text("Sign Up"),
+        iconTheme: IconThemeData(color: Colors.black),
+        title: Text(
+          "Sign Up",
+          style: TextStyle(
+            color: Colors.black,
+          ),
+        ),
+        backgroundColor: Colors.transparent,
         centerTitle: true,
         elevation: 0.0,
       ),

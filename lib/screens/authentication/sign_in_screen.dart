@@ -31,7 +31,9 @@ class _SignInScreenState extends State<SignInScreen> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text("Sign In"),
+        iconTheme: IconThemeData(color: Colors.black),
+        title: Text("Sign In", style: TextStyle(color: Colors.black)),
+        backgroundColor: Colors.transparent,
         centerTitle: true,
         elevation: 0.0,
       ),
